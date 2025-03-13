@@ -6,7 +6,7 @@ def C(n, N, R=3, S=0):
 
 def D(n, N, T=5, P=1):
     """Payoff for defecting when n players cooperate."""
-    return P + (T - P) * (n / (N - 1))  
+    return P + (T - P) * (n / (N - 1))
 
 def create_payoff_matrix(N):
     """
@@ -19,7 +19,7 @@ def create_payoff_matrix(N):
     return payoff_matrix
 
 class Agent:
-    def __init__(self, agent_id, strategy="random", learning_rate=0.1, discount_factor=0.9, epsilon=0.1):
+    def __init__(self, agent_id, strategy="random", learning_rate=0.5, discount_factor=0.9, epsilon=0.1):
         self.agent_id = agent_id  # Unique identifier
         self.strategy = strategy  # Initial strategy (e.g., "random", "tit_for_tat", "always_defect")
         self.score = 0
@@ -145,8 +145,8 @@ class Environment:
         return results
 
 if __name__ == "__main__":
-    num_agents = 5
-    num_rounds = 100
+    num_agents = 20
+    num_rounds = 1000
 
     # Create agents with different strategies
     agents = [Agent(agent_id=i, strategy="random") for i in range(num_agents - 2)]

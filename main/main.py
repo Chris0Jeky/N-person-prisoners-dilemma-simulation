@@ -1,12 +1,22 @@
 import argparse
 import json
 import os
+import logging
 import pandas as pd
-import matplotlib.pyplot as plt
 
 from agents import Agent
 from environment import Environment
 from utils import create_payoff_matrix
+
+# Set up logging: log both to console and a file.
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    handlers=[
+        logging.StreamHandler(),
+        logging.FileHandler("experiment.log", mode="w")
+    ]
+)
 
 
 def load_scenarios(file_path):
@@ -17,8 +27,9 @@ def load_scenarios(file_path):
 
 
 def run_experiment(scenario):
-    """Runs a single experiment based on the provided scenario."""
-    # 1. Create Agents based on the scenario's agent_strategies.
+    logging.info(f"Running scenario: {scenario['scenario_name']}")
+
+    # Create agents based on the scenario's agent_strategies.
     agents = []
     agent_id_counter = 0
     for strategy, count in scenario["agent_strategies"].items():
@@ -37,10 +48,10 @@ def run_experiment(scenario):
                 agents.append(Agent(agent_id=agent_id_counter, strategy=strategy))
             agent_id_counter += 1
 
-    # 2. Create Payoff Matrix
+    # Create payoff matrix.
     payoff_matrix = create_payoff_matrix(scenario["num_agents"])
 
-    # 3. Create Environment (this will also log network stats)
+    # Create the environment (this will log network stats).
     env = Environment(
         agents,
         payoff_matrix,
@@ -48,10 +59,9 @@ def run_experiment(scenario):
         network_params=scenario["network_params"],
     )
 
-    # 4. Run Simulation for the specified number of rounds.
+    # Run the simulation.
     results = env.run_simulation(scenario["num_rounds"])
-
-    # 5. Return experiment results along with scenario info and final agent states.
+    logging.info(f"Completed scenario: {scenario['scenario_name']}")
     return {"scenario": scenario, "results": results, "agents": agents}
 
 
@@ -76,6 +86,7 @@ def save_results(all_results, base_filename="experiment_results", results_dir="r
         df_agent = pd.DataFrame(agent_data)
         agent_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_agents.csv")
         df_agent.to_csv(agent_filename, index=False)
+        logging.info(f"Saved agent results for scenario '{scenario_name}' to {agent_filename}")
 
         # Save round-by-round data.
         round_data = []
@@ -96,6 +107,7 @@ def save_results(all_results, base_filename="experiment_results", results_dir="r
         df_rounds = pd.DataFrame(round_data)
         rounds_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_rounds.csv")
         df_rounds.to_csv(rounds_filename, index=False)
+        logging.info(f"Saved round results for scenario '{scenario_name}' to {rounds_filename}")
 
 
 def main():
@@ -107,19 +119,18 @@ def main():
     parser.add_argument('--verbose', action='store_true', help='Enable verbose logging.')
     args = parser.parse_args()
 
+    if args.verbose:
+        logging.getLogger().setLevel(logging.DEBUG)
+
     scenarios = load_scenarios(args.scenario_file)
     all_results = []
 
     for scenario in scenarios:
-        if args.verbose:
-            print(f"Running scenario: {scenario['scenario_name']}")
         result = run_experiment(scenario)
         all_results.append(result)
 
     save_results(all_results, results_dir=args.results_dir)
-
-    if args.verbose:
-        print(f"Simulations complete. Results saved to '{args.results_dir}' directory.")
+    logging.info(f"Simulations complete. Results saved to '{args.results_dir}' directory.")
 
 
 if __name__ == "__main__":

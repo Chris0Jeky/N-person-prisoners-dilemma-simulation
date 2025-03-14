@@ -19,7 +19,6 @@ if __name__ == "__main__":
     # Create agents
     agents = []
     for i in range(num_agents):
-        # Decide each agent's strategy however you like, but i must run from 0..19
         if i < 14:
             strategy = "random"
         elif i == 14:
@@ -55,3 +54,21 @@ if __name__ == "__main__":
 
     for agent in agents:
       print(agent.agent_id, agent.strategy, agent.score, agent.q_values)
+
+import csv  #
+
+with open("simulation_results.csv", "w", newline="") as f:
+    writer = csv.writer(f)
+    # Write header row
+    writer.writerow(["round", "agent_id", "move", "payoff", "q_cooperate", "q_defect"])
+    for round_data in results:
+        round_num = round_data['round']
+        moves = round_data['moves']
+        payoffs = round_data['payoffs']
+        for agent in agents: #it's better to iterate over agents, so you can get q-values
+            agent_id = agent.agent_id
+            move = moves.get(agent_id, None) # Using .get() in case an agent is missing
+            payoff = payoffs.get(agent_id, None)
+            q_coop = agent.q_values["cooperate"] if agent.strategy == "q_learning" else None
+            q_def = agent.q_values["defect"] if agent.strategy == "q_learning" else None
+            writer.writerow([round_num, agent_id, move, payoff, q_coop, q_def])

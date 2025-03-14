@@ -6,7 +6,7 @@ from utils import create_payoff_matrix
 
 if __name__ == "__main__":
     num_agents = 20
-    num_rounds = 500
+    num_rounds = 100
     # Example of using different network types:
     # network_type = "fully_connected"
     # network_type = "random"

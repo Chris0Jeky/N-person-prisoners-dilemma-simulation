@@ -96,4 +96,18 @@ class Environment:
                       f"Avg Coop Rate: {avg_coop_rate:.2f}, "
                       f"Avg Score: {avg_score:.2f}")
 
+                # Collect all Q-learning agents
+                q_learning_agents = [agent for agent in self.agents if agent.strategy == "q_learning"]
+                if q_learning_agents:
+                    avg_coop_q = sum(a.q_values["cooperate"] for a in q_learning_agents) / len(q_learning_agents)
+                    avg_defect_q = sum(a.q_values["defect"] for a in q_learning_agents) / len(q_learning_agents)
+                    print(f"Round: {round_num + 1}, "
+                          f"Avg Coop Rate: {avg_coop_rate:.2f}, "
+                          f"Avg Score: {avg_score:.2f}, "
+                          f"Avg Q(c): {avg_coop_q:.2f}, "
+                          f"Avg Q(d): {avg_defect_q:.2f}")
+                else:
+                    print(f"Round: {round_num + 1}, "
+                          f"Avg Coop Rate: {avg_coop_rate:.2f}, "
+                          f"Avg Score: {avg_score:.2f}")
         return results

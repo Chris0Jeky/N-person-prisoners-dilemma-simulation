@@ -77,9 +77,23 @@ class Environment:
         return moves, payoffs
 
     def run_simulation(self, num_rounds):
-        # (rest of run_simulation as before)
         results = []
         for round_num in range(num_rounds):
             moves, payoffs = self.run_round()
             results.append({'round': round_num, 'moves': moves, 'payoffs': payoffs})
+
+            # LOGGING: print every 10 rounds (as an example)
+            if (round_num + 1) % 10 == 0:
+                # Calculate average cooperation rate
+                coop_count = sum(1 for move in moves.values() if move == "cooperate")
+                avg_coop_rate = coop_count / len(self.agents)
+
+                # Calculate average score
+                total_score = sum(agent.score for agent in self.agents)
+                avg_score = total_score / len(self.agents)
+
+                print(f"Round: {round_num + 1}, "
+                      f"Avg Coop Rate: {avg_coop_rate:.2f}, "
+                      f"Avg Score: {avg_score:.2f}")
+
         return results

@@ -3,3 +3,4 @@
 *.pyc
 main/simulation_results.csv
 /main/results
+*.log

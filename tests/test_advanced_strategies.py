@@ -23,6 +23,15 @@ from npdl.core.environment import Environment
 from npdl.core.utils import create_payoff_matrix
 
 
+class TestDailyT001LraQDefaults:
+    """Daily check: LRA-Q exposes its configured base learning rate."""
+
+    def test_lra_q_base_learning_rate(self):
+        agent = Agent(agent_id=0, strategy="lra_q", learning_rate=0.2)
+        assert agent.strategy_type == "lra_q"
+        assert agent.strategy.base_learning_rate == 0.2
+
+
 class TestLRAQLearning:
     """Test suite for Learning Rate Adjusting Q-Learning strategy."""
     

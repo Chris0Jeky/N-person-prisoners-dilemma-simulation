@@ -1,5 +1,4 @@
 # environment.py
-import random  # needed for network creation
 import networkx as nx
 
 def log_network_stats(graph, network_type):

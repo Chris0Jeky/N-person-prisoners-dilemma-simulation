@@ -1,3 +1,4 @@
+#main.py
 import argparse
 import json
 import os
@@ -8,7 +9,7 @@ from agents import Agent
 from environment import Environment
 from utils import create_payoff_matrix
 
-# Set up logging: log both to console and a file.
+# Set up logging
 logging.basicConfig(
     level=logging.INFO,
     format='%(asctime)s - %(levelname)s - %(message)s',
@@ -20,7 +21,6 @@ logging.basicConfig(
 
 
 def load_scenarios(file_path):
-    """Load scenario definitions from a JSON file."""
     with open(file_path, 'r') as f:
         scenarios = json.load(f)
     return scenarios
@@ -29,40 +29,39 @@ def load_scenarios(file_path):
 def run_experiment(scenario):
     logging.info(f"Running scenario: {scenario['scenario_name']}")
 
-    # Create agents based on the scenario's agent_strategies.
+    # Create agents, handling strategy-specific parameters.
     agents = []
     agent_id_counter = 0
     for strategy, count in scenario["agent_strategies"].items():
         for _ in range(count):
-            if strategy == "q_learning":
-                agents.append(
-                    Agent(
-                        agent_id=agent_id_counter,
-                        strategy=strategy,
-                        learning_rate=scenario["learning_rate"],
-                        discount_factor=scenario["discount_factor"],
-                        epsilon=scenario["epsilon"],
-                    )
-                )
-            else:
-                agents.append(Agent(agent_id=agent_id_counter, strategy=strategy))
+            agent_params = {"agent_id": agent_id_counter, "strategy": strategy}
+            if strategy == "q_learning" or strategy == "q_learning_adaptive":
+                agent_params.update({
+                    "learning_rate": scenario.get("learning_rate", 0.1), #use .get to provide default values
+                    "discount_factor": scenario.get("discount_factor", 0.9),
+                    "epsilon": scenario.get("epsilon", 0.1),
+                })
+            elif strategy == "generous_tit_for_tat":
+                agent_params["generosity"] = scenario.get("generosity", 0.05) #default value for generosity
+            elif strategy == "pavlov" or strategy == "suspicious_tit_for_tat":
+                agent_params["initial_move"] = scenario.get("initial_move", "cooperate") #default value
+            elif strategy == "randomprob":
+              agent_params["prob_coop"] = scenario.get("prob_coop", 0.5)
+
+            agents.append(Agent(**agent_params))  # Use dictionary unpacking
             agent_id_counter += 1
 
-    # Create payoff matrix.
     payoff_matrix = create_payoff_matrix(scenario["num_agents"])
-
-    # Create the environment (this will log network stats).
     env = Environment(
         agents,
         payoff_matrix,
         network_type=scenario["network_type"],
         network_params=scenario["network_params"],
     )
-
-    # Run the simulation.
     results = env.run_simulation(scenario["num_rounds"])
     logging.info(f"Completed scenario: {scenario['scenario_name']}")
     return {"scenario": scenario, "results": results, "agents": agents}
+
 
 
 def save_results(all_results, base_filename="experiment_results", results_dir="results"):
@@ -110,6 +109,7 @@ def save_results(all_results, base_filename="experiment_results", results_dir="r
         logging.info(f"Saved round results for scenario '{scenario_name}' to {rounds_filename}")
 
 
+
 def main():
     parser = argparse.ArgumentParser(description="Run N-person IPD experiments")
     parser.add_argument('--scenario_file', type=str, default='scenarios.json',
@@ -120,7 +120,7 @@ def main():
     args = parser.parse_args()
 
     if args.verbose:
-        logging.getLogger().setLevel(logging.DEBUG)
+        logging.getLogger().setLevel(logging.DEBUG)  # Set logging level to DEBUG
 
     scenarios = load_scenarios(args.scenario_file)
     all_results = []
@@ -130,7 +130,7 @@ def main():
         all_results.append(result)
 
     save_results(all_results, results_dir=args.results_dir)
-    logging.info(f"Simulations complete. Results saved to '{args.results_dir}' directory.")
+    logging.info(f"Simulations complete.  Results saved to '{args.results_dir}' directory.")
 
 
 if __name__ == "__main__":

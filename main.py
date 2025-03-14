@@ -19,7 +19,7 @@ def create_payoff_matrix(N):
     return payoff_matrix
 
 class Agent:
-    def __init__(self, agent_id, strategy="random", learning_rate=0.5, discount_factor=0.9, epsilon=0.1):
+    def __init__(self, agent_id, strategy="random", learning_rate=0.1, discount_factor=0.9, epsilon=0.1):
         self.agent_id = agent_id  # Unique identifier
         self.strategy = strategy  # Initial strategy (e.g., "random", "tit_for_tat", "always_defect")
         self.score = 0
@@ -146,12 +146,16 @@ class Environment:
 
 if __name__ == "__main__":
     num_agents = 20
-    num_rounds = 1000
+    num_rounds = 500
 
     # Create agents with different strategies
-    agents = [Agent(agent_id=i, strategy="random") for i in range(num_agents - 2)]
+    agents = [Agent(agent_id=i, strategy="random") for i in range(num_agents - 6)]
+    agents.append(Agent(agent_id=num_agents - 4, strategy="q_learning", epsilon=0.7))
+    agents.append(Agent(agent_id=num_agents - 3, strategy="q_learning", epsilon=0.5))
     agents.append(Agent(agent_id=num_agents - 2, strategy="tit_for_tat"))
-    agents.append(Agent(agent_id=num_agents - 1, strategy="q_learning", epsilon=0.3))
+    agents.append(Agent(agent_id=num_agents - 5, strategy="q_learning", epsilon=0.4))
+    agents.append(Agent(agent_id=num_agents - 6, strategy="q_learning", epsilon=0.2))
+    agents.append(Agent(agent_id=num_agents - 7, strategy="q_learning", epsilon=0.9))
 
     # Create the payoff matrix
     payoff_matrix = create_payoff_matrix(num_agents)
@@ -161,6 +165,11 @@ if __name__ == "__main__":
 
     # Run the simulation
     results = env.run_simulation(num_rounds)
+
+    for round_data in results:
+        print(f"Round: {round_data['round']}")
+        print(f"  Moves: {round_data['moves']}")
+        print(f"  Payoffs: {round_data['payoffs']}")
 
     for agent in agents:
         print(agent.agent_id, agent.strategy, agent.score, agent.q_values)

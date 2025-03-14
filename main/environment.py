@@ -86,6 +86,9 @@ class Environment:
             neighbor_moves = {n_id: moves[n_id] for n_id in self.get_neighbors(agent.agent_id)}
             agent.update_q_value(moves[agent.agent_id], payoffs[agent.agent_id], neighbor_moves)
             agent.update_memory(moves[agent.agent_id], neighbor_moves, payoffs[agent.agent_id])
+            #Decrease epsilon if agent is q_learning_adaptive
+            if agent.strategy == "q_learning_adaptive":
+              agent.decrease_epsilon()
 
         return moves, payoffs
 

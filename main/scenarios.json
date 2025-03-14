@@ -1,0 +1,53 @@
+[
+  {
+    "scenario_name": "FullyConnected_QLearning",
+    "num_agents": 20,
+    "num_rounds": 100,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "agent_strategies": {
+      "q_learning": 10,
+      "random": 5,
+      "tit_for_tat": 5
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "logging_interval": 10
+  },
+  {
+    "scenario_name": "SmallWorld_Mixed",
+    "num_agents": 50,
+    "num_rounds": 200,
+    "network_type": "small_world",
+    "network_params": {
+      "k": 4,
+      "beta": 0.3
+    },
+    "agent_strategies": {
+      "q_learning": 25,
+      "always_defect": 25
+    },
+    "learning_rate": 0.2,
+    "discount_factor": 0.8,
+    "epsilon": 0.2,
+    "logging_interval": 20
+  },
+  {
+    "scenario_name": "ScaleFree_HighEpsilon",
+    "num_agents": 30,
+    "num_rounds": 150,
+    "network_type": "scale_free",
+    "network_params": {
+      "m": 2
+    },
+    "agent_strategies": {
+      "q_learning": 20,
+      "tit_for_tat": 10
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.5,
+    "logging_interval": 10
+  }
+]

@@ -17,13 +17,26 @@ if __name__ == "__main__":
     network_params = {"m": 3} #each new node creates 3 edges
 
     # Create agents
-    agents = [Agent(agent_id=i, strategy="random") for i in range(num_agents - 6)]
-    agents.append(Agent(agent_id=num_agents - 4, strategy="q_learning", epsilon=0.7))
-    agents.append(Agent(agent_id=num_agents - 3, strategy="q_learning", epsilon=0.5))
-    agents.append(Agent(agent_id=num_agents - 2, strategy="tit_for_tat"))
-    agents.append(Agent(agent_id=num_agents - 5, strategy="q_learning", epsilon=0.4))
-    agents.append(Agent(agent_id=num_agents - 6, strategy="q_learning", epsilon=0.2))
-    agents.append(Agent(agent_id=num_agents - 7, strategy="q_learning", epsilon=0.9))
+    agents = []
+    for i in range(num_agents):
+        # Decide each agent's strategy however you like, but i must run from 0..19
+        if i < 14:
+            strategy = "random"
+        elif i == 14:
+            strategy = "q_learning"
+        elif i == 15:
+            strategy = "q_learning"
+        elif i == 16:
+            strategy = "q_learning"
+        elif i == 17:
+            strategy = "q_learning"
+        elif i == 18:
+            strategy = "tit_for_tat"
+        elif i == 19:
+            strategy = "q_learning"
+
+        # Adjust epsilon or other params as needed:
+        agents.append(Agent(agent_id=i, strategy=strategy, epsilon=0.3))
 
     # Create the payoff matrix
     payoff_matrix = create_payoff_matrix(num_agents)

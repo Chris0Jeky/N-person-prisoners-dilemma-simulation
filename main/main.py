@@ -1,74 +1,157 @@
 # main.py
-import random
-from agents import Agent  # Import the Agent class
-from environment import Environment  # Import the Environment class
+import os
+import csv
+import pandas as pd
+import networkx as nx
+import matplotlib.pyplot as plt
+
+from agents import Agent
+from environment import Environment
 from utils import create_payoff_matrix
 
-if __name__ == "__main__":
-    num_agents = 20
-    num_rounds = 100
-    # Example of using different network types:
-    # network_type = "fully_connected"
-    # network_type = "random"
-    # network_params = {"probability": 0.2}  # 20% chance of connection
-    # network_type = "small_world"
-    # network_params = {"k": 4, "beta": 0.3}  # 4 neighbors, 30% rewiring
-    network_type = "scale_free"
-    network_params = {"m": 3} #each new node creates 3 edges
+scenarios = [
+    {
+        "scenario_name": "FullyConnected_QLearning",
+        "num_agents": 20,
+        "num_rounds": 100,
+        "network_type": "fully_connected",
+        "network_params": {},
+        "agent_strategies": {  # Define strategies for each agent
+            "q_learning": 10,  # 10 Q-learning agents
+            "random": 5,      # 5 random agents
+            "tit_for_tat": 5,    # 5 Tit-for-Tat agents
+        },
+        "learning_rate": 0.1,
+        "discount_factor": 0.9,
+        "epsilon": 0.1,
+        "logging_interval": 10, #logging every 10 rounds
+    },
+    {
+        "scenario_name": "SmallWorld_Mixed",
+        "num_agents": 50,
+        "num_rounds": 200,
+        "network_type": "small_world",
+        "network_params": {"k": 4, "beta": 0.3},
+        "agent_strategies": {
+            "q_learning": 25,
+            "always_defect": 25,
+        },
+        "learning_rate": 0.2,
+        "discount_factor": 0.8,
+        "epsilon": 0.2,
+        "logging_interval": 20,
+    },
+     {
+        "scenario_name": "ScaleFree_HighEpsilon",
+        "num_agents": 30,
+        "num_rounds": 150,
+        "network_type": "scale_free",
+        "network_params": {"m": 2},
+        "agent_strategies": {
+            "q_learning": 20,
+            "tit_for_tat": 10,
+        },
+        "learning_rate": 0.1,
+        "discount_factor": 0.9,
+        "epsilon": 0.5,  # High exploration rate
+        "logging_interval": 10,
+    },
+]
+# --- Experiment Runner Function ---
+def run_experiment(scenario):
+    """Runs a single experiment based on the provided scenario."""
 
-    # Create agents
+    # 1. Create Agents
     agents = []
-    for i in range(num_agents):
-        if i < 14:
-            strategy = "random"
-        elif i == 14:
-            strategy = "q_learning"
-        elif i == 15:
-            strategy = "q_learning"
-        elif i == 16:
-            strategy = "q_learning"
-        elif i == 17:
-            strategy = "q_learning"
-        elif i == 18:
-            strategy = "tit_for_tat"
-        elif i == 19:
-            strategy = "q_learning"
+    agent_id_counter = 0
+    for strategy, count in scenario["agent_strategies"].items():
+        for _ in range(count):
+            if strategy == "q_learning":
+                agents.append(
+                    Agent(
+                        agent_id=agent_id_counter,
+                        strategy=strategy,
+                        learning_rate=scenario["learning_rate"],
+                        discount_factor=scenario["discount_factor"],
+                        epsilon=scenario["epsilon"],
+                    )
+                )
+            else:
+                agents.append(Agent(agent_id=agent_id_counter, strategy=strategy))
+            agent_id_counter += 1
 
-        # Adjust epsilon or other params as needed:
-        agents.append(Agent(agent_id=i, strategy=strategy, epsilon=0.3))
 
-    # Create the payoff matrix
-    payoff_matrix = create_payoff_matrix(num_agents)
+    # 2. Create Payoff Matrix
+    payoff_matrix = create_payoff_matrix(scenario["num_agents"])
 
-    # Create the environment
-    env = Environment(agents, payoff_matrix, network_type=network_type, network_params=network_params)
+    # 3. Create Environment
+    env = Environment(
+        agents,
+        payoff_matrix,
+        network_type=scenario["network_type"],
+        network_params=scenario["network_params"],
+    )
 
-    # Run the simulation
-    results = env.run_simulation(num_rounds)
+    # 4. Run Simulation
+    results = env.run_simulation(scenario["num_rounds"])
 
-    # Basic results printing (replace with proper logging/analysis)
-    # for round_data in results:
-    #    print(f"Round: {round_data['round']}")
-    #    print(f"  Moves: {round_data['moves']}")
-    #    print(f"  Payoffs: {round_data['payoffs']}")
+    # 5. Return Results (including scenario info)
+    return {"scenario": scenario, "results": results, "agents": agents}
 
-    for agent in agents:
-      print(agent.agent_id, agent.strategy, agent.score, agent.q_values)
+# --- Result Storage Function ---
+def save_results(all_results, base_filename="experiment_results"):
+    """Saves the experiment results to CSV files."""
 
-import csv  #
+    # Create a directory for storing results if one doesn't exist.
+    results_dir = "results"
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
 
-# with open("simulation_results.csv", "w", newline="") as f:
-#     writer = csv.writer(f)
-#     # Write header row
-#     writer.writerow(["round", "agent_id", "move", "payoff", "q_cooperate", "q_defect"])
-#     for round_data in results:
-#         round_num = round_data['round']
-#         moves = round_data['moves']
-#         payoffs = round_data['payoffs']
-#         for agent in agents: #it's better to iterate over agents, so you can get q-values
-#             agent_id = agent.agent_id
-#             move = moves.get(agent_id, None) # Using .get() in case an agent is missing
-#             payoff = payoffs.get(agent_id, None)
-#             q_coop = agent.q_values["cooperate"] if agent.strategy == "q_learning" else None
-#             q_def = agent.q_values["defect"] if agent.strategy == "q_learning" else None
-#             writer.writerow([round_num, agent_id, move, payoff, q_coop, q_def])
+    for result in all_results:
+        scenario_name = result['scenario']['scenario_name']
+
+        # Create a DataFrame for agent data at the simulation's end
+        agent_data = []
+        for agent in result['agents']:
+             agent_data.append({
+                'scenario_name': scenario_name,
+                'agent_id': agent.agent_id,
+                'strategy': agent.strategy,
+                'final_score': agent.score,
+                'final_q_values': agent.q_values if agent.strategy == 'q_learning' else None,
+              })
+        df_agent = pd.DataFrame(agent_data)
+        agent_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_agents.csv")
+        df_agent.to_csv(agent_filename, index=False)
+
+        # Create a DataFrame for round-by-round data
+        round_data = []
+        for round_result in result['results']:
+            round_num = round_result['round']
+            moves = round_result['moves']
+            payoffs = round_result['payoffs']
+            for agent_id, move in moves.items():
+                payoff = payoffs.get(agent_id,None)
+                round_data.append({
+                    'scenario_name': scenario_name,
+                    'round': round_num,
+                    'agent_id': agent_id,
+                    'move': move,
+                    'payoff': payoff,
+                    'strategy': next((ag.strategy for ag in result['agents'] if ag.agent_id == agent_id), None)
+                })
+        df_rounds = pd.DataFrame(round_data)
+        rounds_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_rounds.csv")
+        df_rounds.to_csv(rounds_filename, index=False)
+
+# --- Main Execution Block ---
+if __name__ == "__main__":
+    all_results = []
+    for scenario in scenarios:
+        print(f"Running scenario: {scenario['scenario_name']}")
+        result = run_experiment(scenario)
+        all_results.append(result)
+
+    save_results(all_results)
+
+    print("Simulations complete.  Results saved to 'results' directory.")

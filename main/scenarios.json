@@ -1,53 +1,99 @@
 [
   {
-    "scenario_name": "FullyConnected_QLearning",
+    "scenario_name": "FullyConnected_Mixed",
     "num_agents": 20,
-    "num_rounds": 100,
+    "num_rounds": 200,
     "network_type": "fully_connected",
     "network_params": {},
     "agent_strategies": {
-      "q_learning": 10,
-      "random": 5,
-      "tit_for_tat": 5
+      "q_learning": 5,
+      "tit_for_tat": 5,
+      "always_defect": 5,
+      "random": 5
     },
     "learning_rate": 0.1,
     "discount_factor": 0.9,
-    "epsilon": 0.1,
-    "logging_interval": 10
-  },
-  {
-    "scenario_name": "SmallWorld_Mixed",
-    "num_agents": 50,
-    "num_rounds": 200,
-    "network_type": "small_world",
-    "network_params": {
-      "k": 4,
-      "beta": 0.3
-    },
-    "agent_strategies": {
-      "q_learning": 25,
-      "always_defect": 25
-    },
-    "learning_rate": 0.2,
-    "discount_factor": 0.8,
-    "epsilon": 0.2,
+    "epsilon": 0.3,
     "logging_interval": 20
   },
   {
-    "scenario_name": "ScaleFree_HighEpsilon",
-    "num_agents": 30,
-    "num_rounds": 150,
-    "network_type": "scale_free",
-    "network_params": {
-      "m": 2
-    },
+    "scenario_name": "SmallWorld_GTFT_vs_QL",
+    "num_agents": 50,
+    "num_rounds": 300,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
     "agent_strategies": {
-      "q_learning": 20,
-      "tit_for_tat": 10
+      "q_learning": 25,
+      "generous_tit_for_tat": 25
+    },
+      "learning_rate": 0.1,
+      "discount_factor": 0.9,
+      "epsilon": 0.1,
+      "generosity": 0.1,
+    "logging_interval": 50
+  },
+  {
+    "scenario_name": "ScaleFree_Pavlov_vs_QL",
+    "num_agents": 30,
+    "num_rounds": 250,
+    "network_type": "scale_free",
+    "network_params": {"m": 2},
+    "agent_strategies": {
+      "q_learning": 15,
+      "pavlov": 15
+    },
+      "learning_rate": 0.1,
+      "discount_factor": 0.9,
+      "epsilon": 0.2,
+      "initial_move" : "cooperate",
+    "logging_interval": 25
+  },
+    {
+    "scenario_name": "FullyConnected_AdaptiveQL",
+    "num_agents": 20,
+    "num_rounds": 200,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "agent_strategies": {
+      "q_learning_adaptive": 10,
+      "tit_for_tat": 5,
+      "always_defect": 5
     },
     "learning_rate": 0.1,
     "discount_factor": 0.9,
-    "epsilon": 0.5,
+    "epsilon": 0.9,
     "logging_interval": 10
+  },
+    {
+    "scenario_name": "Random_RandomProb",
+    "num_agents": 30,
+    "num_rounds": 150,
+    "network_type": "random",
+    "network_params": {"probability": 0.4},
+    "agent_strategies": {
+      "randomprob": 15,
+       "q_learning": 15
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.2,
+      "prob_coop" : 0.7,
+    "logging_interval": 20
+  },
+    {
+    "scenario_name": "SmallWorld_STFT_vs_QL",
+    "num_agents": 40,
+    "num_rounds": 200,
+    "network_type": "small_world",
+    "network_params": {"k":6, "beta":0.4},
+    "agent_strategies": {
+      "q_learning": 20,
+      "suspicious_tit_for_tat": 20
+    },
+    "learning_rate": 0.2,
+    "discount_factor": 0.9,
+    "epsilon": 0.3,
+      "initial_move" : "defect",
+    "logging_interval": 25
   }
 ]

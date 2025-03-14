@@ -1,44 +1,58 @@
 # environment.py
 import random  # needed for network creation
-import networkx as nx  # importing networkx
+import networkx as nx
 
+def log_network_stats(graph, network_type):
+    """
+    Logs key statistics for a given NetworkX graph.
+    """
+    num_nodes = graph.number_of_nodes()
+    num_edges = graph.number_of_edges()
+    degrees = dict(graph.degree())
+    avg_degree = sum(degrees.values()) / num_nodes if num_nodes > 0 else 0
+    max_degree = max(degrees.values()) if degrees else 0
+    min_degree = min(degrees.values()) if degrees else 0
 
+    print(f"Network Type: {network_type}")
+    print(f"Nodes: {num_nodes}, Edges: {num_edges}")
+    print(f"Degree - Avg: {avg_degree:.2f}, Min: {min_degree}, Max: {max_degree}")
+    # Optionally, you could print the entire degree distribution:
+    print("Degree Distribution:")
+    for node, deg in degrees.items():
+        print(f"  Node {node}: Degree {deg}")
+
+# Example usage within the Environment class
 class Environment:
     def __init__(self, agents, payoff_matrix, network_type="fully_connected", network_params=None):
         self.agents = agents
         self.payoff_matrix = payoff_matrix
         self.network_type = network_type
-        self.network_params = network_params or {}  # Use an empty dict if network_params is None
-        self.network = self._create_network()
+        self.network_params = network_params or {}
+        # Store the graph (before converting to a dict) for logging
+        self.graph = self._create_network_graph()
+        # Log network statistics right after creation:
+        log_network_stats(self.graph, self.network_type)
+        # Convert graph to dict for neighbor lookup:
+        self.network = {agent.agent_id: list(self.graph.neighbors(agent.agent_id))
+                        for agent in self.agents}
 
-    def _create_network(self):
-        """Creates the network structure using networkx."""
+    def _create_network_graph(self):
         num_agents = len(self.agents)
-        graph = nx.Graph()  # Start with an empty graph
-        graph.add_nodes_from(range(num_agents))  # adds nodes, one for each agent
-
         if self.network_type == "fully_connected":
-            # Connect every agent to every other agent.
-            graph.add_edges_from([(i, j) for i in range(num_agents) for j in range(i + 1, num_agents)])
+            graph = nx.complete_graph(num_agents)
         elif self.network_type == "random":
-            # Use the Erdős-Rényi model (G(n, p)).
-            probability = self.network_params.get("probability", 0.5)  # Default probability of 0.5
+            probability = self.network_params.get("probability", 0.5)
             graph = nx.erdos_renyi_graph(num_agents, probability)
         elif self.network_type == "small_world":
-            # Use the Watts-Strogatz model.
-            k = self.network_params.get("k", 4)  # Number of nearest neighbors
-            beta = self.network_params.get("beta", 0.2)  # Rewiring probability
+            k = self.network_params.get("k", 4)
+            beta = self.network_params.get("beta", 0.2)
             graph = nx.watts_strogatz_graph(num_agents, k, beta)
         elif self.network_type == "scale_free":
-            # Use the Barabási-Albert model.
-            m = self.network_params.get("m", 2)  # Number of edges to attach
+            m = self.network_params.get("m", 2)
             graph = nx.barabasi_albert_graph(num_agents, m)
         else:
             raise ValueError(f"Unknown network type: {self.network_type}")
-
-        # Convert the networkx graph to a dictionary for easy neighbor lookup.
-        return {agent.agent_id: [neighbor for neighbor in graph.neighbors(agent.agent_id)]
-                for agent in self.agents}
+        return graph
 
     def get_neighbors(self, agent_id):
         """Returns the list of neighbors for a given agent."""

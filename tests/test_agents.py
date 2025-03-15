@@ -12,6 +12,15 @@ from npdl.core.agents import (
 )
 
 
+class TestDailyT002AlwaysDefectMove:
+    """Daily check: AlwaysDefect agents defect on every move."""
+
+    def test_always_defect_move(self):
+        agent = Agent(agent_id=0, strategy="always_defect")
+        for _ in range(5):
+            assert agent.choose_move([1, 2]) == "defect"
+
+
 class TestAgentBasics:
     """Test basic agent functionality."""
 

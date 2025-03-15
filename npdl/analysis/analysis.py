@@ -486,6 +486,7 @@ def create_analysis_report(
 
     # Convert NumPy types to Python native types for JSON serialization
     def convert_to_serializable(obj):
+        """Recursively convert NumPy types to JSON-serializable Python natives."""
         if isinstance(obj, (np.integer, np.int64)):
             return int(obj)
         elif isinstance(obj, (np.floating, np.float64)):

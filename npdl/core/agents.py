@@ -44,6 +44,8 @@ class Strategy:
 
 
 class RandomStrategy(Strategy):
+    """Choose moves uniformly at random, ignoring history and neighbors."""
+
     def choose_move(self, agent, neighbors):
         return random.choice(["cooperate", "defect"])
 

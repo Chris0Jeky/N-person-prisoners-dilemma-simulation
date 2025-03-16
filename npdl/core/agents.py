@@ -47,6 +47,7 @@ class RandomStrategy(Strategy):
     def choose_move(self, agent, neighbors):
         return random.choice(["cooperate", "defect"])
 
+        """Return a uniformly random move."""
 
 class AlwaysCooperateStrategy(Strategy):
     def choose_move(self, agent, neighbors):

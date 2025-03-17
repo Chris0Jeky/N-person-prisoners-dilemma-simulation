@@ -52,6 +52,8 @@ class RandomStrategy(Strategy):
         """Return a uniformly random move."""
 
 class AlwaysCooperateStrategy(Strategy):
+    """Always cooperate, regardless of history or neighbors."""
+
     def choose_move(self, agent, neighbors):
         return "cooperate"
 

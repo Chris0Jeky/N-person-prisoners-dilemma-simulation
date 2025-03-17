@@ -55,6 +55,7 @@ class AlwaysCooperateStrategy(Strategy):
     """Always cooperate, regardless of history or neighbors."""
 
     def choose_move(self, agent, neighbors):
+        """Return "cooperate" unconditionally."""
         return "cooperate"
 
 

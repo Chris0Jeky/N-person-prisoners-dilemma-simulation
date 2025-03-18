@@ -8,7 +8,7 @@ import time
 from agents import Agent
 from environment import Environment
 from utils import create_payoff_matrix
-from logging_utils import setup_logging, log_experiment_summary
+from logging_utils import setup_logging, log_experiment_summary, generate_ascii_chart
 
 def load_scenarios(file_path):
     """Load scenario definitions from a JSON file."""
@@ -118,9 +118,78 @@ def save_results(all_results, base_filename="experiment_results", results_dir="r
         df_rounds = pd.DataFrame(round_data)
         rounds_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_rounds.csv")
         df_rounds.to_csv(rounds_filename, index=False)
+
+def print_comparative_summary(all_results):
+    """Print a comparative summary of all scenario results"""
+    print("\n=== COMPARATIVE SCENARIO SUMMARY ===\n")
+    
+    # Extract key metrics
+    scenarios = []
+    final_coop_rates = []
+    max_scores = []
+    winning_strategies = []
+    q_learning_preferences = []
+    
+    for result in all_results:
+        scenario = result['scenario']
+        scenario_name = scenario['scenario_name']
+        scenarios.append(scenario_name)
         
-        # Save network information
-        #TODO: Add network data export
+        # Calculate final cooperation rate
+        last_round = result['results'][-1]
+        coop_count = sum(1 for move in last_round['moves'].values() if move == "cooperate")
+        coop_rate = coop_count / len(last_round['moves'])
+        final_coop_rates.append(coop_rate)
+        
+        # Find highest scoring strategy
+        strategies = {}
+        for agent in result['agents']:
+            if agent.strategy_type not in strategies:
+                strategies[agent.strategy_type] = []
+            strategies[agent.strategy_type].append(agent)
+        
+        if strategies:
+            avg_scores = [(strategy, sum(a.score for a in agents) / len(agents)) 
+                          for strategy, agents in strategies.items()]
+            winning_strategy = max(avg_scores, key=lambda x: x[1])
+            winning_strategies.append(winning_strategy[0])
+            max_scores.append(winning_strategy[1])
+        else:
+            winning_strategies.append("N/A")
+            max_scores.append(0)
+        
+        # Analyze Q-learning outcomes
+        q_learning_agents = [a for a in result['agents'] if a.strategy_type in ("q_learning", "q_learning_adaptive")]
+        if q_learning_agents:
+            avg_q_coop = sum(a.q_values["cooperate"] for a in q_learning_agents) / len(q_learning_agents)
+            avg_q_defect = sum(a.q_values["defect"] for a in q_learning_agents) / len(q_learning_agents)
+            
+            if avg_q_defect > avg_q_coop + 3.0:
+                preference = "Defect"
+            elif avg_q_coop > avg_q_defect + 3.0:
+                preference = "Cooperate"
+            else:
+                preference = "Mixed"
+            
+            q_learning_preferences.append(preference)
+        else:
+            q_learning_preferences.append("N/A")
+    
+    # Print the comparative table
+    print(f"{'Scenario':<30} {'Coop Rate':<10} {'Max Score':<10} {'Winner':<20} {'Q-Learning':<10}")
+    print("-" * 80)
+    
+    for i in range(len(scenarios)):
+        print(f"{scenarios[i]:<30} {final_coop_rates[i]:.2f}       {max_scores[i]:<10.2f} {winning_strategies[i]:<20} {q_learning_preferences[i]:<10}")
+    
+    print("\n")
+    
+    # Print cooperation rate chart
+    if final_coop_rates:
+        chart = generate_ascii_chart(final_coop_rates, title="Cooperation Rates Across Scenarios", width=40, height=10)
+        print(chart)
+    
+    print("\n=== END OF COMPARATIVE SUMMARY ===\n")
 
 def main():
     parser = argparse.ArgumentParser(description="Run N-person IPD experiments")
@@ -132,9 +201,21 @@ def main():
                         help='Directory to save log files.')
     parser.add_argument('--analyze', action='store_true',
                         help='Run analysis on results after experiments complete.')
+    parser.add_argument('--interactive', action='store_true',
+                        help='Run in interactive mode (play against AI agents).')
     parser.add_argument('--verbose', action='store_true', 
                         help='Enable verbose logging.')
     args = parser.parse_args()
+    
+    # Run in interactive mode if requested
+    if args.interactive:
+        try:
+            from interactive_game import main as interactive_main
+            interactive_main()
+            return
+        except ImportError:
+            print("Error: interactive_game module not found.")
+            return
 
     # Set up logging
     if not os.path.exists(args.log_dir):
@@ -162,6 +243,9 @@ def main():
     # Save results
     save_results(all_results, results_dir=args.results_dir)
     logger.info(f"Simulations complete. Results saved to '{args.results_dir}' directory.")
+    
+    # Print comparative summary
+    print_comparative_summary(all_results)
     
     # Run analysis if requested
     if args.analyze:

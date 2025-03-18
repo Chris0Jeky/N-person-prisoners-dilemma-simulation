@@ -63,6 +63,7 @@ class AlwaysDefectStrategy(Strategy):
     """Always defect, regardless of history or neighbors."""
 
     def choose_move(self, agent, neighbors):
+        """Return "defect" unconditionally."""
         return "defect"
 
 

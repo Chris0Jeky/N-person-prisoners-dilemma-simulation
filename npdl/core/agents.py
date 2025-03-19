@@ -129,6 +129,8 @@ class TitForTatStrategy(Strategy):
 class ProportionalTitForTatStrategy(Strategy):
     def __init__(self):
         """Proportional TFT: cooperates with probability equal to cooperation proportion."""
+    """Cooperate with probability equal to the observed cooperation proportion."""
+
         pass
     
     def choose_move(self, agent, neighbors):

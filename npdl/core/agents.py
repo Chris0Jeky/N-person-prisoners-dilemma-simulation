@@ -68,6 +68,8 @@ class AlwaysDefectStrategy(Strategy):
 
 
 class TitForTatStrategy(Strategy):
+    """Ecosystem-aware Tit-for-Tat: cooperate when enough neighbors cooperated."""
+
     def __init__(self, cooperation_threshold: float = 0.5):
         """Initialize TitForTat strategy.
         

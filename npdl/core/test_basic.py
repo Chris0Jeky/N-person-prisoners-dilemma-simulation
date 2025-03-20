@@ -4,9 +4,9 @@ Simple test script to verify that the core components are working correctly.
 """
 
 import logging
-from agents import Agent
-from environment import Environment
-from utils import create_payoff_matrix, plot_payoff_functions
+from npdl.core.agents import Agent
+from npdl.core.environment import Environment
+from npdl.core.utils import create_payoff_matrix, plot_payoff_functions
 from logging_utils import setup_logging
 
 def test_agent_strategies():

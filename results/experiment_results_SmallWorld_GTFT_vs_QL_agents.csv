@@ -1,51 +1,51 @@
 scenario_name,agent_id,strategy,final_score,final_q_values
-SmallWorld_GTFT_vs_QL,0,q_learning,140.0408163265307,"{'cooperate': 1.3645118856077465, 'defect': 6.844191728156201}"
-SmallWorld_GTFT_vs_QL,1,q_learning,313.6734693877555,"{'cooperate': 4.976506722954314, 'defect': 9.978112022241918}"
-SmallWorld_GTFT_vs_QL,2,q_learning,237.77551020408194,"{'cooperate': 5.213727407241583, 'defect': 9.35968757820293}"
-SmallWorld_GTFT_vs_QL,3,q_learning,319.59183673469363,"{'cooperate': 6.855996715439177, 'defect': 10.068275440683685}"
-SmallWorld_GTFT_vs_QL,4,q_learning,238.30612244897958,"{'cooperate': 3.8158054571744353, 'defect': 9.221354050847161}"
-SmallWorld_GTFT_vs_QL,5,q_learning,142.0816326530613,"{'cooperate': 1.8306806187726252, 'defect': 7.041105487350253}"
-SmallWorld_GTFT_vs_QL,6,q_learning,145.7755102040818,"{'cooperate': 3.3495966486022475, 'defect': 6.881220344885706}"
-SmallWorld_GTFT_vs_QL,7,q_learning,102.61224489795927,"{'cooperate': 1.4357574347172792, 'defect': 5.251579963194324}"
-SmallWorld_GTFT_vs_QL,8,q_learning,242.0204081632654,"{'cooperate': 3.118624611522531, 'defect': 9.33834519989171}"
-SmallWorld_GTFT_vs_QL,9,q_learning,273.5510204081634,"{'cooperate': 4.964466235589134, 'defect': 9.573435483794707}"
-SmallWorld_GTFT_vs_QL,10,q_learning,255.57142857142864,"{'cooperate': 6.1978995214982024, 'defect': 9.316211108303952}"
-SmallWorld_GTFT_vs_QL,11,q_learning,310.65306122449005,"{'cooperate': 5.181026179689735, 'defect': 9.860279815775646}"
-SmallWorld_GTFT_vs_QL,12,q_learning,204.14285714285742,"{'cooperate': 4.426784226811652, 'defect': 8.700817203813239}"
-SmallWorld_GTFT_vs_QL,13,q_learning,178.65306122448987,"{'cooperate': 3.657359453284561, 'defect': 8.206792766962996}"
-SmallWorld_GTFT_vs_QL,14,q_learning,335.2857142857141,"{'cooperate': 5.136574603098236, 'defect': 10.259672914154493}"
-SmallWorld_GTFT_vs_QL,15,q_learning,319.734693877551,"{'cooperate': 5.741334475517728, 'defect': 9.92285998674348}"
-SmallWorld_GTFT_vs_QL,16,q_learning,296.7755102040817,"{'cooperate': 5.627986367355008, 'defect': 9.788352156377483}"
-SmallWorld_GTFT_vs_QL,17,q_learning,242.48979591836763,"{'cooperate': 4.006292250416071, 'defect': 9.468466917903012}"
-SmallWorld_GTFT_vs_QL,18,q_learning,300.1428571428571,"{'cooperate': 5.678884960283522, 'defect': 9.944126022036626}"
-SmallWorld_GTFT_vs_QL,19,q_learning,168.91836734693882,"{'cooperate': 3.4732940043397704, 'defect': 7.96870739329869}"
-SmallWorld_GTFT_vs_QL,20,q_learning,305.30612244897975,"{'cooperate': 6.419160519467088, 'defect': 9.976766554935214}"
-SmallWorld_GTFT_vs_QL,21,q_learning,162.16326530612255,"{'cooperate': 2.607216784602242, 'defect': 7.769448902091521}"
-SmallWorld_GTFT_vs_QL,22,q_learning,177.73469387755108,"{'cooperate': 3.4026353504832008, 'defect': 8.370770357201224}"
-SmallWorld_GTFT_vs_QL,23,q_learning,313.4489795918368,"{'cooperate': 5.354494060279125, 'defect': 9.986554905883734}"
-SmallWorld_GTFT_vs_QL,24,q_learning,344.18367346938743,"{'cooperate': 7.131224125519848, 'defect': 10.80595351804501}"
-SmallWorld_GTFT_vs_QL,25,generous_tit_for_tat,210.85714285714278,
-SmallWorld_GTFT_vs_QL,26,generous_tit_for_tat,154.34693877551024,
-SmallWorld_GTFT_vs_QL,27,generous_tit_for_tat,214.99999999999991,
-SmallWorld_GTFT_vs_QL,28,generous_tit_for_tat,152.7755102040816,
-SmallWorld_GTFT_vs_QL,29,generous_tit_for_tat,224.20408163265327,
-SmallWorld_GTFT_vs_QL,30,generous_tit_for_tat,200.08163265306135,
-SmallWorld_GTFT_vs_QL,31,generous_tit_for_tat,162.63265306122457,
-SmallWorld_GTFT_vs_QL,32,generous_tit_for_tat,189.67346938775495,
-SmallWorld_GTFT_vs_QL,33,generous_tit_for_tat,191.06122448979602,
-SmallWorld_GTFT_vs_QL,34,generous_tit_for_tat,246.26530612244898,
-SmallWorld_GTFT_vs_QL,35,generous_tit_for_tat,209.42857142857142,
-SmallWorld_GTFT_vs_QL,36,generous_tit_for_tat,203.28571428571408,
-SmallWorld_GTFT_vs_QL,37,generous_tit_for_tat,216.79591836734696,
-SmallWorld_GTFT_vs_QL,38,generous_tit_for_tat,163.53061224489798,
-SmallWorld_GTFT_vs_QL,39,generous_tit_for_tat,205.8571428571429,
-SmallWorld_GTFT_vs_QL,40,generous_tit_for_tat,183.5510204081632,
-SmallWorld_GTFT_vs_QL,41,generous_tit_for_tat,178.6122448979593,
-SmallWorld_GTFT_vs_QL,42,generous_tit_for_tat,114.7551020408164,
-SmallWorld_GTFT_vs_QL,43,generous_tit_for_tat,158.38775510204104,
-SmallWorld_GTFT_vs_QL,44,generous_tit_for_tat,140.91836734693894,
-SmallWorld_GTFT_vs_QL,45,generous_tit_for_tat,154.8775510204084,
-SmallWorld_GTFT_vs_QL,46,generous_tit_for_tat,164.44897959183692,
-SmallWorld_GTFT_vs_QL,47,generous_tit_for_tat,148.51020408163282,
-SmallWorld_GTFT_vs_QL,48,generous_tit_for_tat,134.53061224489798,
-SmallWorld_GTFT_vs_QL,49,generous_tit_for_tat,175.4285714285716,
+SmallWorld_GTFT_vs_QL,0,q_learning,336.4081632653059,"{'cooperate': 7.43909589798762, 'defect': 10.74172143017863}"
+SmallWorld_GTFT_vs_QL,1,q_learning,120.89795918367346,"{'cooperate': 1.3737972046183284, 'defect': 6.3091681877394095}"
+SmallWorld_GTFT_vs_QL,2,q_learning,331.12244897959107,"{'cooperate': 6.8524344661882495, 'defect': 10.558694791055752}"
+SmallWorld_GTFT_vs_QL,3,q_learning,177.46938775510213,"{'cooperate': 3.1034538182567664, 'defect': 8.190559855442283}"
+SmallWorld_GTFT_vs_QL,4,q_learning,256.8775510204084,"{'cooperate': 6.495031237078634, 'defect': 9.392409401027924}"
+SmallWorld_GTFT_vs_QL,5,q_learning,260.40816326530614,"{'cooperate': 5.867414465476489, 'defect': 9.426549967919795}"
+SmallWorld_GTFT_vs_QL,6,q_learning,301.2653061224489,"{'cooperate': 7.3665154558801635, 'defect': 10.047775603296232}"
+SmallWorld_GTFT_vs_QL,7,q_learning,164.44897959183677,"{'cooperate': 3.3349882679752088, 'defect': 7.940390379321768}"
+SmallWorld_GTFT_vs_QL,8,q_learning,311.1020408163262,"{'cooperate': 7.455204976953582, 'defect': 10.285187345565562}"
+SmallWorld_GTFT_vs_QL,9,q_learning,345.3673469387755,"{'cooperate': 5.354035702937317, 'defect': 10.828412594884446}"
+SmallWorld_GTFT_vs_QL,10,q_learning,124.1020408163266,"{'cooperate': 2.7558594651376453, 'defect': 5.604313830339987}"
+SmallWorld_GTFT_vs_QL,11,q_learning,133.02040816326542,"{'cooperate': 2.293864681024169, 'defect': 6.418905143107189}"
+SmallWorld_GTFT_vs_QL,12,q_learning,97.48979591836749,"{'cooperate': 1.3121669936341023, 'defect': 4.795330668641056}"
+SmallWorld_GTFT_vs_QL,13,q_learning,149.75510204081658,"{'cooperate': 3.306529017928992, 'defect': 6.705473704963511}"
+SmallWorld_GTFT_vs_QL,14,q_learning,190.93877551020444,"{'cooperate': 3.1816413003406154, 'defect': 8.279188096915757}"
+SmallWorld_GTFT_vs_QL,15,q_learning,184.61224489795927,"{'cooperate': 3.1162388503813245, 'defect': 8.422362214309526}"
+SmallWorld_GTFT_vs_QL,16,q_learning,114.51020408163275,"{'cooperate': 1.4572770160633013, 'defect': 6.016630147868357}"
+SmallWorld_GTFT_vs_QL,17,q_learning,323.36734693877577,"{'cooperate': 6.743067181873602, 'defect': 10.070223177101045}"
+SmallWorld_GTFT_vs_QL,18,q_learning,125.10204081632658,"{'cooperate': 1.881664911048197, 'defect': 6.361067157437931}"
+SmallWorld_GTFT_vs_QL,19,q_learning,184.38775510204107,"{'cooperate': 2.829628321004077, 'defect': 8.327129893907575}"
+SmallWorld_GTFT_vs_QL,20,q_learning,293.9591836734698,"{'cooperate': 6.501056684348493, 'defect': 9.725840761662843}"
+SmallWorld_GTFT_vs_QL,21,q_learning,122.6530612244899,"{'cooperate': 1.9720773773215483, 'defect': 6.449234994463149}"
+SmallWorld_GTFT_vs_QL,22,q_learning,296.16326530612264,"{'cooperate': 5.250805808231175, 'defect': 9.729243372376228}"
+SmallWorld_GTFT_vs_QL,23,q_learning,295.18367346938794,"{'cooperate': 5.198792937853853, 'defect': 9.922067376043188}"
+SmallWorld_GTFT_vs_QL,24,q_learning,278.2244897959184,"{'cooperate': 6.540494098706969, 'defect': 10.025085574226669}"
+SmallWorld_GTFT_vs_QL,25,generous_tit_for_tat,208.14285714285728,
+SmallWorld_GTFT_vs_QL,26,generous_tit_for_tat,195.83673469387753,
+SmallWorld_GTFT_vs_QL,27,generous_tit_for_tat,179.1020408163266,
+SmallWorld_GTFT_vs_QL,28,generous_tit_for_tat,151.73469387755108,
+SmallWorld_GTFT_vs_QL,29,generous_tit_for_tat,190.79591836734693,
+SmallWorld_GTFT_vs_QL,30,generous_tit_for_tat,142.04081632653077,
+SmallWorld_GTFT_vs_QL,31,generous_tit_for_tat,173.34693877551038,
+SmallWorld_GTFT_vs_QL,32,generous_tit_for_tat,115.46938775510215,
+SmallWorld_GTFT_vs_QL,33,generous_tit_for_tat,136.18367346938788,
+SmallWorld_GTFT_vs_QL,34,generous_tit_for_tat,130.67346938775523,
+SmallWorld_GTFT_vs_QL,35,generous_tit_for_tat,161.83673469387745,
+SmallWorld_GTFT_vs_QL,36,generous_tit_for_tat,155.24489795918376,
+SmallWorld_GTFT_vs_QL,37,generous_tit_for_tat,126.73469387755122,
+SmallWorld_GTFT_vs_QL,38,generous_tit_for_tat,120.65306122448999,
+SmallWorld_GTFT_vs_QL,39,generous_tit_for_tat,139.75510204081647,
+SmallWorld_GTFT_vs_QL,40,generous_tit_for_tat,127.77551020408181,
+SmallWorld_GTFT_vs_QL,41,generous_tit_for_tat,155.91836734693877,
+SmallWorld_GTFT_vs_QL,42,generous_tit_for_tat,158.3469387755103,
+SmallWorld_GTFT_vs_QL,43,generous_tit_for_tat,146.69387755102045,
+SmallWorld_GTFT_vs_QL,44,generous_tit_for_tat,158.02040816326527,
+SmallWorld_GTFT_vs_QL,45,generous_tit_for_tat,166.142857142857,
+SmallWorld_GTFT_vs_QL,46,generous_tit_for_tat,195.32653061224488,
+SmallWorld_GTFT_vs_QL,47,generous_tit_for_tat,198.61224489795913,
+SmallWorld_GTFT_vs_QL,48,generous_tit_for_tat,239.18367346938788,
+SmallWorld_GTFT_vs_QL,49,generous_tit_for_tat,212.87755102040848,

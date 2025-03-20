@@ -193,7 +193,7 @@ def print_comparative_summary(all_results):
 
 def main():
     parser = argparse.ArgumentParser(description="Run N-person IPD experiments")
-    parser.add_argument('--scenario_file', type=str, default='scenarios.json',
+    parser.add_argument('--scenario_file', type=str, default='testing/scenarios.json',
                         help='Path to the JSON file containing scenario definitions.')
     parser.add_argument('--results_dir', type=str, default='results',
                         help='Directory to save experiment results.')

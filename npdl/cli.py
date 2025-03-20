@@ -73,8 +73,8 @@ def run_simulation(args):
         
         # Run the original main function
         orig_main()
-    except ImportError:
-        print("Error: Could not import original main module.")
+    except ImportError as e:
+        print(f"Error: Could not import original main module: {e}")
         return 1
     
     return 0
@@ -86,13 +86,17 @@ def run_interactive():
     sys.path.insert(0, os.path.abspath("."))
     
     try:
-        # Try importing from old structure first
-        from main.interactive_game import main as interactive_main
+        # First try from the new structure
+        try:
+            from npdl.interactive.game import main as interactive_main
+        except ImportError:
+            # Then try from the old structure
+            from main.interactive_game import main as interactive_main
         
         # Run the interactive game
         interactive_main()
-    except ImportError:
-        print("Error: Could not import interactive game module.")
+    except ImportError as e:
+        print(f"Error: Could not import interactive game module: {e}")
         return 1
     
     return 0

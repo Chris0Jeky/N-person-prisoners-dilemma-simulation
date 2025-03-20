@@ -1,19 +1,24 @@
-# interactive_game.py
+# game.py
 """
-Interactive mode for the N-Person Prisoner's Dilemma simulation.
-This allows a human player to participate in games against AI agents.
+Interactive gameplay for N-Person Prisoner's Dilemma.
+
+This module allows human players to participate in simulations
+against AI agents with a text-based interface.
 """
 
 import random
+import time
 import os
+
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment
 from npdl.core.utils import create_payoff_matrix
-import logging
+
 
 def clear_screen():
     """Clear the terminal screen."""
     os.system('cls' if os.name == 'nt' else 'clear')
+
 
 class InteractiveGame:
     """Class for managing interactive gameplay."""
@@ -40,12 +45,6 @@ class InteractiveGame:
         # Create agents
         self.agents = []
         self.human_id = 0  # Human player is always agent 0
-        
-        # Initialize logger with no console output
-        self.logger = logging.getLogger("interactive")
-        self.logger.setLevel(logging.INFO)
-        if not self.logger.handlers:
-            self.logger.addHandler(logging.NullHandler())
         
         self._setup_game()
     
@@ -85,8 +84,7 @@ class InteractiveGame:
         self.env = Environment(
             self.agents,
             self.payoff_matrix,
-            network_type=self.network_type,
-            logger=self.logger
+            network_type=self.network_type
         )
         
         # Track game history
@@ -235,6 +233,7 @@ class InteractiveGame:
         self._display_game_summary()
         print("\nThanks for playing!")
 
+
 def main():
     """Main function for the interactive game."""
     clear_screen()
@@ -327,6 +326,7 @@ def main():
     except Exception as e:
         print(f"\nError: {e}")
         print("Game aborted.")
+
 
 if __name__ == "__main__":
     main()

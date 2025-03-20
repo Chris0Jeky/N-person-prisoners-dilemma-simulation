@@ -239,7 +239,7 @@ def main():
             all_results.append(result)
         except Exception as e:
             logger.error(f"Error running scenario {scenario['scenario_name']}: {e}", exc_info=True)
-    #
+    
     # Save results
     save_results(all_results, results_dir=args.results_dir)
     logger.info(f"Simulations complete. Results saved to '{args.results_dir}' directory.")

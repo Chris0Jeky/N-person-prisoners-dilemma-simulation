@@ -5,3 +5,4 @@ main/simulation_results.csv
 /main/results
 *.log
 qodana.yaml
+.idea

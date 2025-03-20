@@ -401,7 +401,8 @@ def update_network_graph(scenario, round_num, n_clicks):
 
 def run_dashboard(debug=True, port=8050):
     """Run the Dash visualization dashboard."""
-    app.run_server(debug=debug, port=port)
+    # Fixed: Use app.run() instead of app.run_server() for newer Dash versions
+    app.run(debug=debug, port=port)
 
 
 if __name__ == "__main__":

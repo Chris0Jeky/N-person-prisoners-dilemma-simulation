@@ -15,6 +15,15 @@ from npdl.core.environment import Environment
 from npdl.core.utils import create_payoff_matrix, plot_payoff_functions
 from npdl.core.logging_utils import setup_logging
 
+
+class TestDailyT003GenerousTft:
+    """Daily check: GenerousTFT keeps its configured generosity."""
+
+    def test_generous_tft_generosity(self):
+        agent = Agent(agent_id=0, strategy="generous_tit_for_tat", generosity=0.2)
+        assert agent.strategy_type == "generous_tit_for_tat"
+        assert agent.strategy.generosity == 0.2
+
 def test_agent_strategies():
     """Test that all agent strategies work as expected."""
     print("Testing agent strategies...")

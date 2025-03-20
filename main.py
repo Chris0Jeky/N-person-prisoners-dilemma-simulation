@@ -5,10 +5,10 @@ import os
 import pandas as pd
 import time
 
-from agents import Agent
-from environment import Environment
-from utils import create_payoff_matrix
-from logging_utils import setup_logging, log_experiment_summary, generate_ascii_chart
+from npdl.core.agents import Agent
+from npdl.core.environment import Environment
+from npdl.core.utils import create_payoff_matrix
+from npdl.core.logging_utils import setup_logging, log_experiment_summary, generate_ascii_chart
 
 def load_scenarios(file_path):
     """Load scenario definitions from a JSON file."""

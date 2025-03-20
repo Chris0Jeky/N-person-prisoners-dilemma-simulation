@@ -1,0 +1,41 @@
+scenario_name,agent_id,strategy,final_score,final_q_values
+SmallWorld_STFT_vs_QL,0,q_learning,177.17948717948732,"{'cooperate': 8.786635387039677, 'defect': 10.149190818872148}"
+SmallWorld_STFT_vs_QL,1,q_learning,187.53846153846183,"{'cooperate': 9.065588828161612, 'defect': 10.384362000201916}"
+SmallWorld_STFT_vs_QL,2,q_learning,201.46153846153874,"{'cooperate': 9.114890613884706, 'defect': 10.718906242465835}"
+SmallWorld_STFT_vs_QL,3,q_learning,191.38461538461573,"{'cooperate': 9.449762697096505, 'defect': 10.89271723531354}"
+SmallWorld_STFT_vs_QL,4,q_learning,185.615384615385,"{'cooperate': 9.099894200458634, 'defect': 10.581090359100376}"
+SmallWorld_STFT_vs_QL,5,q_learning,174.30769230769246,"{'cooperate': 8.260438104338103, 'defect': 10.173380586972021}"
+SmallWorld_STFT_vs_QL,6,q_learning,188.51282051282087,"{'cooperate': 8.551930886657487, 'defect': 10.465109428349386}"
+SmallWorld_STFT_vs_QL,7,q_learning,203.25641025641065,"{'cooperate': 8.799599158653141, 'defect': 10.645968013020202}"
+SmallWorld_STFT_vs_QL,8,q_learning,179.97435897435926,"{'cooperate': 9.402386820821112, 'defect': 10.53091461378885}"
+SmallWorld_STFT_vs_QL,9,q_learning,179.89743589743614,"{'cooperate': 9.072427639230416, 'defect': 10.386845862059786}"
+SmallWorld_STFT_vs_QL,10,q_learning,176.12820512820537,"{'cooperate': 9.535507022898276, 'defect': 10.832303043047476}"
+SmallWorld_STFT_vs_QL,11,q_learning,212.66666666666706,"{'cooperate': 9.768780518138332, 'defect': 11.239527390549625}"
+SmallWorld_STFT_vs_QL,12,q_learning,156.48717948717962,"{'cooperate': 8.871510215353108, 'defect': 10.207590451541996}"
+SmallWorld_STFT_vs_QL,13,q_learning,173.76923076923097,"{'cooperate': 8.966419072994599, 'defect': 10.700645761359896}"
+SmallWorld_STFT_vs_QL,14,q_learning,190.10256410256437,"{'cooperate': 9.040427315258386, 'defect': 10.70234781716099}"
+SmallWorld_STFT_vs_QL,15,q_learning,190.12820512820537,"{'cooperate': 9.420806479070212, 'defect': 10.772969096305212}"
+SmallWorld_STFT_vs_QL,16,q_learning,182.61538461538487,"{'cooperate': 9.123235192313464, 'defect': 10.406421102881932}"
+SmallWorld_STFT_vs_QL,17,q_learning,189.6153846153848,"{'cooperate': 9.412443826319585, 'defect': 10.655416546559442}"
+SmallWorld_STFT_vs_QL,18,q_learning,180.58974358974385,"{'cooperate': 9.368976400315436, 'defect': 10.62509550221992}"
+SmallWorld_STFT_vs_QL,19,q_learning,178.69230769230788,"{'cooperate': 8.992253381500634, 'defect': 10.201028243842485}"
+SmallWorld_STFT_vs_QL,20,suspicious_tit_for_tat,187.69230769230785,
+SmallWorld_STFT_vs_QL,21,suspicious_tit_for_tat,190.8717948717951,
+SmallWorld_STFT_vs_QL,22,suspicious_tit_for_tat,180.51282051282072,
+SmallWorld_STFT_vs_QL,23,suspicious_tit_for_tat,186.8461538461541,
+SmallWorld_STFT_vs_QL,24,suspicious_tit_for_tat,195.589743589744,
+SmallWorld_STFT_vs_QL,25,suspicious_tit_for_tat,195.89743589743622,
+SmallWorld_STFT_vs_QL,26,suspicious_tit_for_tat,193.7179487179491,
+SmallWorld_STFT_vs_QL,27,suspicious_tit_for_tat,178.2820512820514,
+SmallWorld_STFT_vs_QL,28,suspicious_tit_for_tat,182.84615384615398,
+SmallWorld_STFT_vs_QL,29,suspicious_tit_for_tat,181.666666666667,
+SmallWorld_STFT_vs_QL,30,suspicious_tit_for_tat,167.66666666666686,
+SmallWorld_STFT_vs_QL,31,suspicious_tit_for_tat,177.0256410256412,
+SmallWorld_STFT_vs_QL,32,suspicious_tit_for_tat,189.10256410256434,
+SmallWorld_STFT_vs_QL,33,suspicious_tit_for_tat,185.74358974359004,
+SmallWorld_STFT_vs_QL,34,suspicious_tit_for_tat,186.58974358974388,
+SmallWorld_STFT_vs_QL,35,suspicious_tit_for_tat,184.05128205128224,
+SmallWorld_STFT_vs_QL,36,suspicious_tit_for_tat,193.51282051282087,
+SmallWorld_STFT_vs_QL,37,suspicious_tit_for_tat,193.56410256410282,
+SmallWorld_STFT_vs_QL,38,suspicious_tit_for_tat,187.97435897435932,
+SmallWorld_STFT_vs_QL,39,suspicious_tit_for_tat,196.61538461538487,

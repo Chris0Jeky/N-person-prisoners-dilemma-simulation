@@ -1,0 +1,31 @@
+scenario_name,agent_id,strategy,final_score,final_q_values
+Random_RandomProb,0,randomprob,204.86206896551727,
+Random_RandomProb,1,randomprob,216.3103448275863,
+Random_RandomProb,2,randomprob,179.79310344827562,
+Random_RandomProb,3,randomprob,169.96551724137916,
+Random_RandomProb,4,randomprob,127.44827586206888,
+Random_RandomProb,5,randomprob,182.34482758620692,
+Random_RandomProb,6,randomprob,206.55172413793113,
+Random_RandomProb,7,randomprob,162.72413793103436,
+Random_RandomProb,8,randomprob,200.93103448275866,
+Random_RandomProb,9,randomprob,214.10344827586198,
+Random_RandomProb,10,randomprob,104.68965517241377,
+Random_RandomProb,11,randomprob,180.65517241379308,
+Random_RandomProb,12,randomprob,214.4137931034483,
+Random_RandomProb,13,randomprob,172.55172413793093,
+Random_RandomProb,14,randomprob,166.99999999999983,
+Random_RandomProb,15,q_learning,208.10344827586206,"{'cooperate': 9.499381985762994, 'defect': 6.256415447986981}"
+Random_RandomProb,16,q_learning,157.551724137931,"{'cooperate': 6.619541546130485, 'defect': 5.366916423255829}"
+Random_RandomProb,17,q_learning,220.0344827586205,"{'cooperate': 6.263036904315624, 'defect': 12.077619348102836}"
+Random_RandomProb,18,q_learning,110.41379310344821,"{'cooperate': 4.797364057180752, 'defect': 3.823258874710167}"
+Random_RandomProb,19,q_learning,137.06896551724137,"{'cooperate': 5.837746358025634, 'defect': 4.825883957655267}"
+Random_RandomProb,20,q_learning,147.72413793103442,"{'cooperate': 6.161503716754652, 'defect': 5.120945441874728}"
+Random_RandomProb,21,q_learning,180.41379310344837,"{'cooperate': 7.49678155608441, 'defect': 6.287426249561636}"
+Random_RandomProb,22,q_learning,335.4827586206896,"{'cooperate': 10.766874942498195, 'defect': 17.422097214441404}"
+Random_RandomProb,23,q_learning,248.48275862068928,"{'cooperate': 7.862398408294109, 'defect': 13.103881147025078}"
+Random_RandomProb,24,q_learning,289.1034482758616,"{'cooperate': 9.213508126132332, 'defect': 15.310924969965436}"
+Random_RandomProb,25,q_learning,335.758620689655,"{'cooperate': 11.289801510779885, 'defect': 17.64569632430214}"
+Random_RandomProb,26,q_learning,153.72413793103442,"{'cooperate': 6.5990872998780254, 'defect': 5.4295960319072964}"
+Random_RandomProb,27,q_learning,124.55172413793099,"{'cooperate': 5.544647249532176, 'defect': 4.0164409093604085}"
+Random_RandomProb,28,q_learning,260.03448275862036,"{'cooperate': 8.008010543917637, 'defect': 13.850284101100325}"
+Random_RandomProb,29,q_learning,142.27586206896552,"{'cooperate': 6.678150964267639, 'defect': 4.062164042896261}"

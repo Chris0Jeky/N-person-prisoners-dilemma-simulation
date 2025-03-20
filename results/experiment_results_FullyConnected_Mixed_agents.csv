@@ -1,0 +1,21 @@
+scenario_name,agent_id,strategy,final_score,final_q_values
+FullyConnected_Mixed,0,q_learning,438.47368421052596,"{'cooperate': 16.330650441071395, 'defect': 19.2944642583918}"
+FullyConnected_Mixed,1,q_learning,429.73684210526255,"{'cooperate': 15.721850209813823, 'defect': 18.930224270352983}"
+FullyConnected_Mixed,2,q_learning,290.3684210526315,"{'cooperate': 9.592379600379068, 'defect': 12.449389373883816}"
+FullyConnected_Mixed,3,q_learning,283.7894736842104,"{'cooperate': 8.898600770587498, 'defect': 12.068888622111075}"
+FullyConnected_Mixed,4,q_learning,236.0526315789473,"{'cooperate': 7.560116803376259, 'defect': 8.011145139946631}"
+FullyConnected_Mixed,5,tit_for_tat,375.21052631578914,
+FullyConnected_Mixed,6,tit_for_tat,369.47368421052613,
+FullyConnected_Mixed,7,tit_for_tat,372.94736842105254,
+FullyConnected_Mixed,8,tit_for_tat,375.4736842105262,
+FullyConnected_Mixed,9,tit_for_tat,375.52631578947387,
+FullyConnected_Mixed,10,always_defect,492.21052631578857,
+FullyConnected_Mixed,11,always_defect,492.21052631578857,
+FullyConnected_Mixed,12,always_defect,492.21052631578857,
+FullyConnected_Mixed,13,always_defect,492.21052631578857,
+FullyConnected_Mixed,14,always_defect,492.21052631578857,
+FullyConnected_Mixed,15,random,340.2631578947369,
+FullyConnected_Mixed,16,random,346.5789473684211,
+FullyConnected_Mixed,17,random,336.3157894736842,
+FullyConnected_Mixed,18,random,328.5263157894737,
+FullyConnected_Mixed,19,random,333.3684210526319,

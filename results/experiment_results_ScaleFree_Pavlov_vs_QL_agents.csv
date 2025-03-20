@@ -1,0 +1,31 @@
+scenario_name,agent_id,strategy,final_score,final_q_values
+ScaleFree_Pavlov_vs_QL,0,q_learning,230.68965517241418,"{'cooperate': 6.0493088452305495, 'defect': 9.704719817979187}"
+ScaleFree_Pavlov_vs_QL,1,q_learning,198.1034482758623,"{'cooperate': 4.453601715505092, 'defect': 8.940733889635382}"
+ScaleFree_Pavlov_vs_QL,2,q_learning,199.79310344827604,"{'cooperate': 6.482163385971306, 'defect': 8.782963397615429}"
+ScaleFree_Pavlov_vs_QL,3,q_learning,189.96551724137927,"{'cooperate': 4.719096486021236, 'defect': 7.361080863154617}"
+ScaleFree_Pavlov_vs_QL,4,q_learning,249.62068965517255,"{'cooperate': 6.006110098429673, 'defect': 10.065927035940712}"
+ScaleFree_Pavlov_vs_QL,5,q_learning,303.172413793104,"{'cooperate': 8.203664170150907, 'defect': 11.385976695567615}"
+ScaleFree_Pavlov_vs_QL,6,q_learning,130.2413793103445,"{'cooperate': 3.1994540986580944, 'defect': 5.043788224904863}"
+ScaleFree_Pavlov_vs_QL,7,q_learning,258.06896551724185,"{'cooperate': 8.315056767413903, 'defect': 10.071821880473202}"
+ScaleFree_Pavlov_vs_QL,8,q_learning,272.1379310344833,"{'cooperate': 8.366588427534133, 'defect': 10.54303845244282}"
+ScaleFree_Pavlov_vs_QL,9,q_learning,201.27586206896578,"{'cooperate': 6.200476142781493, 'defect': 8.940576446051487}"
+ScaleFree_Pavlov_vs_QL,10,q_learning,230.20689655172427,"{'cooperate': 6.803360590943435, 'defect': 9.208250539714193}"
+ScaleFree_Pavlov_vs_QL,11,q_learning,251.62068965517278,"{'cooperate': 7.221053887905274, 'defect': 9.728941812634671}"
+ScaleFree_Pavlov_vs_QL,12,q_learning,226.86206896551764,"{'cooperate': 5.8768217814595385, 'defect': 9.897507159943808}"
+ScaleFree_Pavlov_vs_QL,13,q_learning,269.8965517241385,"{'cooperate': 8.801244644822546, 'defect': 11.195108921514965}"
+ScaleFree_Pavlov_vs_QL,14,q_learning,263.96551724137964,"{'cooperate': 6.787773314038113, 'defect': 9.871847228521073}"
+ScaleFree_Pavlov_vs_QL,15,pavlov,191.7241379310348,
+ScaleFree_Pavlov_vs_QL,16,pavlov,163.82758620689668,
+ScaleFree_Pavlov_vs_QL,17,pavlov,170.2068965517244,
+ScaleFree_Pavlov_vs_QL,18,pavlov,163.82758620689668,
+ScaleFree_Pavlov_vs_QL,19,pavlov,165.17241379310337,
+ScaleFree_Pavlov_vs_QL,20,pavlov,167.344827586207,
+ScaleFree_Pavlov_vs_QL,21,pavlov,163.44827586206912,
+ScaleFree_Pavlov_vs_QL,22,pavlov,154.17241379310346,
+ScaleFree_Pavlov_vs_QL,23,pavlov,158.34482758620692,
+ScaleFree_Pavlov_vs_QL,24,pavlov,161.5517241379312,
+ScaleFree_Pavlov_vs_QL,25,pavlov,183.13793103448296,
+ScaleFree_Pavlov_vs_QL,26,pavlov,159.5172413793105,
+ScaleFree_Pavlov_vs_QL,27,pavlov,163.44827586206912,
+ScaleFree_Pavlov_vs_QL,28,pavlov,149.896551724138,
+ScaleFree_Pavlov_vs_QL,29,pavlov,159.5172413793105,

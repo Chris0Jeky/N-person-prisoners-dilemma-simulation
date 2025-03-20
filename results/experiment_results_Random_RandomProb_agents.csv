@@ -1,31 +1,31 @@
 scenario_name,agent_id,strategy,final_score,final_q_values
-Random_RandomProb,0,randomprob,213.37931034482767,
-Random_RandomProb,1,randomprob,148.82758620689643,
-Random_RandomProb,2,randomprob,238.37931034482767,
-Random_RandomProb,3,randomprob,149.48275862068957,
-Random_RandomProb,4,randomprob,205.7241379310345,
-Random_RandomProb,5,randomprob,184.2413793103447,
-Random_RandomProb,6,randomprob,139.34482758620692,
-Random_RandomProb,7,randomprob,191.79310344827576,
-Random_RandomProb,8,randomprob,185.06896551724128,
-Random_RandomProb,9,randomprob,157.17241379310332,
-Random_RandomProb,10,randomprob,187.99999999999986,
-Random_RandomProb,11,randomprob,209.20689655172418,
-Random_RandomProb,12,randomprob,170.10344827586204,
-Random_RandomProb,13,randomprob,215.1379310344829,
-Random_RandomProb,14,randomprob,202.82758620689668,
-Random_RandomProb,15,q_learning,76.10344827586204,"{'cooperate': 3.034436570005239, 'defect': 2.719483917925701}"
-Random_RandomProb,16,q_learning,165.86206896551724,"{'cooperate': 7.608249663061678, 'defect': 5.011662590305535}"
-Random_RandomProb,17,q_learning,188.5862068965521,"{'cooperate': 6.220777131952338, 'defect': 10.245090002509556}"
-Random_RandomProb,18,q_learning,236.79310344827562,"{'cooperate': 6.648059081190148, 'defect': 12.496519820219907}"
-Random_RandomProb,19,q_learning,278.55172413793076,"{'cooperate': 7.918247783069086, 'defect': 14.621419965739815}"
-Random_RandomProb,20,q_learning,114.9310344827586,"{'cooperate': 4.790812757916664, 'defect': 3.803677212107115}"
-Random_RandomProb,21,q_learning,295.0344827586204,"{'cooperate': 7.865904866443423, 'defect': 15.449507111304134}"
-Random_RandomProb,22,q_learning,290.6206896551721,"{'cooperate': 7.575647702289022, 'defect': 15.272850808586595}"
-Random_RandomProb,23,q_learning,136.3793103448275,"{'cooperate': 6.016159390427782, 'defect': 4.1523817669839485}"
-Random_RandomProb,24,q_learning,203.31034482758653,"{'cooperate': 5.461613624699245, 'defect': 10.81323406547261}"
-Random_RandomProb,25,q_learning,268.8965517241375,"{'cooperate': 6.0895732847468595, 'defect': 14.186324505224228}"
-Random_RandomProb,26,q_learning,116.41379310344823,"{'cooperate': 5.460637778819122, 'defect': 2.7428550503620874}"
-Random_RandomProb,27,q_learning,149.34482758620683,"{'cooperate': 6.615420122661729, 'defect': 5.143347438298024}"
-Random_RandomProb,28,q_learning,388.0689655172412,"{'cooperate': 13.045246747340297, 'defect': 20.337436987384297}"
-Random_RandomProb,29,q_learning,121.48275862068958,"{'cooperate': 5.6055456494450455, 'defect': 3.3236905123580454}"
+Random_RandomProb,0,randomprob,581.0000000000013,
+Random_RandomProb,1,randomprob,520.0344827586215,
+Random_RandomProb,2,randomprob,444.68965517241315,
+Random_RandomProb,3,randomprob,566.4827586206918,
+Random_RandomProb,4,randomprob,414.65517241379246,
+Random_RandomProb,5,randomprob,468.20689655172396,
+Random_RandomProb,6,randomprob,375.55172413793144,
+Random_RandomProb,7,randomprob,599.2413793103461,
+Random_RandomProb,8,randomprob,482.5862068965518,
+Random_RandomProb,9,randomprob,479.68965517241395,
+Random_RandomProb,10,randomprob,331.8620689655178,
+Random_RandomProb,11,randomprob,446.68965517241344,
+Random_RandomProb,12,randomprob,543.0344827586207,
+Random_RandomProb,13,randomprob,514.1379310344835,
+Random_RandomProb,14,randomprob,370.2068965517246,
+Random_RandomProb,15,q_learning,884.9310344827609,"{'cooperate': 15.612537900759326, 'defect': 16.633242694184403}"
+Random_RandomProb,16,q_learning,696.1379310344835,"{'cooperate': 14.146554988447507, 'defect': 17.350355092895562}"
+Random_RandomProb,17,q_learning,579.2068965517237,"{'cooperate': 10.797673417098524, 'defect': 14.493508864454135}"
+Random_RandomProb,18,q_learning,574.4827586206884,"{'cooperate': 11.309785564111044, 'defect': 13.23279037052644}"
+Random_RandomProb,19,q_learning,580.206896551723,"{'cooperate': 12.164628075304337, 'defect': 14.700248783346057}"
+Random_RandomProb,20,q_learning,730.3448275862032,"{'cooperate': 12.714221840918334, 'defect': 13.757119293967468}"
+Random_RandomProb,21,q_learning,848.0689655172416,"{'cooperate': 15.102100635005929, 'defect': 15.810295870072602}"
+Random_RandomProb,22,q_learning,736.9655172413794,"{'cooperate': 13.851150987461937, 'defect': 17.059355522869364}"
+Random_RandomProb,23,q_learning,772.0689655172416,"{'cooperate': 15.179742769753233, 'defect': 17.229978829614993}"
+Random_RandomProb,24,q_learning,646.4137931034486,"{'cooperate': 12.535356972400633, 'defect': 15.758401529201059}"
+Random_RandomProb,25,q_learning,657.5862068965521,"{'cooperate': 13.214546503996026, 'defect': 16.496293736304786}"
+Random_RandomProb,26,q_learning,634.5517241379308,"{'cooperate': 13.218622346094818, 'defect': 16.00537533245557}"
+Random_RandomProb,27,q_learning,550.2758620689656,"{'cooperate': 11.242791223377742, 'defect': 14.538753245866465}"
+Random_RandomProb,28,q_learning,823.4137931034492,"{'cooperate': 14.820076237915618, 'defect': 15.792471647831388}"
+Random_RandomProb,29,q_learning,504.3103448275859,"{'cooperate': 9.978999922500062, 'defect': 13.666080923272531}"

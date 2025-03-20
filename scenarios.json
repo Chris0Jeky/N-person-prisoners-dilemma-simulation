@@ -2,7 +2,7 @@
   {
     "scenario_name": "FullyConnected_Mixed",
     "num_agents": 20,
-    "num_rounds": 200,
+    "num_rounds": 500,
     "network_type": "fully_connected",
     "network_params": {},
     "agent_strategies": {
@@ -19,7 +19,7 @@
   {
     "scenario_name": "SmallWorld_GTFT_vs_QL",
     "num_agents": 50,
-    "num_rounds": 300,
+    "num_rounds": 500,
     "network_type": "small_world",
     "network_params": {"k": 4, "beta": 0.3},
     "agent_strategies": {
@@ -35,7 +35,7 @@
   {
     "scenario_name": "ScaleFree_Pavlov_vs_QL",
     "num_agents": 30,
-    "num_rounds": 250,
+    "num_rounds": 500,
     "network_type": "scale_free",
     "network_params": {"m": 2},
     "agent_strategies": {
@@ -51,7 +51,7 @@
   {
     "scenario_name": "FullyConnected_AdaptiveQL",
     "num_agents": 20,
-    "num_rounds": 200,
+    "num_rounds": 500,
     "network_type": "fully_connected",
     "network_params": {},
     "agent_strategies": {
@@ -67,7 +67,7 @@
   {
     "scenario_name": "Random_RandomProb",
     "num_agents": 30,
-    "num_rounds": 150,
+    "num_rounds": 500,
     "network_type": "random",
     "network_params": {"probability": 0.4},
     "agent_strategies": {
@@ -83,7 +83,7 @@
   {
     "scenario_name": "SmallWorld_STFT_vs_QL",
     "num_agents": 40,
-    "num_rounds": 200,
+    "num_rounds": 500,
     "network_type": "small_world",
     "network_params": {"k": 6, "beta": 0.4},
     "agent_strategies": {
@@ -99,7 +99,7 @@
   {
     "scenario_name": "ThresholdPayoff_Mixed",
     "num_agents": 30,
-    "num_rounds": 200,
+    "num_rounds": 500,
     "network_type": "fully_connected",
     "network_params": {},
     "agent_strategies": {
@@ -124,7 +124,7 @@
   {
     "scenario_name": "ExponentialPayoff_QL",
     "num_agents": 25,
-    "num_rounds": 250,
+    "num_rounds": 500,
     "network_type": "small_world",
     "network_params": {"k": 4, "beta": 0.2},
     "agent_strategies": {

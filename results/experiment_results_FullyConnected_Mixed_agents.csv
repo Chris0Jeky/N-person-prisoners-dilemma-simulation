@@ -1,21 +1,21 @@
 scenario_name,agent_id,strategy,final_score,final_q_values
-FullyConnected_Mixed,0,q_learning,363.78947368421075,"{'cooperate': 12.403215332093644, 'defect': 15.914793752375559}"
-FullyConnected_Mixed,1,q_learning,374.6842105263158,"{'cooperate': 12.19493103564044, 'defect': 16.310425687411946}"
-FullyConnected_Mixed,2,q_learning,340.1052631578946,"{'cooperate': 12.738116525891904, 'defect': 15.270906675887748}"
-FullyConnected_Mixed,3,q_learning,364.1052631578948,"{'cooperate': 12.44568041152067, 'defect': 16.03196374930543}"
-FullyConnected_Mixed,4,q_learning,278.6315789473683,"{'cooperate': 7.9239778291344445, 'defect': 13.24398009602877}"
-FullyConnected_Mixed,5,tit_for_tat,346.2105263157896,
-FullyConnected_Mixed,6,tit_for_tat,333.6315789473686,
-FullyConnected_Mixed,7,tit_for_tat,334.1052631578946,
-FullyConnected_Mixed,8,tit_for_tat,330.5789473684209,
-FullyConnected_Mixed,9,tit_for_tat,337.21052631578965,
-FullyConnected_Mixed,10,always_defect,409.6842105263158,
-FullyConnected_Mixed,11,always_defect,409.6842105263158,
-FullyConnected_Mixed,12,always_defect,409.6842105263158,
-FullyConnected_Mixed,13,always_defect,409.6842105263158,
-FullyConnected_Mixed,14,always_defect,409.6842105263158,
-FullyConnected_Mixed,15,random,252.10526315789474,
-FullyConnected_Mixed,16,random,253.99999999999997,
-FullyConnected_Mixed,17,random,257.84210526315786,
-FullyConnected_Mixed,18,random,259.89473684210526,
-FullyConnected_Mixed,19,random,265.8421052631578,
+FullyConnected_Mixed,0,q_learning,751.368421052635,"{'cooperate': 16.03428231066638, 'defect': 17.91463727805657}"
+FullyConnected_Mixed,1,q_learning,765.1052631578982,"{'cooperate': 16.17391758468407, 'defect': 18.110758901696503}"
+FullyConnected_Mixed,2,q_learning,945.1578947368465,"{'cooperate': 17.272021416472068, 'defect': 18.48505395428148}"
+FullyConnected_Mixed,3,q_learning,935.5789473684258,"{'cooperate': 17.169773273277176, 'defect': 18.587540768582784}"
+FullyConnected_Mixed,4,q_learning,728.9473684210557,"{'cooperate': 15.986024074022051, 'defect': 17.63375087067487}"
+FullyConnected_Mixed,5,tit_for_tat,862.1052631578993,
+FullyConnected_Mixed,6,tit_for_tat,848.6842105263202,
+FullyConnected_Mixed,7,tit_for_tat,829.3684210526357,
+FullyConnected_Mixed,8,tit_for_tat,854.7368421052671,
+FullyConnected_Mixed,9,tit_for_tat,863.1578947368461,
+FullyConnected_Mixed,10,always_defect,1046.3157894736896,
+FullyConnected_Mixed,11,always_defect,1046.3157894736896,
+FullyConnected_Mixed,12,always_defect,1046.3157894736896,
+FullyConnected_Mixed,13,always_defect,1046.3157894736896,
+FullyConnected_Mixed,14,always_defect,1046.3157894736896,
+FullyConnected_Mixed,15,random,693.4210526315806,
+FullyConnected_Mixed,16,random,684.1578947368444,
+FullyConnected_Mixed,17,random,668.6842105263177,
+FullyConnected_Mixed,18,random,706.3684210526343,
+FullyConnected_Mixed,19,random,720.1578947368444,

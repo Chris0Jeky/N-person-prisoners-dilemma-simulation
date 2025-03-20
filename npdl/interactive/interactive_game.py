@@ -5,11 +5,10 @@ This allows a human player to participate in games against AI agents.
 """
 
 import random
-import time
 import os
-from agents import Agent
-from environment import Environment
-from utils import create_payoff_matrix
+from npdl.core.agents import Agent
+from npdl.core.environment import Environment
+from npdl.core.utils import create_payoff_matrix
 import logging
 
 def clear_screen():

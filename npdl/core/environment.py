@@ -3,7 +3,7 @@ import networkx as nx
 import numpy as np
 import random
 import logging
-from logging_utils import log_network_stats, log_round_stats
+from npdl.core.logging_utils import log_network_stats, log_round_stats
 
 class Environment:
     """Environment class that manages agent interactions and network structure."""

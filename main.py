@@ -250,7 +250,7 @@ def main():
     # Run analysis if requested
     if args.analyze:
         try:
-            from analysis import analyze_multiple_scenarios
+            from npdl.analysis.analysis import analyze_multiple_scenarios
             logger.info("Running analysis on experiment results")
             scenario_names = [result['scenario']['scenario_name'] for result in all_results]
             analyze_multiple_scenarios(scenario_names, args.results_dir, "analysis_results")

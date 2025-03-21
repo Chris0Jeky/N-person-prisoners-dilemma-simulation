@@ -2,7 +2,7 @@
   {
     "scenario_name": "FullyConnected_Mixed",
     "num_agents": 20,
-    "num_rounds": 200,
+    "num_rounds": 500,
     "network_type": "fully_connected",
     "network_params": {},
     "agent_strategies": {
@@ -19,39 +19,39 @@
   {
     "scenario_name": "SmallWorld_GTFT_vs_QL",
     "num_agents": 50,
-    "num_rounds": 300,
+    "num_rounds": 500,
     "network_type": "small_world",
     "network_params": {"k": 4, "beta": 0.3},
     "agent_strategies": {
       "q_learning": 25,
       "generous_tit_for_tat": 25
     },
-      "learning_rate": 0.1,
-      "discount_factor": 0.9,
-      "epsilon": 0.1,
-      "generosity": 0.1,
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "generosity": 0.1,
     "logging_interval": 50
   },
   {
     "scenario_name": "ScaleFree_Pavlov_vs_QL",
     "num_agents": 30,
-    "num_rounds": 250,
+    "num_rounds": 500,
     "network_type": "scale_free",
     "network_params": {"m": 2},
     "agent_strategies": {
       "q_learning": 15,
       "pavlov": 15
     },
-      "learning_rate": 0.1,
-      "discount_factor": 0.9,
-      "epsilon": 0.2,
-      "initial_move" : "cooperate",
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.2,
+    "initial_move": "cooperate",
     "logging_interval": 25
   },
-    {
+  {
     "scenario_name": "FullyConnected_AdaptiveQL",
     "num_agents": 20,
-    "num_rounds": 200,
+    "num_rounds": 500,
     "network_type": "fully_connected",
     "network_params": {},
     "agent_strategies": {
@@ -64,28 +64,28 @@
     "epsilon": 0.9,
     "logging_interval": 10
   },
-    {
+  {
     "scenario_name": "Random_RandomProb",
     "num_agents": 30,
-    "num_rounds": 150,
+    "num_rounds": 500,
     "network_type": "random",
     "network_params": {"probability": 0.4},
     "agent_strategies": {
       "randomprob": 15,
-       "q_learning": 15
+      "q_learning": 15
     },
     "learning_rate": 0.1,
     "discount_factor": 0.9,
     "epsilon": 0.2,
-      "prob_coop" : 0.7,
+    "prob_coop": 0.7,
     "logging_interval": 20
   },
-    {
+  {
     "scenario_name": "SmallWorld_STFT_vs_QL",
     "num_agents": 40,
-    "num_rounds": 200,
+    "num_rounds": 500,
     "network_type": "small_world",
-    "network_params": {"k":6, "beta":0.4},
+    "network_params": {"k": 6, "beta": 0.4},
     "agent_strategies": {
       "q_learning": 20,
       "suspicious_tit_for_tat": 20
@@ -93,7 +93,54 @@
     "learning_rate": 0.2,
     "discount_factor": 0.9,
     "epsilon": 0.3,
-      "initial_move" : "defect",
+    "initial_move": "defect",
+    "logging_interval": 25
+  },
+  {
+    "scenario_name": "ThresholdPayoff_Mixed",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "agent_strategies": {
+      "q_learning": 10,
+      "tit_for_tat": 10,
+      "always_cooperate": 5,
+      "always_defect": 5
+    },
+    "payoff_type": "threshold",
+    "payoff_params": {
+      "threshold": 0.6,
+      "R": 3,
+      "S": 0,
+      "T": 5,
+      "P": 1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.2,
+    "logging_interval": 20
+  },
+  {
+    "scenario_name": "ExponentialPayoff_QL",
+    "num_agents": 25,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.2},
+    "agent_strategies": {
+      "q_learning_adaptive": 25
+    },
+    "payoff_type": "exponential",
+    "payoff_params": {
+      "exponent": 2.5,
+      "R": 3,
+      "S": 0,
+      "T": 5,
+      "P": 1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.95,
+    "epsilon": 0.8,
     "logging_interval": 25
   }
 ]

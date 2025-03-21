@@ -1,0 +1,51 @@
+scenario_name,agent_id,strategy,final_score,final_q_values
+SmallWorld_GTFT_vs_QL,0,q_learning,291.7346938775513,"{'cooperate': 5.9965677230555015, 'defect': 9.591173649158808}"
+SmallWorld_GTFT_vs_QL,1,q_learning,323.9591836734693,"{'cooperate': 4.405137986659459, 'defect': 9.76505725058405}"
+SmallWorld_GTFT_vs_QL,2,q_learning,280.16326530612287,"{'cooperate': 4.824074381741921, 'defect': 9.39881082172247}"
+SmallWorld_GTFT_vs_QL,3,q_learning,542.8979591836735,"{'cooperate': 7.946487387239614, 'defect': 10.345049321554779}"
+SmallWorld_GTFT_vs_QL,4,q_learning,335.1632653061223,"{'cooperate': 7.036694521023616, 'defect': 9.904099022438476}"
+SmallWorld_GTFT_vs_QL,5,q_learning,500.83673469387725,"{'cooperate': 8.307064688314036, 'defect': 10.158104205090206}"
+SmallWorld_GTFT_vs_QL,6,q_learning,429.4897959183674,"{'cooperate': 7.704780844225079, 'defect': 10.051002508234268}"
+SmallWorld_GTFT_vs_QL,7,q_learning,393.46938775510176,"{'cooperate': 6.130412123991879, 'defect': 9.955972416882435}"
+SmallWorld_GTFT_vs_QL,8,q_learning,344.6530612244898,"{'cooperate': 5.8643887155323835, 'defect': 9.999306755025314}"
+SmallWorld_GTFT_vs_QL,9,q_learning,484.26530612244767,"{'cooperate': 8.151986153128803, 'defect': 10.285283769990928}"
+SmallWorld_GTFT_vs_QL,10,q_learning,403.8571428571426,"{'cooperate': 6.640428330642127, 'defect': 10.426830881254858}"
+SmallWorld_GTFT_vs_QL,11,q_learning,552.3061224489782,"{'cooperate': 8.586551120959072, 'defect': 10.713234882768665}"
+SmallWorld_GTFT_vs_QL,12,q_learning,483.16326530612264,"{'cooperate': 6.637343978765415, 'defect': 10.067576603707016}"
+SmallWorld_GTFT_vs_QL,13,q_learning,307.81632653061223,"{'cooperate': 5.923821382180346, 'defect': 9.54094695516493}"
+SmallWorld_GTFT_vs_QL,14,q_learning,357.1836734693876,"{'cooperate': 7.3261112041637615, 'defect': 9.89462770242377}"
+SmallWorld_GTFT_vs_QL,15,q_learning,299.7142857142858,"{'cooperate': 6.474688044368804, 'defect': 9.759258413066997}"
+SmallWorld_GTFT_vs_QL,16,q_learning,410.6122448979587,"{'cooperate': 7.522258375015793, 'defect': 9.983462099478402}"
+SmallWorld_GTFT_vs_QL,17,q_learning,415.30612244897935,"{'cooperate': 7.598162947054599, 'defect': 9.950579791723511}"
+SmallWorld_GTFT_vs_QL,18,q_learning,498.8367346938772,"{'cooperate': 8.206222800404548, 'defect': 10.20300691255081}"
+SmallWorld_GTFT_vs_QL,19,q_learning,507.3877551020394,"{'cooperate': 8.488596723224191, 'defect': 10.423865542321858}"
+SmallWorld_GTFT_vs_QL,20,q_learning,437.9183673469383,"{'cooperate': 6.0731203397294795, 'defect': 10.155952424426497}"
+SmallWorld_GTFT_vs_QL,21,q_learning,470.44897959183635,"{'cooperate': 7.654177768771145, 'defect': 10.03137943989853}"
+SmallWorld_GTFT_vs_QL,22,q_learning,505.30612244897856,"{'cooperate': 8.091034608354605, 'defect': 10.326558135973318}"
+SmallWorld_GTFT_vs_QL,23,q_learning,335.326530612245,"{'cooperate': 5.97874609064667, 'defect': 9.828101357936289}"
+SmallWorld_GTFT_vs_QL,24,q_learning,542.1428571428556,"{'cooperate': 8.96703683579589, 'defect': 10.77908226436738}"
+SmallWorld_GTFT_vs_QL,25,generous_tit_for_tat,390.8775510204079,
+SmallWorld_GTFT_vs_QL,26,generous_tit_for_tat,290.8979591836726,
+SmallWorld_GTFT_vs_QL,27,generous_tit_for_tat,425.8367346938773,
+SmallWorld_GTFT_vs_QL,28,generous_tit_for_tat,241.22448979591812,
+SmallWorld_GTFT_vs_QL,29,generous_tit_for_tat,294.87755102040757,
+SmallWorld_GTFT_vs_QL,30,generous_tit_for_tat,320.65306122448897,
+SmallWorld_GTFT_vs_QL,31,generous_tit_for_tat,269.9999999999997,
+SmallWorld_GTFT_vs_QL,32,generous_tit_for_tat,263.06122448979534,
+SmallWorld_GTFT_vs_QL,33,generous_tit_for_tat,305.42857142857105,
+SmallWorld_GTFT_vs_QL,34,generous_tit_for_tat,269.26530612244846,
+SmallWorld_GTFT_vs_QL,35,generous_tit_for_tat,236.44897959183635,
+SmallWorld_GTFT_vs_QL,36,generous_tit_for_tat,283.6734693877545,
+SmallWorld_GTFT_vs_QL,37,generous_tit_for_tat,228.20408163265287,
+SmallWorld_GTFT_vs_QL,38,generous_tit_for_tat,323.4081632653059,
+SmallWorld_GTFT_vs_QL,39,generous_tit_for_tat,253.42857142857105,
+SmallWorld_GTFT_vs_QL,40,generous_tit_for_tat,297.48979591836695,
+SmallWorld_GTFT_vs_QL,41,generous_tit_for_tat,306.6326530612238,
+SmallWorld_GTFT_vs_QL,42,generous_tit_for_tat,256.7755102040811,
+SmallWorld_GTFT_vs_QL,43,generous_tit_for_tat,344.8571428571421,
+SmallWorld_GTFT_vs_QL,44,generous_tit_for_tat,206.1224489795917,
+SmallWorld_GTFT_vs_QL,45,generous_tit_for_tat,297.9795918367343,
+SmallWorld_GTFT_vs_QL,46,generous_tit_for_tat,252.24489795918348,
+SmallWorld_GTFT_vs_QL,47,generous_tit_for_tat,272.4081632653063,
+SmallWorld_GTFT_vs_QL,48,generous_tit_for_tat,264.18367346938794,
+SmallWorld_GTFT_vs_QL,49,generous_tit_for_tat,322.3469387755098,

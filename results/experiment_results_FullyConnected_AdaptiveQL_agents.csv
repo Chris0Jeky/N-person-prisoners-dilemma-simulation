@@ -1,0 +1,21 @@
+scenario_name,agent_id,strategy,final_score,final_q_values
+FullyConnected_AdaptiveQL,0,q_learning_adaptive,574.5789473684218,"{'cooperate': 8.877986905909212, 'defect': 10.316567070561751}"
+FullyConnected_AdaptiveQL,1,q_learning_adaptive,560.7368421052639,"{'cooperate': 8.960046330125047, 'defect': 10.309924930257187}"
+FullyConnected_AdaptiveQL,2,q_learning_adaptive,560.1578947368428,"{'cooperate': 8.737771796581528, 'defect': 10.285455367870739}"
+FullyConnected_AdaptiveQL,3,q_learning_adaptive,564.894736842106,"{'cooperate': 9.183574189011305, 'defect': 10.314263592386526}"
+FullyConnected_AdaptiveQL,4,q_learning_adaptive,566.1052631578956,"{'cooperate': 8.732116079302857, 'defect': 10.301453184525466}"
+FullyConnected_AdaptiveQL,5,q_learning_adaptive,559.6842105263164,"{'cooperate': 8.868460175628304, 'defect': 10.260488389415618}"
+FullyConnected_AdaptiveQL,6,q_learning_adaptive,568.1052631578955,"{'cooperate': 7.923794437124366, 'defect': 10.31550317471244}"
+FullyConnected_AdaptiveQL,7,q_learning_adaptive,567.2631578947377,"{'cooperate': 8.778938577248342, 'defect': 10.307570466735836}"
+FullyConnected_AdaptiveQL,8,q_learning_adaptive,564.4210526315796,"{'cooperate': 8.620959431373517, 'defect': 10.297310811898088}"
+FullyConnected_AdaptiveQL,9,q_learning_adaptive,562.0526315789481,"{'cooperate': 8.319340065669415, 'defect': 10.283680360265011}"
+FullyConnected_AdaptiveQL,10,tit_for_tat,579.6315789473691,
+FullyConnected_AdaptiveQL,11,tit_for_tat,570.1052631578956,
+FullyConnected_AdaptiveQL,12,tit_for_tat,581.4736842105272,
+FullyConnected_AdaptiveQL,13,tit_for_tat,574.7368421052639,
+FullyConnected_AdaptiveQL,14,tit_for_tat,593.4210526315799,
+FullyConnected_AdaptiveQL,15,always_defect,622.9473684210535,
+FullyConnected_AdaptiveQL,16,always_defect,622.9473684210535,
+FullyConnected_AdaptiveQL,17,always_defect,622.9473684210535,
+FullyConnected_AdaptiveQL,18,always_defect,622.9473684210535,
+FullyConnected_AdaptiveQL,19,always_defect,622.9473684210535,

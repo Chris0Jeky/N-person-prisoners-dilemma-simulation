@@ -1,0 +1,31 @@
+scenario_name,agent_id,strategy,final_score,final_q_values
+ThresholdPayoff_Mixed,0,q_learning,1002.9224137931046,"{'cooperate': 16.298899713693405, 'defect': 17.037940803409544}"
+ThresholdPayoff_Mixed,1,q_learning,678.3017241379318,"{'cooperate': 13.110678784398361, 'defect': 15.629602955327165}"
+ThresholdPayoff_Mixed,2,q_learning,619.2844827586217,"{'cooperate': 11.971066491852351, 'defect': 14.97884364547101}"
+ThresholdPayoff_Mixed,3,q_learning,675.3965517241388,"{'cooperate': 13.416750274222123, 'defect': 15.612830320137554}"
+ThresholdPayoff_Mixed,4,q_learning,988.586206896553,"{'cooperate': 16.493682081653716, 'defect': 17.04305797815805}"
+ThresholdPayoff_Mixed,5,q_learning,659.8017241379322,"{'cooperate': 13.415197394393628, 'defect': 15.355713847531756}"
+ThresholdPayoff_Mixed,6,q_learning,642.7931034482771,"{'cooperate': 11.911216269180553, 'defect': 15.243554380213277}"
+ThresholdPayoff_Mixed,7,q_learning,678.1637931034494,"{'cooperate': 13.655363175141586, 'defect': 15.510781761553512}"
+ThresholdPayoff_Mixed,8,q_learning,665.543103448277,"{'cooperate': 12.594346199036277, 'defect': 15.417452981303363}"
+ThresholdPayoff_Mixed,9,q_learning,675.3534482758632,"{'cooperate': 13.46528733687693, 'defect': 15.623484115227214}"
+ThresholdPayoff_Mixed,10,tit_for_tat,719.7844827586213,
+ThresholdPayoff_Mixed,11,tit_for_tat,712.8620689655181,
+ThresholdPayoff_Mixed,12,tit_for_tat,719.577586206897,
+ThresholdPayoff_Mixed,13,tit_for_tat,697.0603448275863,
+ThresholdPayoff_Mixed,14,tit_for_tat,695.0948275862074,
+ThresholdPayoff_Mixed,15,tit_for_tat,716.250000000001,
+ThresholdPayoff_Mixed,16,tit_for_tat,708.7327586206903,
+ThresholdPayoff_Mixed,17,tit_for_tat,709.5517241379313,
+ThresholdPayoff_Mixed,18,tit_for_tat,701.7327586206902,
+ThresholdPayoff_Mixed,19,tit_for_tat,718.9310344827593,
+ThresholdPayoff_Mixed,20,always_cooperate,371.1982758620698,
+ThresholdPayoff_Mixed,21,always_cooperate,371.1982758620698,
+ThresholdPayoff_Mixed,22,always_cooperate,371.1982758620698,
+ThresholdPayoff_Mixed,23,always_cooperate,371.1982758620698,
+ThresholdPayoff_Mixed,24,always_cooperate,371.1982758620698,
+ThresholdPayoff_Mixed,25,always_defect,1058.5172413793107,
+ThresholdPayoff_Mixed,26,always_defect,1058.5172413793107,
+ThresholdPayoff_Mixed,27,always_defect,1058.5172413793107,
+ThresholdPayoff_Mixed,28,always_defect,1058.5172413793107,
+ThresholdPayoff_Mixed,29,always_defect,1058.5172413793107,

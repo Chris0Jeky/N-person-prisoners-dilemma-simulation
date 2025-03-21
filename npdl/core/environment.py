@@ -274,3 +274,34 @@ class Environment:
                 self.logger.warning(f"Error calculating some network metrics: {e}")
         
         return metrics
+        
+    def export_network_structure(self):
+        """Export the network structure as a dictionary for visualization.
+        
+        Returns:
+            Dictionary containing nodes and edges information
+        """
+        G = self.graph
+        
+        # Create dictionary representation of the network
+        export_data = {
+            "nodes": list(G.nodes()),
+            "edges": list(G.edges()),
+            "network_type": self.network_type,
+            "network_params": self.network_params,
+        }
+        
+        # Add node attributes if available
+        node_attrs = {}
+        for node in G.nodes():
+            # Check if node has any attributes
+            if G.nodes[node]:
+                node_attrs[node] = G.nodes[node].copy()
+                
+        if node_attrs:
+            export_data["node_attributes"] = node_attrs
+            
+        # Add network metrics
+        export_data["metrics"] = self.get_network_metrics()
+        
+        return export_data

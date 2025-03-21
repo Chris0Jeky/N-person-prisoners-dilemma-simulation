@@ -74,7 +74,7 @@ def run_experiment(scenario, logger):
     execution_time = time.time() - start_time
     logger.info(f"Completed scenario: {scenario['scenario_name']} in {execution_time:.2f} seconds")
     
-    return {"scenario": scenario, "results": results, "agents": agents}
+    return {"scenario": scenario, "results": results, "agents": agents, "environment": env}
 
 def save_results(all_results, base_filename="experiment_results", results_dir="results"):
     """Save experiment results to CSV files."""
@@ -118,6 +118,14 @@ def save_results(all_results, base_filename="experiment_results", results_dir="r
         df_rounds = pd.DataFrame(round_data)
         rounds_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_rounds.csv")
         df_rounds.to_csv(rounds_filename, index=False)
+        
+        # Save network structure if environment is available
+        if 'environment' in result and hasattr(result['environment'], 'export_network_structure'):
+            network_data = result['environment'].export_network_structure()
+            network_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_network.json")
+            
+            with open(network_filename, 'w') as f:
+                json.dump(network_data, f, indent=2, default=str)
 
 def print_comparative_summary(all_results):
     """Print a comparative summary of all scenario results"""

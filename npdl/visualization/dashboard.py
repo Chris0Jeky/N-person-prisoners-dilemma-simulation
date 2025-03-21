@@ -6,25 +6,33 @@ using Flask and Dash.
 """
 
 import os
+import sys
+import json
 import dash
-from dash import dcc, html, Input, Output
+from dash import dcc, html, Input, Output, State, callback
 import dash_bootstrap_components as dbc
 import plotly.express as px
 import plotly.graph_objects as go
 from flask import Flask
 import pandas as pd
+import subprocess
+from pathlib import Path
+import importlib.util
 
 from npdl.visualization.data_loader import (
     get_available_scenarios,
     load_scenario_results,
     get_cooperation_rates,
-    get_strategy_cooperation_rates
+    get_strategy_cooperation_rates,
+    load_network_structure
 )
 from npdl.visualization.data_processor import (
     get_payoffs_by_strategy,
     get_strategy_scores,
-    get_strategy_colors
+    get_strategy_colors,
+    prepare_network_data
 )
+from npdl.visualization.network_viz import create_network_figure
 
 # Initialize the Flask server
 server = Flask(__name__)
@@ -372,7 +380,7 @@ def update_score_graph(scenario, selected_strategies, n_clicks):
         return go.Figure()
 
 
-# Update network graph (placeholder - would need actual network data)
+# Update network graph
 @app.callback(
     Output("network-graph", "figure"),
     [Input("scenario-dropdown", "value"),
@@ -383,20 +391,106 @@ def update_network_graph(scenario, round_num, n_clicks):
     if scenario is None:
         return go.Figure()
     
-    # Create placeholder figure
-    fig = go.Figure()
-    fig.add_annotation(
-        text="Network visualization requires stored network structure data<br>which is not currently available in result files.<br>This feature will be implemented in future updates.",
-        showarrow=False,
-        font=dict(size=14)
-    )
-    fig.update_layout(
-        title="Network Visualization (Coming Soon)",
-        xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
-        yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
-    )
-    
-    return fig
+    try:
+        # Load network structure
+        G, network_data = load_network_structure(scenario)
+        
+        # If network data is not available
+        if not network_data:
+            fig = go.Figure()
+            fig.add_annotation(
+                text="Network data not found for this scenario.<br>Run new simulations with network export enabled.",
+                showarrow=False,
+                font=dict(size=14)
+            )
+            fig.update_layout(
+                title="Network Data Not Available",
+                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+            )
+            return fig
+        
+        # Load agent and round data for additional information
+        agents_df, rounds_df = load_scenario_results(scenario)
+        
+        # Filter rounds data for the specific round
+        if round_num is not None:
+            round_data = rounds_df[rounds_df['round'] == round_num]
+        else:
+            # Use the last round if round_num is not specified
+            round_num = rounds_df['round'].max()
+            round_data = rounds_df[rounds_df['round'] == round_num]
+        
+        # Prepare node data for visualization
+        node_data = {}
+        
+        for _, agent_row in agents_df.iterrows():
+            agent_id = agent_row['agent_id']
+            
+            # Get the agent's data for the current round
+            agent_round_data = round_data[round_data['agent_id'] == agent_id]
+            
+            if not agent_round_data.empty:
+                move = agent_round_data.iloc[0]['move']
+                payoff = agent_round_data.iloc[0]['payoff']
+                
+                node_data[agent_id] = {
+                    'strategy': agent_row['strategy'],
+                    'score': agent_row['final_score'],
+                    'move': move,
+                    'payoff': payoff
+                }
+        
+        # Create network visualization
+        network_title = f"Network Visualization - Round {round_num}"
+        fig = create_network_figure(
+            G, 
+            node_data=node_data,
+            color_by='strategy',
+            size_by='payoff',
+            layout_type='spring',
+            strategy_colors=get_strategy_colors()
+        )
+        
+        # Update layout
+        fig.update_layout(
+            title=network_title,
+            showlegend=False,
+            height=600,
+        )
+        
+        # Add network type info
+        network_type = network_data.get('network_type', 'Unknown')
+        network_params = network_data.get('network_params', {})
+        params_str = ', '.join([f"{k}={v}" for k, v in network_params.items()])
+        
+        fig.add_annotation(
+            text=f"Network Type: {network_type.title()} ({params_str})",
+            xref="paper", yref="paper",
+            x=0.5, y=0.02,
+            showarrow=False,
+            font=dict(size=12)
+        )
+        
+        return fig
+        
+    except Exception as e:
+        print(f"Error updating network graph: {e}")
+        
+        # Create error figure
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error visualizing network: {str(e)}",
+            showarrow=False,
+            font=dict(size=14)
+        )
+        fig.update_layout(
+            title="Network Visualization Error",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        )
+        
+        return fig
 
 
 def run_dashboard(debug=True, port=8050):

@@ -13,6 +13,19 @@ from npdl.core.environment import Environment
 from npdl.core.utils import create_payoff_matrix
 
 
+class TestDailyT004AllCooperateRound:
+    """Daily check: two cooperators produce an all-cooperate round."""
+
+    def test_all_cooperate_round(self):
+        agents = [
+            Agent(agent_id=0, strategy="always_cooperate"),
+            Agent(agent_id=1, strategy="always_cooperate"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}
+
+
 @pytest.mark.unit
 class TestEnvironmentBasics:
     """Test basic environment functionality."""

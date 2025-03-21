@@ -9,6 +9,7 @@ import os
 import pandas as pd
 import json
 import glob
+import networkx as nx
 from typing import Dict, List, Tuple, Optional
 
 
@@ -65,3 +66,40 @@ def get_strategy_cooperation_rates(rounds_df: pd.DataFrame) -> pd.DataFrame:
     coop_rates.rename(columns={'cooperation': 'cooperation_rate'}, inplace=True)
     
     return coop_rates
+
+
+def load_network_structure(scenario_name: str, results_dir: str = "results", 
+                          base_filename: str = "experiment_results") -> Tuple[nx.Graph, Dict]:
+    """Load network structure for a scenario.
+    
+    Args:
+        scenario_name: Name of the scenario
+        results_dir: Directory containing result files
+        base_filename: Base filename prefix for result files
+        
+    Returns:
+        Tuple of (NetworkX graph, network data dictionary)
+    """
+    network_file = os.path.join(results_dir, f"{base_filename}_{scenario_name}_network.json")
+    
+    # Return empty graph if file doesn't exist
+    if not os.path.exists(network_file):
+        return nx.Graph(), {}
+    
+    try:
+        with open(network_file, 'r') as f:
+            network_data = json.load(f)
+        
+        # Create NetworkX graph from the saved structure
+        G = nx.Graph()
+        
+        # Add nodes
+        G.add_nodes_from(network_data.get('nodes', []))
+        
+        # Add edges
+        G.add_edges_from(network_data.get('edges', []))
+        
+        return G, network_data
+    except Exception as e:
+        print(f"Error loading network structure: {e}")
+        return nx.Graph(), {}

@@ -181,6 +181,7 @@ class GenerousTitForTatStrategy(Strategy):
         self.generosity = generosity
         
     def choose_move(self, agent, neighbors):
+        """Cooperate unless a defection is observed, then forgive with generosity probability."""
         if not agent.memory:
             return "cooperate"
         

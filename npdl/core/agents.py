@@ -175,6 +175,8 @@ class ProportionalTitForTatStrategy(Strategy):
 
 
 class GenerousTitForTatStrategy(Strategy):
+    """Forgiving Tit-for-Tat: retaliates probabilistically, otherwise cooperates."""
+
     def __init__(self, generosity=0.1):
         self.generosity = generosity
         

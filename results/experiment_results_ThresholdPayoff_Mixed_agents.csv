@@ -1,31 +1,31 @@
 scenario_name,agent_id,strategy,final_score,final_q_values
-ThresholdPayoff_Mixed,0,q_learning,730.3017241379315,"{'cooperate': 13.896347253229376, 'defect': 15.557837300567325}"
-ThresholdPayoff_Mixed,1,q_learning,716.0862068965522,"{'cooperate': 13.71993623087478, 'defect': 15.317263938157412}"
-ThresholdPayoff_Mixed,2,q_learning,682.2413793103453,"{'cooperate': 12.095728468724182, 'defect': 14.883420686619775}"
-ThresholdPayoff_Mixed,3,q_learning,704.5258620689661,"{'cooperate': 12.687298471984535, 'defect': 15.198602458726715}"
-ThresholdPayoff_Mixed,4,q_learning,663.3017241379317,"{'cooperate': 11.784700522934182, 'defect': 14.530910793981784}"
-ThresholdPayoff_Mixed,5,q_learning,714.8965517241388,"{'cooperate': 13.312596278398715, 'defect': 15.329964680078703}"
-ThresholdPayoff_Mixed,6,q_learning,682.1034482758629,"{'cooperate': 12.547194782406399, 'defect': 14.841775160011803}"
-ThresholdPayoff_Mixed,7,q_learning,677.1982758620692,"{'cooperate': 11.83608973124002, 'defect': 14.797641232410589}"
-ThresholdPayoff_Mixed,8,q_learning,1093.310344827587,"{'cooperate': 17.862544708160094, 'defect': 17.912580447061416}"
-ThresholdPayoff_Mixed,9,q_learning,691.5344827586212,"{'cooperate': 12.861278987454366, 'defect': 15.038881444799769}"
-ThresholdPayoff_Mixed,10,tit_for_tat,805.8017241379314,
-ThresholdPayoff_Mixed,11,tit_for_tat,757.6982758620688,
-ThresholdPayoff_Mixed,12,tit_for_tat,766.5344827586213,
-ThresholdPayoff_Mixed,13,tit_for_tat,768.8620689655182,
-ThresholdPayoff_Mixed,14,tit_for_tat,748.1551724137938,
-ThresholdPayoff_Mixed,15,tit_for_tat,763.5000000000009,
-ThresholdPayoff_Mixed,16,tit_for_tat,788.9655172413798,
-ThresholdPayoff_Mixed,17,tit_for_tat,770.4568965517249,
-ThresholdPayoff_Mixed,18,tit_for_tat,786.5689655172417,
-ThresholdPayoff_Mixed,19,tit_for_tat,769.4913793103451,
-ThresholdPayoff_Mixed,20,always_cooperate,447.4655172413798,
-ThresholdPayoff_Mixed,21,always_cooperate,447.4655172413798,
-ThresholdPayoff_Mixed,22,always_cooperate,447.4655172413798,
-ThresholdPayoff_Mixed,23,always_cooperate,447.4655172413798,
-ThresholdPayoff_Mixed,24,always_cooperate,447.4655172413798,
-ThresholdPayoff_Mixed,25,always_defect,1174.8620689655158,
-ThresholdPayoff_Mixed,26,always_defect,1174.8620689655158,
-ThresholdPayoff_Mixed,27,always_defect,1174.8620689655158,
-ThresholdPayoff_Mixed,28,always_defect,1174.8620689655158,
-ThresholdPayoff_Mixed,29,always_defect,1174.8620689655158,
+ThresholdPayoff_Mixed,0,q_learning,643.0258620689663,"{'cooperate': 12.778350339828638, 'defect': 15.577894519345431}"
+ThresholdPayoff_Mixed,1,q_learning,658.750000000001,"{'cooperate': 12.364442504879694, 'defect': 15.660487403764433}"
+ThresholdPayoff_Mixed,2,q_learning,646.0086206896556,"{'cooperate': 13.56185602733253, 'defect': 15.599608011110952}"
+ThresholdPayoff_Mixed,3,q_learning,902.5258620689659,"{'cooperate': 15.481135767139747, 'defect': 16.535312969871818}"
+ThresholdPayoff_Mixed,4,q_learning,590.9741379310357,"{'cooperate': 12.036310468791378, 'defect': 15.042959802925706}"
+ThresholdPayoff_Mixed,5,q_learning,661.6293103448282,"{'cooperate': 13.02670022652232, 'defect': 15.660889878964722}"
+ThresholdPayoff_Mixed,6,q_learning,891.2586206896552,"{'cooperate': 15.589151723333332, 'defect': 16.582930659042503}"
+ThresholdPayoff_Mixed,7,q_learning,624.8879310344839,"{'cooperate': 12.520224065249284, 'defect': 15.348147725910849}"
+ThresholdPayoff_Mixed,8,q_learning,907.1120689655176,"{'cooperate': 15.606728266312818, 'defect': 16.622102469365913}"
+ThresholdPayoff_Mixed,9,q_learning,699.5258620689661,"{'cooperate': 14.209349409649214, 'defect': 15.922916058239885}"
+ThresholdPayoff_Mixed,10,tit_for_tat,682.1896551724146,
+ThresholdPayoff_Mixed,11,tit_for_tat,666.6379310344832,
+ThresholdPayoff_Mixed,12,tit_for_tat,690.6293103448276,
+ThresholdPayoff_Mixed,13,tit_for_tat,674.3706896551734,
+ThresholdPayoff_Mixed,14,tit_for_tat,664.3017241379315,
+ThresholdPayoff_Mixed,15,tit_for_tat,667.8793103448284,
+ThresholdPayoff_Mixed,16,tit_for_tat,696.4224137931036,
+ThresholdPayoff_Mixed,17,tit_for_tat,673.9827586206895,
+ThresholdPayoff_Mixed,18,tit_for_tat,674.3620689655176,
+ThresholdPayoff_Mixed,19,tit_for_tat,667.3879310344828,
+ThresholdPayoff_Mixed,20,always_cooperate,314.74137931034574,
+ThresholdPayoff_Mixed,21,always_cooperate,314.74137931034574,
+ThresholdPayoff_Mixed,22,always_cooperate,314.74137931034574,
+ThresholdPayoff_Mixed,23,always_cooperate,314.74137931034574,
+ThresholdPayoff_Mixed,24,always_cooperate,314.74137931034574,
+ThresholdPayoff_Mixed,25,always_defect,967.931034482759,
+ThresholdPayoff_Mixed,26,always_defect,967.931034482759,
+ThresholdPayoff_Mixed,27,always_defect,967.931034482759,
+ThresholdPayoff_Mixed,28,always_defect,967.931034482759,
+ThresholdPayoff_Mixed,29,always_defect,967.931034482759,

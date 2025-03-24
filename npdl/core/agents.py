@@ -219,6 +219,7 @@ class SuspiciousTitForTatStrategy(Strategy):
     """Suspicious Tit-for-Tat: defects on the first move, then mimics."""
 
     def choose_move(self, agent, neighbors):
+        """Defect first; thereafter copy a neighbor's previous move."""
         if not agent.memory:
             return "defect"  # Start with defection
         

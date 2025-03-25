@@ -249,6 +249,8 @@ class SuspiciousTitForTatStrategy(Strategy):
 
 
 class TitForTwoTatsStrategy(Strategy):
+    """Tit-for-Two-Tats: defects only after two consecutive defections."""
+
     def choose_move(self, agent, neighbors):
         if len(agent.memory) < 2:
             return "cooperate"

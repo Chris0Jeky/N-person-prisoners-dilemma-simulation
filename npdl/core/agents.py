@@ -252,6 +252,7 @@ class TitForTwoTatsStrategy(Strategy):
     """Tit-for-Two-Tats: defects only after two consecutive defections."""
 
     def choose_move(self, agent, neighbors):
+        """Cooperate unless an opponent defected in both of the last two rounds."""
         if len(agent.memory) < 2:
             return "cooperate"
 

@@ -322,6 +322,8 @@ class TitForTwoTatsStrategy(Strategy):
 
 
 class PavlovStrategy(Strategy):
+    """Win-stay, lose-shift: repeat successful moves, change failing ones."""
+
     def __init__(self, initial_move="cooperate"):
         self.initial_move = initial_move
 

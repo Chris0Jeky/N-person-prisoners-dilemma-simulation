@@ -3,6 +3,9 @@ import random
 import math
 from collections import deque
 
+from networkx.classes import common_neighbors
+
+
 class Strategy:
     """Base Strategy class that all specific strategies inherit from."""
     
@@ -323,8 +326,28 @@ class TitForTwoTatsStrategy(Strategy):
 
         # Need a consistent way to get "an" opponent's move
         # Using the same random neighbor logic as TitForTat for simplicity
-        last_neighbour_moves = last_round['neighbor_moves']
-        prev_neighbour_moves = prev_round['neighbor_moves']
+        last_neighbor_moves = last_round['neighbor_moves']
+        prev_neighbor_moves = prev_round['neighbor_moves']
+
+        # Hnadle cases where neighbors might not exist in both rounds
+        if not last_neighbor_moves or not prev_neighbor_moves:
+            return "cooperate" # Default to cooperate if neighbors info are missing
+
+        # Try to find a neighbor present in both rounds
+        common_neighbors = list(set(last_neighbor_moves.keys()) & set(prev_neighbor_moves.keys()))
+
+        if not common_neighbors:
+            # If no common neighbors, pick randomly from last round's neighbors
+            if not last_neighbor_moves: return "cooperate" # Should not happen if reached here
+            random_neighbor_id = random.choice(list(last_neighbor_moves.keys()))
+            last_opponent_move = last_neighbor_moves.get(random_neighbor_id, "cooperate")
+            prev_opponent_move = "cooperate" # Default to cooperate if no memory
+        else:
+            random_neighbor_id = random.choice(common_neighbors)
+            last_opponent_move = last_neighbor_moves.get(random_neighbor_id, "cooperate")
+            prev_opponent_move = prev_neighbor_moves.get(random_neighbor_id, "cooperate")
+
+    
 
 class HystereticQLearningStrategy(QLearningStrategy):
     """Hysteretic Q-Learning Strategy.

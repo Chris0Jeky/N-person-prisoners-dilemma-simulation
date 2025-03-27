@@ -195,11 +195,28 @@ class QLearningStrategy(Strategy):
             
         # Default fallback
         return 'standard'
-    
+
+    def _initialize_q_values_for_state(self, agent, state):
+        """Initialize Q-values for a new state based on the agent's init type. """
+        if agent.q_init_type == "optimistic":
+            init_val = agent.max_possible_payoff
+        elif agent.q_init_type == "random":
+            init_val = random.uniform(-0.1, 0.1)
+        else: # Default to zero initialization
+            init_val = 0.0
+        agent.q_values[state] = {"cooperate": init_val, "defect": init_val}
+
+    def _ensure_state_exists(self, agent, state):
+        """Checks if state exists in the Q-table and initializes if not."""
+        if state not in agent.q_values:
+            self._initialize_q_values_for_state(agent, state)
+
     def choose_move(self, agent, neighbors):
         # Get current state
         current_state = self._get_current_state(agent)
         agent.last_state_representation = current_state
+
+        self._ensure_state_exists(agent, current_state)
         
         # Ensure state exists in Q-table, initialize if not
         if current_state not in agent.q_values:
@@ -224,6 +241,8 @@ class QLearningStrategy(Strategy):
             
         # Calculate the state for the next step (based on the current memory after this round)
         next_state = self._get_current_state(agent)
+
+        self._ensure_state_exists(agent, next_state)
         
         # Ensure next state exists in Q-table, initialize if not
         if next_state not in agent.q_values:
@@ -534,13 +553,16 @@ def create_strategy(strategy_type, **kwargs):
 class Agent:
     def __init__(self, agent_id, strategy="random", memory_length=10, 
                  learning_rate=0.1, discount_factor=0.9, epsilon=0.1,
-                 state_type="proportion_discretized", generosity=0.05, 
+                 state_type="proportion_discretized", q_init_type="zero",
+                 max_possible_payoff=5.0, generosity=0.05,
                  initial_move="cooperate", prob_coop=0.5,
                  increase_rate=0.1, decrease_rate=0.05, beta=0.01,
                  alpha_win=0.05, alpha_lose=0.2, alpha_avg=0.01,
                  exploration_constant=2.0):
         self.agent_id = agent_id
         self.strategy_type = strategy
+        self.q_init_type = q_init_type  # Store the initialization type
+        self.max_possible_payoff = max_possible_payoff  # Store max payoff for optimistic init
         
         # Create strategy parameters dictionary
         strategy_params = {}
@@ -557,10 +579,14 @@ class Agent:
                 "epsilon": epsilon,
                 "state_type": state_type
             })
-            if strategy == "q_learning_adaptive":
+            if strategy in ["q_learning", "q_learning_adaptive", "lra_q",
+                            "hysteretic_q", "wolf_phc", "ucb1_q"]:
                 strategy_params.update({
-                    "min_epsilon": 0.01,
-                    "decay_rate": 0.99
+                    "learning_rate": learning_rate,
+                    "discount_factor": discount_factor,
+                    "epsilon": epsilon,
+                    "state_type": state_type
+                    # For simplicity, we'll handle it in the strategy's _ensure_state_exists method.
                 })
         elif strategy == "lra_q":
             strategy_params.update({
@@ -605,7 +631,7 @@ class Agent:
         self.memory = deque(maxlen=memory_length)  # Use deque with max length
         self.q_values = {}  # Change to empty dict to support state-based Q-values
         self.last_state_representation = None  # Track state for Q-learning
-        
+
     def choose_move(self, neighbors):
         """Choose the next move based on the agent's strategy."""
         return self.strategy.choose_move(self, neighbors)

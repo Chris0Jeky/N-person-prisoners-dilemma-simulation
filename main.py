@@ -31,7 +31,13 @@ def run_experiment(scenario, logger):
             # Add common parameters for all agents
             memory_length = scenario.get("memory_length", 10)
             agent_params["memory_length"] = memory_length
-            
+            agent_params["q_init_type"] = scenario.get("q_init_type", "zero")
+
+            # Determine max possible payoff (T value for optimistic init)
+            payoff_params_for_init = scenario.get("payoff_params", {})
+            max_payoff = payoff_params_for_init.get("T", 5.0)  # Default to T=5 if not specified
+            agent_params["max_possible_payoff"] = max_payoff
+
             # Add strategy-specific parameters
             if strategy in ["q_learning", "q_learning_adaptive", "lra_q", "hysteretic_q", "wolf_phc", "ucb1_q"]:
                 # Common Q-learning parameters

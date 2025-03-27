@@ -157,6 +157,19 @@ class QLearningStrategy(Strategy):
         if self.state_type == "proportion":
             # Use the exact proportion as state
             return (coop_proportion,)
+
+        elif self.state_type == "memory_enhanced":
+            # Example: Own last 2 moves + discretized neighbor coop proportion
+            # Determine own moves (default to C if not enough history)
+            own_last_move = 'cooperate'
+            own_prev_move = 'cooperate'
+            if len(agent.memory) >= 1:
+                own_last_move = agent.memory[-1]['my_move']
+            if len(agent.memory) >= 2:
+                own_prev_move = agent.memory[-2]['my_move']
+
+            own_last_bin = 1 if own_last_move == "cooperate" else 0
+            own_prev_bin = 1 if own_prev_move == "cooperate" else 0
             
         elif self.state_type == "proportion_discretized":
             # Discretize the proportion into bins (5 bins)

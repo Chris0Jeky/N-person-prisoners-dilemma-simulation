@@ -347,7 +347,11 @@ class TitForTwoTatsStrategy(Strategy):
             last_opponent_move = last_neighbor_moves.get(random_neighbor_id, "cooperate")
             prev_opponent_move = prev_neighbor_moves.get(random_neighbor_id, "cooperate")
 
-    
+        # Defect only if the chosen opponent defected twice in a row
+        if last_opponent_move == "defect" and prev_opponent_move == "defect":
+            return "defect"
+        else:
+            return "cooperate"
 
 class HystereticQLearningStrategy(QLearningStrategy):
     """Hysteretic Q-Learning Strategy.

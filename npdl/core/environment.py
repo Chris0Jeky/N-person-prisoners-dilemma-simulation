@@ -105,24 +105,16 @@ class Environment:
         """
         return self.network[agent_id]
 
-    def calculate_payoffs(self, moves, include_global_bonus=True):
+    def calculate_payoffs(self, moves):
         """Calculate payoffs for all agents based on their moves and neighbors' moves.
         
         Args:
             moves: Dictionary mapping agent_id to move
-            include_global_bonus: Whether to include a bonus for global cooperation
             
         Returns:
             Dictionary mapping agent_id to payoff
         """
         payoffs = {}
-        
-        # Calculate global cooperation rate if needed
-        global_coop_rate = 0
-        if include_global_bonus:
-            global_coop_rate = sum(1 for move in moves.values() if move == "cooperate") / len(moves)
-            # Quadratic bonus - grows faster as cooperation increases
-            global_bonus = global_coop_rate ** 2 * 2  # Max bonus of 2 when all cooperate
         
         for agent in self.agents:
             agent_id = agent.agent_id
@@ -138,26 +130,17 @@ class Environment:
             neighbor_moves = {n_id: moves[n_id] for n_id in neighbors}
             num_cooperating_neighbors = sum(1 for move in neighbor_moves.values() if move == "cooperate")
             
-            # Calculate base payoff based on move
+            # Calculate payoff based on move
             if agent_move == "cooperate":
-                base_payoff = self.payoff_matrix["C"][num_cooperating_neighbors]
-                # Add cooperation bonus only for cooperators if enabled
-                if include_global_bonus:
-                    payoffs[agent_id] = base_payoff + global_bonus
-                else:
-                    payoffs[agent_id] = base_payoff
+                payoffs[agent_id] = self.payoff_matrix["C"][num_cooperating_neighbors]
             else:  # defect
                 payoffs[agent_id] = self.payoff_matrix["D"][num_cooperating_neighbors]
         
         return payoffs
 
-    def run_round(self, use_global_bonus=True, rewiring_prob=0.0):
+    def run_round(self):
         """Run a single round of the simulation.
         
-        Args:
-            use_global_bonus: Whether to include global cooperation bonus in payoffs
-            rewiring_prob: Probability to rewire network edges after this round
-            
         Returns:
             Tuple of (moves, payoffs) dictionaries
         """
@@ -166,7 +149,7 @@ class Environment:
                  for agent in self.agents}
         
         # Calculate payoffs
-        payoffs = self.calculate_payoffs(moves, include_global_bonus=use_global_bonus)
+        payoffs = self.calculate_payoffs(moves)
         
         # Update agent states
         for agent in self.agents:
@@ -181,22 +164,14 @@ class Environment:
             agent.update_q_value(moves[agent.agent_id], payoffs[agent.agent_id], neighbor_moves)
             agent.update_memory(moves[agent.agent_id], neighbor_moves, payoffs[agent.agent_id])
         
-        # Optionally update network structure
-        if rewiring_prob > 0:
-            self.update_network(rewiring_prob=rewiring_prob)
-            
         return moves, payoffs
 
-    def run_simulation(self, num_rounds, logging_interval=10, use_global_bonus=True, 
-                   rewiring_interval=0, rewiring_prob=0.0):
+    def run_simulation(self, num_rounds, logging_interval=10):
         """Run a full simulation for the specified number of rounds.
         
         Args:
             num_rounds: Number of rounds to simulate
             logging_interval: Log statistics every N rounds
-            use_global_bonus: Whether to include global cooperation bonus in payoffs
-            rewiring_interval: Interval (in rounds) to perform network rewiring
-            rewiring_prob: Probability of rewiring per edge when rewiring occurs
             
         Returns:
             List of round results
@@ -204,15 +179,8 @@ class Environment:
         results = []
         
         for round_num in range(num_rounds):
-            # Determine if we should rewire the network this round
-            do_rewiring = (rewiring_interval > 0 and 
-                          rewiring_prob > 0 and 
-                          round_num > 0 and 
-                          round_num % rewiring_interval == 0)
-            
             # Run a single round
-            moves, payoffs = self.run_round(use_global_bonus=use_global_bonus,
-                                          rewiring_prob=rewiring_prob if do_rewiring else 0.0)
+            moves, payoffs = self.run_round()
             
             # Store results
             results.append({'round': round_num, 'moves': moves, 'payoffs': payoffs})
@@ -224,12 +192,11 @@ class Environment:
         self.logger.info(f"Simulation completed: {num_rounds} rounds")
         return results
     
-    def update_network(self, rewiring_prob=0.05, cooperation_bias=0.7):
+    def update_network(self, rewiring_prob=0.05):
         """Dynamically update the network structure during simulation.
         
         Args:
             rewiring_prob: Probability of rewiring an edge
-            cooperation_bias: Tendency to prefer connections with similar cooperation level
             
         Returns:
             Number of edges rewired
@@ -243,57 +210,25 @@ class Environment:
         # Count rewired edges
         rewired_count = 0
         
-        # Calculate cooperation rates for all agents
-        coop_rates = {}
-        for agent in self.agents:
-            if agent.memory:
-                # Look at last 10 moves (or fewer if not available)
-                recent_moves = [entry['my_move'] for entry in agent.memory]
-                coop_count = sum(1 for move in recent_moves if move == "cooperate")
-                coop_rates[agent.agent_id] = coop_count / len(recent_moves) if recent_moves else 0.5
-            else:
-                coop_rates[agent.agent_id] = 0.5  # Default if no memory
-        
         # For each edge, decide whether to rewire
         edges = list(G.edges())
         for u, v in edges:
             if random.random() < rewiring_prob:
-                # Get cooperation rates
-                u_coop_rate = coop_rates.get(u, 0.5)
-                v_coop_rate = coop_rates.get(v, 0.5)
+                # Remove the existing edge
+                G.remove_edge(u, v)
                 
-                # Higher probability to disconnect if cooperation rates differ significantly
-                # or if both agents are defectors
-                disconnect_prob = abs(u_coop_rate - v_coop_rate)
-                if u_coop_rate < 0.3 and v_coop_rate < 0.3:  # Both are defectors
-                    disconnect_prob += 0.2  # Additional bias to break defector links
+                # Find potential new neighbors for u
+                # (nodes that u is not already connected to)
+                potential_nodes = [n for n in G.nodes() if n != u and n != v and not G.has_edge(u, n)]
                 
-                if random.random() < disconnect_prob:
-                    # Remove the existing edge
-                    G.remove_edge(u, v)
-                    
-                    # Find potential new neighbors for u
-                    potential_nodes = []
-                    for node in G.nodes():
-                        if node != u and node != v and not G.has_edge(u, node):
-                            node_coop_rate = coop_rates.get(node, 0.5)
-                            
-                            # Calculate similarity score
-                            similarity = 1 - abs(u_coop_rate - node_coop_rate)
-                            
-                            # Higher similarity means higher chance to be selected
-                            # Add node multiple times based on similarity
-                            weight = int(similarity * 10) + 1
-                            potential_nodes.extend([node] * weight)
-                    
-                    if potential_nodes:
-                        # Rewire to a new neighbor (weighted by similarity)
-                        new_neighbor = random.choice(potential_nodes)
-                        G.add_edge(u, new_neighbor)
-                        rewired_count += 1
-                    else:
-                        # If no potential new neighbors, restore the original edge
-                        G.add_edge(u, v)
+                if potential_nodes:
+                    # Rewire to a random new neighbor
+                    new_neighbor = random.choice(potential_nodes)
+                    G.add_edge(u, new_neighbor)
+                    rewired_count += 1
+                else:
+                    # If no potential new neighbors, restore the original edge
+                    G.add_edge(u, v)
         
         if rewired_count > 0:
             # Update the graph and network dictionary

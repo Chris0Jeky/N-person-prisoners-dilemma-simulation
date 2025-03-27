@@ -47,7 +47,7 @@
       "tit_for_two_tats": 15
     },
     "memory_length": 5,
-    "state_type": "memory_enhanced", 
+    "state_type": "memory_enhanced",
     "learning_rate": 0.1,
     "discount_factor": 0.9,
     "epsilon": 0.1,

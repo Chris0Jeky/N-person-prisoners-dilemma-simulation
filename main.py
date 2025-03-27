@@ -4,6 +4,7 @@ import json
 import os
 import pandas as pd
 import time
+import logging
 
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment
@@ -117,8 +118,11 @@ def run_experiment(scenario, logger):
     
     return {"scenario": scenario, "results": results, "agents": agents, "environment": env}
 
-def save_results(all_results, base_filename="experiment_results", results_dir="results"):
+def save_results(all_results, base_filename="experiment_results", results_dir="results", logger=None):
     """Save experiment results to CSV files."""
+    if logger is None:
+        logger = logging.getLogger(__name__)
+
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 
@@ -128,32 +132,48 @@ def save_results(all_results, base_filename="experiment_results", results_dir="r
         # Save agent summary data
         agent_data = []
         for agent in result['agents']:
-            # For enhanced Q-learning strategies, extract average Q-values
             q_values_summary = None
-            if agent.strategy_type in ('q_learning', 'q_learning_adaptive', 'lra_q', 'hysteretic_q', 'wolf_phc', 'ucb1_q'):
-                # Calculate average Q-values across all states
-                avg_coop_q = 0
-                avg_defect_q = 0
-                q_count = 0
-                
-                for state in agent.q_values:
-                    if "cooperate" in agent.q_values[state] and "defect" in agent.q_values[state]:
-                        avg_coop_q += agent.q_values[state]["cooperate"]
-                        avg_defect_q += agent.q_values[state]["defect"]
-                        q_count += 1
-                
-                if q_count > 0:
-                    avg_coop_q /= q_count
-                    avg_defect_q /= q_count
-                    q_values_summary = {"avg_cooperate": avg_coop_q, "avg_defect": avg_defect_q}
-            
+            full_q_values_str = None  # Initialize
+            if agent.strategy_type in ('q_learning', 'q_learning_adaptive', 'lra_q',
+                                       'hysteretic_q', 'wolf_phc', 'ucb1_q'):
+                try:
+                    full_q_values_str = str(agent.q_values)  # Save full table first
+                    avg_coop_q = 0.0
+                    avg_defect_q = 0.0
+                    state_count = 0
+                    if agent.q_values and isinstance(agent.q_values, dict):
+                        for state, actions in agent.q_values.items():
+                            # Check if 'actions' is a dict and has the keys
+                            if isinstance(actions, dict):
+                                avg_coop_q += actions.get("cooperate", 0.0)
+                                avg_defect_q += actions.get("defect", 0.0)
+                                state_count += 1
+                            else:
+                                # Log unexpected structure
+                                logger.warning(
+                                    f"Agent {agent.agent_id}: Unexpected Q-value structure for state {state}: {actions}")
+
+                    if state_count > 0:
+                        avg_coop_q /= state_count
+                        avg_defect_q /= state_count
+                        q_values_summary = {"avg_cooperate": avg_coop_q, "avg_defect": avg_defect_q}
+                    else:
+                        # Handle case where agent might not have learned anything
+                        q_values_summary = {"avg_cooperate": 0.0, "avg_defect": 0.0}
+
+                except Exception as e:
+                    # Log the error and continue
+                    logger.error(f"Agent {agent.agent_id}: Error processing Q-values for saving: {e}",
+                                 exc_info=False)  # exc_info=False to avoid full stack trace unless needed
+                    q_values_summary = None  # Indicate error
+
             agent_data.append({
                 'scenario_name': scenario_name,
                 'agent_id': agent.agent_id,
                 'strategy': agent.strategy_type,
                 'final_score': agent.score,
-                'final_q_values': q_values_summary,
-                'full_q_values': str(agent.q_values) if agent.strategy_type in ('q_learning', 'q_learning_adaptive', 'lra_q', 'hysteretic_q', 'wolf_phc', 'ucb1_q') else None,
+                'final_q_values_avg': q_values_summary,  # Renamed for clarity
+                'full_q_values': full_q_values_str
             })
         df_agent = pd.DataFrame(agent_data)
         agent_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_agents.csv")
@@ -188,8 +208,12 @@ def save_results(all_results, base_filename="experiment_results", results_dir="r
             with open(network_filename, 'w') as f:
                 json.dump(network_data, f, indent=2, default=str)
 
-def print_comparative_summary(all_results):
+def print_comparative_summary(all_results, logger=None):
     """Print a comparative summary of all scenario results"""
+
+    if logger is None:
+        logger = logging.getLogger(__name__)
+
     print("\n=== COMPARATIVE SCENARIO SUMMARY ===\n")
     
     # Extract key metrics
@@ -232,29 +256,40 @@ def print_comparative_summary(all_results):
             "q_learning", "q_learning_adaptive", "lra_q", "hysteretic_q", "wolf_phc", "ucb1_q"
         )]
         if q_learning_agents:
-            # Handle complex Q-value structure (state-based)
-            avg_q_coop = 0
-            avg_q_defect = 0
-            q_count = 0
-            
+            avg_q_coop_total = 0.0
+            avg_q_defect_total = 0.0
+            total_q_entries = 0
+            error_occurred = False
+
             for agent in q_learning_agents:
-                for state in agent.q_values:
-                    if "cooperate" in agent.q_values[state] and "defect" in agent.q_values[state]:
-                        avg_q_coop += agent.q_values[state]["cooperate"]
-                        avg_q_defect += agent.q_values[state]["defect"]
-                        q_count += 1
-            
-            if q_count > 0:
-                avg_q_coop /= q_count
-                avg_q_defect /= q_count
-            
-            if avg_q_defect > avg_q_coop + 3.0:
-                preference = "Defect"
-            elif avg_q_coop > avg_q_defect + 3.0:
-                preference = "Cooperate"
+                try:
+                    if agent.q_values and isinstance(agent.q_values, dict):
+                        for state, actions in agent.q_values.items():
+                            if isinstance(actions, dict):
+                                avg_q_coop_total += actions.get("cooperate", 0.0)
+                                avg_q_defect_total += actions.get("defect", 0.0)
+                                total_q_entries += 1
+                except Exception as e:
+                    logger.warning(f"Agent {agent.agent_id}: Error processing Q-values for summary: {e}")
+                    error_occurred = True  # Flag error, but continue if possible
+
+            if total_q_entries > 0:
+                avg_q_coop = avg_q_coop_total / total_q_entries
+                avg_q_defect = avg_q_defect_total / total_q_entries
+
+                # Determine preference (consider making threshold a parameter)
+                preference_threshold = 1.0  # Smaller threshold for summary
+                if avg_q_defect > avg_q_coop + preference_threshold:
+                    preference = "Defect"
+                elif avg_q_coop > avg_q_defect + preference_threshold:
+                    preference = "Cooperate"
+                else:
+                    preference = "Mixed"
+            elif error_occurred:
+                preference = "Error"
             else:
-                preference = "Mixed"
-            
+                preference = "N/A (No Q)"
+
             q_learning_preferences.append(preference)
         else:
             q_learning_preferences.append("N/A")

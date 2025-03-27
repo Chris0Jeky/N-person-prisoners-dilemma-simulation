@@ -170,6 +170,17 @@ class QLearningStrategy(Strategy):
 
             own_last_bin = 1 if own_last_move == "cooperate" else 0
             own_prev_bin = 1 if own_prev_move == "cooperate" else 0
+
+            # Use discretized neighbor state (from previous state implementation)
+            if coop_proportion <= 0.33:
+                neighbor_state = 0  # Low
+            elif coop_proportion <= 0.67:
+                neighbor_state = 1  # Med
+            else:
+                neighbor_state = 2  # High
+
+            # State includes own last 2 moves and neighbor summary
+            return (own_last_bin, own_prev_bin, neighbor_state)
             
         elif self.state_type == "proportion_discretized":
             # Discretize the proportion into bins (5 bins)

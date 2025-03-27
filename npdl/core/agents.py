@@ -534,13 +534,16 @@ def create_strategy(strategy_type, **kwargs):
 class Agent:
     def __init__(self, agent_id, strategy="random", memory_length=10, 
                  learning_rate=0.1, discount_factor=0.9, epsilon=0.1,
-                 state_type="proportion_discretized", generosity=0.05, 
+                 state_type="proportion_discretized", q_init_type="zero",
+                 max_possible_payoff=5.0,
                  initial_move="cooperate", prob_coop=0.5,
                  increase_rate=0.1, decrease_rate=0.05, beta=0.01,
                  alpha_win=0.05, alpha_lose=0.2, alpha_avg=0.01,
                  exploration_constant=2.0):
         self.agent_id = agent_id
         self.strategy_type = strategy
+        self.q_init_type = q_init_type  # Store the initialization type
+        self.max_possible_payoff = max_possible_payoff  # Store max payoff for optimistic init
         
         # Create strategy parameters dictionary
         strategy_params = {}

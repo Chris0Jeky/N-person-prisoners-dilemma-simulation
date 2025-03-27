@@ -4,6 +4,7 @@ import json
 import os
 import pandas as pd
 import time
+import logging
 
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment
@@ -128,32 +129,48 @@ def save_results(all_results, base_filename="experiment_results", results_dir="r
         # Save agent summary data
         agent_data = []
         for agent in result['agents']:
-            # For enhanced Q-learning strategies, extract average Q-values
             q_values_summary = None
-            if agent.strategy_type in ('q_learning', 'q_learning_adaptive', 'lra_q', 'hysteretic_q', 'wolf_phc', 'ucb1_q'):
-                # Calculate average Q-values across all states
-                avg_coop_q = 0
-                avg_defect_q = 0
-                q_count = 0
-                
-                for state in agent.q_values:
-                    if "cooperate" in agent.q_values[state] and "defect" in agent.q_values[state]:
-                        avg_coop_q += agent.q_values[state]["cooperate"]
-                        avg_defect_q += agent.q_values[state]["defect"]
-                        q_count += 1
-                
-                if q_count > 0:
-                    avg_coop_q /= q_count
-                    avg_defect_q /= q_count
-                    q_values_summary = {"avg_cooperate": avg_coop_q, "avg_defect": avg_defect_q}
-            
+            full_q_values_str = None  # Initialize
+            if agent.strategy_type in ('q_learning', 'q_learning_adaptive', 'lra_q',
+                                       'hysteretic_q', 'wolf_phc', 'ucb1_q'):
+                try:
+                    full_q_values_str = str(agent.q_values)  # Save full table first
+                    avg_coop_q = 0.0
+                    avg_defect_q = 0.0
+                    state_count = 0
+                    if agent.q_values and isinstance(agent.q_values, dict):
+                        for state, actions in agent.q_values.items():
+                            # Check if 'actions' is a dict and has the keys
+                            if isinstance(actions, dict):
+                                avg_coop_q += actions.get("cooperate", 0.0)
+                                avg_defect_q += actions.get("defect", 0.0)
+                                state_count += 1
+                            else:
+                                # Log unexpected structure
+                                logger.warning(
+                                    f"Agent {agent.agent_id}: Unexpected Q-value structure for state {state}: {actions}")
+
+                    if state_count > 0:
+                        avg_coop_q /= state_count
+                        avg_defect_q /= state_count
+                        q_values_summary = {"avg_cooperate": avg_coop_q, "avg_defect": avg_defect_q}
+                    else:
+                        # Handle case where agent might not have learned anything
+                        q_values_summary = {"avg_cooperate": 0.0, "avg_defect": 0.0}
+
+                except Exception as e:
+                    # Log the error and continue
+                    logger.error(f"Agent {agent.agent_id}: Error processing Q-values for saving: {e}",
+                                 exc_info=False)  # exc_info=False to avoid full stack trace unless needed
+                    q_values_summary = None  # Indicate error
+
             agent_data.append({
                 'scenario_name': scenario_name,
                 'agent_id': agent.agent_id,
                 'strategy': agent.strategy_type,
                 'final_score': agent.score,
-                'final_q_values': q_values_summary,
-                'full_q_values': str(agent.q_values) if agent.strategy_type in ('q_learning', 'q_learning_adaptive', 'lra_q', 'hysteretic_q', 'wolf_phc', 'ucb1_q') else None,
+                'final_q_values_avg': q_values_summary,  # Renamed for clarity
+                'full_q_values': full_q_values_str
             })
         df_agent = pd.DataFrame(agent_data)
         agent_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_agents.csv")

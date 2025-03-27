@@ -19,6 +19,24 @@
     "logging_interval": 10
   },
   {
+    "scenario_name": "UCB1_OptimisticInit",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "scale_free",
+    "network_params": {"m": 2},
+    "agent_strategies": {
+      "ucb1_q": 30
+    },
+    "payoff_params": { "T": 5.0 }, 
+    "q_init_type": "optimistic",
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "exploration_constant": 2.0,
+    "state_type": "proportion_discretized",
+    "memory_length": 20,
+    "logging_interval": 10
+  },
+  {
     "scenario_name": "Hysteretic_QL_Enhanced",
     "num_agents": 30,
     "num_rounds": 500,

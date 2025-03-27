@@ -328,6 +328,7 @@ class PavlovStrategy(Strategy):
         self.initial_move = initial_move
 
     def choose_move(self, agent, neighbors):
+        """Keep the last move after good rewards, switch after poor ones."""
         if not agent.memory:
             return self.initial_move
 

@@ -215,6 +215,8 @@ class QLearningStrategy(Strategy):
         # Get current state
         current_state = self._get_current_state(agent)
         agent.last_state_representation = current_state
+
+        self._ensure_state_exists(agent, current_state)
         
         # Ensure state exists in Q-table, initialize if not
         if current_state not in agent.q_values:
@@ -239,6 +241,8 @@ class QLearningStrategy(Strategy):
             
         # Calculate the state for the next step (based on the current memory after this round)
         next_state = self._get_current_state(agent)
+        
+        self._ensure_state_exists(agent, next_state)
         
         # Ensure next state exists in Q-table, initialize if not
         if next_state not in agent.q_values:

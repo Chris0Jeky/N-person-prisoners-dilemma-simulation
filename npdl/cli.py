@@ -56,7 +56,10 @@ def run_simulation(args):
         # Convert args back to a format expected by the original main function
         sys.argv = ['main.py']
         
-        if args.scenario_file:
+        if args.enhanced:
+            sys.argv.append('--enhanced')
+        
+        if args.scenario_file and not args.enhanced:
             sys.argv.extend(['--scenario_file', args.scenario_file])
         
         if args.results_dir:
@@ -111,6 +114,8 @@ def main():
     
     # Simulation command
     sim_parser = subparsers.add_parser("simulate", help="Run a simulation")
+    sim_parser.add_argument('--enhanced', action='store_true',
+                          help='Use enhanced scenarios from enhanced_scenarios.json')
     sim_parser.add_argument('--scenario_file', type=str, default='scenarios.json',
                           help='Path to the JSON file containing scenario definitions.')
     sim_parser.add_argument('--results_dir', type=str, default='results',

@@ -28,13 +28,37 @@ def run_experiment(scenario, logger):
         for _ in range(count):
             agent_params = {"agent_id": agent_id_counter, "strategy": strategy}
             
+            # Add common parameters for all agents
+            memory_length = scenario.get("memory_length", 10)
+            agent_params["memory_length"] = memory_length
+            
             # Add strategy-specific parameters
-            if strategy == "q_learning" or strategy == "q_learning_adaptive":
+            if strategy in ["q_learning", "q_learning_adaptive", "lra_q", "hysteretic_q", "wolf_phc", "ucb1_q"]:
+                # Common Q-learning parameters
                 agent_params.update({
                     "learning_rate": scenario.get("learning_rate", 0.1),
                     "discount_factor": scenario.get("discount_factor", 0.9),
                     "epsilon": scenario.get("epsilon", 0.1),
+                    "state_type": scenario.get("state_type", "proportion_discretized"),
                 })
+                
+                # Strategy-specific params
+                if strategy == "lra_q":
+                    agent_params.update({
+                        "increase_rate": scenario.get("increase_rate", 0.1),
+                        "decrease_rate": scenario.get("decrease_rate", 0.05)
+                    })
+                elif strategy == "hysteretic_q":
+                    agent_params["beta"] = scenario.get("beta", 0.01)
+                elif strategy == "wolf_phc":
+                    agent_params.update({
+                        "alpha_win": scenario.get("alpha_win", 0.05),
+                        "alpha_lose": scenario.get("alpha_lose", 0.2),
+                        "alpha_avg": scenario.get("alpha_avg", 0.01)
+                    })
+                elif strategy == "ucb1_q":
+                    agent_params["exploration_constant"] = scenario.get("exploration_constant", 2.0)
+            
             elif strategy == "generous_tit_for_tat":
                 agent_params["generosity"] = scenario.get("generosity", 0.05)
             elif strategy == "pavlov" or strategy == "suspicious_tit_for_tat":
@@ -65,7 +89,18 @@ def run_experiment(scenario, logger):
     
     # Run simulation
     logging_interval = scenario.get("logging_interval", 10)
-    results = env.run_simulation(scenario["num_rounds"], logging_interval)
+    use_global_bonus = scenario.get("use_global_bonus", False)
+    rewiring_interval = scenario.get("rewiring_interval", 0)
+    rewiring_prob = scenario.get("rewiring_prob", 0.0)
+    
+    # Run simulation with enhanced parameters
+    results = env.run_simulation(
+        scenario["num_rounds"], 
+        logging_interval=logging_interval,
+        use_global_bonus=use_global_bonus,
+        rewiring_interval=rewiring_interval,
+        rewiring_prob=rewiring_prob
+    )
     
     # Log summary statistics
     log_experiment_summary(scenario, results, agents, logger)
@@ -87,12 +122,32 @@ def save_results(all_results, base_filename="experiment_results", results_dir="r
         # Save agent summary data
         agent_data = []
         for agent in result['agents']:
+            # For enhanced Q-learning strategies, extract average Q-values
+            q_values_summary = None
+            if agent.strategy_type in ('q_learning', 'q_learning_adaptive', 'lra_q', 'hysteretic_q', 'wolf_phc', 'ucb1_q'):
+                # Calculate average Q-values across all states
+                avg_coop_q = 0
+                avg_defect_q = 0
+                q_count = 0
+                
+                for state in agent.q_values:
+                    if "cooperate" in agent.q_values[state] and "defect" in agent.q_values[state]:
+                        avg_coop_q += agent.q_values[state]["cooperate"]
+                        avg_defect_q += agent.q_values[state]["defect"]
+                        q_count += 1
+                
+                if q_count > 0:
+                    avg_coop_q /= q_count
+                    avg_defect_q /= q_count
+                    q_values_summary = {"avg_cooperate": avg_coop_q, "avg_defect": avg_defect_q}
+            
             agent_data.append({
                 'scenario_name': scenario_name,
                 'agent_id': agent.agent_id,
                 'strategy': agent.strategy_type,
                 'final_score': agent.score,
-                'final_q_values': agent.q_values if agent.strategy_type in ('q_learning', 'q_learning_adaptive') else None,
+                'final_q_values': q_values_summary,
+                'full_q_values': str(agent.q_values) if agent.strategy_type in ('q_learning', 'q_learning_adaptive', 'lra_q', 'hysteretic_q', 'wolf_phc', 'ucb1_q') else None,
             })
         df_agent = pd.DataFrame(agent_data)
         agent_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_agents.csv")
@@ -167,10 +222,25 @@ def print_comparative_summary(all_results):
             max_scores.append(0)
         
         # Analyze Q-learning outcomes
-        q_learning_agents = [a for a in result['agents'] if a.strategy_type in ("q_learning", "q_learning_adaptive")]
+        q_learning_agents = [a for a in result['agents'] if a.strategy_type in (
+            "q_learning", "q_learning_adaptive", "lra_q", "hysteretic_q", "wolf_phc", "ucb1_q"
+        )]
         if q_learning_agents:
-            avg_q_coop = sum(a.q_values["cooperate"] for a in q_learning_agents) / len(q_learning_agents)
-            avg_q_defect = sum(a.q_values["defect"] for a in q_learning_agents) / len(q_learning_agents)
+            # Handle complex Q-value structure (state-based)
+            avg_q_coop = 0
+            avg_q_defect = 0
+            q_count = 0
+            
+            for agent in q_learning_agents:
+                for state in agent.q_values:
+                    if "cooperate" in agent.q_values[state] and "defect" in agent.q_values[state]:
+                        avg_q_coop += agent.q_values[state]["cooperate"]
+                        avg_q_defect += agent.q_values[state]["defect"]
+                        q_count += 1
+            
+            if q_count > 0:
+                avg_q_coop /= q_count
+                avg_q_defect /= q_count
             
             if avg_q_defect > avg_q_coop + 3.0:
                 preference = "Defect"
@@ -201,6 +271,9 @@ def print_comparative_summary(all_results):
 
 def main():
     parser = argparse.ArgumentParser(description="Run N-person IPD experiments")
+    # Add a new argument for enhanced scenarios
+    parser.add_argument('--enhanced', action='store_true', 
+                        help='Use enhanced_scenarios.json instead of scenarios.json')
     parser.add_argument('--scenario_file', type=str, default='scenarios.json',
                         help='Path to the JSON file containing scenario definitions.')
     parser.add_argument('--results_dir', type=str, default='results',
@@ -236,8 +309,14 @@ def main():
     logger.info("Starting N-person IPD experiments")
     
     # Load scenarios
-    scenarios = load_scenarios(args.scenario_file)
-    logger.info(f"Loaded {len(scenarios)} scenarios from {args.scenario_file}")
+    if args.enhanced:
+        scenario_file = 'enhanced_scenarios.json'
+        logger.info("Using enhanced scenarios")
+    else:
+        scenario_file = args.scenario_file
+    
+    scenarios = load_scenarios(scenario_file)
+    logger.info(f"Loaded {len(scenarios)} scenarios from {scenario_file}")
     
     # Run experiments
     all_results = []

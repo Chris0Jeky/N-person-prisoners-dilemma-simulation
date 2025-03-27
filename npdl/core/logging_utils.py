@@ -117,11 +117,24 @@ def log_round_stats(round_num, agents, moves, payoffs, logger=None, logging_inte
     msg = f"Round {round_num + 1}: Cooperation Rate: {coop_rate:.2f}, Avg Score: {avg_score:.2f}"
     
     # Add Q-value information if any agents use Q-learning
-    q_learning_agents = [a for a in agents if a.strategy_type in ("q_learning", "q_learning_adaptive")]
+    q_learning_agents = [a for a in agents if a.strategy_type in ("q_learning", "q_learning_adaptive", "lra_q", "hysteretic_q", "wolf_phc", "ucb1_q")]
     if q_learning_agents:
-        avg_q_coop = sum(a.q_values["cooperate"] for a in q_learning_agents) / len(q_learning_agents)
-        avg_q_defect = sum(a.q_values["defect"] for a in q_learning_agents) / len(q_learning_agents)
-        msg += f", Avg Q(c): {avg_q_coop:.2f}, Avg Q(d): {avg_q_defect:.2f}"
+        # Calculate average Q-values across all states
+        avg_q_coop = 0
+        avg_q_defect = 0
+        q_count = 0
+        
+        for agent in q_learning_agents:
+            for state in agent.q_values:
+                if "cooperate" in agent.q_values[state] and "defect" in agent.q_values[state]:
+                    avg_q_coop += agent.q_values[state]["cooperate"]
+                    avg_q_defect += agent.q_values[state]["defect"]
+                    q_count += 1
+        
+        if q_count > 0:
+            avg_q_coop /= q_count
+            avg_q_defect /= q_count
+            msg += f", Avg Q(c): {avg_q_coop:.2f}, Avg Q(d): {avg_q_defect:.2f}"
         
         # Log epsilon value for adaptive Q-learning agents (using 'eps' instead of Greek letter)
         adaptive_agents = [a for a in agents if a.strategy_type == "q_learning_adaptive"]
@@ -181,11 +194,24 @@ def log_experiment_summary(scenario, results, agents, logger=None):
         logger.info(f"  {strategy}: {avg_score:.2f}")
     
     # Q-learning specific information
-    q_learning_agents = [a for a in agents if a.strategy_type in ("q_learning", "q_learning_adaptive")]
+    q_learning_agents = [a for a in agents if a.strategy_type in ("q_learning", "q_learning_adaptive", "lra_q", "hysteretic_q", "wolf_phc", "ucb1_q")]
     if q_learning_agents:
-        avg_q_coop = sum(a.q_values["cooperate"] for a in q_learning_agents) / len(q_learning_agents)
-        avg_q_defect = sum(a.q_values["defect"] for a in q_learning_agents) / len(q_learning_agents)
-        logger.info(f"Final average Q-values - Q(c): {avg_q_coop:.2f}, Q(d): {avg_q_defect:.2f}")
+        # Calculate average Q-values across all states
+        avg_q_coop = 0
+        avg_q_defect = 0
+        q_count = 0
+        
+        for agent in q_learning_agents:
+            for state in agent.q_values:
+                if "cooperate" in agent.q_values[state] and "defect" in agent.q_values[state]:
+                    avg_q_coop += agent.q_values[state]["cooperate"]
+                    avg_q_defect += agent.q_values[state]["defect"]
+                    q_count += 1
+        
+        if q_count > 0:
+            avg_q_coop /= q_count
+            avg_q_defect /= q_count
+            logger.info(f"Final average Q-values - Q(c): {avg_q_coop:.2f}, Q(d): {avg_q_defect:.2f}")
         
     # Create a more detailed summary
     logger.info("\n--- DETAILED TOURNAMENT SUMMARY ---")

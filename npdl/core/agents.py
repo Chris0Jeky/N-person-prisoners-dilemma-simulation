@@ -241,7 +241,7 @@ class QLearningStrategy(Strategy):
             
         # Calculate the state for the next step (based on the current memory after this round)
         next_state = self._get_current_state(agent)
-        
+
         self._ensure_state_exists(agent, next_state)
         
         # Ensure next state exists in Q-table, initialize if not

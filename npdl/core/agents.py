@@ -353,7 +353,7 @@ class TitForTwoTatsStrategy(Strategy):
         last_neighbor_moves = last_round['neighbor_moves']
         prev_neighbor_moves = prev_round['neighbor_moves']
 
-        # Hnadle cases where neighbors might not exist in both rounds
+        # Handle cases where neighbors might not exist in both rounds
         if not last_neighbor_moves or not prev_neighbor_moves:
             return "cooperate" # Default to cooperate if neighbors info are missing
 

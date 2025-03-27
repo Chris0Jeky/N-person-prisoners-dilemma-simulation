@@ -431,13 +431,24 @@ class WolfPHCStrategy(QLearningStrategy):
         # Calculate V_pi and V_pi_avg for the state
         q_coop = agent.q_values[state_executed]['cooperate']
         q_def = agent.q_values[state_executed]['defect']
-        
-        # Estimate current policy (epsilon-greedy for simplicity)
-        pi_coop = 1.0 if q_coop >= q_def else 0.0
-        pi_def = 1.0 - pi_coop
+
+        # Estimate current policy pi using epsilon-greedy logic
+        num_actions = 2.0  # Float for division
+        if q_coop >= q_def:  # Cooperate is 'best' action
+            pi_coop = 1.0 - self.epsilon + self.epsilon / num_actions
+            pi_def = self.epsilon / num_actions
+        else:  # Defect is 'best' action
+            pi_def = 1.0 - self.epsilon + self.epsilon / num_actions
+            pi_coop = self.epsilon / num_actions
+
+        # Ensure probabilities sum roughly to 1 (optional sanity check)
+        # assert math.isclose(pi_coop + pi_def, 1.0), f"Policy probs sum to {pi_coop + pi_def}"
+
         V_pi = pi_coop * q_coop + pi_def * q_def
-        
-        # Get average policy values
+
+        # Get average policy values (ensure state exists)
+        if state_executed not in self.average_policy:
+            self.average_policy[state_executed] = {'cooperate': 0.5, 'defect': 0.5}
         avg_pi_coop = self.average_policy[state_executed]['cooperate']
         avg_pi_def = self.average_policy[state_executed]['defect']
         V_pi_avg = avg_pi_coop * q_coop + avg_pi_def * q_def

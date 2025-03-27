@@ -312,6 +312,19 @@ class LRAQLearningStrategy(QLearningStrategy):
             self.learning_rate = min(self.base_learning_rate, 
                                      self.learning_rate + 0.01)
 
+class TitForTwoTatsStrategy(Strategy):
+    def choose_move(self, agent, neighbors):
+        # Cooperate for the first two rounds or if insufficient memory
+        if len(agent.memory) < 2:
+            return "cooperate"
+
+        last_round = agent.memory[-1]
+        prev_round = agent.memory[-2]
+
+        # Need a consistent way to get "an" opponent's move
+        # Using the same random neighbor logic as TitForTat for simplicity
+        last_neighbour_moves = last_round['neighbor_moves']
+        prev_neighbour_moves = prev_round['neighbor_moves']
 
 class HystereticQLearningStrategy(QLearningStrategy):
     """Hysteretic Q-Learning Strategy.

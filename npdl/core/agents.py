@@ -535,7 +535,7 @@ class Agent:
     def __init__(self, agent_id, strategy="random", memory_length=10, 
                  learning_rate=0.1, discount_factor=0.9, epsilon=0.1,
                  state_type="proportion_discretized", q_init_type="zero",
-                 max_possible_payoff=5.0,
+                 max_possible_payoff=5.0, generosity=0.05,
                  initial_move="cooperate", prob_coop=0.5,
                  increase_rate=0.1, decrease_rate=0.05, beta=0.01,
                  alpha_win=0.05, alpha_lose=0.2, alpha_avg=0.01,
@@ -612,7 +612,7 @@ class Agent:
         self.memory = deque(maxlen=memory_length)  # Use deque with max length
         self.q_values = {}  # Change to empty dict to support state-based Q-values
         self.last_state_representation = None  # Track state for Q-learning
-        
+
     def choose_move(self, neighbors):
         """Choose the next move based on the agent's strategy."""
         return self.strategy.choose_move(self, neighbors)

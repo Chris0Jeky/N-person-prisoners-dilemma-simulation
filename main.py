@@ -213,7 +213,7 @@ def print_comparative_summary(all_results, logger=None):
 
     if logger is None:
         logger = logging.getLogger(__name__)
-        
+
     print("\n=== COMPARATIVE SCENARIO SUMMARY ===\n")
     
     # Extract key metrics

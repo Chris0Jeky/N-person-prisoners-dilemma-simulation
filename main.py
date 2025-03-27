@@ -118,8 +118,11 @@ def run_experiment(scenario, logger):
     
     return {"scenario": scenario, "results": results, "agents": agents, "environment": env}
 
-def save_results(all_results, base_filename="experiment_results", results_dir="results"):
+def save_results(all_results, base_filename="experiment_results", results_dir="results", logger=None):
     """Save experiment results to CSV files."""
+    if logger is None:
+        logger = logging.getLogger(__name__)
+
     if not os.path.exists(results_dir):
         os.makedirs(results_dir)
 

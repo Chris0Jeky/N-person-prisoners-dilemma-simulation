@@ -1,0 +1,155 @@
+[
+  {
+    "scenario_name": "LRA_vs_Standard_QL",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "agent_strategies": {
+      "lra_q": 15,
+      "q_learning": 15
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.2,
+    "state_type": "proportion_discretized",
+    "increase_rate": 0.1,
+    "decrease_rate": 0.05,
+    "memory_length": 20,
+    "logging_interval": 10
+  },
+  {
+    "scenario_name": "Hysteretic_QL_Enhanced",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": {
+      "hysteretic_q": 15,
+      "tit_for_tat": 15
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "beta": 0.01,
+    "state_type": "proportion_discretized",
+    "memory_length": 20,
+    "logging_interval": 10
+  },
+  {
+    "scenario_name": "WolfPHC_SmallWorld",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": {
+      "wolf_phc": 20,
+      "q_learning": 10
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "alpha_win": 0.05,
+    "alpha_lose": 0.2,
+    "alpha_avg": 0.01,
+    "state_type": "proportion_discretized",
+    "memory_length": 20,
+    "logging_interval": 10
+  },
+  {
+    "scenario_name": "UCB1_ScaleFree",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "scale_free",
+    "network_params": {"m": 2},
+    "agent_strategies": {
+      "ucb1_q": 20,
+      "q_learning": 10
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "exploration_constant": 2.0,
+    "state_type": "proportion_discretized",
+    "memory_length": 20,
+    "logging_interval": 10
+  },
+  {
+    "scenario_name": "NetworkRewiring_Test",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": {
+      "lra_q": 15,
+      "tit_for_tat": 15
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "state_type": "proportion_discretized",
+    "memory_length": 20,
+    "logging_interval": 10,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.1
+  },
+  {
+    "scenario_name": "GlobalBonus_Test",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "agent_strategies": {
+      "lra_q": 15,
+      "q_learning": 15
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "state_type": "proportion_discretized",
+    "memory_length": 20,
+    "use_global_bonus": true,
+    "logging_interval": 10
+  },
+  {
+    "scenario_name": "Combined_Enhancements",
+    "num_agents": 40,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": {
+      "lra_q": 15,
+      "hysteretic_q": 15,
+      "tit_for_tat": 10
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "increase_rate": 0.1,
+    "decrease_rate": 0.05,
+    "beta": 0.01,
+    "state_type": "proportion_discretized",
+    "memory_length": 20,
+    "use_global_bonus": true,
+    "rewiring_interval": 25,
+    "rewiring_prob": 0.1,
+    "logging_interval": 10
+  },
+  {
+    "scenario_name": "Memory_Comparison",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": {
+      "lra_q": 30
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "increase_rate": 0.1,
+    "decrease_rate": 0.05,
+    "state_type": "memory_enhanced",
+    "memory_length": 30,
+    "logging_interval": 10
+  }
+]

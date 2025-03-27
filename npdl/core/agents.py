@@ -606,6 +606,7 @@ def create_strategy(strategy_type, **kwargs):
         "always_cooperate": AlwaysCooperateStrategy,
         "always_defect": AlwaysDefectStrategy,
         "tit_for_tat": TitForTatStrategy,
+        "tit_for_two_tats": TitForTwoTatsStrategy,
         "generous_tit_for_tat": GenerousTitForTatStrategy,
         "suspicious_tit_for_tat": SuspiciousTitForTatStrategy,
         "pavlov": PavlovStrategy,

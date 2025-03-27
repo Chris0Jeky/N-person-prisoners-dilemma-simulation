@@ -560,10 +560,14 @@ class Agent:
                 "epsilon": epsilon,
                 "state_type": state_type
             })
-            if strategy == "q_learning_adaptive":
+            if strategy in ["q_learning", "q_learning_adaptive", "lra_q",
+                            "hysteretic_q", "wolf_phc", "ucb1_q"]:
                 strategy_params.update({
-                    "min_epsilon": 0.01,
-                    "decay_rate": 0.99
+                    "learning_rate": learning_rate,
+                    "discount_factor": discount_factor,
+                    "epsilon": epsilon,
+                    "state_type": state_type
+                    # For simplicity, we'll handle it in the strategy's _ensure_state_exists method.
                 })
         elif strategy == "lra_q":
             strategy_params.update({

@@ -3,6 +3,9 @@ import random
 import math
 from collections import deque
 
+from networkx.classes import common_neighbors
+
+
 class Strategy:
     """Base Strategy class that all specific strategies inherit from."""
     
@@ -154,6 +157,30 @@ class QLearningStrategy(Strategy):
         if self.state_type == "proportion":
             # Use the exact proportion as state
             return (coop_proportion,)
+
+        elif self.state_type == "memory_enhanced":
+            # Example: Own last 2 moves + discretized neighbor coop proportion
+            # Determine own moves (default to C if not enough history)
+            own_last_move = 'cooperate'
+            own_prev_move = 'cooperate'
+            if len(agent.memory) >= 1:
+                own_last_move = agent.memory[-1]['my_move']
+            if len(agent.memory) >= 2:
+                own_prev_move = agent.memory[-2]['my_move']
+
+            own_last_bin = 1 if own_last_move == "cooperate" else 0
+            own_prev_bin = 1 if own_prev_move == "cooperate" else 0
+
+            # Use discretized neighbor state (from previous state implementation)
+            if coop_proportion <= 0.33:
+                neighbor_state = 0  # Low
+            elif coop_proportion <= 0.67:
+                neighbor_state = 1  # Med
+            else:
+                neighbor_state = 2  # High
+
+            # State includes own last 2 moves and neighbor summary
+            return (own_last_bin, own_prev_bin, neighbor_state)
             
         elif self.state_type == "proportion_discretized":
             # Discretize the proportion into bins (5 bins)
@@ -312,6 +339,43 @@ class LRAQLearningStrategy(QLearningStrategy):
             self.learning_rate = min(self.base_learning_rate, 
                                      self.learning_rate + 0.01)
 
+class TitForTwoTatsStrategy(Strategy):
+    def choose_move(self, agent, neighbors):
+        # Cooperate for the first two rounds or if insufficient memory
+        if len(agent.memory) < 2:
+            return "cooperate"
+
+        last_round = agent.memory[-1]
+        prev_round = agent.memory[-2]
+
+        # Need a consistent way to get "an" opponent's move
+        # Using the same random neighbor logic as TitForTat for simplicity
+        last_neighbor_moves = last_round['neighbor_moves']
+        prev_neighbor_moves = prev_round['neighbor_moves']
+
+        # Handle cases where neighbors might not exist in both rounds
+        if not last_neighbor_moves or not prev_neighbor_moves:
+            return "cooperate" # Default to cooperate if neighbors info are missing
+
+        # Try to find a neighbor present in both rounds
+        common_neighbors = list(set(last_neighbor_moves.keys()) & set(prev_neighbor_moves.keys()))
+
+        if not common_neighbors:
+            # If no common neighbors, pick randomly from last round's neighbors
+            if not last_neighbor_moves: return "cooperate" # Should not happen if reached here
+            random_neighbor_id = random.choice(list(last_neighbor_moves.keys()))
+            last_opponent_move = last_neighbor_moves.get(random_neighbor_id, "cooperate")
+            prev_opponent_move = "cooperate" # Default to cooperate if no memory
+        else:
+            random_neighbor_id = random.choice(common_neighbors)
+            last_opponent_move = last_neighbor_moves.get(random_neighbor_id, "cooperate")
+            prev_opponent_move = prev_neighbor_moves.get(random_neighbor_id, "cooperate")
+
+        # Defect only if the chosen opponent defected twice in a row
+        if last_opponent_move == "defect" and prev_opponent_move == "defect":
+            return "defect"
+        else:
+            return "cooperate"
 
 class HystereticQLearningStrategy(QLearningStrategy):
     """Hysteretic Q-Learning Strategy.
@@ -542,6 +606,7 @@ def create_strategy(strategy_type, **kwargs):
         "always_cooperate": AlwaysCooperateStrategy,
         "always_defect": AlwaysDefectStrategy,
         "tit_for_tat": TitForTatStrategy,
+        "tit_for_two_tats": TitForTwoTatsStrategy,
         "generous_tit_for_tat": GenerousTitForTatStrategy,
         "suspicious_tit_for_tat": SuspiciousTitForTatStrategy,
         "pavlov": PavlovStrategy,

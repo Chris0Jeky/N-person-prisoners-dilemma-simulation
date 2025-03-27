@@ -37,6 +37,25 @@
     "logging_interval": 10
   },
   {
+    "scenario_name": "TF2T_vs_LRAQ_Mem5",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": {
+      "lra_q": 15,
+      "tit_for_two_tats": 15
+    },
+    "memory_length": 5,
+    "state_type": "memory_enhanced", 
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "increase_rate": 0.1,
+    "decrease_rate": 0.05,
+    "logging_interval": 10
+  },
+  {
     "scenario_name": "Hysteretic_QL_Enhanced",
     "num_agents": 30,
     "num_rounds": 500,

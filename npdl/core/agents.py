@@ -195,7 +195,17 @@ class QLearningStrategy(Strategy):
             
         # Default fallback
         return 'standard'
-    
+
+    def _initialize_q_values(self, agent, state):
+        """Initialize Q-values for a new state based on the agent's init type. """
+        if agent.q_init_type == "optimistic":
+            init_val = agent.max_possible_payoff
+        elif agent.q_init_type == "random":
+            init_val = random.uniform(-0.1, 0.1)
+        else: # Default to zero initialization
+            init_val = 0.0
+        agent.q_values[state] = {"cooperate": init_val, "defect": init_val}
+
     def choose_move(self, agent, neighbors):
         # Get current state
         current_state = self._get_current_state(agent)

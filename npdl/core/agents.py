@@ -355,6 +355,8 @@ class PavlovStrategy(Strategy):
 
 
 class RandomProbStrategy(Strategy):
+    """Cooperate with a fixed independent probability each round."""
+
     def __init__(self, prob_coop=0.5):
         self.prob_coop = prob_coop
 

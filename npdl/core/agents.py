@@ -4,6 +4,7 @@ import math
 from collections import deque
 
 from networkx.classes import common_neighbors
+from typing import List, Dict, Tuple, Any, Optional, Union, Hashable
 
 
 class Strategy:
@@ -300,10 +301,17 @@ class AdaptiveQLearningStrategy(QLearningStrategy):
 
 class LRAQLearningStrategy(QLearningStrategy):
     """Learning Rate Adjusting Q-Learning Strategy.
-    
-    Adjusts learning rate based on cooperation levels of neighbors.
-    Increases learning rate after cooperative outcomes, decreases after defection.
+
+    This strategy dynamically adjusts its learning rate based on the cooperation
+    levels of neighbors. It increases the learning rate after cooperative outcomes
+    to reinforce successful cooperation patterns, and decreases it after defection
+    to slow down learning from potentially suboptimal interactions.
+
+    This approach helps overcome the tendency of standard Q-learning to converge
+    to defection in social dilemma games by giving more weight to cooperative
+    experiences.
     """
+
     def __init__(self, learning_rate=0.1, discount_factor=0.9, epsilon=0.1, 
                  increase_rate=0.1, decrease_rate=0.05, state_type="proportion_discretized"):
         super().__init__(learning_rate, discount_factor, epsilon, state_type)
@@ -377,12 +385,19 @@ class TitForTwoTatsStrategy(Strategy):
         else:
             return "cooperate"
 
+
 class HystereticQLearningStrategy(QLearningStrategy):
-    """Hysteretic Q-Learning Strategy.
-    
-    Uses different learning rates for positive and negative experiences.
-    More optimistic updating that is resistant to occasional defections.
+    """Hysteretic Q-Learning Strategy for resilient cooperation.
+
+    This strategy uses different learning rates for positive and negative experiences.
+    Positive updates (when the target Q-value is higher than current) use the standard
+    learning rate, while negative updates use a slower rate (beta). This creates
+    an optimistic agent that is more resistant to occasional defections.
+
+    Hysteretic Q-learning helps maintain cooperation in unstable, non-stationary
+    environments by being slower to learn negative outcomes.
     """
+
     def __init__(self, learning_rate=0.1, discount_factor=0.9, epsilon=0.1, 
                  beta=0.01, state_type="proportion_discretized"):
         super().__init__(learning_rate, discount_factor, epsilon, state_type)
@@ -416,11 +431,18 @@ class HystereticQLearningStrategy(QLearningStrategy):
 
 
 class WolfPHCStrategy(QLearningStrategy):
-    """Win or Learn Fast Policy Hill-Climbing.
-    
-    Adjusts learning rate based on whether the agent is "winning" or "losing"
-    compared to its average historical performance.
+    """Win or Learn Fast Policy Hill-Climbing Strategy.
+
+    This strategy adjusts learning rates based on whether the agent is "winning"
+    or "losing" compared to its historical performance. It learns quickly
+    when performing worse than average (losing) and cautiously when doing better
+    than average (winning).
+
+    WoLF-PHC helps achieve convergence in multi-agent settings by dynamically
+    balancing between exploration and exploitation, improving stability in
+    non-stationary environments.
     """
+
     def __init__(self, learning_rate=0.1, discount_factor=0.9, epsilon=0.1,
                  alpha_win=0.05, alpha_lose=0.2, alpha_avg=0.01, state_type="proportion_discretized"):
         super().__init__(learning_rate, discount_factor, epsilon, state_type)
@@ -536,9 +558,17 @@ class WolfPHCStrategy(QLearningStrategy):
 
 class UCB1QLearningStrategy(QLearningStrategy):
     """Upper Confidence Bound Q-Learning Strategy.
-    
-    Uses UCB1 algorithm for smarter exploration based on uncertainty.
+
+    This strategy replaces the standard ε-greedy exploration with UCB1 algorithm
+    from multi-armed bandit research. It balances exploration and exploitation
+    by considering both the estimated value of actions and the uncertainty in
+    those estimates.
+
+    UCB1 provides more informed exploration by prioritizing actions with high
+    potential value or high uncertainty, which can lead to faster convergence to
+    optimal policies compared to random exploration.
     """
+
     def __init__(self, exploration_constant=2.0, learning_rate=0.1, 
                  discount_factor=0.9, state_type="proportion_discretized"):
         super().__init__(learning_rate, discount_factor, 0.0, state_type)  # Set epsilon to 0, using UCB instead

@@ -86,7 +86,7 @@ def log_network_stats(graph, network_type, logger=None):
         for node, deg in sorted(degrees.items()):
             logger.debug(f"  Node {node}: Degree {deg}")
 
-def log_round_stats(round_num, agents, moves, payoffs, logger=None, logging_interval=10):
+def log_round_stats(round_num, agents, moves, payoffs, logger=None, logging_interval=20):
     """Log statistics for a simulation round.
     
     Args:

@@ -20,7 +20,7 @@ class Strategy:
         Returns:
             String: "cooperate" or "defect"
         """
-        
+
         raise NotImplementedError("Subclasses must implement choose_move")
 
     def update(self, agent: 'Agent', action: str, reward: float, neighbor_moves: Dict[int, str]) -> None:
@@ -768,8 +768,20 @@ class Agent:
         self.q_values = {}  # Change to empty dict to support state-based Q-values
         self.last_state_representation = None  # Track state for Q-learning
 
-    def choose_move(self, neighbors):
-        """Choose the next move based on the agent's strategy."""
+    def choose_move(self, agent: 'Agent', neighbors: List[int]) -> str:
+        """Choose the next move for the agent using UCB1 exploration.
+
+        Instead of randomly exploring with probability epsilon, this method
+        calculates UCB values for each action that balance exploitation (high Q-value)
+        with exploration (high uncertainty).
+
+        Args:
+            agent: The agent making the decision
+            neighbors: List of neighbor agent IDs
+
+        Returns:
+            The selected action ("cooperate" or "defect")
+        """
         return self.strategy.choose_move(self, neighbors)
         
     def update_q_value(self, action, reward, next_state_actions):

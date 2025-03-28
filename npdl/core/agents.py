@@ -20,17 +20,22 @@ class Strategy:
         Returns:
             String: "cooperate" or "defect"
         """
-        raise NotImplementedError("Subclasses must implement choose_move")
-    
-    def update(self, agent, action, reward, neighbor_moves):
-        """Update internal state based on the results of the last action.
         
+        raise NotImplementedError("Subclasses must implement choose_move")
+
+    def update(self, agent: 'Agent', action: str, reward: float, neighbor_moves: Dict[int, str]) -> None:
+        """Update the agent's Q-values based on the received reward.
+
+        Implements the Q-learning update rule with dynamic learning rate adjustment
+        based on the cooperation levels of neighbors.
+
         Args:
             agent: The agent that performed the action
             action: The action that was taken ("cooperate" or "defect")
             reward: The reward received
-            neighbor_moves: Dictionary of neighbor IDs to their moves
+            neighbor_moves: Dictionary mapping neighbor IDs to their moves
         """
+
         pass  # Default implementation does nothing
 
 
@@ -129,16 +134,22 @@ class QLearningStrategy(Strategy):
         self.discount_factor = discount_factor
         self.epsilon = epsilon
         self.state_type = state_type
-        
-    def _get_current_state(self, agent):
+
+    def _get_current_state(self, agent: 'Agent') -> Hashable:
         """Get the current state representation for Q-learning.
-        
+
+        Constructs a state representation based on the agent's memory of past
+        interactions, particularly focusing on neighbor cooperation patterns.
+        The specific representation depends on the state_type parameter.
+
         Args:
             agent: The agent making the decision
-            
+
         Returns:
-            A hashable state representation (string or tuple)
+            A hashable state representation (string, tuple, or other hashable type)
+            that captures relevant information from the agent's memory and neighbors
         """
+
         if not agent.memory:
             return 'initial'  # Special state for the first move
         
@@ -224,8 +235,18 @@ class QLearningStrategy(Strategy):
         # Default fallback
         return 'standard'
 
-    def _initialize_q_values_for_state(self, agent, state):
-        """Initialize Q-values for a new state based on the agent's init type. """
+    def _initialize_q_values_for_state(self, agent: 'Agent', state: Hashable) -> None:
+        """Initialize Q-values for a new state based on the agent's initialization type.
+
+        Creates initial Q-values for a previously unseen state, using different
+        initialization strategies (zero, optimistic, or random) as specified by
+        the agent's q_init_type parameter.
+
+        Args:
+            agent: The agent whose Q-values are being initialized
+            state: The state for which to initialize Q-values
+        """
+
         if agent.q_init_type == "optimistic":
             init_val = agent.max_possible_payoff
         elif agent.q_init_type == "random":
@@ -452,9 +473,18 @@ class WolfPHCStrategy(QLearningStrategy):
         self.average_payoff = 0.0
         self.policy_counts = {}  # {state: {'cooperate': count, 'defect': count}}
         self.average_policy = {}  # {state: {'cooperate': prob, 'defect': prob}}
-        
-    def _update_average_policy(self, state):
-        """Update the average policy for a given state."""
+
+    def _update_average_policy(self, state: Hashable) -> None:
+        """Update the average policy for a given state.
+
+        Tracks the average policy (probability distribution over actions)
+        for a state over time. This is used to determine whether the agent
+        is "winning" or "losing" compared to historical performance.
+
+        Args:
+            state: The state for which to update the average policy
+        """
+
         if state not in self.policy_counts:
             return
             

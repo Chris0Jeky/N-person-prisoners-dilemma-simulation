@@ -4,6 +4,7 @@ import numpy as np
 import random
 import logging
 from npdl.core.logging_utils import log_network_stats, log_round_stats
+from typing import List, Dict, Tuple, Any, Optional, Union, Hashable
 
 class Environment:
     """Environment class that manages agent interactions and network structure."""

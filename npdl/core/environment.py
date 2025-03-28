@@ -188,7 +188,7 @@ class Environment:
             
         return moves, payoffs
 
-    def run_simulation(self, num_rounds, logging_interval=20, use_global_bonus=True,
+    def run_simulation(self, num_rounds, logging_interval=10, use_global_bonus=True, 
                    rewiring_interval=0, rewiring_prob=0.0):
         """Run a full simulation for the specified number of rounds.
         

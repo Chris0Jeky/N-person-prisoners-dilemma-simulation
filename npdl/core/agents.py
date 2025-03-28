@@ -361,6 +361,7 @@ class RandomProbStrategy(Strategy):
     def choose_move(self, agent, neighbors):
         return "cooperate" if random.random() < self.prob_coop else "defect"
 
+        """Cooperate with fixed probability prob_coop."""
 
 class QLearningStrategy(Strategy):
     def __init__(

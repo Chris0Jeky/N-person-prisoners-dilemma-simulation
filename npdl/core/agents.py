@@ -366,6 +366,8 @@ class RandomProbStrategy(Strategy):
 
 
 class QLearningStrategy(Strategy):
+    """Standard Q-learning with epsilon-greedy exploration."""
+
     def __init__(
         self, learning_rate=0.1, discount_factor=0.9, epsilon=0.1, state_type="basic"
     ):

@@ -27,6 +27,16 @@ from npdl.core.logging_utils import (
 from npdl.core.agents import Agent
 
 
+class TestDailyT005LoggingToFile:
+    """Daily check: setup_logging creates the requested log file."""
+
+    def test_setup_logging_creates_file(self, tmp_path):
+        log_file = str(tmp_path / "daily.log")
+        logger = setup_logging(log_file=log_file)
+        assert isinstance(logger, logging.Logger)
+        assert os.path.exists(log_file)
+
+
 class TestSetupLogging:
     """Test the logging setup functionality."""
     

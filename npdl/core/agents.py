@@ -493,6 +493,7 @@ class QLearningStrategy(Strategy):
             self._initialize_q_values_for_state(agent, state)
 
     def choose_move(self, agent, neighbors):
+        """Select a move epsilon-greedily from current Q-values."""
         # Get current state
         current_state = self._get_current_state(agent)
         agent.last_state_representation = current_state

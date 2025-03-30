@@ -15,6 +15,24 @@ import os
 sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 from npdl.core.agents import Agent, create_strategy
+
+
+class TestDailyT006NPersonStateN:
+    """Daily check: N-person state carries the requested group size."""
+
+    def test_n_person_state_uses_given_n(self):
+        mixin = NPersonStateMixin()
+        mixin.state_type = "n_person_basic"
+        agent = type('MockAgent', (), {})()
+        agent.memory = deque(maxlen=10)
+        agent.memory.append({
+            'my_move': 'defect',
+            'neighbor_moves': {1: 'defect', 2: 'cooperate'},
+            'reward': 1
+        })
+        state = mixin._get_n_person_state(agent, N=3)
+        assert isinstance(state, tuple)
+        assert state[2] == 3
 from npdl.core.n_person_rl import (
     NPersonQLearning, 
     NPersonHystereticQ, 

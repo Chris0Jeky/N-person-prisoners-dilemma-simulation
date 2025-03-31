@@ -46,6 +46,30 @@
     "logging_interval": 50
   },
   {
+    "scenario_name": "LRAQ_State_Count",
+    "num_agents": 30, "num_rounds": 500,
+    "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "lra_q": 30 },
+    "state_type": "count",
+    "q_init_type": "zero",
+    "memory_length": 10,
+    "learning_rate": 0.1, "discount_factor": 0.9, "epsilon": 0.1,
+    "increase_rate": 0.1, "decrease_rate": 0.05,
+    "logging_interval": 50
+  },
+   {
+    "scenario_name": "LRAQ_State_MemEnhanced",
+    "num_agents": 30, "num_rounds": 500,
+    "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "lra_q": 30 },
+    "state_type": "memory_enhanced",
+    "q_init_type": "zero",
+    "memory_length": 10, 
+    "learning_rate": 0.1, "discount_factor": 0.9, "epsilon": 0.1,
+    "increase_rate": 0.1, "decrease_rate": 0.05,
+    "logging_interval": 50
+  },
+  {
     "scenario_name": "LRA_vs_Standard_QL",
     "num_agents": 30,
     "num_rounds": 500,

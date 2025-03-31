@@ -16,7 +16,7 @@
     "increase_rate": 0.1,
     "decrease_rate": 0.05,
     "memory_length": 20,
-    "logging_interval": 10
+    "logging_interval": 20
   },
   {
     "scenario_name": "UCB1_OptimisticInit",
@@ -34,7 +34,7 @@
     "exploration_constant": 2.0,
     "state_type": "proportion_discretized",
     "memory_length": 20,
-    "logging_interval": 10
+    "logging_interval": 20
   },
   {
     "scenario_name": "TF2T_vs_LRAQ_Mem5",
@@ -53,7 +53,7 @@
     "epsilon": 0.1,
     "increase_rate": 0.1,
     "decrease_rate": 0.05,
-    "logging_interval": 10
+    "logging_interval": 20
   },
   {
     "scenario_name": "Hysteretic_QL_Enhanced",
@@ -71,7 +71,7 @@
     "beta": 0.01,
     "state_type": "proportion_discretized",
     "memory_length": 20,
-    "logging_interval": 10
+    "logging_interval": 20
   },
   {
     "scenario_name": "WolfPHC_SmallWorld",
@@ -91,7 +91,7 @@
     "alpha_avg": 0.01,
     "state_type": "proportion_discretized",
     "memory_length": 20,
-    "logging_interval": 10
+    "logging_interval": 20
   },
   {
     "scenario_name": "UCB1_ScaleFree",
@@ -108,7 +108,7 @@
     "exploration_constant": 2.0,
     "state_type": "proportion_discretized",
     "memory_length": 20,
-    "logging_interval": 10
+    "logging_interval": 20
   },
   {
     "scenario_name": "NetworkRewiring_Test",
@@ -125,7 +125,7 @@
     "epsilon": 0.1,
     "state_type": "proportion_discretized",
     "memory_length": 20,
-    "logging_interval": 10,
+    "logging_interval": 20,
     "rewiring_interval": 20,
     "rewiring_prob": 0.1
   },
@@ -145,7 +145,7 @@
     "state_type": "proportion_discretized",
     "memory_length": 20,
     "use_global_bonus": true,
-    "logging_interval": 10
+    "logging_interval": 20
   },
   {
     "scenario_name": "Combined_Enhancements",
@@ -169,7 +169,7 @@
     "use_global_bonus": true,
     "rewiring_interval": 25,
     "rewiring_prob": 0.1,
-    "logging_interval": 10
+    "logging_interval": 20
   },
   {
     "scenario_name": "Memory_Comparison",
@@ -187,6 +187,6 @@
     "decrease_rate": 0.05,
     "state_type": "memory_enhanced",
     "memory_length": 30,
-    "logging_interval": 10
+    "logging_interval": 20
   }
 ]

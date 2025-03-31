@@ -20,6 +20,30 @@ from npdl.core.agents import Agent
 from npdl.core.environment import Environment
 from npdl.core.utils import create_payoff_matrix, get_pairwise_payoffs
 
+
+class TestDailyT007PairwiseTwoRounds:
+    """Daily check: pairwise mode runs two rounds with valid moves."""
+
+    def test_pairwise_two_rounds_valid_moves(self):
+        agents = [
+            Agent(agent_id=0, strategy="always_cooperate"),
+            Agent(agent_id=1, strategy="always_defect"),
+            Agent(agent_id=2, strategy="tit_for_tat"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        env.run_round()
+        moves, _ = env.run_round()
+        seq = moves.values() if isinstance(moves, dict) else moves
+        assert len(list(seq)) == 3
+        for move in seq:
+            assert move in ("cooperate", "defect")
+
 # Note: The TitForTat implementation in agents.py handles pairwise mode correctly.
 # It checks for 'specific_opponent_moves' first, then falls back to 'opponent_coop_proportion'.
 # In pairwise mode with opponent_coop_proportion, it uses a threshold of 0.99 to decide.

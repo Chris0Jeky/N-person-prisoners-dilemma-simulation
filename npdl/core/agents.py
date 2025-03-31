@@ -768,7 +768,7 @@ class Agent:
         self.q_values = {}  # Change to empty dict to support state-based Q-values
         self.last_state_representation = None  # Track state for Q-learning
 
-    def choose_move(self, agent: 'Agent', neighbors: List[int]) -> str:
+    def choose_move(self, neighbors: List[int]) -> str:
         """Choose the next move for the agent using UCB1 exploration.
 
         Instead of randomly exploring with probability epsilon, this method

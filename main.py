@@ -19,55 +19,44 @@ def load_scenarios(file_path):
         scenarios = json.load(f)
     return scenarios
 
-def run_experiment(scenario, logger):
-    """Run a single experiment based on the given scenario."""
-    logger.info(f"Running scenario: {scenario['scenario_name']}")
-    start_time = time.time()
-    
-    # Create agents based on strategy configuration
+
+# --- Modified run_experiment to handle setup and return env details ---
+def setup_experiment(scenario, logger):
+    """Sets up agents and environment for a scenario run."""
+    logger.debug(f"Setting up agents for scenario: {scenario['scenario_name']}")
     agents = []
     agent_id_counter = 0
     for strategy, count in scenario["agent_strategies"].items():
         for _ in range(count):
-            agent_params = {"agent_id": agent_id_counter, "strategy": strategy}
-            
-            # Add common parameters for all agents
-            memory_length = scenario.get("memory_length", 10)
-            agent_params["memory_length"] = memory_length
-            agent_params["q_init_type"] = scenario.get("q_init_type", "zero")
-
-            # Determine max possible payoff (T value for optimistic init)
-            payoff_params_for_init = scenario.get("payoff_params", {})
-            max_payoff = payoff_params_for_init.get("T", 5.0)  # Default to T=5 if not specified
-            agent_params["max_possible_payoff"] = max_payoff
+            agent_params = {
+                "agent_id": agent_id_counter,
+                "strategy": strategy,
+                "memory_length": scenario.get("memory_length", 10),
+                "q_init_type": scenario.get("q_init_type", "zero"),
+                "max_possible_payoff": scenario.get("payoff_params", {}).get("T", 5.0)  # Pass T for optimistic init
+            }
 
             # Add strategy-specific parameters
+            agent_params.update(scenario.get("agent_params", {}).get(strategy, {}))  # Simplified generic param passing
+
+            # Override specific params if needed (example for Q-learning base params)
             if strategy in ["q_learning", "q_learning_adaptive", "lra_q", "hysteretic_q", "wolf_phc", "ucb1_q"]:
-                # Common Q-learning parameters
                 agent_params.update({
                     "learning_rate": scenario.get("learning_rate", 0.1),
                     "discount_factor": scenario.get("discount_factor", 0.9),
-                    "epsilon": scenario.get("epsilon", 0.1),
+                    "epsilon": scenario.get("epsilon", 0.1),  # Note: UCB1 ignores this internally
                     "state_type": scenario.get("state_type", "proportion_discretized"),
                 })
-                
-                # Strategy-specific params
-                if strategy == "lra_q":
-                    agent_params.update({
-                        "increase_rate": scenario.get("increase_rate", 0.1),
-                        "decrease_rate": scenario.get("decrease_rate", 0.05)
-                    })
-                elif strategy == "hysteretic_q":
-                    agent_params["beta"] = scenario.get("beta", 0.01)
-                elif strategy == "wolf_phc":
-                    agent_params.update({
-                        "alpha_win": scenario.get("alpha_win", 0.05),
-                        "alpha_lose": scenario.get("alpha_lose", 0.2),
-                        "alpha_avg": scenario.get("alpha_avg", 0.01)
-                    })
-                elif strategy == "ucb1_q":
-                    agent_params["exploration_constant"] = scenario.get("exploration_constant", 2.0)
-            
+                # Further specific params (beta, rates, constant etc.)
+                if strategy == "lra_q": agent_params.update({"increase_rate": scenario.get("increase_rate", 0.1),
+                                                             "decrease_rate": scenario.get("decrease_rate", 0.05)})
+                if strategy == "hysteretic_q": agent_params["beta"] = scenario.get("beta", 0.01)
+                if strategy == "wolf_phc": agent_params.update(
+                    {"alpha_win": scenario.get("alpha_win", 0.05), "alpha_lose": scenario.get("alpha_lose", 0.2),
+                     "alpha_avg": scenario.get("alpha_avg", 0.01)})
+                if strategy == "ucb1_q": agent_params["exploration_constant"] = scenario.get("exploration_constant",
+                                                                                             2.0)
+
             elif strategy == "generous_tit_for_tat":
                 agent_params["generosity"] = scenario.get("generosity", 0.05)
             elif strategy == "pavlov" or strategy == "suspicious_tit_for_tat":
@@ -77,16 +66,51 @@ def run_experiment(scenario, logger):
 
             agents.append(Agent(**agent_params))
             agent_id_counter += 1
-    
-    # Create payoff matrix with the specified payoff function
+
+    # Create payoff matrix
     payoff_type = scenario.get("payoff_type", "linear")
     payoff_params = scenario.get("payoff_params", {})
     payoff_matrix = create_payoff_matrix(
-        scenario["num_agents"], 
+        scenario["num_agents"],
         payoff_type=payoff_type,
         params=payoff_params
     )
-    
+
+    # Calculate Theoretical Global Scores (using the created matrix's C/D lists)
+    N_agents = scenario["num_agents"]
+    C_payoffs = payoff_matrix['C']
+    D_payoffs = payoff_matrix['D']
+
+    # Payoff C(k) means payoff for coop when k *others* cooperate (so k+1 total cooperators)
+    # Payoff D(k) means payoff for defect when k *others* cooperate
+    max_coop_score_per_agent = C_payoffs[N_agents - 1] if N_agents > 0 else 0
+    max_defect_score_per_agent = D_payoffs[0] if N_agents > 0 else 0
+
+    theoretical_scores = {
+        "max_cooperation": N_agents * max_coop_score_per_agent,
+        "max_defection": N_agents * max_defect_score_per_agent
+    }
+
+    # Calculate half-half (approximate for odd N)
+    if N_agents > 0:
+        n_coop = N_agents // 2
+        n_defect = N_agents - n_coop
+        # Payoff for a cooperator: C(n_coop - 1) as n_coop-1 others cooperate
+        # Payoff for a defector: D(n_coop) as n_coop others cooperate
+        c_idx = max(0, n_coop - 1)  # Index for C payoff list
+        d_idx = n_coop  # Index for D payoff list
+
+        # Ensure indices are within bounds
+        c_idx = min(c_idx, N_agents - 1)
+        d_idx = min(d_idx, N_agents - 1)
+
+        score_coop = C_payoffs[c_idx] if n_coop > 0 else 0
+        score_defect = D_payoffs[d_idx] if n_defect > 0 else 0
+
+        theoretical_scores["half_half"] = (n_coop * score_coop) + (n_defect * score_defect)
+    else:
+        theoretical_scores["half_half"] = 0
+
     # Create environment
     env = Environment(
         agents,
@@ -95,30 +119,8 @@ def run_experiment(scenario, logger):
         network_params=scenario["network_params"],
         logger=logger
     )
-    
-    # Run simulation
-    logging_interval = scenario.get("logging_interval", 10)
-    use_global_bonus = scenario.get("use_global_bonus", False)
-    rewiring_interval = scenario.get("rewiring_interval", 0)
-    rewiring_prob = scenario.get("rewiring_prob", 0.0)
-    
-    # Run simulation with enhanced parameters
-    results = env.run_simulation(
-        scenario["num_rounds"], 
-        logging_interval=logging_interval,
-        use_global_bonus=use_global_bonus,
-        rewiring_interval=rewiring_interval,
-        rewiring_prob=rewiring_prob
-    )
-    
-    # Log summary statistics
-    log_experiment_summary(scenario, results, agents, logger)
-    
-    # Calculate execution time
-    execution_time = time.time() - start_time
-    logger.info(f"Completed scenario: {scenario['scenario_name']} in {execution_time:.2f} seconds")
-    
-    return {"scenario": scenario, "results": results, "agents": agents, "environment": env}
+
+    return env, theoretical_scores
 
 def save_results(all_results, base_filename="experiment_results", results_dir="results", logger=None):
     """Save experiment results to CSV files."""

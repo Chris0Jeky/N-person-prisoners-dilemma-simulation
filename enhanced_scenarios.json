@@ -64,7 +64,32 @@
     "agent_strategies": { "lra_q": 30 },
     "state_type": "memory_enhanced",
     "q_init_type": "zero",
-    "memory_length": 10, 
+    "memory_length": 10,
+    "learning_rate": 0.1, "discount_factor": 0.9, "epsilon": 0.1,
+    "increase_rate": 0.1, "decrease_rate": 0.05,
+    "logging_interval": 50
+  },
+  // --- Memory Length Comparison Scenarios (Using LRA-Q, Memory Enhanced State) ---
+  {
+    "scenario_name": "LRAQ_MemEnh_Len_1",
+    "num_agents": 30, "num_rounds": 500,
+    "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "lra_q": 30 },
+    "state_type": "memory_enhanced",
+    "memory_length": 1, // Test memory length 1
+    "q_init_type": "zero",
+    "learning_rate": 0.1, "discount_factor": 0.9, "epsilon": 0.1,
+    "increase_rate": 0.1, "decrease_rate": 0.05,
+    "logging_interval": 50
+  },
+    {
+    "scenario_name": "LRAQ_MemEnh_Len_5", // Already had similar in example
+    "num_agents": 30, "num_rounds": 500,
+    "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "lra_q": 30 },
+    "state_type": "memory_enhanced",
+    "memory_length": 5, // Test memory length 5
+    "q_init_type": "zero",
     "learning_rate": 0.1, "discount_factor": 0.9, "epsilon": 0.1,
     "increase_rate": 0.1, "decrease_rate": 0.05,
     "logging_interval": 50

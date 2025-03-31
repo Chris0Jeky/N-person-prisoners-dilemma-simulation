@@ -1,5 +1,27 @@
 [
   {
+    "scenario_name": "Baseline_QL_BasicState",
+    "num_agents": 30, "num_rounds": 500,
+    "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "q_learning": 30 },
+    "state_type": "basic",
+    "q_init_type": "zero",
+    "memory_length": 1,
+    "learning_rate": 0.1, "discount_factor": 0.9, "epsilon": 0.1,
+    "logging_interval": 50
+  },
+  {
+    "scenario_name": "Baseline_QL_PropDiscr",
+    "num_agents": 30, "num_rounds": 500,
+    "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "q_learning": 30 },
+    "state_type": "proportion_discretized",
+    "q_init_type": "zero",
+    "memory_length": 10,
+    "learning_rate": 0.1, "discount_factor": 0.9, "epsilon": 0.1,
+    "logging_interval": 50
+  },
+  {
     "scenario_name": "LRA_vs_Standard_QL",
     "num_agents": 30,
     "num_rounds": 500,

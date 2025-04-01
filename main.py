@@ -254,32 +254,22 @@ def print_comparative_summary(scenario_results_agg, logger=None):
 
 def main():
     parser = argparse.ArgumentParser(description="Run N-person IPD experiments")
-    # Add a new argument for enhanced scenarios
-    parser.add_argument('--enhanced', action='store_true', 
+    parser.add_argument('--enhanced', action='store_true',
                         help='Use enhanced_scenarios.json instead of scenarios.json')
     parser.add_argument('--scenario_file', type=str, default='scenarios.json',
                         help='Path to the JSON file containing scenario definitions.')
+    parser.add_argument('--num_runs', type=int, default=10, # New argument for number of runs
+                        help='Number of runs (seeds) per scenario.')
     parser.add_argument('--results_dir', type=str, default='results',
                         help='Directory to save experiment results.')
     parser.add_argument('--log_dir', type=str, default='logs',
                         help='Directory to save log files.')
     parser.add_argument('--analyze', action='store_true',
                         help='Run analysis on results after experiments complete.')
-    parser.add_argument('--interactive', action='store_true',
-                        help='Run in interactive mode (play against AI agents).')
-    parser.add_argument('--verbose', action='store_true', 
+    # Interactive mode removed from this script, keep it separate or use CLI
+    parser.add_argument('--verbose', action='store_true',
                         help='Enable verbose logging.')
     args = parser.parse_args()
-    
-    # Run in interactive mode if requested
-    if args.interactive:
-        try:
-            from interactive_game import main as interactive_main
-            interactive_main()
-            return
-        except ImportError:
-            print("Error: interactive_game module not found.")
-            return
 
     # Set up logging
     if not os.path.exists(args.log_dir):

@@ -147,17 +147,20 @@ def load_network_structure(scenario_name: str, results_dir: str = "results",
     # Load network structure from run directory
     scenario_dir = os.path.join(results_dir, scenario_name)
     if not os.path.isdir(scenario_dir):
-        logger.warning(f"Scenario directory not found: {scenario_dir}")
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f"Scenario directory not found: {scenario_dir}")
         return nx.Graph(), {}
         
     run_dir = os.path.join(scenario_dir, f"run_{run_number:02d}")
     if not os.path.isdir(run_dir):
-        logger.warning(f"Run directory not found: {run_dir}")
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f"Run directory not found: {run_dir}")
         return nx.Graph(), {}
         
     network_file = os.path.join(run_dir, f"{base_filename}_network.json")
     if not os.path.exists(network_file):
-        logger.warning(f"Network file not found: {network_file}")
+        if logger.isEnabledFor(logging.DEBUG):
+            logger.debug(f"Network file not found: {network_file}")
         return nx.Graph(), {}
         
     try:

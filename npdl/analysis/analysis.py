@@ -18,6 +18,34 @@ def load_results(scenario_name, results_dir="results", base_filename="experiment
     Returns:
         Tuple of (agents_df, rounds_df)
     """
+    # First check if scenario has the new directory structure
+    scenario_dir = os.path.join(results_dir, scenario_name)
+    
+    if os.path.isdir(scenario_dir):
+        # New directory structure with multiple runs
+        all_agents = []
+        all_rounds = []
+        
+        # Look for run directories
+        run_dirs = [d for d in os.listdir(scenario_dir) if d.startswith('run_')]
+        if run_dirs:
+            for run_dir in run_dirs:
+                run_path = os.path.join(scenario_dir, run_dir)
+                agents_file = os.path.join(run_path, f"{base_filename}_agents.csv")
+                rounds_file = os.path.join(run_path, f"{base_filename}_rounds.csv")
+                
+                if os.path.exists(agents_file) and os.path.exists(rounds_file):
+                    agents_df = pd.read_csv(agents_file)
+                    rounds_df = pd.read_csv(rounds_file)
+                    all_agents.append(agents_df)
+                    all_rounds.append(rounds_df)
+            
+            if all_agents and all_rounds:
+                agents_df = pd.concat(all_agents, ignore_index=True)
+                rounds_df = pd.concat(all_rounds, ignore_index=True)
+                return agents_df, rounds_df
+    
+    # Fall back to the legacy format if new structure not found
     agents_file = os.path.join(results_dir, f"{base_filename}_{scenario_name}_agents.csv")
     rounds_file = os.path.join(results_dir, f"{base_filename}_{scenario_name}_rounds.csv")
     
@@ -311,9 +339,27 @@ def create_analysis_report(scenario_name, results_dir="results", output_dir="ana
         metrics['average_final_q_cooperate'] = avg_q_coop
         metrics['average_final_q_defect'] = avg_q_defect
     
+    # Convert NumPy types to Python native types for JSON serialization
+    def convert_to_serializable(obj):
+        if isinstance(obj, (np.integer, np.int64)):
+            return int(obj)
+        elif isinstance(obj, (np.floating, np.float64)):
+            return float(obj)
+        elif isinstance(obj, np.ndarray):
+            return obj.tolist()
+        elif isinstance(obj, dict):
+            return {k: convert_to_serializable(v) for k, v in obj.items()}
+        elif isinstance(obj, list):
+            return [convert_to_serializable(i) for i in obj]
+        else:
+            return obj
+    
+    # Convert metrics to JSON-serializable format
+    serializable_metrics = convert_to_serializable(metrics)
+    
     # Save metrics to a JSON file
     with open(os.path.join(output_dir, f"{scenario_name}_metrics.json"), 'w') as f:
-        json.dump(metrics, f, indent=2)
+        json.dump(serializable_metrics, f, indent=2)
     
     return metrics
 

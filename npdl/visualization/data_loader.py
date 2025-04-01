@@ -156,8 +156,7 @@ def load_network_structure(scenario_name: str, results_dir: str = "results",
                     G.add_edges_from(network_data.get('edges', []))
                     return G, network_data
                 except Exception as e:
-                    print(f"Error loading network structure from run directory: {e}")
-    
+                    logger.error(f"Error loading network structure from run directory: {e}")
     # Fallback to legacy format
     network_file = os.path.join(results_dir, f"{base_filename}_{scenario_name}_network.json")
     if not os.path.exists(network_file):

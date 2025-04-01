@@ -645,10 +645,20 @@ def update_network_graph(scenario, run_value, round_num, n_clicks):
         return fig
 
 
-def run_dashboard(debug=True, port=8050):
-    """Run the Dash visualization dashboard."""
-    # Fixed: Use app.run() instead of app.run_server() for newer Dash versions
-    app.run(debug=debug, port=port)
+def run_dashboard(debug: bool = True, port: int = 8050) -> None:
+    """Run the Dash visualization dashboard.
+    
+    Args:
+        debug: Whether to run the app in debug mode
+        port: The port to run the dashboard on
+    """
+    try:
+        # Use app.run() for newer Dash versions
+        app.run(debug=debug, port=port)
+    except Exception as e:
+        print(f"Error starting dashboard: {e}")
+        print("Make sure all required dependencies are installed:")
+        print("  pip install dash dash-bootstrap-components plotly flask")
 
 
 if __name__ == "__main__":

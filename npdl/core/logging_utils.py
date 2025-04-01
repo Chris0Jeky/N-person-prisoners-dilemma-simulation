@@ -165,8 +165,10 @@ def log_experiment_summary(scenario, run_number, agents, round_results, theoreti
     
     Args:
         scenario: Scenario dictionary
-        round_results: List of round results
+        run_number: Number of the current run
         agents: List of Agent objects
+        round_results: List of round results
+        theoretical_scores: Dictionary with theoretical max scores
         logger: Logger object (if None, uses the root logger)
     """
     if logger is None:
@@ -277,7 +279,7 @@ def log_experiment_summary(scenario, run_number, agents, round_results, theoreti
     # 4. Learning analysis for Q-learning agents
     if q_learning_agents and len(round_results) > 1:
         # Check if Q-values have converged
-        if abs(avg_q_coop - avg_q_defect) > 3.0:
+        if 'avg_q_coop' in locals() and 'avg_q_defect' in locals() and abs(avg_q_coop - avg_q_defect) > 3.0:
             if avg_q_defect > avg_q_coop:
                 logger.info("Q-learning outcome: Strong preference for DEFECTION")
             else:

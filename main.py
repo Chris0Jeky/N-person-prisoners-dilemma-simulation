@@ -1,3 +1,4 @@
+
 # main.py
 import argparse
 import json
@@ -181,13 +182,13 @@ def save_results(scenario_name, run_number, agents, round_results, base_filename
 
     # Save round-by-round data
     round_data = []
-    for round_result in round_results['results']:
+    for round_result in round_results:
         round_num = round_result['round']
         moves = round_result['moves']
         payoffs = round_result['payoffs']
         for agent_id, move in moves.items():
             payoff = payoffs.get(agent_id, None)
-            agent = next((a for a in round_results['agents'] if a.agent_id == agent_id), None)
+            agent = next((a for a in agents if a.agent_id == agent_id), None)
             round_data.append({
                 'scenario_name': scenario_name,
                 'run_number': run_number,
@@ -201,13 +202,8 @@ def save_results(scenario_name, run_number, agents, round_results, base_filename
     rounds_filename = os.path.join(run_dir, f"{base_filename}_rounds.csv")
     df_rounds.to_csv(rounds_filename, index=False)
 
-    # Save network structure if environment is available
-    if 'environment' in round_result and hasattr(round_result['environment'], 'export_network_structure'):
-        network_data = round_result['environment'].export_network_structure()
-        network_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_network.json")
-
-        with open(network_filename, 'w') as f:
-            json.dump(network_data, f, indent=2, default=str)
+    # Save network structure if available
+    network_filename = os.path.join(run_dir, f"{base_filename}_network.json")
 
 def print_comparative_summary(scenario_results_agg, logger=None):
     """Print a comparative summary of all scenario results"""
@@ -365,6 +361,9 @@ def main():
                 'avg_final_max_score': np.mean(all_max_scores)
             }
         logger.info(f"--- Completed Scenario: {scenario_name} ---")
+    
+    # Print comparative summary using aggregated results
+    print_comparative_summary(scenario_results_aggregated, logger)
     
     # Run analysis if requested
     # TO BE REWORKED:

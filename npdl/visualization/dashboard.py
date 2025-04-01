@@ -414,6 +414,8 @@ def update_payoff_graph(scenario, run_value, selected_strategies, round_range, n
         )
         return fig
     
+    logger = logging.getLogger(__name__)
+    
     try:
         # Convert 'all' to None for aggregated data
         run_number = None if run_value == 'all' else run_value
@@ -429,9 +431,42 @@ def update_payoff_graph(scenario, run_value, selected_strategies, round_range, n
         # Filter by selected strategies
         filtered_rounds = filtered_rounds[filtered_rounds['strategy'].isin(selected_strategies)]
         
+        # Check if we have data after filtering
+        if filtered_rounds.empty:
+            fig = go.Figure()
+            fig.add_annotation(
+                text="No data available for the selected strategies and round range",
+                showarrow=False,
+                font=dict(size=14)
+            )
+            fig.update_layout(
+                title="No Data Available",
+                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+            )
+            return fig
+        
+        # Make sure payoff column is numeric
+        filtered_rounds['payoff'] = pd.to_numeric(filtered_rounds['payoff'], errors='coerce')
+        
         # Calculate payoffs by strategy
         payoffs = get_payoffs_by_strategy(filtered_rounds)
         
+        # Check if we have data after calculation
+        if payoffs.empty:
+            fig = go.Figure()
+            fig.add_annotation(
+                text="Unable to calculate payoffs for the selected data",
+                showarrow=False,
+                font=dict(size=14)
+            )
+            fig.update_layout(
+                title="Calculation Error",
+                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+            )
+            return fig
+            
         # Handle run information in title
         run_info = f" (Run {run_value})" if run_value != 'all' and run_value is not None else " (All Runs)"
         
@@ -456,11 +491,11 @@ def update_payoff_graph(scenario, run_value, selected_strategies, round_range, n
         
         return fig
     except Exception as e:
-        print(f"Error updating payoff graph: {e}")
+        logger.error(f"Error updating payoff graph: {e}")
         # Return empty figure with error message
         fig = go.Figure()
         fig.add_annotation(
-            text=f"Error loading data: {str(e)}",
+            text=f"Error loading data. Please try a different selection.",
             showarrow=False,
             font=dict(size=14, color="red")
         )

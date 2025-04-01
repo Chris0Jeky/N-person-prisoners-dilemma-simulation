@@ -285,7 +285,7 @@ def log_experiment_summary(scenario, run_number, agents, round_results, theoreti
         else:
             logger.info("Q-learning outcome: Mixed strategy (no strong preference)")
     
-    logger.info("--- END OF SUMMARY ---\n")
+    logger.info(f"--- End Run {run_number} Summary ---")
         
 def generate_ascii_chart(values, title="", width=50, height=10):
     """Generate a simple ASCII chart for displaying data trends.

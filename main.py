@@ -128,6 +128,9 @@ def save_results(scenario_name, run_number, agents, round_results, base_filename
     if not os.path.exists(run_dir):
         os.makedirs(run_dir)
 
+    if logger is None:
+        logger = logging.getLogger(__name__)
+
     # Save agent summary data
     agent_data = []
     for agent in agents:
@@ -206,107 +209,48 @@ def save_results(scenario_name, run_number, agents, round_results, base_filename
         with open(network_filename, 'w') as f:
             json.dump(network_data, f, indent=2, default=str)
 
-def print_comparative_summary(all_results, logger=None):
+def print_comparative_summary(scenario_results_agg, logger=None):
     """Print a comparative summary of all scenario results"""
 
     if logger is None:
         logger = logging.getLogger(__name__)
 
-    print("\n=== COMPARATIVE SCENARIO SUMMARY ===\n")
-    
+    print("\n=== AGGREGATED COMPARATIVE SCENARIO SUMMARY (Avg over runs) ===\n")
+
     # Extract key metrics
-    scenarios = []
-    final_coop_rates = []
-    max_scores = []
-    winning_strategies = []
-    q_learning_preferences = []
-    
-    for result in all_results:
-        scenario = result['scenario']
-        scenario_name = scenario['scenario_name']
-        scenarios.append(scenario_name)
-        
-        # Calculate final cooperation rate
-        last_round = result['results'][-1]
-        coop_count = sum(1 for move in last_round['moves'].values() if move == "cooperate")
-        coop_rate = coop_count / len(last_round['moves'])
-        final_coop_rates.append(coop_rate)
-        
-        # Find highest scoring strategy
-        strategies = {}
-        for agent in result['agents']:
-            if agent.strategy_type not in strategies:
-                strategies[agent.strategy_type] = []
-            strategies[agent.strategy_type].append(agent)
-        
-        if strategies:
-            avg_scores = [(strategy, sum(a.score for a in agents) / len(agents)) 
-                          for strategy, agents in strategies.items()]
-            winning_strategy = max(avg_scores, key=lambda x: x[1])
-            winning_strategies.append(winning_strategy[0])
-            max_scores.append(winning_strategy[1])
-        else:
-            winning_strategies.append("N/A")
-            max_scores.append(0)
-        
-        # Analyze Q-learning outcomes
-        q_learning_agents = [a for a in result['agents'] if a.strategy_type in (
-            "q_learning", "q_learning_adaptive", "lra_q", "hysteretic_q", "wolf_phc", "ucb1_q"
-        )]
-        if q_learning_agents:
-            avg_q_coop_total = 0.0
-            avg_q_defect_total = 0.0
-            total_q_entries = 0
-            error_occurred = False
+    scenarios = list(scenario_results_agg.keys())
+    avg_final_coop_rates = []
+    std_final_coop_rates = []
+    avg_max_scores = []
+    # Winning strategy might be less meaningful when averaged, maybe dominant strategy?
 
-            for agent in q_learning_agents:
-                try:
-                    if agent.q_values and isinstance(agent.q_values, dict):
-                        for state, actions in agent.q_values.items():
-                            if isinstance(actions, dict):
-                                avg_q_coop_total += actions.get("cooperate", 0.0)
-                                avg_q_defect_total += actions.get("defect", 0.0)
-                                total_q_entries += 1
-                except Exception as e:
-                    logger.warning(f"Agent {agent.agent_id}: Error processing Q-values for summary: {e}")
-                    error_occurred = True  # Flag error, but continue if possible
+    for scenario_name, agg_data in scenario_results_agg.items():
+        avg_final_coop_rates.append(agg_data['avg_final_coop_rate'])
+        std_final_coop_rates.append(agg_data['std_final_coop_rate'])
+        avg_max_scores.append(agg_data['avg_final_max_score'])  # Assuming max score per run is stored
 
-            if total_q_entries > 0:
-                avg_q_coop = avg_q_coop_total / total_q_entries
-                avg_q_defect = avg_q_defect_total / total_q_entries
+    print(f"{'Scenario':<35} {'Avg Coop Rate':<15} {'Std Coop Rate':<15} {'Avg Max Score':<15}")
+    print("-" * 85)
 
-                # Determine preference (consider making threshold a parameter)
-                preference_threshold = 1.0  # Smaller threshold for summary
-                if avg_q_defect > avg_q_coop + preference_threshold:
-                    preference = "Defect"
-                elif avg_q_coop > avg_q_defect + preference_threshold:
-                    preference = "Cooperate"
-                else:
-                    preference = "Mixed"
-            elif error_occurred:
-                preference = "Error"
-            else:
-                preference = "N/A (No Q)"
-
-            q_learning_preferences.append(preference)
-        else:
-            q_learning_preferences.append("N/A")
-    
-    # Print the comparative table
-    print(f"{'Scenario':<30} {'Coop Rate':<10} {'Max Score':<10} {'Winner':<20} {'Q-Learning':<10}")
-    print("-" * 80)
-    
     for i in range(len(scenarios)):
-        print(f"{scenarios[i]:<30} {final_coop_rates[i]:.2f}       {max_scores[i]:<10.2f} {winning_strategies[i]:<20} {q_learning_preferences[i]:<10}")
-    
+        scenario_name = scenarios[i]
+        # Ensure we have data before trying to access it
+        coop_rate_str = f"{avg_final_coop_rates[i]:.3f}" if i < len(avg_final_coop_rates) else "N/A"
+        coop_std_str = f"{std_final_coop_rates[i]:.3f}" if i < len(std_final_coop_rates) else "N/A"
+        max_score_str = f"{avg_max_scores[i]:.2f}" if i < len(avg_max_scores) else "N/A"
+
+        print(f"{scenario_name:<35} {coop_rate_str:<15} {coop_std_str:<15} {max_score_str:<15}")
+
     print("\n")
-    
-    # Print cooperation rate chart
-    if final_coop_rates:
-        chart = generate_ascii_chart(final_coop_rates, title="Cooperation Rates Across Scenarios", width=40, height=10)
+
+    # Print cooperation rate chart (using averages)
+    if avg_final_coop_rates:
+        chart = generate_ascii_chart(avg_final_coop_rates,
+                                     title="Avg Final Cooperation Rates Across Scenarios",
+                                     width=50, height=10)
         print(chart)
-    
-    print("\n=== END OF COMPARATIVE SUMMARY ===\n")
+
+    print("\n=== END OF AGGREGATED COMPARATIVE SUMMARY ===\n")
 
 def main():
     parser = argparse.ArgumentParser(description="Run N-person IPD experiments")

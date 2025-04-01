@@ -1,4 +1,3 @@
-
 # main.py
 import argparse
 import json
@@ -262,10 +261,21 @@ def main():
                         help='Directory to save log files.')
     parser.add_argument('--analyze', action='store_true',
                         help='Run analysis on results after experiments complete.')
-    # Interactive mode removed from this script, keep it separate or use CLI
+    parser.add_argument('--interactive', action='store_true',
+                        help='Run in interactive mode (play against AI agents).')
     parser.add_argument('--verbose', action='store_true',
                         help='Enable verbose logging.')
     args = parser.parse_args()
+
+    # Run in interactive mode if requested
+    if args.interactive:
+        try:
+            from npdl.interactive.game import main as interactive_main
+            interactive_main()
+            return
+        except ImportError:
+            print("Error: interactive_game module not found.")
+            return
 
     # Set up logging
     if not os.path.exists(args.log_dir):
@@ -366,16 +376,15 @@ def main():
     print_comparative_summary(scenario_results_aggregated, logger)
     
     # Run analysis if requested
-    # TO BE REWORKED:
-    # if args.analyze:
-    #     try:
-    #         from npdl.analysis.analysis import analyze_multiple_scenarios
-    #         logger.info("Running analysis on experiment results")
-    #         scenario_names = [result['scenario']['scenario_name'] for result in all_results]
-    #         analyze_multiple_scenarios(scenario_names, args.results_dir, "analysis_results")
-    #         logger.info("Analysis complete. Results saved to 'analysis_results' directory.")
-    #     except Exception as e:
-    #         logger.error(f"Error running analysis: {e}", exc_info=True)
+    if args.analyze:
+        try:
+            from npdl.analysis.analysis import analyze_multiple_scenarios
+            logger.info("Running analysis on experiment results")
+            scenario_names = list(scenario_results_aggregated.keys())
+            analyze_multiple_scenarios(scenario_names, args.results_dir, "analysis_results")
+            logger.info("Analysis complete. Results saved to 'analysis_results' directory.")
+        except Exception as e:
+            logger.error(f"Error running analysis: {e}", exc_info=True)
 
 if __name__ == "__main__":
     main()

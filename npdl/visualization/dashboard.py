@@ -287,6 +287,8 @@ def update_cooperation_graph(scenario, run_value, selected_strategies, round_ran
         )
         return fig
     
+    logger = logging.getLogger(__name__)
+    
     try:
         # Convert 'all' to None for aggregated data
         run_number = None if run_value == 'all' else run_value
@@ -302,8 +304,38 @@ def update_cooperation_graph(scenario, run_value, selected_strategies, round_ran
         # Filter by selected strategies
         filtered_rounds = filtered_rounds[filtered_rounds['strategy'].isin(selected_strategies)]
         
+        # Check if we have data after filtering
+        if filtered_rounds.empty:
+            fig = go.Figure()
+            fig.add_annotation(
+                text="No data available for the selected strategies and round range",
+                showarrow=False,
+                font=dict(size=14)
+            )
+            fig.update_layout(
+                title="No Data Available",
+                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+            )
+            return fig
+        
         # Calculate cooperation rates by strategy
         coop_rates = get_strategy_cooperation_rates(filtered_rounds)
+        
+        # Check if we have data after calculation
+        if coop_rates.empty:
+            fig = go.Figure()
+            fig.add_annotation(
+                text="Unable to calculate cooperation rates for the selected data",
+                showarrow=False,
+                font=dict(size=14)
+            )
+            fig.update_layout(
+                title="Calculation Error",
+                xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+                yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+            )
+            return fig
         
         # Create figure
         fig = px.line(
@@ -341,11 +373,11 @@ def update_cooperation_graph(scenario, run_value, selected_strategies, round_ran
         
         return fig
     except Exception as e:
-        print(f"Error updating cooperation graph: {e}")
+        logger.error(f"Error updating cooperation graph: {e}")
         # Return empty figure with error message
         fig = go.Figure()
         fig.add_annotation(
-            text=f"Error loading data: {str(e)}",
+            text=f"Error loading data. Please try a different selection.",
             showarrow=False,
             font=dict(size=14, color="red")
         )
@@ -542,11 +574,15 @@ def update_network_graph(scenario, run_value, round_num, n_clicks):
         # Use run 0 if 'all' is selected for network visualization
         run_number = 0 if run_value == 'all' else (run_value or 0)
         
+        # Set up logger with reduced verbosity
+        silent_logger = logging.getLogger("network_vis_logger")
+        silent_logger.setLevel(logging.ERROR)  # Only show errors, not warnings
+        
         # Load network structure
-        G, network_data = load_network_structure(scenario, run_number=run_number)
+        G, network_data = load_network_structure(scenario, run_number=run_number, logger=silent_logger)
         
         # If network data is not available
-        if not network_data:
+        if not network_data or not G.nodes():
             fig = go.Figure()
             fig.add_annotation(
                 text="Network data not found for this scenario.<br>Run new simulations with network export enabled.",
@@ -628,12 +664,13 @@ def update_network_graph(scenario, run_value, round_num, n_clicks):
         return fig
         
     except Exception as e:
-        print(f"Error updating network graph: {e}")
+        logger = logging.getLogger(__name__)
+        logger.error(f"Error updating network graph: {e}")
         
         # Create error figure
         fig = go.Figure()
         fig.add_annotation(
-            text=f"Error visualizing network: {str(e)}",
+            text=f"Error visualizing network. Please select a different scenario or run.",
             showarrow=False,
             font=dict(size=14, color="red")
         )

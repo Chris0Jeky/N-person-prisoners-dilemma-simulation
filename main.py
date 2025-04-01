@@ -122,7 +122,7 @@ def setup_experiment(scenario, logger):
 
     return env, theoretical_scores
 
-def save_results(scenario_name, run_number, agents, round_results, base_filename="experiment_results", results_dir="results", logger=None):
+def save_results(scenario_name, run_number, agents, round_results, base_filename="experiment_results", results_dir="results", logger=None, env=None):
     """Save experiment results for a specific run to CSV files."""
     run_dir = os.path.join(results_dir, scenario_name, f"run_{run_number:02d}")
     if not os.path.exists(run_dir):
@@ -203,6 +203,12 @@ def save_results(scenario_name, run_number, agents, round_results, base_filename
 
     # Save network structure if available
     network_filename = os.path.join(run_dir, f"{base_filename}_network.json")
+    try:
+        network_data = env.export_network_structure()  # Get network data from environment
+        with open(network_filename, 'w') as f:
+            json.dump(network_data, f, indent=2)
+    except Exception as e:
+        logger.error(f"Error saving network structure: {e}")
 
 def print_comparative_summary(scenario_results_agg, logger=None):
     """Print a comparative summary of all scenario results"""

@@ -423,7 +423,7 @@ def run_simulation(enhanced: bool = False, scenario_file: str = "scenarios.json"
             # Save results for this specific run
             try:
                 save_results(scenario_name, run_number, env.agents, round_results,
-                             results_dir=results_dir)
+                             results_dir=results_dir, env=env)
             except Exception as e:
                 logger.error(f"Error saving results for {scenario_name} run {run_number}: {e}")
 

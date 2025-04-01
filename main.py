@@ -367,15 +367,16 @@ def main():
         logger.info(f"--- Completed Scenario: {scenario_name} ---")
     
     # Run analysis if requested
-    if args.analyze:
-        try:
-            from npdl.analysis.analysis import analyze_multiple_scenarios
-            logger.info("Running analysis on experiment results")
-            scenario_names = [result['scenario']['scenario_name'] for result in all_results]
-            analyze_multiple_scenarios(scenario_names, args.results_dir, "analysis_results")
-            logger.info("Analysis complete. Results saved to 'analysis_results' directory.")
-        except Exception as e:
-            logger.error(f"Error running analysis: {e}", exc_info=True)
+    # TO BE REWORKED:
+    # if args.analyze:
+    #     try:
+    #         from npdl.analysis.analysis import analyze_multiple_scenarios
+    #         logger.info("Running analysis on experiment results")
+    #         scenario_names = [result['scenario']['scenario_name'] for result in all_results]
+    #         analyze_multiple_scenarios(scenario_names, args.results_dir, "analysis_results")
+    #         logger.info("Analysis complete. Results saved to 'analysis_results' directory.")
+    #     except Exception as e:
+    #         logger.error(f"Error running analysis: {e}", exc_info=True)
 
 if __name__ == "__main__":
     main()

@@ -322,22 +322,83 @@ def create_analysis_report(scenario_name, results_dir="results", output_dir="ana
     metrics['strategy_average_scores'] = strategy_scores
     
     # For Q-learning agents, calculate final Q-values
-    q_agents = agents_df[agents_df['strategy'].str.contains('q_learning')]
+    q_learning_strategies = ['q_learning', 'q_learning_adaptive', 'lra_q', 'hysteretic_q', 'wolf_phc', 'ucb1_q']
+    q_agents = agents_df[agents_df['strategy'].isin(q_learning_strategies)]
+    
     if not q_agents.empty:
-        # Convert q_values string to dictionary if necessary
-        if isinstance(q_agents.iloc[0]['final_q_values'], str):
-            q_agents['q_values_dict'] = q_agents['final_q_values'].apply(
-                lambda x: json.loads(x.replace("'", "\"")) if isinstance(x, str) else x
-            )
-            avg_q_coop = np.mean([d.get('cooperate', 0) for d in q_agents['q_values_dict'] if d])
-            avg_q_defect = np.mean([d.get('defect', 0) for d in q_agents['q_values_dict'] if d])
-        else:
-            # Handle case where q_values are stored differently or are None
-            avg_q_coop = "N/A"
-            avg_q_defect = "N/A"
+        # Check which Q-values column exists in the dataframe
+        q_value_cols = [col for col in ['final_q_values', 'final_q_values_avg', 'full_q_values'] if col in q_agents.columns]
+        
+        if q_value_cols:
+            q_value_col = q_value_cols[0]  # Use the first found column
             
-        metrics['average_final_q_cooperate'] = avg_q_coop
-        metrics['average_final_q_defect'] = avg_q_defect
+            # Only process if the column is not empty
+            if not q_agents[q_value_col].isna().all():
+                # Check if the column contains dictionaries or strings
+                first_valid_value = q_agents[q_value_col].dropna().iloc[0] if not q_agents[q_value_col].dropna().empty else None
+                
+                # This column might contain any of these formats:
+                # 1. JSON string of whole Q-table
+                # 2. String representation of Python dict for Q-values
+                # 3. JSON string of Q-value averages (e.g., {"avg_cooperate": 1.2, "avg_defect": 0.8})
+                # 4. Direct dict object (if reading from in-memory data)
+                
+                if isinstance(first_valid_value, str):
+                    # Try to extract Q-values from string representations
+                    try:
+                        if 'avg_cooperate' in first_valid_value and 'avg_defect' in first_valid_value:
+                            # This is likely a summary dict
+                            q_values_list = []
+                            for val in q_agents[q_value_col].dropna():
+                                try:
+                                    q_dict = json.loads(val.replace("'", "\""))
+                                    q_values_list.append(q_dict)
+                                except:
+                                    continue
+                            
+                            if q_values_list:
+                                avg_q_coop = np.mean([d.get('avg_cooperate', 0) for d in q_values_list])
+                                avg_q_defect = np.mean([d.get('avg_defect', 0) for d in q_values_list])
+                                metrics['average_final_q_cooperate'] = avg_q_coop
+                                metrics['average_final_q_defect'] = avg_q_defect
+                        else:
+                            # This might be a full Q-table string or direct Q-values
+                            # Let's try to be conservative and only extract if we clearly see cooperate/defect
+                            if '"cooperate"' in first_valid_value or "'cooperate'" in first_valid_value:
+                                metrics['average_final_q_cooperate'] = "Found but complex format"
+                                metrics['average_final_q_defect'] = "Found but complex format"
+                    except Exception as e:
+                        print(f"Could not process Q-values in {q_value_col}: {e}")
+                        metrics['average_final_q_cooperate'] = "Error processing"
+                        metrics['average_final_q_defect'] = "Error processing"
+                elif isinstance(first_valid_value, dict):
+                    # Direct dictionary access
+                    if 'avg_cooperate' in first_valid_value and 'avg_defect' in first_valid_value:
+                        avg_q_coop = np.mean([d.get('avg_cooperate', 0) for d in q_agents[q_value_col].dropna()])
+                        avg_q_defect = np.mean([d.get('avg_defect', 0) for d in q_agents[q_value_col].dropna()])
+                    else:
+                        # Try direct cooperate/defect keys
+                        avg_q_coop = np.mean([d.get('cooperate', 0) for d in q_agents[q_value_col].dropna()])
+                        avg_q_defect = np.mean([d.get('defect', 0) for d in q_agents[q_value_col].dropna()])
+                    
+                    metrics['average_final_q_cooperate'] = avg_q_coop
+                    metrics['average_final_q_defect'] = avg_q_defect
+                else:
+                    # Unknown format, provide a placeholder
+                    metrics['average_final_q_cooperate'] = "Unknown format"
+                    metrics['average_final_q_defect'] = "Unknown format"
+            else:
+                # Column exists but all values are None/NaN
+                metrics['average_final_q_cooperate'] = "No data"
+                metrics['average_final_q_defect'] = "No data"
+        else:
+            # No Q-value columns found
+            metrics['average_final_q_cooperate'] = "No Q-value columns"
+            metrics['average_final_q_defect'] = "No Q-value columns"
+    else:
+        # No Q-learning agents found
+        metrics['average_final_q_cooperate'] = "No Q-learning agents"
+        metrics['average_final_q_defect'] = "No Q-learning agents"
     
     # Convert NumPy types to Python native types for JSON serialization
     def convert_to_serializable(obj):

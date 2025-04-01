@@ -7,7 +7,8 @@ for visualization purposes.
 
 import pandas as pd
 import numpy as np
-from typing import Dict, List
+import logging
+from typing import Dict, List, Optional, Any, Tuple, Union
 
 
 def get_payoffs_by_strategy(rounds_df: pd.DataFrame) -> pd.DataFrame:
@@ -53,20 +54,31 @@ def get_payoffs_by_strategy(rounds_df: pd.DataFrame) -> pd.DataFrame:
 
 
 def get_strategy_scores(agents_df: pd.DataFrame) -> pd.DataFrame:
-    """Calculate final scores by strategy."""
+    """Calculate final scores by strategy.
+    
+    Args:
+        agents_df: DataFrame containing agent-level data
+        
+    Returns:
+        DataFrame with columns: 'strategy', 'mean', 'std', 'min', 'max'
+    """
+    # Check for empty or None input
+    if agents_df is None or agents_df.empty:
+        logging.warning("Empty agents_df provided to get_strategy_scores")
+        return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
+    
     # Make a copy to avoid modifying the original
     df = agents_df.copy()
     
-    # Ensure final_score column is numeric
-    if 'final_score' in df.columns:
-        df['final_score'] = pd.to_numeric(df['final_score'], errors='coerce')
-    else:
-        # If final_score column doesn't exist, return empty dataframe with expected columns
+    # Ensure required columns exist
+    required_columns = ['strategy', 'final_score']
+    if not all(col in df.columns for col in required_columns):
+        missing = [col for col in required_columns if col not in df.columns]
+        logging.warning(f"Missing required columns in agents_df: {missing}")
         return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
     
-    # Handle empty dataframe case
-    if df.empty:
-        return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
+    # Ensure final_score column is numeric
+    df['final_score'] = pd.to_numeric(df['final_score'], errors='coerce')
     
     try:
         # Group by strategy, calculate average final score
@@ -74,13 +86,14 @@ def get_strategy_scores(agents_df: pd.DataFrame) -> pd.DataFrame:
         
         # Check if result is empty after groupby (can happen with all NaN)
         if scores.empty:
+            logging.warning("Empty result after groupby operation in get_strategy_scores")
             return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
             
         # Fill any NaN values with 0
         scores = scores.fillna(0)
         return scores
     except Exception as e:
-        print(f"Error in get_strategy_scores: {e}")
+        logging.error(f"Error in get_strategy_scores: {e}")
         # Return empty dataframe with expected columns
         return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
 

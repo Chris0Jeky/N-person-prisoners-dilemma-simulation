@@ -14,10 +14,13 @@ def generate_network_positions(G: nx.Graph, layout_type: str = "spring") -> Dict
     
     Args:
         G: NetworkX graph
-        layout_type: Type of layout algorithm to use
+        layout_type: Type of layout algorithm to use ('spring', 'circular', 'kamada_kawai', 'spectral', or 'random')
         
     Returns:
         Dictionary mapping node IDs to [x, y] positions
+        
+    Raises:
+        ValueError: If an invalid layout type is specified and the graph is too large for default layout
     """
     if layout_type == "spring":
         pos = nx.spring_layout(G, seed=42)
@@ -54,7 +57,27 @@ def create_network_figure(G: nx.Graph,
         
     Returns:
         Plotly figure
+        
+    Raises:
+        ValueError: If the layout_type is invalid
     """
+    # Check if the graph is empty
+    if G.number_of_nodes() == 0:
+        # Return an empty figure with a message
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Empty graph: No data to visualize",
+            showarrow=False,
+            font=dict(size=14),
+            xref="paper", yref="paper",
+            x=0.5, y=0.5
+        )
+        fig.update_layout(
+            title="Network Visualization",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        )
+        return fig
     # Generate node positions
     pos = generate_network_positions(G, layout_type)
     

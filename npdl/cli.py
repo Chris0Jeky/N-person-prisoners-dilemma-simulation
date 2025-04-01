@@ -46,63 +46,71 @@ def run_visualization():
 
 def run_simulation(args):
     """Run simulation with the specified arguments."""
-    # Import main module from original project
-    sys.path.insert(0, os.path.abspath("."))
-    
     try:
-        # Try importing from old structure first
-        from main import main as orig_main
+        from npdl.simulation import run_simulation as sim_runner
         
-        # Convert args back to a format expected by the original main function
-        sys.argv = ['main.py']
+        print("Starting simulation...")
+        # Convert args to parameters for the simulation runner
+        sim_config = {
+            'enhanced': args.enhanced,
+            'scenario_file': args.scenario_file if not args.enhanced else 'enhanced_scenarios.json',
+            'results_dir': args.results_dir,
+            'log_dir': args.log_dir,
+            'analyze': args.analyze,
+            'verbose': args.verbose
+        }
         
-        if args.enhanced:
-            sys.argv.append('--enhanced')
-        
-        if args.scenario_file and not args.enhanced:
-            sys.argv.extend(['--scenario_file', args.scenario_file])
-        
-        if args.results_dir:
-            sys.argv.extend(['--results_dir', args.results_dir])
-        
-        if args.log_dir:
-            sys.argv.extend(['--log_dir', args.log_dir])
-        
-        if args.analyze:
-            sys.argv.append('--analyze')
-        
-        if args.verbose:
-            sys.argv.append('--verbose')
-        
-        # Run the original main function
-        orig_main()
-    except ImportError as e:
-        print(f"Error: Could not import original main module: {e}")
-        return 1
-    
-    return 0
+        # Run the simulation with the given configuration
+        return sim_runner(**sim_config)
+    except ImportError:
+        # Fall back to main.py if the simulation module is not found
+        try:
+            from main import main as orig_main
+            
+            print("Using legacy simulation runner from main.py")
+            # Convert args back to a format expected by the original main function
+            sys.argv = ['main.py']
+            
+            if args.enhanced:
+                sys.argv.append('--enhanced')
+            
+            if args.scenario_file and not args.enhanced:
+                sys.argv.extend(['--scenario_file', args.scenario_file])
+            
+            if args.results_dir:
+                sys.argv.extend(['--results_dir', args.results_dir])
+            
+            if args.log_dir:
+                sys.argv.extend(['--log_dir', args.log_dir])
+            
+            if args.analyze:
+                sys.argv.append('--analyze')
+            
+            if args.verbose:
+                sys.argv.append('--verbose')
+            
+            # Run the original main function
+            orig_main()
+            return 0
+        except ImportError as e:
+            print(f"Error: Could not import simulation module: {e}")
+            print("Make sure the npdl package is properly installed.")
+            return 1
 
 
 def run_interactive():
     """Run the interactive gameplay mode."""
-    # Import main module from original project
-    sys.path.insert(0, os.path.abspath("."))
-    
     try:
-        # First try from the new structure
-        try:
-            from npdl.interactive.game import main as interactive_main
-        except ImportError:
-            # Then try from the old structure
-            from main.interactive_game import main as interactive_main
+        from npdl.interactive.game import main as interactive_main
         
+        print("Starting interactive game mode...")
         # Run the interactive game
         interactive_main()
+        return 0
     except ImportError as e:
         print(f"Error: Could not import interactive game module: {e}")
+        print("Make sure the npdl package is properly installed.")
         return 1
-    
-    return 0
 
 
 def main():

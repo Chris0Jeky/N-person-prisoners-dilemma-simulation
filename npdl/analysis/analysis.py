@@ -6,8 +6,9 @@ import seaborn as sns
 import networkx as nx
 import os
 import json
+from typing import Dict, List, Optional, Any, Tuple, Union
 
-def load_results(scenario_name, results_dir="results", base_filename="experiment_results"):
+def load_results(scenario_name: str, results_dir: str = "results", base_filename: str = "experiment_results"):
     """Load experiment results for a given scenario.
     
     Args:
@@ -17,44 +18,42 @@ def load_results(scenario_name, results_dir="results", base_filename="experiment
         
     Returns:
         Tuple of (agents_df, rounds_df)
+        
+    Raises:
+        FileNotFoundError: If the scenario directory or result files are not found
     """
-    # First check if scenario has the new directory structure
     scenario_dir = os.path.join(results_dir, scenario_name)
     
-    if os.path.isdir(scenario_dir):
-        # New directory structure with multiple runs
-        all_agents = []
-        all_rounds = []
+    if not os.path.isdir(scenario_dir):
+        raise FileNotFoundError(f"Scenario directory not found: {scenario_dir}")
+    
+    # Directory structure with multiple runs
+    all_agents = []
+    all_rounds = []
+    
+    # Look for run directories
+    run_dirs = [d for d in os.listdir(scenario_dir) if d.startswith('run_')]
+    if not run_dirs:
+        raise FileNotFoundError(f"No run directories found in scenario: {scenario_name}")
         
-        # Look for run directories
-        run_dirs = [d for d in os.listdir(scenario_dir) if d.startswith('run_')]
-        if run_dirs:
-            for run_dir in run_dirs:
-                run_path = os.path.join(scenario_dir, run_dir)
-                agents_file = os.path.join(run_path, f"{base_filename}_agents.csv")
-                rounds_file = os.path.join(run_path, f"{base_filename}_rounds.csv")
-                
-                if os.path.exists(agents_file) and os.path.exists(rounds_file):
-                    agents_df = pd.read_csv(agents_file)
-                    rounds_df = pd.read_csv(rounds_file)
-                    all_agents.append(agents_df)
-                    all_rounds.append(rounds_df)
-            
-            if all_agents and all_rounds:
-                agents_df = pd.concat(all_agents, ignore_index=True)
-                rounds_df = pd.concat(all_rounds, ignore_index=True)
-                return agents_df, rounds_df
-    
-    # Fall back to the legacy format if new structure not found
-    agents_file = os.path.join(results_dir, f"{base_filename}_{scenario_name}_agents.csv")
-    rounds_file = os.path.join(results_dir, f"{base_filename}_{scenario_name}_rounds.csv")
-    
-    if not os.path.exists(agents_file) or not os.path.exists(rounds_file):
-        raise FileNotFoundError(f"Results files not found for scenario: {scenario_name}")
-    
-    agents_df = pd.read_csv(agents_file)
-    rounds_df = pd.read_csv(rounds_file)
-    
+    for run_dir in run_dirs:
+        run_path = os.path.join(scenario_dir, run_dir)
+        agents_file = os.path.join(run_path, f"{base_filename}_agents.csv")
+        rounds_file = os.path.join(run_path, f"{base_filename}_rounds.csv")
+        
+        if os.path.exists(agents_file) and os.path.exists(rounds_file):
+            try:
+                agents_df = pd.read_csv(agents_file)
+                rounds_df = pd.read_csv(rounds_file)
+                all_agents.append(agents_df)
+                all_rounds.append(rounds_df)
+            except Exception as e:
+                logging.error(f"Error reading files from {run_path}: {e}")
+    if not all_agents or not all_rounds:
+        raise FileNotFoundError(f"No valid run data found for scenario: {scenario_name}")
+        
+    agents_df = pd.concat(all_agents, ignore_index=True)
+    rounds_df = pd.concat(all_rounds, ignore_index=True)
     return agents_df, rounds_df
 
 def plot_cooperation_rate(rounds_df, title=None, figsize=(10, 6), save_path=None):
@@ -247,7 +246,7 @@ def visualize_network(environment, metric=None, title=None, figsize=(10, 10), sa
     
     return plt
 
-def create_analysis_report(scenario_name, results_dir="results", output_dir="analysis_results"):
+def create_analysis_report(scenario_name: str, results_dir: str = "results", output_dir: str = "analysis_results") -> Dict[str, Any]:
     """Generate a comprehensive analysis report for a scenario.
     
     Args:
@@ -257,6 +256,10 @@ def create_analysis_report(scenario_name, results_dir="results", output_dir="ana
         
     Returns:
         Dictionary containing analysis metrics
+    
+    Raises:
+        FileNotFoundError: If the scenario results cannot be loaded
+        IOError: If there's an error writing output files
     """
     # Create output directory if it doesn't exist
     if not os.path.exists(output_dir):
@@ -424,7 +427,7 @@ def create_analysis_report(scenario_name, results_dir="results", output_dir="ana
     
     return metrics
 
-def analyze_multiple_scenarios(scenarios, results_dir="results", output_dir="analysis_results"):
+def analyze_multiple_scenarios(scenarios: List[str], results_dir: str = "results", output_dir: str = "analysis_results") -> Optional[pd.DataFrame]:
     """Analyze multiple scenarios and generate a comparative report.
     
     Args:
@@ -433,7 +436,10 @@ def analyze_multiple_scenarios(scenarios, results_dir="results", output_dir="ana
         output_dir: Directory to save analysis results
         
     Returns:
-        DataFrame containing comparative metrics
+        DataFrame containing comparative metrics, or None if no scenarios were successfully analyzed
+    
+    Raises:
+        IOError: If there's an error creating the output directory
     """
     # Create output directory if it doesn't exist
     if not os.path.exists(output_dir):

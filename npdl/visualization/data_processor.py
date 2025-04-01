@@ -7,24 +7,34 @@ for visualization purposes.
 
 import pandas as pd
 import numpy as np
-from typing import Dict, List
+import logging
+from typing import Dict, List, Optional, Any, Tuple, Union
 
 
 def get_payoffs_by_strategy(rounds_df: pd.DataFrame) -> pd.DataFrame:
-    """Calculate average payoffs by round and strategy."""
+    """Calculate average payoffs by round and strategy.
+    
+    Args:
+        rounds_df: DataFrame containing round-by-round data
+        
+    Returns:
+        DataFrame with columns: 'round', 'strategy', and 'payoff'
+    """
     # Make a copy to avoid modifying the original
+    if rounds_df is None or rounds_df.empty:
+        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+        
     df = rounds_df.copy()
     
-    # Ensure payoff column is numeric
-    if 'payoff' in df.columns:
-        df['payoff'] = pd.to_numeric(df['payoff'], errors='coerce')
-    else:
-        # If payoff column doesn't exist, return empty dataframe with expected columns
-        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+    # Ensure required columns exist
+    required_columns = ['round', 'strategy', 'payoff']
+    if not all(col in df.columns for col in required_columns):
+        missing = [col for col in required_columns if col not in df.columns]
+        logging.warning(f"Missing required columns in rounds_df: {missing}")
+        return pd.DataFrame(columns=required_columns)
     
-    # Handle empty dataframe case
-    if df.empty:
-        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+    # Ensure payoff column is numeric
+    df['payoff'] = pd.to_numeric(df['payoff'], errors='coerce')
         
     # Group by round and strategy, calculate average payoff
     # Use dropna=True to handle NaN values
@@ -33,30 +43,42 @@ def get_payoffs_by_strategy(rounds_df: pd.DataFrame) -> pd.DataFrame:
         
         # Check if result is empty after groupby (can happen with all NaN)
         if payoffs.empty:
-            return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+            logging.warning("Empty result after groupby operation in get_payoffs_by_strategy")
+            return pd.DataFrame(columns=required_columns)
             
         return payoffs
     except Exception as e:
-        print(f"Error in get_payoffs_by_strategy: {e}")
+        logging.error(f"Error in get_payoffs_by_strategy: {e}")
         # Return empty dataframe with expected columns
-        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+        return pd.DataFrame(columns=required_columns)
 
 
 def get_strategy_scores(agents_df: pd.DataFrame) -> pd.DataFrame:
-    """Calculate final scores by strategy."""
+    """Calculate final scores by strategy.
+    
+    Args:
+        agents_df: DataFrame containing agent-level data
+        
+    Returns:
+        DataFrame with columns: 'strategy', 'mean', 'std', 'min', 'max'
+    """
+    # Check for empty or None input
+    if agents_df is None or agents_df.empty:
+        logging.warning("Empty agents_df provided to get_strategy_scores")
+        return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
+    
     # Make a copy to avoid modifying the original
     df = agents_df.copy()
     
-    # Ensure final_score column is numeric
-    if 'final_score' in df.columns:
-        df['final_score'] = pd.to_numeric(df['final_score'], errors='coerce')
-    else:
-        # If final_score column doesn't exist, return empty dataframe with expected columns
+    # Ensure required columns exist
+    required_columns = ['strategy', 'final_score']
+    if not all(col in df.columns for col in required_columns):
+        missing = [col for col in required_columns if col not in df.columns]
+        logging.warning(f"Missing required columns in agents_df: {missing}")
         return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
     
-    # Handle empty dataframe case
-    if df.empty:
-        return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
+    # Ensure final_score column is numeric
+    df['final_score'] = pd.to_numeric(df['final_score'], errors='coerce')
     
     try:
         # Group by strategy, calculate average final score
@@ -64,23 +86,56 @@ def get_strategy_scores(agents_df: pd.DataFrame) -> pd.DataFrame:
         
         # Check if result is empty after groupby (can happen with all NaN)
         if scores.empty:
+            logging.warning("Empty result after groupby operation in get_strategy_scores")
             return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
             
         # Fill any NaN values with 0
         scores = scores.fillna(0)
         return scores
     except Exception as e:
-        print(f"Error in get_strategy_scores: {e}")
+        logging.error(f"Error in get_strategy_scores: {e}")
         # Return empty dataframe with expected columns
         return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
 
 
 def prepare_network_data(agents_df: pd.DataFrame, 
                          rounds_df: pd.DataFrame, 
-                         round_num: int = None) -> Dict:
-    """Prepare data for network visualization."""
-    # Handle empty dataframes
-    if agents_df.empty or rounds_df.empty:
+                         round_num: Optional[int] = None) -> Dict[str, Any]:
+    """Prepare data for network visualization.
+    
+    Args:
+        agents_df: DataFrame containing agent-level data
+        rounds_df: DataFrame containing round-by-round data
+        round_num: Round number to visualize (if None, uses the last round)
+        
+    Returns:
+        Dictionary with 'nodes', 'edges', and 'round' keys
+    """
+    # Handle empty or None dataframes
+    if agents_df is None or rounds_df is None or agents_df.empty or rounds_df.empty:
+        logging.warning("Empty dataframes provided to prepare_network_data")
+        return {
+            'nodes': [],
+            'edges': [],
+            'round': round_num or 0
+        }
+    
+    # Ensure required columns exist
+    required_agent_columns = ['agent_id', 'strategy', 'final_score']
+    required_round_columns = ['round', 'agent_id', 'move', 'payoff']
+    
+    if not all(col in agents_df.columns for col in required_agent_columns):
+        missing = [col for col in required_agent_columns if col not in agents_df.columns]
+        logging.warning(f"Missing required columns in agents_df: {missing}")
+        return {
+            'nodes': [],
+            'edges': [],
+            'round': round_num or 0
+        }
+        
+    if not all(col in rounds_df.columns for col in required_round_columns):
+        missing = [col for col in required_round_columns if col not in rounds_df.columns]
+        logging.warning(f"Missing required columns in rounds_df: {missing}")
         return {
             'nodes': [],
             'edges': [],
@@ -95,13 +150,18 @@ def prepare_network_data(agents_df: pd.DataFrame,
         # Filter rounds data for the specific round
         round_data = rounds_df[rounds_df['round'] == round_num]
         
+        # If no data for this round, return empty result
+        if round_data.empty:
+            logging.warning(f"No data found for round {round_num}")
+            return {
+                'nodes': [],
+                'edges': [],
+                'round': round_num
+            }
+        
         # Prepare nodes data
         nodes = []
         for _, agent in agents_df.iterrows():
-            # Safely get agent_id
-            if 'agent_id' not in agent:
-                continue
-                
             agent_id = agent['agent_id']
             agent_round_data = round_data[round_data['agent_id'] == agent_id]
             
@@ -137,11 +197,11 @@ def prepare_network_data(agents_df: pd.DataFrame,
         
         return {
             'nodes': nodes,
-            'edges': [],  # Placeholder
+            'edges': [],  # Placeholder - edges would be provided by environment
             'round': round_num
         }
     except Exception as e:
-        print(f"Error in prepare_network_data: {e}")
+        logging.error(f"Error in prepare_network_data: {e}")
         return {
             'nodes': [],
             'edges': [],

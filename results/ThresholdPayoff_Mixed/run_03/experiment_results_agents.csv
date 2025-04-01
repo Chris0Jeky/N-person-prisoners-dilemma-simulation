@@ -1,0 +1,31 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+ThresholdPayoff_Mixed,3,0,q_learning,599.844827586207,"{'avg_cooperate': 3.8579834371991293, 'avg_defect': 6.423992206036485}","{'initial': {'cooperate': 0.1913793103448276, 'defect': 0.0}, (0.8,): {'cooperate': 2.6375457568896437, 'defect': 10.479176538352268}, (0.6,): {'cooperate': 8.461065577506652, 'defect': 12.911240252387362}, (0.4,): {'cooperate': 4.141943104055393, 'defect': 2.3055520334063107}}"
+ThresholdPayoff_Mixed,3,1,q_learning,662.2413793103441,"{'avg_cooperate': 4.874706406911197, 'avg_defect': 6.426059308457616}","{'initial': {'cooperate': 0.1913793103448276, 'defect': 0.0}, (0.8,): {'cooperate': 3.873091000926088, 'defect': 3.207325013621179}, (0.6,): {'cooperate': 12.084268957341417, 'defect': 15.674828709877161}, (0.4,): {'cooperate': 3.3500863590324577, 'defect': 6.822083510332125}}"
+ThresholdPayoff_Mixed,3,2,q_learning,809.0603448275849,"{'avg_cooperate': 5.999438976926895, 'avg_defect': 5.656652351393776}","{'initial': {'cooperate': 0.1913793103448276, 'defect': 0.0}, (0.8,): {'cooperate': 4.437241181838815, 'defect': 2.963098709701355}, (0.6,): {'cooperate': 15.42450271246284, 'defect': 17.953274689660613}, (0.4,): {'cooperate': 3.9446327030611004, 'defect': 1.7102360062131323}}"
+ThresholdPayoff_Mixed,3,3,q_learning,493.31896551724213,"{'avg_cooperate': 4.044832158008934, 'avg_defect': 3.903853564299213}","{'initial': {'cooperate': 0.1913793103448276, 'defect': 0.0}, (0.8,): {'cooperate': 4.020240626649324, 'defect': 1.4502076009874245}, (0.6,): {'cooperate': 7.76170646524809, 'defect': 11.621565080010162}, (0.4,): {'cooperate': 4.206002229793496, 'defect': 2.5436415761992652}}"
+ThresholdPayoff_Mixed,3,4,q_learning,548.0689655172417,"{'avg_cooperate': 4.399309761015403, 'avg_defect': 4.588790288393478}","{'initial': {'cooperate': 0.1913793103448276, 'defect': 0.0}, (0.8,): {'cooperate': 3.748997135931076, 'defect': 2.7271319919944483}, (0.6,): {'cooperate': 9.595246860092022, 'defect': 13.943551460779874}, (0.4,): {'cooperate': 4.061615737693687, 'defect': 1.6844777007995906}}"
+ThresholdPayoff_Mixed,3,5,q_learning,909.9396551724117,"{'avg_cooperate': 5.260004426770342, 'avg_defect': 7.9037860398526645}","{'initial': {'cooperate': 0.1913793103448276, 'defect': 0.0}, (0.8,): {'cooperate': 4.425929388267346, 'defect': 11.484721565863428}, (0.6,): {'cooperate': 12.66386860762996, 'defect': 17.986550003637756}, (0.4,): {'cooperate': 3.758840400839234, 'defect': 2.143872589909474}}"
+ThresholdPayoff_Mixed,3,6,q_learning,638.3189655172406,"{'avg_cooperate': 4.45588382047722, 'avg_defect': 6.620860927692777}","{'initial': {'cooperate': 0.1913793103448276, 'defect': 0.0}, (0.8,): {'cooperate': 3.6889950700965004, 'defect': 9.863524846699121}, (0.6,): {'cooperate': 10.025698073460887, 'defect': 14.347892518035529}, (0.4,): {'cooperate': 3.917462828006665, 'defect': 2.272026346036459}}"
+ThresholdPayoff_Mixed,3,7,q_learning,691.0517241379301,"{'avg_cooperate': 4.835964987171197, 'avg_defect': 6.7247693519158425}","{'initial': {'cooperate': 0.1913793103448276, 'defect': 0.0}, (0.8,): {'cooperate': 4.252341809505041, 'defect': 1.6196875622852025}, (0.6,): {'cooperate': 11.60436448595233, 'defect': 15.87442974367185}, (0.4,): {'cooperate': 3.2957743428825896, 'defect': 9.404960101706314}}"
+ThresholdPayoff_Mixed,3,8,q_learning,886.2844827586185,"{'avg_cooperate': 6.042396947355533, 'avg_defect': 8.104184420537726}","{'initial': {'cooperate': 0.1913793103448276, 'defect': 0.0}, (0.8,): {'cooperate': 4.34679271149624, 'defect': 11.398729913034984}, (0.6,): {'cooperate': 16.071499586853687, 'defect': 17.82933508778557}, (0.4,): {'cooperate': 3.559916180727379, 'defect': 3.188672681330347}}"
+ThresholdPayoff_Mixed,3,9,q_learning,760.4137931034469,"{'avg_cooperate': 4.4513113150828305, 'avg_defect': 4.3851386248504625}","{'initial': {'cooperate': 0.0, 'defect': 0.37931034482758624}, (1.0,): {'cooperate': 0.13706896551724143, 'defect': 0.0}, (0.8,): {'cooperate': 4.310713173189041, 'defect': 1.3850550089053546}, (0.6,): {'cooperate': 14.134675781953302, 'defect': 17.640821806053218}, (0.4,): {'cooperate': 3.674098654754564, 'defect': 2.5205059644661527}}"
+ThresholdPayoff_Mixed,3,10,tit_for_tat,699.1982758620693,,
+ThresholdPayoff_Mixed,3,11,tit_for_tat,710.7931034482757,,
+ThresholdPayoff_Mixed,3,12,tit_for_tat,710.2327586206895,,
+ThresholdPayoff_Mixed,3,13,tit_for_tat,679.51724137931,,
+ThresholdPayoff_Mixed,3,14,tit_for_tat,719.0172413793102,,
+ThresholdPayoff_Mixed,3,15,tit_for_tat,720.7500000000001,,
+ThresholdPayoff_Mixed,3,16,tit_for_tat,708.3189655172414,,
+ThresholdPayoff_Mixed,3,17,tit_for_tat,688.2155172413788,,
+ThresholdPayoff_Mixed,3,18,tit_for_tat,680.9999999999998,,
+ThresholdPayoff_Mixed,3,19,tit_for_tat,694.6551724137931,,
+ThresholdPayoff_Mixed,3,20,always_cooperate,372.07758620689737,,
+ThresholdPayoff_Mixed,3,21,always_cooperate,372.07758620689737,,
+ThresholdPayoff_Mixed,3,22,always_cooperate,372.07758620689737,,
+ThresholdPayoff_Mixed,3,23,always_cooperate,372.07758620689737,,
+ThresholdPayoff_Mixed,3,24,always_cooperate,372.07758620689737,,
+ThresholdPayoff_Mixed,3,25,always_defect,1044.5862068965503,,
+ThresholdPayoff_Mixed,3,26,always_defect,1044.5862068965503,,
+ThresholdPayoff_Mixed,3,27,always_defect,1044.5862068965503,,
+ThresholdPayoff_Mixed,3,28,always_defect,1044.5862068965503,,
+ThresholdPayoff_Mixed,3,29,always_defect,1044.5862068965503,,

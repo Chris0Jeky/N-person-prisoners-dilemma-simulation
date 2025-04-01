@@ -1,0 +1,21 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+FullyConnected_Mixed,5,0,q_learning,883.0526315789514,"{'avg_cooperate': 5.684313605286222, 'avg_defect': 6.820227174669182}","{'initial': {'cooperate': 0.20526315789473687, 'defect': 0.0}, (0.8,): {'cooperate': 0.0, 'defect': 0.3315789473684211}, (0.6,): {'cooperate': 3.7954449916677, 'defect': 2.857342909301152}, (0.4,): {'cooperate': 16.79725957419474, 'defect': 18.891555109784466}, (0.2,): {'cooperate': 7.623600302673932, 'defect': 12.020658906891875}}"
+FullyConnected_Mixed,5,1,q_learning,921.2105263157945,"{'avg_cooperate': 5.675799515168246, 'avg_defect': 7.997631418428179}","{'initial': {'cooperate': 0.20526315789473687, 'defect': 0.0}, (0.8,): {'cooperate': 0.15789473684210528, 'defect': 0.0}, (0.6,): {'cooperate': 4.330481233354419, 'defect': 9.568096757300621}, (0.4,): {'cooperate': 16.661756031705504, 'defect': 18.205756905664632}, (0.2,): {'cooperate': 7.0236024160444686, 'defect': 12.21430342917564}}"
+FullyConnected_Mixed,5,2,q_learning,851.0526315789515,"{'avg_cooperate': 5.78618921846832, 'avg_defect': 6.340308196371666}","{'initial': {'cooperate': 0.20526315789473687, 'defect': 0.0}, (0.8,): {'cooperate': 0.15789473684210528, 'defect': 0.0}, (0.6,): {'cooperate': 3.669148338661757, 'defect': 1.5248127781110208}, (0.4,): {'cooperate': 16.624171914495506, 'defect': 18.47836098298286}, (0.2,): {'cooperate': 8.274467944447492, 'defect': 11.69836722076445}}"
+FullyConnected_Mixed,5,3,q_learning,738.8421052631597,"{'avg_cooperate': 4.9675265002191455, 'avg_defect': 4.872356054817795}","{'initial': {'cooperate': 0.20526315789473687, 'defect': 0.0}, (0.8,): {'cooperate': 0.15789473684210528, 'defect': 0.0}, (0.6,): {'cooperate': 3.3016177604279817, 'defect': 2.26874163955931}, (0.4,): {'cooperate': 16.795204720379, 'defect': 18.428037029164898}, (0.2,): {'cooperate': 4.377652125551904, 'defect': 3.6650016053647683}}"
+FullyConnected_Mixed,5,4,q_learning,828.8421052631619,"{'avg_cooperate': 5.046147718741548, 'avg_defect': 7.642889470376373}","{'initial': {'cooperate': 0.20526315789473687, 'defect': 0.0}, (0.8,): {'cooperate': 0.15789473684210528, 'defect': 0.0}, (0.6,): {'cooperate': 2.7418563429470306, 'defect': 8.399249723555732}, (0.4,): {'cooperate': 14.632066321558884, 'defect': 17.507322800006673}, (0.2,): {'cooperate': 7.493658034464987, 'defect': 12.307874828319463}}"
+FullyConnected_Mixed,5,5,tit_for_tat,855.7368421052671,,
+FullyConnected_Mixed,5,6,tit_for_tat,856.0000000000034,,
+FullyConnected_Mixed,5,7,tit_for_tat,877.4210526315833,,
+FullyConnected_Mixed,5,8,tit_for_tat,849.5263157894777,,
+FullyConnected_Mixed,5,9,tit_for_tat,865.4210526315829,,
+FullyConnected_Mixed,5,10,always_defect,1053.2631578947432,,
+FullyConnected_Mixed,5,11,always_defect,1053.2631578947432,,
+FullyConnected_Mixed,5,12,always_defect,1053.2631578947432,,
+FullyConnected_Mixed,5,13,always_defect,1053.2631578947432,,
+FullyConnected_Mixed,5,14,always_defect,1053.2631578947432,,
+FullyConnected_Mixed,5,15,random,702.4736842105286,,
+FullyConnected_Mixed,5,16,random,670.5789473684226,,
+FullyConnected_Mixed,5,17,random,662.5789473684235,,
+FullyConnected_Mixed,5,18,random,665.5789473684232,,
+FullyConnected_Mixed,5,19,random,691.0526315789493,,

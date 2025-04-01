@@ -24,7 +24,8 @@ from npdl.visualization.data_loader import (
     load_scenario_results,
     get_cooperation_rates,
     get_strategy_cooperation_rates,
-    load_network_structure
+    load_network_structure,
+    get_available_runs
 )
 from npdl.visualization.data_processor import (
     get_payoffs_by_strategy,
@@ -33,6 +34,10 @@ from npdl.visualization.data_processor import (
     prepare_network_data
 )
 from npdl.visualization.network_viz import create_network_figure
+from npdl.visualization.matplotlib_config import configure_matplotlib
+
+# Configure matplotlib to reduce debug output
+configure_matplotlib()
 
 # Initialize the Flask server
 server = Flask(__name__)
@@ -64,6 +69,13 @@ app.layout = dbc.Container([
             dcc.Dropdown(
                 id="scenario-dropdown",
                 options=[],  # Will be populated on load
+                value=None,
+                className="mb-3"
+            ),
+            html.Label("Select Run:"),
+            dcc.Dropdown(
+                id="run-dropdown",
+                options=[],  # Will be populated based on scenario
                 value=None,
                 className="mb-3"
             ),
@@ -163,6 +175,31 @@ def populate_scenarios(dummy):
         return []
 
 
+# Update run dropdown when scenario is selected
+@app.callback(
+    [Output("run-dropdown", "options"),
+     Output("run-dropdown", "value")],
+    [Input("scenario-dropdown", "value")]
+)
+def update_run_dropdown(scenario):
+    if scenario is None:
+        return [], None
+    
+    try:
+        runs = get_available_runs(scenario)
+        options = [{"label": f"Run {r}", "value": r} for r in runs]
+        
+        # Add "All Runs" option
+        if len(runs) > 1:
+            options.insert(0, {"label": "All Runs (Aggregated)", "value": "all"})
+            return options, "all"
+        
+        return options, runs[0] if runs else None
+    except Exception as e:
+        print(f"Error loading runs: {e}")
+        return [], None
+
+
 # Update controls based on selected scenario
 @app.callback(
     [Output("strategy-checklist", "options"),
@@ -176,15 +213,19 @@ def populate_scenarios(dummy):
      Output("network-round-slider", "value"),
      Output("network-round-slider", "marks")],
     [Input("scenario-dropdown", "value"),
+     Input("run-dropdown", "value"),
      Input("load-data-button", "n_clicks")]
 )
-def update_controls(scenario, n_clicks):
+def update_controls(scenario, run_value, n_clicks):
     if scenario is None:
         return [], [], 0, 100, [0, 100], None, 0, 100, 0, None
     
     try:
+        # Convert 'all' to None for aggregated data
+        run_number = None if run_value == 'all' else run_value
+        
         # Load scenario data
-        agents_df, rounds_df = load_scenario_results(scenario)
+        agents_df, rounds_df = load_scenario_results(scenario, run_number=run_number)
         
         # Get unique strategies
         strategies = agents_df['strategy'].unique().tolist()
@@ -224,17 +265,33 @@ def update_controls(scenario, n_clicks):
 @app.callback(
     Output("cooperation-graph", "figure"),
     [Input("scenario-dropdown", "value"),
+     Input("run-dropdown", "value"),
      Input("strategy-checklist", "value"),
      Input("round-slider", "value"),
      Input("load-data-button", "n_clicks")]
 )
-def update_cooperation_graph(scenario, selected_strategies, round_range, n_clicks):
-    if scenario is None or not selected_strategies:
-        return go.Figure()
+def update_cooperation_graph(scenario, run_value, selected_strategies, round_range, n_clicks):
+    if scenario is None or selected_strategies is None or len(selected_strategies) == 0:
+        # Return empty figure with informational message
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Select a scenario and strategies to view cooperation rates",
+            showarrow=False,
+            font=dict(size=14)
+        )
+        fig.update_layout(
+            title="Cooperation Rate Over Time",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        )
+        return fig
     
     try:
+        # Convert 'all' to None for aggregated data
+        run_number = None if run_value == 'all' else run_value
+        
         # Load scenario data
-        agents_df, rounds_df = load_scenario_results(scenario)
+        agents_df, rounds_df = load_scenario_results(scenario, run_number=run_number)
         
         # Filter by round range
         min_round, max_round = round_range
@@ -270,8 +327,10 @@ def update_cooperation_graph(scenario, selected_strategies, round_range, n_click
             )
         )
         
-        # Update layout
+        # Handle run information in title
+        run_info = f" (Run {run_value})" if run_value != 'all' and run_value is not None else " (All Runs)"
         fig.update_layout(
+            title=f"Cooperation Rate Over Time by Strategy{run_info}",
             xaxis_title="Round",
             yaxis_title="Cooperation Rate",
             yaxis=dict(range=[0, 1]),
@@ -282,24 +341,52 @@ def update_cooperation_graph(scenario, selected_strategies, round_range, n_click
         return fig
     except Exception as e:
         print(f"Error updating cooperation graph: {e}")
-        return go.Figure()
+        # Return empty figure with error message
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error loading data: {str(e)}",
+            showarrow=False,
+            font=dict(size=14, color="red")
+        )
+        fig.update_layout(
+            title="Error Loading Cooperation Rate Data",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        )
+        return fig
 
 
 # Update payoff graph
 @app.callback(
     Output("payoff-graph", "figure"),
     [Input("scenario-dropdown", "value"),
+     Input("run-dropdown", "value"),
      Input("strategy-checklist", "value"),
      Input("round-slider", "value"),
      Input("load-data-button", "n_clicks")]
 )
-def update_payoff_graph(scenario, selected_strategies, round_range, n_clicks):
-    if scenario is None or not selected_strategies:
-        return go.Figure()
+def update_payoff_graph(scenario, run_value, selected_strategies, round_range, n_clicks):
+    if scenario is None or selected_strategies is None or len(selected_strategies) == 0:
+        # Return empty figure with informational message
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Select a scenario and strategies to view payoffs",
+            showarrow=False,
+            font=dict(size=14)
+        )
+        fig.update_layout(
+            title="Average Payoff Over Time",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        )
+        return fig
     
     try:
+        # Convert 'all' to None for aggregated data
+        run_number = None if run_value == 'all' else run_value
+        
         # Load scenario data
-        agents_df, rounds_df = load_scenario_results(scenario)
+        agents_df, rounds_df = load_scenario_results(scenario, run_number=run_number)
         
         # Filter by round range
         min_round, max_round = round_range
@@ -312,13 +399,16 @@ def update_payoff_graph(scenario, selected_strategies, round_range, n_clicks):
         # Calculate payoffs by strategy
         payoffs = get_payoffs_by_strategy(filtered_rounds)
         
+        # Handle run information in title
+        run_info = f" (Run {run_value})" if run_value != 'all' and run_value is not None else " (All Runs)"
+        
         # Create figure
         fig = px.line(
             payoffs, 
             x="round", 
             y="payoff", 
             color="strategy",
-            title="Average Payoff Over Time by Strategy",
+            title=f"Average Payoff Over Time by Strategy{run_info}",
             labels={"payoff": "Average Payoff", "round": "Round"},
             color_discrete_map=strategy_colors
         )
@@ -334,26 +424,57 @@ def update_payoff_graph(scenario, selected_strategies, round_range, n_clicks):
         return fig
     except Exception as e:
         print(f"Error updating payoff graph: {e}")
-        return go.Figure()
+        # Return empty figure with error message
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error loading data: {str(e)}",
+            showarrow=False,
+            font=dict(size=14, color="red")
+        )
+        fig.update_layout(
+            title="Error Loading Payoff Data",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        )
+        return fig
 
 
 # Update score graph
 @app.callback(
     Output("score-graph", "figure"),
     [Input("scenario-dropdown", "value"),
+     Input("run-dropdown", "value"),
      Input("strategy-checklist", "value"),
      Input("load-data-button", "n_clicks")]
 )
-def update_score_graph(scenario, selected_strategies, n_clicks):
-    if scenario is None or not selected_strategies:
-        return go.Figure()
+def update_score_graph(scenario, run_value, selected_strategies, n_clicks):
+    if scenario is None or selected_strategies is None or len(selected_strategies) == 0:
+        # Return empty figure with informational message
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Select a scenario and strategies to view final scores",
+            showarrow=False,
+            font=dict(size=14)
+        )
+        fig.update_layout(
+            title="Distribution of Final Scores",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        )
+        return fig
     
     try:
+        # Convert 'all' to None for aggregated data
+        run_number = None if run_value == 'all' else run_value
+        
         # Load scenario data
-        agents_df, rounds_df = load_scenario_results(scenario)
+        agents_df, rounds_df = load_scenario_results(scenario, run_number=run_number)
         
         # Filter by selected strategies
         filtered_agents = agents_df[agents_df['strategy'].isin(selected_strategies)]
+        
+        # Handle run information in title
+        run_info = f" (Run {run_value})" if run_value != 'all' and run_value is not None else " (All Runs)"
         
         # Create figure
         fig = px.box(
@@ -361,7 +482,7 @@ def update_score_graph(scenario, selected_strategies, n_clicks):
             x="strategy", 
             y="final_score",
             color="strategy",
-            title="Distribution of Final Scores by Strategy",
+            title=f"Distribution of Final Scores by Strategy{run_info}",
             labels={"final_score": "Final Score", "strategy": "Strategy"},
             color_discrete_map=strategy_colors
         )
@@ -377,23 +498,51 @@ def update_score_graph(scenario, selected_strategies, n_clicks):
         return fig
     except Exception as e:
         print(f"Error updating score graph: {e}")
-        return go.Figure()
+        # Return empty figure with error message
+        fig = go.Figure()
+        fig.add_annotation(
+            text=f"Error loading data: {str(e)}",
+            showarrow=False,
+            font=dict(size=14, color="red")
+        )
+        fig.update_layout(
+            title="Error Loading Score Data",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        )
+        return fig
 
 
 # Update network graph
 @app.callback(
     Output("network-graph", "figure"),
     [Input("scenario-dropdown", "value"),
+     Input("run-dropdown", "value"),
      Input("network-round-slider", "value"),
      Input("load-data-button", "n_clicks")]
 )
-def update_network_graph(scenario, round_num, n_clicks):
+def update_network_graph(scenario, run_value, round_num, n_clicks):
     if scenario is None:
-        return go.Figure()
+        # Return empty figure with informational message
+        fig = go.Figure()
+        fig.add_annotation(
+            text="Select a scenario to view network structure",
+            showarrow=False,
+            font=dict(size=14)
+        )
+        fig.update_layout(
+            title="Network Visualization",
+            xaxis=dict(showgrid=False, zeroline=False, showticklabels=False),
+            yaxis=dict(showgrid=False, zeroline=False, showticklabels=False)
+        )
+        return fig
     
     try:
+        # Use run 0 if 'all' is selected for network visualization
+        run_number = 0 if run_value == 'all' else (run_value or 0)
+        
         # Load network structure
-        G, network_data = load_network_structure(scenario)
+        G, network_data = load_network_structure(scenario, run_number=run_number)
         
         # If network data is not available
         if not network_data:
@@ -411,7 +560,7 @@ def update_network_graph(scenario, round_num, n_clicks):
             return fig
         
         # Load agent and round data for additional information
-        agents_df, rounds_df = load_scenario_results(scenario)
+        agents_df, rounds_df = load_scenario_results(scenario, run_number=run_number)
         
         # Filter rounds data for the specific round
         if round_num is not None:
@@ -441,8 +590,11 @@ def update_network_graph(scenario, round_num, n_clicks):
                     'payoff': payoff
                 }
         
+        # Handle run information in title
+        run_info = f" (Run {run_value})" if run_value != 'all' and run_value is not None else " (Run 0)"
+        
         # Create network visualization
-        network_title = f"Network Visualization - Round {round_num}"
+        network_title = f"Network Visualization - Round {round_num}{run_info}"
         fig = create_network_figure(
             G, 
             node_data=node_data,
@@ -482,7 +634,7 @@ def update_network_graph(scenario, round_num, n_clicks):
         fig.add_annotation(
             text=f"Error visualizing network: {str(e)}",
             showarrow=False,
-            font=dict(size=14)
+            font=dict(size=14, color="red")
         )
         fig.update_layout(
             title="Network Visualization Error",

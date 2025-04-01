@@ -160,13 +160,15 @@ def log_round_stats(round_num, agents, moves, payoffs, logger=None, logging_inte
             strategy_coop_rate = sum(1 for m in strategy_moves if m == "cooperate") / len(strategy_moves) if strategy_moves else 0
             logger.debug(f"  {strategy} cooperation rate: {strategy_coop_rate:.2f}")
 
-def log_experiment_summary(scenario, results, agents, logger=None):
+def log_experiment_summary(scenario, run_number, agents, round_results, theoretical_scores, logger=None):
     """Log a summary of the experiment results.
     
     Args:
         scenario: Scenario dictionary
-        results: List of round results
+        run_number: Number of the current run
         agents: List of Agent objects
+        round_results: List of round results
+        theoretical_scores: Dictionary with theoretical max scores
         logger: Logger object (if None, uses the root logger)
     """
     if logger is None:
@@ -174,12 +176,20 @@ def log_experiment_summary(scenario, results, agents, logger=None):
     
     logger.info(f"Experiment Summary for scenario: {scenario['scenario_name']}")
     logger.info(f"Total rounds: {scenario['num_rounds']}")
+
+    # Calculate actual final global score for this run
+    total_actual_score = sum(agent.score for agent in agents)
     
     # Calculate final cooperation rate from the last round
-    last_round = results[-1]
+    last_round = round_results[-1]
     coop_count = sum(1 for move in last_round['moves'].values() if move == "cooperate")
     coop_rate = coop_count / len(last_round['moves'])
     logger.info(f"Final cooperation rate: {coop_rate:.2f}")
+    logger.info(f"Run {run_number} Final cooperation rate: {coop_rate:.2f}")
+    logger.info(f"Run {run_number} Final Global Score: {total_actual_score:.2f}")
+    logger.info(f"  Theoretical Max Coop Score: {theoretical_scores['max_cooperation']:.2f}")
+    logger.info(f"  Theoretical Max Defect Score: {theoretical_scores['max_defection']:.2f}")
+    logger.info(f"  Theoretical Half-Half Score: {theoretical_scores['half_half']:.2f}")
     
     # Calculate average scores by strategy
     strategies = {}
@@ -188,7 +198,7 @@ def log_experiment_summary(scenario, results, agents, logger=None):
             strategies[agent.strategy_type] = []
         strategies[agent.strategy_type].append(agent)
     
-    logger.info("Average scores by strategy:")
+    logger.info(f"Run {run_number} Average scores by strategy:")
     for strategy, strategy_agents in strategies.items():
         avg_score = sum(a.score for a in strategy_agents) / len(strategy_agents)
         logger.info(f"  {strategy}: {avg_score:.2f}")
@@ -217,10 +227,10 @@ def log_experiment_summary(scenario, results, agents, logger=None):
     logger.info("\n--- DETAILED TOURNAMENT SUMMARY ---")
     
     # 1. Cooperation rate trend analysis
-    if len(results) >= 3:  # Need at least 3 points to analyze a trend
-        start_coop = sum(1 for move in results[0]['moves'].values() if move == "cooperate") / len(results[0]['moves'])
-        middle_idx = len(results) // 2
-        middle_coop = sum(1 for move in results[middle_idx]['moves'].values() if move == "cooperate") / len(results[middle_idx]['moves'])
+    if len(round_results) >= 3:  # Need at least 3 points to analyze a trend
+        start_coop = sum(1 for move in round_results[0]['moves'].values() if move == "cooperate") / len(round_results[0]['moves'])
+        middle_idx = len(round_results) // 2
+        middle_coop = sum(1 for move in round_results[middle_idx]['moves'].values() if move == "cooperate") / len(round_results[middle_idx]['moves'])
         end_coop = coop_rate
         
         if end_coop > start_coop + 0.1:
@@ -267,9 +277,9 @@ def log_experiment_summary(scenario, results, agents, logger=None):
         logger.info(f"Network parameters: {scenario['network_params']}")
     
     # 4. Learning analysis for Q-learning agents
-    if q_learning_agents and len(results) > 1:
+    if q_learning_agents and len(round_results) > 1:
         # Check if Q-values have converged
-        if abs(avg_q_coop - avg_q_defect) > 3.0:
+        if 'avg_q_coop' in locals() and 'avg_q_defect' in locals() and abs(avg_q_coop - avg_q_defect) > 3.0:
             if avg_q_defect > avg_q_coop:
                 logger.info("Q-learning outcome: Strong preference for DEFECTION")
             else:
@@ -277,7 +287,7 @@ def log_experiment_summary(scenario, results, agents, logger=None):
         else:
             logger.info("Q-learning outcome: Mixed strategy (no strong preference)")
     
-    logger.info("--- END OF SUMMARY ---\n")
+    logger.info(f"--- End Run {run_number} Summary ---")
         
 def generate_ascii_chart(values, title="", width=50, height=10):
     """Generate a simple ASCII chart for displaying data trends.

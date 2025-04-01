@@ -279,7 +279,7 @@ def main():
     log_file = os.path.join(args.log_dir, "experiment.log")
     logger = setup_logging(log_file, level=log_level)
     
-    logger.info("Starting N-person IPD experiments")
+    logger.info(f"Starting N-person IPD experiments: {args.num_runs} runs per scenario.")
     
     # Load scenarios
     if args.enhanced:
@@ -290,22 +290,81 @@ def main():
     
     scenarios = load_scenarios(scenario_file)
     logger.info(f"Loaded {len(scenarios)} scenarios from {scenario_file}")
-    
-    # Run experiments
-    all_results = []
+
+    # Store aggregated results across runs
+    scenario_results_aggregated = {}
+
+    # Run experiments - Outer loop for scenarios, inner loop for runs
     for scenario in scenarios:
-        try:
-            result = setup_experiment(scenario, logger)
-            all_results.append(result)
-        except Exception as e:
-            logger.error(f"Error running scenario {scenario['scenario_name']}: {e}", exc_info=True)
-    
-    # Save results
-    save_results(all_results, results_dir=args.results_dir)
-    logger.info(f"Simulations complete. Results saved to '{args.results_dir}' directory.")
-    
-    # Print comparative summary
-    print_comparative_summary(all_results)
+        scenario_name = scenario['scenario_name']
+        logger.info(f"--- Starting Scenario: {scenario_name} ---")
+        scenario_run_results = []  # Store results for each run of this scenario
+
+        # Setup environment once to get theoretical scores (assuming N doesn't change)
+        _, theoretical_scores = setup_experiment(scenario, logger)
+
+        for run_number in range(args.num_runs):
+            logger.info(f"Starting Run {run_number}/{args.num_runs} for {scenario_name}...")
+            random.seed(run_number)  # Set seed for reproducibility within run
+            np.random.seed(run_number)  # Seed numpy as well if used by strategies/env
+
+            # Setup FRESH agents and environment for EACH run
+            env, _ = setup_experiment(scenario, logger)  # Recalculates theoretical scores, but that's ok
+
+            # Run simulation for this run
+            start_run_time = time.time()
+            round_results = env.run_simulation(
+                scenario["num_rounds"],
+                logging_interval=scenario.get("logging_interval", 10),
+                use_global_bonus=scenario.get("use_global_bonus", False),
+                rewiring_interval=scenario.get("rewiring_interval", 0),
+                rewiring_prob=scenario.get("rewiring_prob", 0.0)
+            )
+            run_execution_time = time.time() - start_run_time
+
+            # Log summary for this specific run
+            log_experiment_summary(scenario, run_number, env.agents, round_results, theoretical_scores, logger)
+
+            # Save results for this specific run
+            save_results(scenario_name, run_number, env.agents, round_results,
+                         results_dir=args.results_dir)
+
+            # Store key results for aggregation
+            final_round = round_results[-1]
+            final_coop_rate = sum(1 for move in final_round['moves'].values() if move == "cooperate") / len(
+                final_round['moves'])
+            final_global_score = sum(agent.score for agent in env.agents)
+            # Find winning strategy score for this run
+            strategies = {}
+            for agent in env.agents:
+                if agent.strategy_type not in strategies: strategies[agent.strategy_type] = []
+                strategies[agent.strategy_type].append(agent)
+            max_score_this_run = 0
+            if strategies:
+                avg_scores = [(s, sum(a.score for a in ags) / len(ags)) for s, ags in strategies.items()]
+                max_score_this_run = max(avg_scores, key=lambda x: x[1])[1]
+
+            scenario_run_results.append({
+                "final_coop_rate": final_coop_rate,
+                "final_global_score": final_global_score,
+                "final_max_strategy_score": max_score_this_run
+            })
+            logger.info(f"Completed Run {run_number} for {scenario_name} in {run_execution_time:.2f} seconds")
+
+        # Aggregate results for this scenario
+        if scenario_run_results:
+            all_coop_rates = [r['final_coop_rate'] for r in scenario_run_results]
+            all_global_scores = [r['final_global_score'] for r in scenario_run_results]
+            all_max_scores = [r['final_max_strategy_score'] for r in scenario_run_results]
+
+            scenario_results_aggregated[scenario_name] = {
+                'avg_final_coop_rate': np.mean(all_coop_rates),
+                'std_final_coop_rate': np.std(all_coop_rates),
+                'avg_final_global_score': np.mean(all_global_scores),
+                'std_final_global_score': np.std(all_global_scores),
+                'avg_final_max_score': np.mean(all_max_scores)
+            }
+        logger.info(f"--- Completed Scenario: {scenario_name} ---")
     
     # Run analysis if requested
     if args.analyze:

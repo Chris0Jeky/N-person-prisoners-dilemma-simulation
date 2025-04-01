@@ -6,63 +6,147 @@ for visualization purposes.
 """
 
 import pandas as pd
+import numpy as np
 from typing import Dict, List
 
 
 def get_payoffs_by_strategy(rounds_df: pd.DataFrame) -> pd.DataFrame:
     """Calculate average payoffs by round and strategy."""
+    # Make a copy to avoid modifying the original
+    df = rounds_df.copy()
+    
+    # Ensure payoff column is numeric
+    if 'payoff' in df.columns:
+        df['payoff'] = pd.to_numeric(df['payoff'], errors='coerce')
+    else:
+        # If payoff column doesn't exist, return empty dataframe with expected columns
+        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+    
+    # Handle empty dataframe case
+    if df.empty:
+        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+        
     # Group by round and strategy, calculate average payoff
-    payoffs = rounds_df.groupby(['round', 'strategy'])['payoff'].mean().reset_index()
-    return payoffs
+    # Use dropna=True to handle NaN values
+    try:
+        payoffs = df.groupby(['round', 'strategy'], dropna=True)['payoff'].mean().reset_index()
+        
+        # Check if result is empty after groupby (can happen with all NaN)
+        if payoffs.empty:
+            return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+            
+        return payoffs
+    except Exception as e:
+        print(f"Error in get_payoffs_by_strategy: {e}")
+        # Return empty dataframe with expected columns
+        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
 
 
 def get_strategy_scores(agents_df: pd.DataFrame) -> pd.DataFrame:
     """Calculate final scores by strategy."""
-    # Group by strategy, calculate average final score
-    scores = agents_df.groupby('strategy')['final_score'].agg(['mean', 'std', 'min', 'max']).reset_index()
-    return scores
+    # Make a copy to avoid modifying the original
+    df = agents_df.copy()
+    
+    # Ensure final_score column is numeric
+    if 'final_score' in df.columns:
+        df['final_score'] = pd.to_numeric(df['final_score'], errors='coerce')
+    else:
+        # If final_score column doesn't exist, return empty dataframe with expected columns
+        return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
+    
+    # Handle empty dataframe case
+    if df.empty:
+        return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
+    
+    try:
+        # Group by strategy, calculate average final score
+        scores = df.groupby('strategy')['final_score'].agg(['mean', 'std', 'min', 'max']).reset_index()
+        
+        # Check if result is empty after groupby (can happen with all NaN)
+        if scores.empty:
+            return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
+            
+        # Fill any NaN values with 0
+        scores = scores.fillna(0)
+        return scores
+    except Exception as e:
+        print(f"Error in get_strategy_scores: {e}")
+        # Return empty dataframe with expected columns
+        return pd.DataFrame(columns=['strategy', 'mean', 'std', 'min', 'max'])
 
 
 def prepare_network_data(agents_df: pd.DataFrame, 
                          rounds_df: pd.DataFrame, 
                          round_num: int = None) -> Dict:
     """Prepare data for network visualization."""
-    # If round_num is not specified, use the last round
-    if round_num is None:
-        round_num = rounds_df['round'].max()
+    # Handle empty dataframes
+    if agents_df.empty or rounds_df.empty:
+        return {
+            'nodes': [],
+            'edges': [],
+            'round': round_num or 0
+        }
     
-    # Filter rounds data for the specific round
-    round_data = rounds_df[rounds_df['round'] == round_num]
-    
-    # Prepare nodes data
-    nodes = []
-    for _, agent in agents_df.iterrows():
-        agent_id = agent['agent_id']
-        agent_round_data = round_data[round_data['agent_id'] == agent_id]
+    try:
+        # If round_num is not specified, use the last round
+        if round_num is None:
+            round_num = rounds_df['round'].max()
         
-        # Skip if no data for this agent in the selected round
-        if agent_round_data.empty:
-            continue
+        # Filter rounds data for the specific round
+        round_data = rounds_df[rounds_df['round'] == round_num]
+        
+        # Prepare nodes data
+        nodes = []
+        for _, agent in agents_df.iterrows():
+            # Safely get agent_id
+            if 'agent_id' not in agent:
+                continue
+                
+            agent_id = agent['agent_id']
+            agent_round_data = round_data[round_data['agent_id'] == agent_id]
             
-        move = agent_round_data.iloc[0]['move']
-        payoff = agent_round_data.iloc[0]['payoff']
+            # Skip if no data for this agent in the selected round
+            if agent_round_data.empty:
+                continue
+                
+            # Safely get values with defaults
+            move = agent_round_data.iloc[0].get('move', 'unknown')
+            payoff = agent_round_data.iloc[0].get('payoff', 0)
+            strategy = agent.get('strategy', 'unknown')
+            final_score = agent.get('final_score', 0)
+            
+            # Convert payoff to float if possible
+            try:
+                payoff = float(payoff)
+            except (ValueError, TypeError):
+                payoff = 0
+                
+            # Convert final_score to float if possible
+            try:
+                final_score = float(final_score)
+            except (ValueError, TypeError):
+                final_score = 0
+            
+            nodes.append({
+                'id': agent_id,
+                'strategy': strategy,
+                'score': final_score,
+                'move': move,
+                'payoff': payoff
+            })
         
-        nodes.append({
-            'id': agent_id,
-            'strategy': agent['strategy'],
-            'score': agent['final_score'],
-            'move': move,
-            'payoff': payoff
-        })
-    
-    # Note: We don't have network structure in results currently
-    # This would need to be stored or reconstructed
-    
-    return {
-        'nodes': nodes,
-        'edges': [],  # Placeholder
-        'round': round_num
-    }
+        return {
+            'nodes': nodes,
+            'edges': [],  # Placeholder
+            'round': round_num
+        }
+    except Exception as e:
+        print(f"Error in prepare_network_data: {e}")
+        return {
+            'nodes': [],
+            'edges': [],
+            'round': round_num or 0
+        }
 
 
 def get_strategy_colors() -> Dict[str, str]:
@@ -78,4 +162,9 @@ def get_strategy_colors() -> Dict[str, str]:
         'randomprob': '#8c564b',        # Brown
         'q_learning': '#e377c2',        # Pink
         'q_learning_adaptive': '#bcbd22',  # Olive
+        'lra_q': '#e377c2',             # Same as q_learning (pink)
+        'hysteretic_q': '#9edae5',      # Light blue
+        'wolf_phc': '#c49c94',          # Light brown
+        'ucb1_q': '#dbdb8d',            # Light yellow-green
+        'tit_for_two_tats': '#98df8a',  # Light green
     }

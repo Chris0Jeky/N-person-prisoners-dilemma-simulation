@@ -122,13 +122,12 @@ def setup_experiment(scenario, logger):
 
     return env, theoretical_scores
 
-def save_results(scenario_name, run_number, agents, round_results, base_filename="experiment_results", results_dir="results"):
+def save_results(scenario_name, run_number, agents, round_results, base_filename="experiment_results", results_dir="results", logger=None):
     """Save experiment results for a specific run to CSV files."""
     run_dir = os.path.join(results_dir, scenario_name, f"run_{run_number:02d}")
     if not os.path.exists(run_dir):
         os.makedirs(run_dir)
 
-    agent_data = []
     # Save agent summary data
     agent_data = []
     for agent in agents:
@@ -166,27 +165,29 @@ def save_results(scenario_name, run_number, agents, round_results, base_filename
                 q_values_summary = None  # Indicate error
         agent_data.append({
             'scenario_name': scenario_name,
+            'run_number': run_number,
             'agent_id': agent.agent_id,
             'strategy': agent.strategy_type,
             'final_score': agent.score,
-            'final_q_values_avg': q_values_summary,  # Renamed for clarity
+            'final_q_values_avg': q_values_summary,
             'full_q_values': full_q_values_str
         })
     df_agent = pd.DataFrame(agent_data)
-    agent_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_agents.csv")
+    agent_filename = os.path.join(run_dir, f"{base_filename}_agents.csv")
     df_agent.to_csv(agent_filename, index=False)
 
     # Save round-by-round data
     round_data = []
-    for round_result in result['results']:
+    for round_result in round_results['results']:
         round_num = round_result['round']
         moves = round_result['moves']
         payoffs = round_result['payoffs']
         for agent_id, move in moves.items():
             payoff = payoffs.get(agent_id, None)
-            agent = next((a for a in result['agents'] if a.agent_id == agent_id), None)
+            agent = next((a for a in round_results['agents'] if a.agent_id == agent_id), None)
             round_data.append({
                 'scenario_name': scenario_name,
+                'run_number': run_number,
                 'round': round_num,
                 'agent_id': agent_id,
                 'move': move,
@@ -194,12 +195,12 @@ def save_results(scenario_name, run_number, agents, round_results, base_filename
                 'strategy': agent.strategy_type if agent else None
             })
     df_rounds = pd.DataFrame(round_data)
-    rounds_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_rounds.csv")
+    rounds_filename = os.path.join(run_dir, f"{base_filename}_rounds.csv")
     df_rounds.to_csv(rounds_filename, index=False)
 
     # Save network structure if environment is available
-    if 'environment' in result and hasattr(result['environment'], 'export_network_structure'):
-        network_data = result['environment'].export_network_structure()
+    if 'environment' in round_result and hasattr(round_result['environment'], 'export_network_structure'):
+        network_data = round_result['environment'].export_network_structure()
         network_filename = os.path.join(results_dir, f"{base_filename}_{scenario_name}_network.json")
 
         with open(network_filename, 'w') as f:
@@ -360,7 +361,7 @@ def main():
     all_results = []
     for scenario in scenarios:
         try:
-            result = run_experiment(scenario, logger)
+            result = setup_experiment(scenario, logger)
             all_results.append(result)
         except Exception as e:
             logger.error(f"Error running scenario {scenario['scenario_name']}: {e}", exc_info=True)

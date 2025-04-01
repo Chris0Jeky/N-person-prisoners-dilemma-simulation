@@ -100,10 +100,42 @@ def get_strategy_scores(agents_df: pd.DataFrame) -> pd.DataFrame:
 
 def prepare_network_data(agents_df: pd.DataFrame, 
                          rounds_df: pd.DataFrame, 
-                         round_num: int = None) -> Dict:
-    """Prepare data for network visualization."""
-    # Handle empty dataframes
-    if agents_df.empty or rounds_df.empty:
+                         round_num: Optional[int] = None) -> Dict[str, Any]:
+    """Prepare data for network visualization.
+    
+    Args:
+        agents_df: DataFrame containing agent-level data
+        rounds_df: DataFrame containing round-by-round data
+        round_num: Round number to visualize (if None, uses the last round)
+        
+    Returns:
+        Dictionary with 'nodes', 'edges', and 'round' keys
+    """
+    # Handle empty or None dataframes
+    if agents_df is None or rounds_df is None or agents_df.empty or rounds_df.empty:
+        logging.warning("Empty dataframes provided to prepare_network_data")
+        return {
+            'nodes': [],
+            'edges': [],
+            'round': round_num or 0
+        }
+    
+    # Ensure required columns exist
+    required_agent_columns = ['agent_id', 'strategy', 'final_score']
+    required_round_columns = ['round', 'agent_id', 'move', 'payoff']
+    
+    if not all(col in agents_df.columns for col in required_agent_columns):
+        missing = [col for col in required_agent_columns if col not in agents_df.columns]
+        logging.warning(f"Missing required columns in agents_df: {missing}")
+        return {
+            'nodes': [],
+            'edges': [],
+            'round': round_num or 0
+        }
+        
+    if not all(col in rounds_df.columns for col in required_round_columns):
+        missing = [col for col in required_round_columns if col not in rounds_df.columns]
+        logging.warning(f"Missing required columns in rounds_df: {missing}")
         return {
             'nodes': [],
             'edges': [],
@@ -118,13 +150,18 @@ def prepare_network_data(agents_df: pd.DataFrame,
         # Filter rounds data for the specific round
         round_data = rounds_df[rounds_df['round'] == round_num]
         
+        # If no data for this round, return empty result
+        if round_data.empty:
+            logging.warning(f"No data found for round {round_num}")
+            return {
+                'nodes': [],
+                'edges': [],
+                'round': round_num
+            }
+        
         # Prepare nodes data
         nodes = []
         for _, agent in agents_df.iterrows():
-            # Safely get agent_id
-            if 'agent_id' not in agent:
-                continue
-                
             agent_id = agent['agent_id']
             agent_round_data = round_data[round_data['agent_id'] == agent_id]
             
@@ -160,11 +197,11 @@ def prepare_network_data(agents_df: pd.DataFrame,
         
         return {
             'nodes': nodes,
-            'edges': [],  # Placeholder
+            'edges': [],  # Placeholder - edges would be provided by environment
             'round': round_num
         }
     except Exception as e:
-        print(f"Error in prepare_network_data: {e}")
+        logging.error(f"Error in prepare_network_data: {e}")
         return {
             'nodes': [],
             'edges': [],

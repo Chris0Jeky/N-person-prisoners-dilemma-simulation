@@ -273,14 +273,14 @@ def save_results(scenario_name: str, run_number: int, agents: List[Agent],
             "network_params": agents[0].environment.network_params,
         }
         network_filename = os.path.join(run_dir, f"{base_filename}_network.json")
-        with open(network_filename, 'w') as f:
+        with open(network_filename, 'w', encoding='utf-8') as f:
             json.dump(network_data, f, indent=2)
     except (AttributeError, IndexError, TypeError):
         # Environment graph not available, skip network saving
         pass
 
 
-def print_comparative_summary(scenario_results_agg: Dict[str, Dict[str, float]], 
+def print_comparative_summary(scenario_results_agg: Dict[str, Dict[str, Union[float, np.float64]]], 
                               logger: Optional[logging.Logger] = None) -> None:
     """Print a comparative summary of all scenario results.
     

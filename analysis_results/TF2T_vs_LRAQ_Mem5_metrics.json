@@ -1,2 +1,13 @@
 {
-  "total_rounds": 
+  "total_rounds": 500,
+  "total_agents": 300,
+  "final_cooperation_rate": 0.6066666666666667,
+  "strategy_cooperation_rates": {
+    "lra_q": 0.31333333333333335,
+    "tit_for_two_tats": 0.9
+  },
+  "strategy_average_scores": {
+    "lra_q": 405.8411494252871,
+    "tit_for_two_tats": 214.76229885057566
+  }
+}

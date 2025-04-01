@@ -1,0 +1,15 @@
+total_rounds,total_agents,final_cooperation_rate,strategy_cooperation_rates,strategy_average_scores,scenario_name
+500,300,0.06,{'lra_q': np.float64(0.06)},{'lra_q': np.float64(477.76666666666597)},LRAQ_State_Basic
+500,300,0.12,{'lra_q': np.float64(0.12)},{'lra_q': np.float64(420.7058620689647)},LRAQ_State_PropDiscr
+500,300,0.17666666666666667,{'lra_q': np.float64(0.17666666666666667)},{'lra_q': np.float64(416.9710344827579)},LRAQ_State_Count
+500,300,0.36,{'lra_q': np.float64(0.36)},{'lra_q': np.float64(378.1867816091952)},LRAQ_State_MemEnhanced
+500,300,0.2,{'lra_q': np.float64(0.2)},{'lra_q': np.float64(414.1308045977004)},LRAQ_MemEnh_Len_1
+500,300,0.36,{'lra_q': np.float64(0.36)},{'lra_q': np.float64(378.1867816091952)},LRAQ_MemEnh_Len_5
+500,300,0.36,{'lra_q': np.float64(0.36)},{'lra_q': np.float64(378.1867816091952)},LRAQ_MemEnh_Len_20
+500,300,0.0,{'ucb1_q': np.float64(0.0)},{'ucb1_q': np.float64(494.2451724137931)},UCB1_ZeroInit
+500,300,0.0,{'ucb1_q': np.float64(0.0)},{'ucb1_q': np.float64(494.2451724137931)},UCB1_OptimisticInit
+500,300,0.6066666666666667,"{'lra_q': np.float64(0.31333333333333335), 'tit_for_two_tats': np.float64(0.9)}","{'lra_q': np.float64(405.8411494252871), 'tit_for_two_tats': np.float64(214.76229885057566)}",TF2T_vs_LRAQ_Mem5
+500,300,0.6133333333333333,"{'hysteretic_q': np.float64(0.54), 'tit_for_tat': np.float64(0.6866666666666666)}","{'hysteretic_q': np.float64(333.12827586206924), 'tit_for_tat': np.float64(310.81655172413844)}",Hysteretic_QL_Enhanced
+500,300,0.15333333333333332,"{'lra_q': np.float64(0.12666666666666668), 'tit_for_tat': np.float64(0.18)}","{'lra_q': np.float64(418.51931034482686), 'tit_for_tat': np.float64(416.05218390804544)}",NetworkRewiring_Test
+500,400,0.845,"{'lra_q': np.float64(0.78), 'hysteretic_q': np.float64(0.9466666666666667), 'tit_for_tat': np.float64(0.79)}","{'lra_q': np.float64(896.7518957264956), 'hysteretic_q': np.float64(900.7835677350429), 'tit_for_tat': np.float64(904.3267955128206)}",Combined_Enhancements
+500,300,0.36,{'lra_q': np.float64(0.36)},{'lra_q': np.float64(378.1867816091952)},Memory_Comparison

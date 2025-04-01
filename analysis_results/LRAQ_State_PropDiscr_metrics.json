@@ -1,0 +1,11 @@
+{
+  "total_rounds": 500,
+  "total_agents": 300,
+  "final_cooperation_rate": 0.12,
+  "strategy_cooperation_rates": {
+    "lra_q": 0.12
+  },
+  "strategy_average_scores": {
+    "lra_q": 420.7058620689647
+  }
+}

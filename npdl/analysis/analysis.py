@@ -48,8 +48,7 @@ def load_results(scenario_name: str, results_dir: str = "results", base_filename
                 all_agents.append(agents_df)
                 all_rounds.append(rounds_df)
             except Exception as e:
-                print(f"Error reading files from {run_path}: {e}")
-    
+                logging.error(f"Error reading files from {run_path}: {e}")
     if not all_agents or not all_rounds:
         raise FileNotFoundError(f"No valid run data found for scenario: {scenario_name}")
         

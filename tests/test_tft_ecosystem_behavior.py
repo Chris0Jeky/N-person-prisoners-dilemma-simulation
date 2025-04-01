@@ -12,6 +12,14 @@ from npdl.core.environment import Environment
 import networkx as nx
 
 
+class TestDailyT008FreshTftCooperates:
+    """Daily check: TFT cooperates on the first move with no history."""
+
+    def test_fresh_tft_cooperates(self):
+        agent = Agent(agent_id=0, strategy="tit_for_tat")
+        assert agent.choose_move([1, 2]) == "cooperate"
+
+
 class TestTFTEcosystemBehavior:
     """Test TFT behavior based on ecosystem cooperation proportion."""
     

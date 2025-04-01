@@ -59,7 +59,7 @@ def create_network_figure(G: nx.Graph,
         Plotly figure
         
     Raises:
-        ValueError: If the graph is empty or layout_type is invalid
+        ValueError: If the layout_type is invalid
     """
     # Check if the graph is empty
     if G.number_of_nodes() == 0:

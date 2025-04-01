@@ -9,6 +9,7 @@ import os
 import pandas as pd
 import json
 import glob
+import logging
 import networkx as nx
 from typing import Dict, List, Tuple, Optional
 
@@ -129,7 +130,7 @@ def get_strategy_cooperation_rates(rounds_df: pd.DataFrame) -> pd.DataFrame:
 
 def load_network_structure(scenario_name: str, results_dir: str = "results", 
                           base_filename: str = "experiment_results",
-                          run_number: int = 0) -> Tuple[nx.Graph, Dict]:
+                          run_number: int = 0, logger=None) -> Tuple[nx.Graph, Dict]:
     """Load network structure for a scenario.
     
     Args:
@@ -141,6 +142,9 @@ def load_network_structure(scenario_name: str, results_dir: str = "results",
     Returns:
         Tuple of (NetworkX graph, network data dictionary)
     """
+
+    if logger is None:
+        logger = logging.getLogger(__name__)
     # First try the new directory structure
     scenario_dir = os.path.join(results_dir, scenario_name)
     if os.path.isdir(scenario_dir):

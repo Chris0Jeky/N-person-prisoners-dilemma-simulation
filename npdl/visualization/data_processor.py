@@ -11,20 +11,29 @@ from typing import Dict, List
 
 
 def get_payoffs_by_strategy(rounds_df: pd.DataFrame) -> pd.DataFrame:
-    """Calculate average payoffs by round and strategy."""
+    """Calculate average payoffs by round and strategy.
+    
+    Args:
+        rounds_df: DataFrame containing round-by-round data
+        
+    Returns:
+        DataFrame with columns: 'round', 'strategy', and 'payoff'
+    """
     # Make a copy to avoid modifying the original
+    if rounds_df is None or rounds_df.empty:
+        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+        
     df = rounds_df.copy()
     
-    # Ensure payoff column is numeric
-    if 'payoff' in df.columns:
-        df['payoff'] = pd.to_numeric(df['payoff'], errors='coerce')
-    else:
-        # If payoff column doesn't exist, return empty dataframe with expected columns
-        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+    # Ensure required columns exist
+    required_columns = ['round', 'strategy', 'payoff']
+    if not all(col in df.columns for col in required_columns):
+        missing = [col for col in required_columns if col not in df.columns]
+        logging.warning(f"Missing required columns in rounds_df: {missing}")
+        return pd.DataFrame(columns=required_columns)
     
-    # Handle empty dataframe case
-    if df.empty:
-        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+    # Ensure payoff column is numeric
+    df['payoff'] = pd.to_numeric(df['payoff'], errors='coerce')
         
     # Group by round and strategy, calculate average payoff
     # Use dropna=True to handle NaN values
@@ -33,13 +42,14 @@ def get_payoffs_by_strategy(rounds_df: pd.DataFrame) -> pd.DataFrame:
         
         # Check if result is empty after groupby (can happen with all NaN)
         if payoffs.empty:
-            return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+            logging.warning("Empty result after groupby operation in get_payoffs_by_strategy")
+            return pd.DataFrame(columns=required_columns)
             
         return payoffs
     except Exception as e:
-        print(f"Error in get_payoffs_by_strategy: {e}")
+        logging.error(f"Error in get_payoffs_by_strategy: {e}")
         # Return empty dataframe with expected columns
-        return pd.DataFrame(columns=['round', 'strategy', 'payoff'])
+        return pd.DataFrame(columns=required_columns)
 
 
 def get_strategy_scores(agents_df: pd.DataFrame) -> pd.DataFrame:

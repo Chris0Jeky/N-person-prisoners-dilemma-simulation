@@ -9,5 +9,7 @@
   "strategy_average_scores": {
     "hysteretic_q": 333.12827586206924,
     "tit_for_tat": 310.81655172413844
-  }
+  },
+  "average_final_q_cooperate": 1.510412919199294,
+  "average_final_q_defect": 2.745732368835379
 }

@@ -7,5 +7,7 @@
   },
   "strategy_average_scores": {
     "lra_q": 416.9710344827579
-  }
+  },
+  "average_final_q_cooperate": 2.9212132003252163,
+  "average_final_q_defect": 5.358567402511885
 }

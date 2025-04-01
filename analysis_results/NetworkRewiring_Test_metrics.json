@@ -9,5 +9,7 @@
   "strategy_average_scores": {
     "lra_q": 418.51931034482686,
     "tit_for_tat": 416.05218390804544
-  }
+  },
+  "average_final_q_cooperate": 3.074549241446654,
+  "average_final_q_defect": 5.618907511118188
 }

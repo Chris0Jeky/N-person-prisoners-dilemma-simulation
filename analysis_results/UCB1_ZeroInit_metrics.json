@@ -7,5 +7,7 @@
   },
   "strategy_average_scores": {
     "ucb1_q": 494.2451724137931
-  }
+  },
+  "average_final_q_cooperate": 0.08106962765302873,
+  "average_final_q_defect": 2.5706723480406306
 }

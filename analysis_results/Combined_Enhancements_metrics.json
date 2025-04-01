@@ -11,5 +11,7 @@
     "lra_q": 896.7518957264956,
     "hysteretic_q": 900.7835677350429,
     "tit_for_tat": 904.3267955128206
-  }
+  },
+  "average_final_q_cooperate": 8.713796978338623,
+  "average_final_q_defect": 6.027457136211495
 }

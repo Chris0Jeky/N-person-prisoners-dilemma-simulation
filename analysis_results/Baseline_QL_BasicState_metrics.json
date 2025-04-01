@@ -3,11 +3,11 @@
   "total_agents": 300,
   "final_cooperation_rate": 0.06,
   "strategy_cooperation_rates": {
-    "lra_q": 0.06
+    "q_learning": 0.06
   },
   "strategy_average_scores": {
-    "lra_q": 477.76666666666597
+    "q_learning": 399.64540229885023
   },
-  "average_final_q_cooperate": 4.229367505513321,
-  "average_final_q_defect": 5.115656069671121
+  "average_final_q_cooperate": 3.3285728333257287,
+  "average_final_q_defect": 4.8861578306478295
 }

@@ -247,7 +247,7 @@ def visualize_network(environment, metric=None, title=None, figsize=(10, 10), sa
     
     return plt
 
-def create_analysis_report(scenario_name: str, results_dir: str = "results", output_dir: str = "analysis_results") -> Dict:
+def create_analysis_report(scenario_name: str, results_dir: str = "results", output_dir: str = "analysis_results") -> Dict[str, Any]:
     """Generate a comprehensive analysis report for a scenario.
     
     Args:

@@ -172,7 +172,7 @@ def setup_experiment(scenario: Dict[str, Any], logger: logging.Logger) -> Tuple[
 
 def save_results(scenario_name: str, run_number: int, agents: List[Agent], 
                  round_results: List[Dict[str, Any]], base_filename: str = "experiment_results", 
-                 results_dir: str = "results", logger: Optional[logging.Logger] = None) -> None:
+                 results_dir: str = "results", logger: Optional[logging.Logger] = None, env: Optional[Environment] = None) -> None:
     """Save experiment results for a specific run to CSV files.
     
     Args:

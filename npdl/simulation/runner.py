@@ -265,19 +265,35 @@ def save_results(scenario_name: str, run_number: int, agents: List[Agent],
     df_rounds.to_csv(rounds_filename, index=False)
 
     # Save network structure if available
-    try:
-        network_data = {
-            "nodes": list(agents[0].environment.graph.nodes()),
-            "edges": list(agents[0].environment.graph.edges()),
-            "network_type": agents[0].environment.network_type,
-            "network_params": agents[0].environment.network_params,
-        }
-        network_filename = os.path.join(run_dir, f"{base_filename}_network.json")
-        with open(network_filename, 'w', encoding='utf-8') as f:
-            json.dump(network_data, f, indent=2)
-    except (AttributeError, IndexError, TypeError):
-        # Environment graph not available, skip network saving
-        pass
+    network_filename = os.path.join(run_dir, f"{base_filename}_network.json")
+    
+    if env is not None:
+        try:
+            # Export network data directly from the environment
+            network_data = env.export_network_structure()
+            with open(network_filename, 'w', encoding='utf-8') as f:
+                json.dump(network_data, f, indent=2)
+            if logger:
+                logger.info(f"Network structure saved to {network_filename}")
+        except Exception as e:
+            if logger:
+                logger.error(f"Error exporting network structure from environment: {e}")
+    else:
+        # Fallback method (probably won't work in most cases)
+        try:
+            network_data = {
+                "nodes": list(agents[0].environment.graph.nodes()),
+                "edges": list(agents[0].environment.graph.edges()),
+                "network_type": agents[0].environment.network_type,
+                "network_params": agents[0].environment.network_params,
+            }
+            with open(network_filename, 'w', encoding='utf-8') as f:
+                json.dump(network_data, f, indent=2)
+        except (AttributeError, IndexError, TypeError) as e:
+            if logger:
+                logger.debug(f"Network structure not available from agents: {e}")
+            # Environment graph not available, skip network saving
+            pass
 
 
 def print_comparative_summary(scenario_results_agg: Dict[str, Dict[str, Union[float, np.float64]]], 
@@ -423,9 +439,9 @@ def run_simulation(enhanced: bool = False, scenario_file: str = "scenarios.json"
             # Save results for this specific run
             try:
                 save_results(scenario_name, run_number, env.agents, round_results,
-                             results_dir=results_dir, env=env)
+                             results_dir=results_dir, logger=logger, env=env)
             except Exception as e:
-                logger.error(f"Error saving results for {scenario_name} run {run_number}: {e}")
+                logger.error(f"Error saving results for {scenario_name} run {run_number}: {e}", exc_info=True)
 
             # Store key results for aggregation
             final_round = round_results[-1]

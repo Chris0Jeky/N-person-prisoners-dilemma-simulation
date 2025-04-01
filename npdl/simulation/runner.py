@@ -21,8 +21,9 @@ from npdl.core.logging_utils import setup_logging, log_experiment_summary, gener
 
 # For analysis
 try:
+    # Optional import, so the module can still work without analysis
     from npdl.analysis.analysis import analyze_multiple_scenarios
-except ImportError:
+except (ImportError, NameError):
     analyze_multiple_scenarios = None
 
 

@@ -1,6 +1,10 @@
 """
-Simulation components for N-Person Prisoner's Dilemma.
+Simulation module for N-Person Prisoner's Dilemma.
 
-This module contains functionality for running simulations
-and processing experiment configurations.
+This module provides functions for running simulations of the N-Person Prisoner's Dilemma
+game with various agent strategies, network structures, and parameters.
 """
+
+from npdl.simulation.runner import run_simulation
+
+__all__ = ['run_simulation']

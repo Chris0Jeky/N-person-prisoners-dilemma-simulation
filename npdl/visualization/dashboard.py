@@ -9,6 +9,7 @@ import os
 import sys
 import json
 import dash
+import logging
 from dash import dcc, html, Input, Output, State, callback
 import dash_bootstrap_components as dbc
 import plotly.express as px
@@ -652,13 +653,16 @@ def run_dashboard(debug: bool = True, port: int = 8050) -> None:
         debug: Whether to run the app in debug mode
         port: The port to run the dashboard on
     """
+    # Set up logger
+    logger = logging.getLogger(__name__)
+    
     try:
         # Use app.run() for newer Dash versions
         app.run(debug=debug, port=port)
     except Exception as e:
-        print(f"Error starting dashboard: {e}")
-        print("Make sure all required dependencies are installed:")
-        print("  pip install dash dash-bootstrap-components plotly flask")
+        logger.error(f"Error starting dashboard: {e}")
+        logger.info("Make sure all required dependencies are installed:")
+        logger.info("  pip install dash dash-bootstrap-components plotly flask")
 
 
 if __name__ == "__main__":

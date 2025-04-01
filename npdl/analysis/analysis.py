@@ -6,6 +6,7 @@ import seaborn as sns
 import networkx as nx
 import os
 import json
+from typing import Dict, List, Optional, Any, Tuple, Union
 
 def load_results(scenario_name: str, results_dir: str = "results", base_filename: str = "experiment_results"):
     """Load experiment results for a given scenario.

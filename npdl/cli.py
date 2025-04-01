@@ -85,24 +85,17 @@ def run_simulation(args):
 
 def run_interactive():
     """Run the interactive gameplay mode."""
-    # Import main module from original project
-    sys.path.insert(0, os.path.abspath("."))
-    
     try:
-        # First try from the new structure
-        try:
-            from npdl.interactive.game import main as interactive_main
-        except ImportError:
-            # Then try from the old structure
-            from main.interactive_game import main as interactive_main
+        from npdl.interactive.game import main as interactive_main
         
+        print("Starting interactive game mode...")
         # Run the interactive game
         interactive_main()
+        return 0
     except ImportError as e:
         print(f"Error: Could not import interactive game module: {e}")
+        print("Make sure the npdl package is properly installed.")
         return 1
-    
-    return 0
 
 
 def main():

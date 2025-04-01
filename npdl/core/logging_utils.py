@@ -160,7 +160,7 @@ def log_round_stats(round_num, agents, moves, payoffs, logger=None, logging_inte
             strategy_coop_rate = sum(1 for m in strategy_moves if m == "cooperate") / len(strategy_moves) if strategy_moves else 0
             logger.debug(f"  {strategy} cooperation rate: {strategy_coop_rate:.2f}")
 
-def log_experiment_summary(scenario, results, agents, logger=None):
+def log_experiment_summary(scenario, run_number, agents, round_results, theoretical_scores, logger=None):
     """Log a summary of the experiment results.
     
     Args:
@@ -174,12 +174,20 @@ def log_experiment_summary(scenario, results, agents, logger=None):
     
     logger.info(f"Experiment Summary for scenario: {scenario['scenario_name']}")
     logger.info(f"Total rounds: {scenario['num_rounds']}")
+
+    # Calculate actual final global score for this run
+    total_actual_score = sum(agent.score for agent in agents)
     
     # Calculate final cooperation rate from the last round
-    last_round = results[-1]
+    last_round = round_results[-1]
     coop_count = sum(1 for move in last_round['moves'].values() if move == "cooperate")
     coop_rate = coop_count / len(last_round['moves'])
     logger.info(f"Final cooperation rate: {coop_rate:.2f}")
+    logger.info(f"Run {run_number} Final cooperation rate: {coop_rate:.2f}")
+    logger.info(f"Run {run_number} Final Global Score: {total_actual_score:.2f}")
+    logger.info(f"  Theoretical Max Coop Score: {theoretical_scores['max_cooperation']:.2f}")
+    logger.info(f"  Theoretical Max Defect Score: {theoretical_scores['max_defection']:.2f}")
+    logger.info(f"  Theoretical Half-Half Score: {theoretical_scores['half_half']:.2f}")
     
     # Calculate average scores by strategy
     strategies = {}
@@ -188,7 +196,7 @@ def log_experiment_summary(scenario, results, agents, logger=None):
             strategies[agent.strategy_type] = []
         strategies[agent.strategy_type].append(agent)
     
-    logger.info("Average scores by strategy:")
+    logger.info(f"Run {run_number} Average scores by strategy:")
     for strategy, strategy_agents in strategies.items():
         avg_score = sum(a.score for a in strategy_agents) / len(strategy_agents)
         logger.info(f"  {strategy}: {avg_score:.2f}")

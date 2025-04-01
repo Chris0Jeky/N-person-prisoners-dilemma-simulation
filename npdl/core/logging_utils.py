@@ -165,7 +165,7 @@ def log_experiment_summary(scenario, run_number, agents, round_results, theoreti
     
     Args:
         scenario: Scenario dictionary
-        results: List of round results
+        round_results: List of round results
         agents: List of Agent objects
         logger: Logger object (if None, uses the root logger)
     """
@@ -225,10 +225,10 @@ def log_experiment_summary(scenario, run_number, agents, round_results, theoreti
     logger.info("\n--- DETAILED TOURNAMENT SUMMARY ---")
     
     # 1. Cooperation rate trend analysis
-    if len(results) >= 3:  # Need at least 3 points to analyze a trend
-        start_coop = sum(1 for move in results[0]['moves'].values() if move == "cooperate") / len(results[0]['moves'])
-        middle_idx = len(results) // 2
-        middle_coop = sum(1 for move in results[middle_idx]['moves'].values() if move == "cooperate") / len(results[middle_idx]['moves'])
+    if len(round_results) >= 3:  # Need at least 3 points to analyze a trend
+        start_coop = sum(1 for move in round_results[0]['moves'].values() if move == "cooperate") / len(round_results[0]['moves'])
+        middle_idx = len(round_results) // 2
+        middle_coop = sum(1 for move in round_results[middle_idx]['moves'].values() if move == "cooperate") / len(round_results[middle_idx]['moves'])
         end_coop = coop_rate
         
         if end_coop > start_coop + 0.1:
@@ -275,7 +275,7 @@ def log_experiment_summary(scenario, run_number, agents, round_results, theoreti
         logger.info(f"Network parameters: {scenario['network_params']}")
     
     # 4. Learning analysis for Q-learning agents
-    if q_learning_agents and len(results) > 1:
+    if q_learning_agents and len(round_results) > 1:
         # Check if Q-values have converged
         if abs(avg_q_coop - avg_q_defect) > 3.0:
             if avg_q_defect > avg_q_coop:

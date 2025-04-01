@@ -47,7 +47,7 @@ def run_visualization():
 def run_simulation(args):
     """Run simulation with the specified arguments."""
     try:
-        from npdl.simulation.runner import run_simulation as sim_runner
+        from npdl.simulation import run_simulation as sim_runner
         
         print("Starting simulation...")
         # Convert args to parameters for the simulation runner
@@ -61,8 +61,7 @@ def run_simulation(args):
         }
         
         # Run the simulation with the given configuration
-        sim_runner(**sim_config)
-        return 0
+        return sim_runner(**sim_config)
     except ImportError:
         # Fall back to main.py if the simulation module is not found
         try:

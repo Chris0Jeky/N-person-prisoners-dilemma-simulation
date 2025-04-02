@@ -46,3 +46,8 @@ def run_sweep(config):
     num_runs = config['num_runs_per_combo']
     output_file = config['output_file']
     log_level_str = config.get('log_level', 'INFO') # Allow setting log level
+
+    # Setup basic logging for the sweep process
+    log_level = getattr(logging, log_level_str.upper(), logging.INFO)
+    sweep_logger = setup_logging(level=log_level, console=True,
+                                 log_file=f"sweep_{target_strategy}.log")  # Log sweep progress

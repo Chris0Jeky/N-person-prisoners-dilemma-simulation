@@ -113,6 +113,13 @@ def run_sweep(config):
                     rewiring_prob=current_scenario.get("rewiring_prob", 0.0)
                 )
 
+                # Calculate performance metrics for this run
+                metrics = calculate_performance_metrics(env, round_results, target_strategy)
+                combo_run_metrics.append(metrics)
+                completed_simulations += 1
+                progress = (completed_simulations / total_simulations) * 100
+                sweep_logger.debug(f"  Run {run_number + 1}/{num_runs} complete. Progress: {progress:.1f}%")
+
 
 
 

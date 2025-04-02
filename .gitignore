@@ -6,3 +6,4 @@ main/simulation_results.csv
 *.log
 qodana.yaml
 anaconda_projects/db/project_filebrowser.db
+fix_network_visualization.py

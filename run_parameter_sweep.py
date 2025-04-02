@@ -188,6 +188,11 @@ if __name__ == "__main__":
 
     # Add/override target strategy from command line
     sweep_config['target_strategy'] = args.strategy
+    # Set default output filename if not specified
+    if 'output_file' not in sweep_config:
+        sweep_config['output_file'] = f"sweep_results_{args.strategy}.csv"
+
+    
 
 
 

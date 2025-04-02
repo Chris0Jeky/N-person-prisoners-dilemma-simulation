@@ -116,8 +116,13 @@ def setup_experiment(scenario, logger):
         agents,
         payoff_matrix,
         network_type=scenario["network_type"],
-        network_params=scenario["network_params"],
-        logger=logger
+        network_params=scenario.get("network_params", {}),
+        logger=logger,
+        interaction_mode=scenario.get("interaction_mode", "neighborhood"),
+        R=scenario.get("payoff_params", {}).get("R", 3),
+        S=scenario.get("payoff_params", {}).get("S", 0),
+        T=scenario.get("payoff_params", {}).get("T", 5),
+        P=scenario.get("payoff_params", {}).get("P", 1)
     )
 
     return env, theoretical_scores

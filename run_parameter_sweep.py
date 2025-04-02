@@ -78,6 +78,15 @@ def run_sweep(config):
         # Update parameters that are being swept
         current_scenario.update(combo_params)
 
+        # Ensure target strategy is present (might override base if needed)
+        if target_strategy not in current_scenario['agent_strategies']:
+            # If target wasn't in base, add it (or handle this error)
+            # This assumes the base scenario has other agents defined
+            current_scenario['agent_strategies'][target_strategy] = 1  # Add one agent? Needs careful thought
+            current_scenario['num_agents'] = sum(current_scenario['agent_strategies'].values())
+            sweep_logger.warning(
+                f"Target strategy '{target_strategy}' not in base scenario, adding 1 agent. Adjust num_agents.")
+
 
 
 

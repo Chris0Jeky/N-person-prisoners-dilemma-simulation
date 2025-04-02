@@ -136,6 +136,11 @@ def run_sweep(config):
         else:
             avg_metrics = {}  # No successful runs for this combo
 
+        # Store results
+        results_list.append({**combo_params, **avg_metrics})
+
+
+
 
 
 

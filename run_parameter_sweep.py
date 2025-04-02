@@ -90,7 +90,11 @@ def run_sweep(config):
         # Store results for this combination across runs
         combo_run_metrics = []
 
-
+        for run_number in range(num_runs):
+            # Set seed for reproducibility *within this specific run*
+            seed = (i * num_runs) + run_number  # Ensure unique seed per sim run
+            random.seed(seed)
+            np.random.seed(seed)
 
 
 

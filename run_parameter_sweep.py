@@ -179,6 +179,12 @@ if __name__ == "__main__":
     try:
         with open(args.config, 'r') as f:
             sweep_config = json.load(f)
+    except FileNotFoundError:
+        print(f"Error: Sweep configuration file '{args.config}' not found.")
+        exit(1)
+    except json.JSONDecodeError:
+        print(f"Error: Could not parse JSON in '{args.config}'.")
+        exit(1)
 
 
 

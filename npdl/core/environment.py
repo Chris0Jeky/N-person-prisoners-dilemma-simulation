@@ -4,13 +4,14 @@ import numpy as np
 import random
 import logging
 from npdl.core.logging_utils import log_network_stats, log_round_stats
-from typing import List, Dict, Tuple, Any, Optional, Union, Hashable
+from npdl.core.utils import get_pairwise_payoffs
+from typing import List, Dict, Tuple, Any, Optional, Union, Hashable, Set
 
 class Environment:
     """Environment class that manages agent interactions and network structure."""
     
     def __init__(self, agents, payoff_matrix, network_type="fully_connected", 
-                 network_params=None, logger=None):
+                 network_params=None, logger=None, interaction_mode="neighborhood", **kwargs):
         """Initialize the environment.
         
         Args:
@@ -19,6 +20,8 @@ class Environment:
             network_type: Type of network to create
             network_params: Parameters for network creation
             logger: Logger object (if None, uses the root logger)
+            interaction_mode: Mode of interaction - "neighborhood" (original) or "pairwise"
+            **kwargs: Additional parameters including 2-player PD payoff values (R, S, T, P)
         """
         self.agents = agents
         self.payoff_matrix = payoff_matrix

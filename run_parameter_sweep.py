@@ -175,6 +175,11 @@ if __name__ == "__main__":
                         help='Path to the JSON configuration file for the sweep.')
     args = parser.parse_args()
 
+    # Load sweep configuration from JSON
+    try:
+        with open(args.config, 'r') as f:
+            sweep_config = json.load(f)
+
 
 
 

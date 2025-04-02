@@ -25,6 +25,18 @@ from npdl.core.true_pairwise_adapter import (
 )
 
 
+class TestDailyT009DefectionTracking:
+    """Daily check: opponent memory counts defections correctly."""
+
+    def test_defection_tracking(self):
+        memory = OpponentSpecificMemory("opponent_9", memory_length=5)
+        memory.add_interaction("defect", "defect", 1)
+        memory.add_interaction("cooperate", "defect", 0)
+        assert memory.total_interactions == 2
+        assert memory.cooperation_count == 0
+        assert memory.defection_count == 2
+
+
 class TestOpponentSpecificMemory:
     """Test the opponent-specific memory functionality."""
     

@@ -120,6 +120,11 @@ def run_sweep(config):
                 progress = (completed_simulations / total_simulations) * 100
                 sweep_logger.debug(f"  Run {run_number + 1}/{num_runs} complete. Progress: {progress:.1f}%")
 
+            except Exception as e:
+                sweep_logger.error(f"  ERROR during run {run_number + 1} for combo {combo_params}: {e}", exc_info=False)
+                # Append placeholder or skip run? Let's skip for average calculation
+                continue  # Skip to next run
+
 
 
 

@@ -62,6 +62,15 @@ class TitForTatStrategy(Strategy):
         # Get a random neighbor's move from the last round
         last_round = agent.memory[-1]
         neighbor_moves = last_round['neighbor_moves']
+        
+        # Handle pairwise interaction format with opponent_coop_proportion
+        if isinstance(neighbor_moves, dict) and 'opponent_coop_proportion' in neighbor_moves:
+            # Convert proportion to binary decision based on majority behavior
+            # If more than half of opponents cooperated, cooperate; otherwise defect
+            coop_proportion = neighbor_moves['opponent_coop_proportion']
+            return "cooperate" if coop_proportion >= 0.5 else "defect"
+            
+        # Standard neighborhood format
         if neighbor_moves:
             random_neighbor_id = random.choice(list(neighbor_moves.keys()))
             return neighbor_moves[random_neighbor_id]
@@ -78,6 +87,19 @@ class GenerousTitForTatStrategy(Strategy):
         
         last_round = agent.memory[-1]
         neighbor_moves = last_round['neighbor_moves']
+        
+        # Handle pairwise interaction format with opponent_coop_proportion
+        if isinstance(neighbor_moves, dict) and 'opponent_coop_proportion' in neighbor_moves:
+            # Convert proportion to binary decision based on majority behavior
+            # If more than half of opponents cooperated, cooperate; otherwise maybe defect with generosity
+            coop_proportion = neighbor_moves['opponent_coop_proportion']
+            if coop_proportion >= 0.5:
+                return "cooperate"
+            else:
+                # Apply generosity - sometimes cooperate even when should defect
+                return "cooperate" if random.random() < self.generosity else "defect"
+        
+        # Standard neighborhood format
         if neighbor_moves:
             random_neighbor_id = random.choice(list(neighbor_moves.keys()))
             move = neighbor_moves[random_neighbor_id]
@@ -95,6 +117,15 @@ class SuspiciousTitForTatStrategy(Strategy):
         
         last_round = agent.memory[-1]
         neighbor_moves = last_round['neighbor_moves']
+        
+        # Handle pairwise interaction format with opponent_coop_proportion
+        if isinstance(neighbor_moves, dict) and 'opponent_coop_proportion' in neighbor_moves:
+            # Convert proportion to binary decision based on majority behavior
+            # If more than half of opponents cooperated, cooperate; otherwise defect
+            coop_proportion = neighbor_moves['opponent_coop_proportion']
+            return "cooperate" if coop_proportion >= 0.5 else "defect"
+        
+        # Standard neighborhood format
         if neighbor_moves:
             random_neighbor_id = random.choice(list(neighbor_moves.keys()))
             return neighbor_moves[random_neighbor_id]

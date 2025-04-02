@@ -57,7 +57,10 @@ def run_sweep(config):
     sweep_logger.info(f"Parameter grid: {param_grid}")
     sweep_logger.info(f"Runs per combination: {num_runs}")
 
-
+    # Generate parameter combinations
+    param_names = list(param_grid.keys())
+    param_values = list(param_grid.values())
+    combinations = list(itertools.product(*param_values))
 
 
 

@@ -1,0 +1,13 @@
+{
+  "total_rounds": 500,
+  "total_agents": 300,
+  "final_cooperation_rate": 0.0,
+  "strategy_cooperation_rates": {
+    "ucb1_q": 0.0
+  },
+  "strategy_average_scores": {
+    "ucb1_q": 494.2451724137931
+  },
+  "average_final_q_cooperate": 0.08106962765302873,
+  "average_final_q_defect": 2.5706723480406306
+}

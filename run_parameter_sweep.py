@@ -125,6 +125,15 @@ def run_sweep(config):
                 # Append placeholder or skip run? Let's skip for average calculation
                 continue  # Skip to next run
 
+        # Aggregate metrics for this combination
+        if combo_run_metrics:  # Only if at least one run succeeded
+            avg_metrics = {}
+            metric_keys = combo_run_metrics[0].keys()
+            for key in metric_keys:
+                values = [m[key] for m in combo_run_metrics]
+                avg_metrics[f'avg_{key}'] = np.mean(values)
+                avg_metrics[f'std_{key}'] = np.std(values)
+
 
 
 

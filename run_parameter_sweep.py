@@ -69,6 +69,15 @@ def run_sweep(config):
     completed_simulations = 0
     start_sweep_time = time.time()
 
+    for i, combo_values in enumerate(combinations):
+        combo_params = dict(zip(param_names, combo_values))
+        sweep_logger.info(f"Testing Combination {i + 1}/{len(combinations)}: {combo_params}")
+
+        # Create the specific scenario for this combination
+        current_scenario = base_scenario.copy()
+        # Update parameters that are being swept
+        current_scenario.update(combo_params)
+
 
 
 

@@ -25,3 +25,13 @@ def calculate_performance_metrics(env, round_results, target_strategy):
         metrics['final_coop_rate_overall'] = coop_count / len(last_round['moves'])
     else:
         metrics['final_coop_rate_overall'] = 0.0
+
+        # Average Final Score of Target Strategy Agents
+        target_agents = [a for a in env.agents if a.strategy_type == target_strategy]
+        if target_agents:
+            metrics['avg_final_score_target'] = sum(a.score for a in target_agents) / len(target_agents)
+        else:
+            metrics['avg_final_score_target'] = 0.0  # Or NaN if preferred
+
+        # Can add more metrics here if needed (e.g., final score of other strategies)
+        return metrics

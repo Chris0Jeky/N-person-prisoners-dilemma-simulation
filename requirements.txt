@@ -1,9 +1,9 @@
 # Core requirements
-numpy>=1.22.0,<2.0.0
-pandas>=1.4.0,<2.0.0
-networkx>=2.8.0,<3.0.0
-matplotlib>=3.5.0,<4.0.0
-seaborn>=0.11.2,<0.13.0
+numpy>=1.20.0
+pandas>=1.3.0
+networkx>=2.6.0
+matplotlib>=3.4.0
+seaborn>=0.11.0
 
 # Visualization requirements
 dash>=2.6.0,<3.0.0

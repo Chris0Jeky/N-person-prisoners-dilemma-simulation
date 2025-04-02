@@ -127,6 +127,19 @@ def threshold_payoff_D(n, N, T=5, P=1, threshold=0.5):
         normalized_prop = (prop - threshold) / (1 - threshold)
         return P + (T - P) * (0.3 + 0.7 * normalized_prop)
 
+def get_pairwise_payoffs(move1, move2, R=3, S=0, T=5, P=1):
+    """Returns payoffs for player 1 and player 2 in a 2-player PD."""
+    if move1 == "cooperate" and move2 == "cooperate":
+        return R, R
+    elif move1 == "cooperate" and move2 == "defect":
+        return S, T
+    elif move1 == "defect" and move2 == "cooperate":
+        return T, S
+    elif move1 == "defect" and move2 == "defect":
+        return P, P
+    else:
+        raise ValueError("Invalid moves") 
+
 def create_payoff_matrix(N, payoff_type="linear", params=None):
     """Create a payoff matrix for an N-person IPD with the specified payoff function.
     

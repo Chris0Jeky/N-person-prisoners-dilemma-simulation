@@ -1,0 +1,19 @@
+{
+  "total_rounds": 500,
+  "total_agents": 300,
+  "final_cooperation_rate": 0.47,
+  "strategy_cooperation_rates": {
+    "q_learning": 0.44,
+    "tit_for_tat": 0.47,
+    "always_cooperate": 1.0,
+    "always_defect": 0.0
+  },
+  "strategy_average_scores": {
+    "q_learning": 700.85224137931,
+    "tit_for_tat": 725.2322413793102,
+    "always_cooperate": 410.7491379310348,
+    "always_defect": 1107.8586206896548
+  },
+  "average_final_q_cooperate": 4.7254557237383095,
+  "average_final_q_defect": 5.71950402462345
+}

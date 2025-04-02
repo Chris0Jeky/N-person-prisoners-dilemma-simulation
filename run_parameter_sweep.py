@@ -143,6 +143,10 @@ def run_sweep(config):
     results_df = pd.DataFrame(results_list)
     # Sort by desired metric, e.g., highest avg final cooperation rate
     primary_metric = f'avg_final_coop_rate_overall'
+    if primary_metric in results_df.columns:
+        results_df = results_df.sort_values(by=primary_metric, ascending=False)
+    else:
+        sweep_logger.warning(f"Primary metric '{primary_metric}' not found for sorting.")
 
 
 

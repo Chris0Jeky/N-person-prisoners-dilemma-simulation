@@ -37,6 +37,11 @@ def test_pairwise_basic():
         R=3, S=0, T=5, P=1  # Standard PD payoff values
     )
     
+    # Force update the TitForTat agent's memory with a simple dictionary
+    # This mimics having played a round already with a simple dictionary like {0: 'cooperate'}
+    # rather than a float from opponent_coop_proportion
+    agents[2].update_memory('cooperate', {0: 'cooperate'}, 3)
+    
     # Run a single round
     moves, payoffs = env.run_round()
     

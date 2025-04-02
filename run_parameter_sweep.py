@@ -35,3 +35,14 @@ def calculate_performance_metrics(env, round_results, target_strategy):
 
         # Can add more metrics here if needed (e.g., final score of other strategies)
         return metrics
+
+# --- Main Sweep Function ---
+def run_sweep(config):
+    """Runs the parameter sweep based on the configuration."""
+
+    base_scenario = config['base_scenario']
+    param_grid = config['parameter_grid']
+    target_strategy = config['target_strategy']
+    num_runs = config['num_runs_per_combo']
+    output_file = config['output_file']
+    log_level_str = config.get('log_level', 'INFO') # Allow setting log level

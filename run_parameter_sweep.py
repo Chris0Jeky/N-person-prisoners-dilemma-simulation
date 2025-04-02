@@ -125,16 +125,28 @@ def run_sweep(config):
                 # Append placeholder or skip run? Let's skip for average calculation
                 continue  # Skip to next run
 
-        # Aggregate metrics for this combination
-        if combo_run_metrics:  # Only if at least one run succeeded
+            # Aggregate metrics for this combination
             avg_metrics = {}
-            metric_keys = combo_run_metrics[0].keys()
-            for key in metric_keys:
-                values = [m[key] for m in combo_run_metrics]
-                avg_metrics[f'avg_{key}'] = np.mean(values)
-                avg_metrics[f'std_{key}'] = np.std(values)
-        else:
-            avg_metrics = {}  # No successful runs for this combo
+            # Filter out any potential non-dictionary entries (belt-and-suspenders approach)
+            valid_run_metrics = [m for m in combo_run_metrics if isinstance(m, dict)]
+            if valid_run_metrics:  # Only if at least one run succeeded AND produced a valid dict
+                # Collect all unique metric keys observed across all valid runs
+                all_keys = set()
+                for m in valid_run_metrics:
+                    all_keys.update(m.keys())
+                metric_keys = list(all_keys)
+                for key in metric_keys:
+                    # Extract values only from runs where the key exists
+                    values = [m[key] for m in valid_run_metrics if key in m]
+                    if values:  # Ensure we have values before calculating stats
+                        avg_metrics[f'avg_{key}'] = np.mean(values)
+                        avg_metrics[f'std_{key}'] = np.std(values)
+                    else:  # Handle case where a key might not be present in all valid runs
+                        avg_metrics[f'avg_{key}'] = np.nan
+                        avg_metrics[f'std_{key}'] = np.nan
+            # If valid_run_metrics is empty (no successful runs), avg_metrics remains {}
+            # Store results (combo_params and the calculated avg_metrics)
+            results_list.append({**combo_params, **avg_metrics})
 
         # Store results
         results_list.append({**combo_params, **avg_metrics})

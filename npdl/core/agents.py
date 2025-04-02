@@ -144,7 +144,17 @@ class PavlovStrategy(Strategy):
         last_move = last_round['my_move']
         last_reward = last_round['reward']
         
-        # Win-stay, lose-shift
+        # Handle pairwise case where reward might be different scale
+        # In pairwise mode, the reward might be averaged across multiple opponents
+        if 'opponent_coop_proportion' in last_round.get('neighbor_moves', {}):
+            # Adjust threshold - if average reward is better than P, keep move
+            # This should work with typical PD values (e.g., R=3, S=0, T=5, P=1)
+            if last_reward > 1.5:  # Above midpoint between P(1) and R(3)
+                return last_move  # Keep the same move
+            else:
+                return "defect" if last_move == "cooperate" else "cooperate"  # Switch
+        
+        # Standard win-stay, lose-shift
         if last_reward >= 3:  # High reward threshold
             return last_move  # Keep the same move
         else:

@@ -133,6 +133,9 @@ def run_sweep(config):
                 values = [m[key] for m in combo_run_metrics]
                 avg_metrics[f'avg_{key}'] = np.mean(values)
                 avg_metrics[f'std_{key}'] = np.std(values)
+        else:
+            avg_metrics = {}  # No successful runs for this combo
+
 
 
 

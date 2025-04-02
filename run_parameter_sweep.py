@@ -155,6 +155,14 @@ def run_sweep(config):
     except Exception as e:
         sweep_logger.error(f"Failed to save sweep results to {output_file}: {e}")
 
+    # Print top results
+    sweep_logger.info(f"\n--- Top Performing Combinations for {target_strategy} ---")
+    sweep_logger.info(f"(Sorted by {primary_metric})\n")
+    # Use pandas toString() for better formatting in log/console
+    top_n = 10
+    sweep_logger.info(results_df.head(top_n).to_string())
+    sweep_logger.info("----------------------------------------------------\n")
+
 
 
 

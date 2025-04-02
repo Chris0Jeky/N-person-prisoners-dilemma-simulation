@@ -166,6 +166,15 @@ def run_sweep(config):
     end_sweep_time = time.time()
     sweep_logger.info(f"Parameter sweep completed in {end_sweep_time - start_sweep_time:.2f} seconds.")
 
+# --- Argument Parsing and Configuration ---
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Run parameter sweep for N-IPD agent strategies.")
+    parser.add_argument('--strategy', type=str, required=True,
+                        help='Target agent strategy type to optimize (e.g., lra_q, hysteretic_q).')
+    parser.add_argument('--config', type=str, default='sweep_config.json',
+                        help='Path to the JSON configuration file for the sweep.')
+    args = parser.parse_args()
+
 
 
 

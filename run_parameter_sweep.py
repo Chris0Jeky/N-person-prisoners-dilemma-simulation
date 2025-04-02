@@ -62,6 +62,13 @@ def run_sweep(config):
     param_values = list(param_grid.values())
     combinations = list(itertools.product(*param_values))
 
+    sweep_logger.info(f"Total combinations to test: {len(combinations)}")
+
+    results_list = []
+    total_simulations = len(combinations) * num_runs
+    completed_simulations = 0
+    start_sweep_time = time.time()
+
 
 
 

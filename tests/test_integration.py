@@ -192,9 +192,13 @@ class TestEndToEndSimulation:
             coop_count = sum(1 for move in result["moves"].values() if move == "cooperate")
             assert coop_count == scenario["num_agents"]
         
-        # Check final scores (should match max cooperation)
+        # The theoretical_scores are per round, but scores accumulate over all rounds
+        # So we need to multiply by the number of rounds
+        expected_total = theoretical_scores["max_cooperation"] * scenario["num_rounds"]
+        
+        # Check final scores (should match max cooperation * num_rounds)
         total_score = sum(agent.score for agent in env.agents)
-        assert total_score == pytest.approx(theoretical_scores["max_cooperation"])
+        assert total_score == pytest.approx(expected_total)
     
     def test_simulation_with_always_defect(self, setup_logging):
         """Test simulation where all agents always defect."""
@@ -220,9 +224,13 @@ class TestEndToEndSimulation:
             defect_count = sum(1 for move in result["moves"].values() if move == "defect")
             assert defect_count == scenario["num_agents"]
         
-        # Check final scores (should match max defection)
+        # The theoretical_scores are per round, but scores accumulate over all rounds
+        # So we need to multiply by the number of rounds
+        expected_total = theoretical_scores["max_defection"] * scenario["num_rounds"]
+        
+        # Check final scores (should match max defection * num_rounds)
         total_score = sum(agent.score for agent in env.agents)
-        assert total_score == pytest.approx(theoretical_scores["max_defection"])
+        assert total_score == pytest.approx(expected_total)
     
     def test_simulation_with_mixed_strategies(self, setup_logging):
         """Test simulation with mixed strategies."""

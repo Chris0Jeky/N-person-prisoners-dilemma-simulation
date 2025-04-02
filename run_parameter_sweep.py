@@ -139,7 +139,10 @@ def run_sweep(config):
         # Store results
         results_list.append({**combo_params, **avg_metrics})
 
-
+    # Create DataFrame and sort by performance
+    results_df = pd.DataFrame(results_list)
+    # Sort by desired metric, e.g., highest avg final cooperation rate
+    primary_metric = f'avg_final_coop_rate_overall'
 
 
 

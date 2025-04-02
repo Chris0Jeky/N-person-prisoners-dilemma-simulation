@@ -186,6 +186,9 @@ if __name__ == "__main__":
         print(f"Error: Could not parse JSON in '{args.config}'.")
         exit(1)
 
+    # Add/override target strategy from command line
+    sweep_config['target_strategy'] = args.strategy
+
 
 
 

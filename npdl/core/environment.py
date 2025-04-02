@@ -28,6 +28,13 @@ class Environment:
         self.network_type = network_type
         self.network_params = network_params or {}
         self.logger = logger or logging.getLogger()
+        self.interaction_mode = interaction_mode
+        
+        # Store 2-player PD payoff values for pairwise interactions
+        self.R = kwargs.get("R", 3)  # Reward for mutual cooperation
+        self.S = kwargs.get("S", 0)  # Sucker's payoff
+        self.T = kwargs.get("T", 5)  # Temptation to defect
+        self.P = kwargs.get("P", 1)  # Punishment for mutual defection
         
         # Create network graph
         self.graph = self._create_network_graph()
@@ -157,6 +164,22 @@ class Environment:
 
     def run_round(self, use_global_bonus=True, rewiring_prob=0.0):
         """Run a single round of the simulation.
+        
+        Args:
+            use_global_bonus: Whether to include global cooperation bonus in payoffs
+            rewiring_prob: Probability to rewire network edges after this round
+            
+        Returns:
+            Tuple of (moves, payoffs) dictionaries
+        """
+        if self.interaction_mode == "pairwise":
+            return self._run_pairwise_round(rewiring_prob)
+        else:
+            # Original neighborhood-based interaction
+            return self._run_neighborhood_round(use_global_bonus, rewiring_prob)
+    
+    def _run_neighborhood_round(self, use_global_bonus=True, rewiring_prob=0.0):
+        """Run a single round using the original neighborhood-based interaction model.
         
         Args:
             use_global_bonus: Whether to include global cooperation bonus in payoffs

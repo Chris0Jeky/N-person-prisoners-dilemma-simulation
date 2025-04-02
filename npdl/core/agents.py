@@ -62,6 +62,15 @@ class TitForTatStrategy(Strategy):
         # Get a random neighbor's move from the last round
         last_round = agent.memory[-1]
         neighbor_moves = last_round['neighbor_moves']
+        
+        # Handle pairwise interaction format with opponent_coop_proportion
+        if isinstance(neighbor_moves, dict) and 'opponent_coop_proportion' in neighbor_moves:
+            # Convert proportion to binary decision based on majority behavior
+            # If more than half of opponents cooperated, cooperate; otherwise defect
+            coop_proportion = neighbor_moves['opponent_coop_proportion']
+            return "cooperate" if coop_proportion >= 0.5 else "defect"
+            
+        # Standard neighborhood format
         if neighbor_moves:
             random_neighbor_id = random.choice(list(neighbor_moves.keys()))
             return neighbor_moves[random_neighbor_id]
@@ -78,6 +87,19 @@ class GenerousTitForTatStrategy(Strategy):
         
         last_round = agent.memory[-1]
         neighbor_moves = last_round['neighbor_moves']
+        
+        # Handle pairwise interaction format with opponent_coop_proportion
+        if isinstance(neighbor_moves, dict) and 'opponent_coop_proportion' in neighbor_moves:
+            # Convert proportion to binary decision based on majority behavior
+            # If more than half of opponents cooperated, cooperate; otherwise maybe defect with generosity
+            coop_proportion = neighbor_moves['opponent_coop_proportion']
+            if coop_proportion >= 0.5:
+                return "cooperate"
+            else:
+                # Apply generosity - sometimes cooperate even when should defect
+                return "cooperate" if random.random() < self.generosity else "defect"
+        
+        # Standard neighborhood format
         if neighbor_moves:
             random_neighbor_id = random.choice(list(neighbor_moves.keys()))
             move = neighbor_moves[random_neighbor_id]
@@ -95,6 +117,15 @@ class SuspiciousTitForTatStrategy(Strategy):
         
         last_round = agent.memory[-1]
         neighbor_moves = last_round['neighbor_moves']
+        
+        # Handle pairwise interaction format with opponent_coop_proportion
+        if isinstance(neighbor_moves, dict) and 'opponent_coop_proportion' in neighbor_moves:
+            # Convert proportion to binary decision based on majority behavior
+            # If more than half of opponents cooperated, cooperate; otherwise defect
+            coop_proportion = neighbor_moves['opponent_coop_proportion']
+            return "cooperate" if coop_proportion >= 0.5 else "defect"
+        
+        # Standard neighborhood format
         if neighbor_moves:
             random_neighbor_id = random.choice(list(neighbor_moves.keys()))
             return neighbor_moves[random_neighbor_id]
@@ -113,7 +144,17 @@ class PavlovStrategy(Strategy):
         last_move = last_round['my_move']
         last_reward = last_round['reward']
         
-        # Win-stay, lose-shift
+        # Handle pairwise case where reward might be different scale
+        # In pairwise mode, the reward might be averaged across multiple opponents
+        if 'opponent_coop_proportion' in last_round.get('neighbor_moves', {}):
+            # Adjust threshold - if average reward is better than P, keep move
+            # This should work with typical PD values (e.g., R=3, S=0, T=5, P=1)
+            if last_reward > 1.5:  # Above midpoint between P(1) and R(3)
+                return last_move  # Keep the same move
+            else:
+                return "defect" if last_move == "cooperate" else "cooperate"  # Switch
+        
+        # Standard win-stay, lose-shift
         if last_reward >= 3:  # High reward threshold
             return last_move  # Keep the same move
         else:
@@ -377,6 +418,22 @@ class TitForTwoTatsStrategy(Strategy):
         last_round = agent.memory[-1]
         prev_round = agent.memory[-2]
 
+        # Handle pairwise interaction format with opponent_coop_proportion
+        if (isinstance(last_round['neighbor_moves'], dict) and 
+            'opponent_coop_proportion' in last_round['neighbor_moves'] and
+            isinstance(prev_round['neighbor_moves'], dict) and
+            'opponent_coop_proportion' in prev_round['neighbor_moves']):
+            
+            last_coop_prop = last_round['neighbor_moves']['opponent_coop_proportion']
+            prev_coop_prop = prev_round['neighbor_moves']['opponent_coop_proportion']
+            
+            # For this strategy, defect only if cooperation was low (< 0.5) for two rounds in a row
+            if last_coop_prop < 0.5 and prev_coop_prop < 0.5:
+                return "defect"
+            else:
+                return "cooperate"
+
+        # Standard neighborhood-based logic
         # Need a consistent way to get "an" opponent's move
         # Using the same random neighbor logic as TitForTat for simplicity
         last_neighbor_moves = last_round['neighbor_moves']

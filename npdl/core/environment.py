@@ -227,8 +227,19 @@ class Environment:
             Tuple of (moves, payoffs) dictionaries
         """
         # Step 1: Each agent chooses one move for the round (used against all opponents)
-        agent_moves_for_round = {agent.agent_id: agent.choose_move([])
-                               for agent in self.agents}
+        # For special strategies like TitForTat, we need to ensure they can handle an empty neighbor list
+        # or a neighbor_moves with opponent_coop_proportion
+        agent_moves_for_round = {}
+        for agent in self.agents:
+            try:
+                # First try with empty list for strategies that don't need neighbors
+                move = agent.choose_move([])
+            except:
+                # If that fails, try with the agent's network neighbors
+                # This ensures TitForTat and similar strategies can at least get neighbor IDs
+                neighbors = self.get_neighbors(agent.agent_id)
+                move = agent.choose_move(neighbors)
+            agent_moves_for_round[agent.agent_id] = move
         
         # Step 2: Simulate Pairwise Games between all agent pairs
         pairwise_payoffs = {agent.agent_id: [] for agent in self.agents}  # Store all payoffs per agent

@@ -231,8 +231,10 @@ class TestNetworkVisualization:
             # Check that positions are in the expected format
             for node, pos in positions.items():
                 assert len(pos) == 2  # [x, y]
-                assert isinstance(pos[0], float)
-                assert isinstance(pos[1], float)
+                # NetworkX may return numpy float types, which aren't instances of Python float
+                # So we'll just check that the position values are numbers
+                assert isinstance(pos[0], (float, int, np.number))
+                assert isinstance(pos[1], (float, int, np.number))
     
     def test_create_network_figure(self, sample_network):
         """Test creating a network visualization figure."""

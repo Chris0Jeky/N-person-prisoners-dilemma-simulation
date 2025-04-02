@@ -1,0 +1,53 @@
+{
+  "global_settings": {
+    "num_runs_per_combo": 5,
+    "output_base_dir": "parameter_sweep_results",
+    "log_level": "INFO"
+  },
+  "base_scenario": {
+    "scenario_name_prefix": "Sweep",
+    "num_rounds": 300,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
+    "fixed_opponents": {
+      "tit_for_tat": 15
+    },
+    "payoff_type": "linear",
+    "state_type": "proportion_discretized",
+    "q_init_type": "zero",
+    "memory_length": 10,
+    "logging_interval": 301
+  },
+  "strategy_sweeps": {
+    "hysteretic_q": {
+      "target_agent_count": 15,
+      "parameter_grid": {
+        "learning_rate": [0.05, 0.1, 0.2],
+        "beta": [0.005, 0.01, 0.02],
+        "epsilon": [0.05, 0.1, 0.2],
+        "discount_factor": [0.9, 0.95]
+      }
+    },
+    "lra_q": {
+      "target_agent_count": 15,
+      "parameter_grid": {
+        "learning_rate": [0.05, 0.1],
+        "increase_rate": [0.05, 0.1, 0.15],
+        "decrease_rate": [0.01, 0.02, 0.05],
+        "epsilon": [0.1, 0.2],
+        "discount_factor": [0.9]
+      }
+    },
+    "wolf_phc": {
+       "target_agent_count": 15,
+       "parameter_grid": {
+         "learning_rate": [0.1],
+         "alpha_win": [0.01, 0.05, 0.1],
+         "alpha_lose": [0.1, 0.2, 0.4],
+         "alpha_avg": [0.01],
+         "epsilon": [0.1, 0.2],
+         "discount_factor": [0.9]
+       }
+    }
+  }
+}

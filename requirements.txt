@@ -6,10 +6,10 @@ matplotlib>=3.4.0
 seaborn>=0.11.0
 
 # Visualization requirements
-dash>=2.6.0,<3.0.0
-dash-bootstrap-components>=1.2.0,<2.0.0
-plotly>=5.10.0,<6.0.0
-flask>=2.0.0,<3.0.0
+dash>=2.0.0
+dash-bootstrap-components>=1.0.0
+plotly>=5.0.0
+flask>=2.0.0
 
 # Interactive mode requirements
 pygame>=2.1.0,<3.0.0

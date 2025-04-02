@@ -1,3 +1,5 @@
+from npdl.core.utils import get_pairwise_payoffs
+
 def _run_pairwise_round(self, rewiring_prob=0.0):
     """Run a single round using pairwise interactions between all agents.
     

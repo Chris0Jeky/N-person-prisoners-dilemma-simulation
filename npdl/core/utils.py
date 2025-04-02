@@ -1,5 +1,6 @@
 # utils.py
 import numpy as np
+from typing import Tuple
 
 def linear_payoff_C(n, N, R=3, S=0):
     """Linear payoff function for cooperation when n players cooperate.
@@ -139,6 +140,32 @@ def get_pairwise_payoffs(move1, move2, R=3, S=0, T=5, P=1):
         return P, P
     else:
         raise ValueError("Invalid moves") 
+
+def get_pairwise_payoffs(move1: str, move2: str, R=3, S=0, T=5, P=1) -> Tuple[float, float]:
+    """Returns payoffs for player 1 and player 2 in a 2-player PD.
+    
+    Args:
+        move1: Move of player 1 ("cooperate" or "defect")
+        move2: Move of player 2 ("cooperate" or "defect")
+        R: Reward for mutual cooperation
+        S: Sucker's payoff (cooperate while other defects)
+        T: Temptation payoff (defect while other cooperates)
+        P: Punishment for mutual defection
+        
+    Returns:
+        Tuple of (payoff for player 1, payoff for player 2)
+    """
+    if move1 == "cooperate" and move2 == "cooperate":
+        return R, R
+    elif move1 == "cooperate" and move2 == "defect":
+        return S, T
+    elif move1 == "defect" and move2 == "cooperate":
+        return T, S
+    elif move1 == "defect" and move2 == "defect":
+        return P, P
+    else:
+        raise ValueError(f"Invalid moves: {move1}, {move2}")
+
 
 def create_payoff_matrix(N, payoff_type="linear", params=None):
     """Create a payoff matrix for an N-person IPD with the specified payoff function.

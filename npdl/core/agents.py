@@ -408,6 +408,22 @@ class TitForTwoTatsStrategy(Strategy):
         last_round = agent.memory[-1]
         prev_round = agent.memory[-2]
 
+        # Handle pairwise interaction format with opponent_coop_proportion
+        if (isinstance(last_round['neighbor_moves'], dict) and 
+            'opponent_coop_proportion' in last_round['neighbor_moves'] and
+            isinstance(prev_round['neighbor_moves'], dict) and
+            'opponent_coop_proportion' in prev_round['neighbor_moves']):
+            
+            last_coop_prop = last_round['neighbor_moves']['opponent_coop_proportion']
+            prev_coop_prop = prev_round['neighbor_moves']['opponent_coop_proportion']
+            
+            # For this strategy, defect only if cooperation was low (< 0.5) for two rounds in a row
+            if last_coop_prop < 0.5 and prev_coop_prop < 0.5:
+                return "defect"
+            else:
+                return "cooperate"
+
+        # Standard neighborhood-based logic
         # Need a consistent way to get "an" opponent's move
         # Using the same random neighbor logic as TitForTat for simplicity
         last_neighbor_moves = last_round['neighbor_moves']

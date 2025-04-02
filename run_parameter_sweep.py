@@ -163,6 +163,9 @@ def run_sweep(config):
     sweep_logger.info(results_df.head(top_n).to_string())
     sweep_logger.info("----------------------------------------------------\n")
 
+    end_sweep_time = time.time()
+    sweep_logger.info(f"Parameter sweep completed in {end_sweep_time - start_sweep_time:.2f} seconds.")
+
 
 
 

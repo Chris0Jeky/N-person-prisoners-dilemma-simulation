@@ -148,6 +148,13 @@ def run_sweep(config):
     else:
         sweep_logger.warning(f"Primary metric '{primary_metric}' not found for sorting.")
 
+    # Save results to CSV
+    try:
+        results_df.to_csv(output_file, index=False)
+        sweep_logger.info(f"Sweep results saved to {output_file}")
+    except Exception as e:
+        sweep_logger.error(f"Failed to save sweep results to {output_file}: {e}")
+
 
 
 

@@ -51,3 +51,33 @@ def run_sweep(config):
     log_level = getattr(logging, log_level_str.upper(), logging.INFO)
     sweep_logger = setup_logging(level=log_level, console=True,
                                  log_file=f"sweep_{target_strategy}.log")  # Log sweep progress
+
+    sweep_logger.info(f"Starting parameter sweep for strategy: {target_strategy}")
+    sweep_logger.info(f"Base scenario: {base_scenario['scenario_name']}")
+    sweep_logger.info(f"Parameter grid: {param_grid}")
+    sweep_logger.info(f"Runs per combination: {num_runs}")
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

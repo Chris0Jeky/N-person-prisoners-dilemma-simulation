@@ -47,9 +47,9 @@ class RandomStrategy(Strategy):
     """Choose moves uniformly at random, ignoring history and neighbors."""
 
     def choose_move(self, agent, neighbors):
+        """Return a uniformly random move."""
         return random.choice(["cooperate", "defect"])
 
-        """Return a uniformly random move."""
 
 class AlwaysCooperateStrategy(Strategy):
     """Always cooperate, regardless of history or neighbors."""
@@ -129,10 +129,10 @@ class TitForTatStrategy(Strategy):
 
 
 class ProportionalTitForTatStrategy(Strategy):
-    def __init__(self):
-        """Proportional TFT: cooperates with probability equal to cooperation proportion."""
     """Cooperate with probability equal to the observed cooperation proportion."""
 
+    def __init__(self):
+        """Proportional TFT: cooperates with probability equal to cooperation proportion."""
         pass
     
     def choose_move(self, agent, neighbors):
@@ -361,9 +361,9 @@ class RandomProbStrategy(Strategy):
         self.prob_coop = prob_coop
 
     def choose_move(self, agent, neighbors):
+        """Cooperate with fixed probability prob_coop."""
         return "cooperate" if random.random() < self.prob_coop else "defect"
 
-        """Cooperate with fixed probability prob_coop."""
 
 class QLearningStrategy(Strategy):
     def __init__(
@@ -542,6 +542,8 @@ class QLearningStrategy(Strategy):
 
 
 class AdaptiveQLearningStrategy(QLearningStrategy):
+    """Q-learning with adaptive exploration decay."""
+
     def __init__(
         self,
         learning_rate=0.1,

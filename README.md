@@ -1,16 +1,18 @@
 # N-Person Prisoner's Dilemma Learning (NPDL)
 
-A framework for simulating and analyzing agent behavior in N-Person Prisoner's Dilemma scenarios.
+A comprehensive framework for simulating, analyzing, and visualizing agent behavior in N-Person Prisoner's Dilemma scenarios.
 
 ## Overview
 
-This package provides tools for studying cooperation and defection in multi-agent systems using the prisoner's dilemma game. It includes:
+The NPDL package provides tools for studying cooperation and defection dynamics in multi-agent systems through the lens of the prisoner's dilemma game. It's designed for both research and educational purposes, allowing users to explore how different strategies interact in complex social networks.
 
-- Various agent strategies from classic game theory and reinforcement learning
-- Network structures for agent interactions
-- Analysis tools for understanding cooperative behavior
-- Interactive gameplay mode
-- Visualization dashboard
+Key features:
+- 12+ agent strategies from classic game theory and reinforcement learning
+- Multiple network structures for agent interactions
+- Detailed analysis tools for understanding cooperation patterns
+- Interactive gameplay mode to compete against AI agents
+- Visualization dashboard for exploring simulation results
+- Comprehensive test suite for code validation
 
 ## Requirements
 
@@ -26,9 +28,17 @@ pip install -r requirements.txt
 npdl/
 ├── analysis/        # Analysis tools for experiment results
 ├── core/            # Core components (agents, environment, utils)
+│   ├── agents.py    # Agent classes and strategy implementations
+│   ├── environment.py # Environment and network simulation
+│   ├── utils.py     # Utility functions and payoff calculations
+│   └── logging_utils.py # Logging and data collection utilities
 ├── interactive/     # Interactive gameplay mode
 ├── simulation/      # Simulation runners
 └── visualization/   # Data visualization tools and dashboard
+    ├── dashboard.py # Web-based visualization dashboard 
+    ├── data_loader.py # Functions for loading simulation data
+    ├── data_processor.py # Data processing utilities
+    └── network_viz.py # Network visualization components
 ```
 
 ## Usage
@@ -48,6 +58,7 @@ Options:
 - `--log_dir DIR`: Directory to save log files
 - `--analyze`: Run analysis on results after experiments complete
 - `--verbose`: Enable verbose logging
+- `--num_runs`: Number of simulation runs (default: 10)
 
 ### Visualization Dashboard
 
@@ -59,6 +70,12 @@ python run.py visualize
 
 Then open your browser at http://127.0.0.1:8050/
 
+The dashboard provides interactive visualizations of:
+- Cooperation rates over time
+- Strategy performance comparisons
+- Network structure and dynamics
+- Agent payoffs and scores
+
 ### Interactive Mode
 
 Play against AI agents in an interactive game:
@@ -67,41 +84,43 @@ Play against AI agents in an interactive game:
 python run.py interactive
 ```
 
-## Strategies
+This allows you to experience firsthand how different AI strategies respond to your decisions.
+
+## Agent Strategies
 
 The package includes multiple agent strategies:
 
-- **Classical Strategies**
-  - Always Cooperate
-  - Always Defect
-  - Tit for Tat
-  - Generous Tit for Tat
-  - Suspicious Tit for Tat
-  - Tit for Two Tats
-  - Pavlov (Win-Stay, Lose-Shift)
-  - Random
+### Classical Strategies
+- **Always Cooperate**: Always chooses to cooperate
+- **Always Defect**: Always chooses to defect
+- **Tit for Tat**: Mimics the opponent's previous move
+- **Generous Tit for Tat**: Like Tit for Tat, but occasionally forgives defection
+- **Suspicious Tit for Tat**: Starts with defection, then follows Tit for Tat
+- **Tit for Two Tats**: Only defects after the opponent defects twice in a row
+- **Pavlov (Win-Stay, Lose-Shift)**: Repeats previous move if successful, switches if not
+- **Random**: Chooses randomly between cooperation and defection
 
-- **Reinforcement Learning Strategies**
-  - Q-Learning
-  - Adaptive Q-Learning
-  - Learning Rate Adjusting Q-Learning (LRA-Q)
-  - Hysteretic Q-Learning
-  - Win or Learn Fast Policy Hill-Climbing (WOLF-PHC)
-  - Upper Confidence Bound (UCB1) Q-Learning
+### Reinforcement Learning Strategies
+- **Q-Learning**: Standard Q-learning with epsilon-greedy exploration
+- **Adaptive Q-Learning**: Q-learning with decaying exploration rate
+- **Learning Rate Adjusting Q-Learning (LRA-Q)**: Dynamically adjusts learning rate based on cooperation levels
+- **Hysteretic Q-Learning**: Uses different learning rates for positive and negative experiences
+- **Win or Learn Fast Policy Hill-Climbing (WOLF-PHC)**: Adjusts learning rates based on performance
+- **Upper Confidence Bound (UCB1) Q-Learning**: Uses UCB1 algorithm for exploration
 
 ## Network Structures
 
 Agents can interact in different network topologies:
 
-- Fully Connected
-- Small World
-- Scale-Free
-- Random 
-- Regular
+- **Fully Connected**: Every agent connects to every other agent
+- **Small World**: High clustering with short average path lengths (Watts-Strogatz model)
+- **Scale-Free**: Power-law degree distribution with hub nodes (Barabási-Albert model)
+- **Random**: Random connections with specified probability (Erdős–Rényi model)
+- **Regular**: Each node has the same number of connections
 
 ## Defining Scenarios
 
-Scenarios are defined in JSON format with parameters like:
+Scenarios are defined in JSON format. Example:
 
 ```json
 {
@@ -121,12 +140,27 @@ Scenarios are defined in JSON format with parameters like:
 }
 ```
 
-## Development
+The project includes both `scenarios.json` with basic scenarios and `enhanced_scenarios.json` with more advanced configurations.
 
-For development and testing:
+## Testing
+
+The project includes a comprehensive test suite with over 40 tests covering all major components. To run the tests:
 
 ```bash
-# Run basic tests
+pytest
+```
+
+Note: While all tests are currently passing, some test cases are still being refined to better validate the system behavior.
+
+## Development
+
+For development:
+
+```bash
+# Run tests with coverage report
+pytest --cov=npdl
+
+# Run basic functionality tests
 python -m npdl.core.test_basic
 
 # Lint code
@@ -135,6 +169,15 @@ black npdl/
 # Type checking
 mypy npdl/
 ```
+
+## Future Work
+
+Planned enhancements include:
+- Additional learning strategies
+- Dynamic payoff structures
+- More sophisticated network rewiring mechanisms
+- Enhanced visualization components
+- Expanded test coverage
 
 ## License
 

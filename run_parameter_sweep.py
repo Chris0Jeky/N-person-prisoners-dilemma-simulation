@@ -96,6 +96,23 @@ def run_sweep(config):
             random.seed(seed)
             np.random.seed(seed)
 
+            # Setup FRESH agents and environment for EACH run
+            # Use a temporary logger that doesn't clutter the main log file excessively during runs
+            # Or pass the sweep_logger but rely on its level setting
+            try:
+                env, _ = setup_experiment(current_scenario, sweep_logger)
+
+                # Run simulation *without* saving individual run artifacts
+                # Set logging_interval high to minimize log spam during sweep
+                round_results = env.run_simulation(
+                    current_scenario["num_rounds"],
+                    logging_interval=current_scenario["num_rounds"] + 1,  # Effectively disable round logging
+                    use_global_bonus=current_scenario.get("use_global_bonus", False),
+                    # Add other relevant params if they are in base_scenario
+                    rewiring_interval=current_scenario.get("rewiring_interval", 0),
+                    rewiring_prob=current_scenario.get("rewiring_prob", 0.0)
+                )
+
 
 
 

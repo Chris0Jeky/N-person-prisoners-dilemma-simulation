@@ -192,7 +192,8 @@ if __name__ == "__main__":
     if 'output_file' not in sweep_config:
         sweep_config['output_file'] = f"sweep_results_{args.strategy}.csv"
 
-    
+    # Run the sweep
+    run_sweep(sweep_config)
 
 
 

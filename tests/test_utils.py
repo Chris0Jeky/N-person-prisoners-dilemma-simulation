@@ -14,6 +14,14 @@ from npdl.core.utils import (
 )
 
 
+class TestDailyT010LinearPayoffBounds:
+    """Daily check: linear cooperate payoff hits its endpoints."""
+
+    def test_linear_cooperate_bounds(self):
+        assert linear_payoff_C(0, 10, R=3, S=0) == pytest.approx(0.0)
+        assert linear_payoff_C(9, 10, R=3, S=0) == pytest.approx(3.0)
+
+
 @pytest.mark.unit
 class TestPayoffFunctions:
     """Test individual N-Person payoff functions."""

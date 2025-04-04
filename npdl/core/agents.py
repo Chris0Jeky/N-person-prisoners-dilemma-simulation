@@ -561,6 +561,7 @@ class AdaptiveQLearningStrategy(QLearningStrategy):
         self.decay_rate = decay_rate
 
     def update(self, agent, action, reward, neighbor_moves):
+        """Decay exploration after each update, floored at min_epsilon."""
         super().update(agent, action, reward, neighbor_moves)
 
         # Decay epsilon over time

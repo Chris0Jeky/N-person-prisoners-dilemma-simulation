@@ -598,6 +598,7 @@ class LRAQLearningStrategy(QLearningStrategy):
         self.max_learning_rate = 0.9
 
     def update(self, agent, action, reward, neighbor_moves):
+        """Nudge the learning rate toward cooperative experiences."""
         # Handle both pairwise and neighborhood modes
         if (
             isinstance(neighbor_moves, dict)

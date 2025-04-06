@@ -664,6 +664,7 @@ class HystereticQLearningStrategy(QLearningStrategy):
         self.beta = beta  # Lower learning rate for negative experiences
 
     def update(self, agent, action, reward, neighbor_moves):
+        """Update Q-values asymmetrically: fast for gains, slow for losses."""
         # Get the state representation that was used for the action
         state_executed = agent.last_state_representation
         if state_executed is None:

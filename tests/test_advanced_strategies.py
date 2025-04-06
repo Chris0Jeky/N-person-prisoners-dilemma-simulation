@@ -23,6 +23,14 @@ from npdl.core.environment import Environment
 from npdl.core.utils import create_payoff_matrix
 
 
+class TestDailyT011LraQEpsilon:
+    """Daily check: LRA-Q keeps its configured exploration rate."""
+
+    def test_lra_q_epsilon(self):
+        agent = Agent(agent_id=1, strategy="lra_q", learning_rate=0.5, epsilon=0.3)
+        assert agent.strategy.epsilon == 0.3
+
+
 class TestDailyT001LraQDefaults:
     """Daily check: LRA-Q exposes its configured base learning rate."""
 

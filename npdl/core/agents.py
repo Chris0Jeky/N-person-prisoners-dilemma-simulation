@@ -66,9 +66,12 @@ class TitForTatStrategy(Strategy):
         # Handle pairwise interaction format with opponent_coop_proportion
         if isinstance(neighbor_moves, dict) and 'opponent_coop_proportion' in neighbor_moves:
             # Convert proportion to binary decision based on majority behavior
-            # If more than half of opponents cooperated, cooperate; otherwise defect
+            # In the pairwise model, we want to defect if more than half of opponents defected
             coop_proportion = neighbor_moves['opponent_coop_proportion']
-            return "cooperate" if coop_proportion >= 0.5 else "defect"
+            # Default tit-for-tat behavior - match what others did
+            # If most cooperated (coop_prop > 0.5), then cooperate
+            # If most defected (coop_prop < 0.5), then defect
+            return "defect" if coop_proportion < 0.5 else "cooperate"
             
         # Standard neighborhood format
         if neighbor_moves:

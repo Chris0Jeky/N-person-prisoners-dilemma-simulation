@@ -788,6 +788,7 @@ class WolfPHCStrategy(QLearningStrategy):
         return chosen_action
 
     def update(self, agent, action, reward, neighbor_moves):
+        """Learn faster when losing, slower when winning."""
         # Get the state that was used for the action
         state_executed = agent.last_state_representation
         if state_executed is None:

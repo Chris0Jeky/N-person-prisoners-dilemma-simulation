@@ -220,6 +220,12 @@ class Environment:
         In this mode, each agent plays a separate 2-player PD game against every other agent.
         The agent's score for the round is the sum of payoffs from all its pairwise games.
         
+        How it works:
+        1. Each agent chooses a single move (C or D) for the entire round
+        2. Every agent plays a 2-player PD game with every other agent
+        3. Payoffs are accumulated for each agent from all their pairwise games
+        4. Information about opponents' moves is stored as proportion of cooperators
+        
         Args:
             rewiring_prob: Probability to rewire network edges after this round
             

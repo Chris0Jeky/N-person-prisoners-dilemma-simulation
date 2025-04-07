@@ -1,90 +1,105 @@
-# Pairwise Interaction Model for N-Person Prisoner's Dilemma
+# Pairwise Interaction Mode
 
-This feature adds a pairwise interaction model to the existing N-Person Prisoner's Dilemma simulation framework. In this mode, agents play separate 2-player PD games against each agent in the population, with their total score being the sum of all pairwise games.
+## Overview
 
-## Key Differences from Neighborhood Model
+The pairwise interaction mode is an alternative way of running N-Person Prisoner's Dilemma simulations where each agent plays a separate 2-player PD game with every other agent, rather than a single move against all neighbors at once.
 
-In the **standard neighborhood model**:
-- Each agent makes one move (cooperate/defect)
-- The payoff depends on the proportion of neighbors who cooperate
-- Network structure is highly influential
+This implementation offers several advantages:
+- More realistic dyadic interactions between agents
+- Direct comparison with classic 2-player PD results
+- Clearer strategy dynamics between agent types
 
-In the **pairwise model**:
-- Each agent makes one move (cooperate/defect) that's used in all their games
-- Separate 2-player payoffs calculated for each pair of agents
-- Network structure is mainly used for visualization
+## How It Works
 
-## Running Pairwise Simulations
+In pairwise mode:
 
-1. **Basic Usage**:
-   ```bash
-   python main.py --scenario_file pairwise_scenarios.json --num_runs 3
-   ```
+1. Each agent chooses a single move (Cooperate or Defect) for the round
+2. The agent plays separate 2-player PD games with each other agent using that move
+3. Payoffs from all pairwise interactions are summed to give the agent's score for the round
+4. Information about opponent moves is stored in the agent's memory
 
-2. **Testing the Implementation**:
-   ```bash
-   python test_pairwise.py
-   ```
+## Using Pairwise Mode
 
-3. **Available Pairwise Scenarios**:
+To use pairwise mode in your simulations, specify `interaction_mode="pairwise"` when creating an Environment:
 
-   The `pairwise_scenarios.json` file includes several pre-configured scenarios:
-   - **Pairwise_Mixed**: A mix of all basic strategies
-   - **Pairwise_GTFT_vs_QL**: Generous Tit-for-Tat vs. Q-Learning
-   - **Pairwise_LRA_vs_TFT**: Learning Rate Adjusting Q-Learning vs. Tit-for-Tat
-   - **Evolution_Of_Trust_Simulation**: Simulates the strategies from "The Evolution of Trust" game
+```python
+env = Environment(
+    agents,
+    payoff_matrix,
+    network_type="fully_connected",  # Network structure still used for visualization
+    interaction_mode="pairwise",     # Use pairwise interaction mode
+    R=3, S=0, T=5, P=1               # Standard 2-player PD payoff values
+)
+```
 
-## Creating Custom Pairwise Scenarios
-
-To create a custom pairwise scenario, use the following template:
+You can also specify pairwise mode in scenario files:
 
 ```json
 {
-  "scenario_name": "My_Pairwise_Scenario",
+  "scenario_name": "Pairwise_Example",
   "num_agents": 20,
   "num_rounds": 100,
   "network_type": "fully_connected",
   "network_params": {},
-  "interaction_mode": "pairwise",  // This flag enables pairwise mode
+  "interaction_mode": "pairwise",
   "agent_strategies": {
-    "strategy1": count1,
-    "strategy2": count2
+    "q_learning": 10,
+    "tit_for_tat": 10
   },
   "payoff_params": { 
-    "R": 3,  // Reward for mutual cooperation
-    "S": 0,  // Sucker's payoff
-    "T": 5,  // Temptation to defect
-    "P": 1   // Punishment for mutual defection
-  },
-  "learning_rate": 0.1,  // For RL agents
-  "discount_factor": 0.9,  // For RL agents
-  "epsilon": 0.1,  // For RL agents
-  "state_type": "proportion_discretized",  // For RL agents
-  "logging_interval": 10
+    "R": 3,
+    "S": 0,
+    "T": 5,
+    "P": 1
+  }
 }
 ```
 
-## Implementation Details
+## Strategy Considerations
 
-1. **Environment Class**:
-   - Added `interaction_mode` parameter
-   - Added `_run_pairwise_round` method 
-   - Modified `run_round` to call the appropriate method
+Strategies behave slightly differently in pairwise mode:
 
-2. **QLearningStrategy**:
-   - Modified `_get_current_state` to handle pairwise data format
-   - Uses opponent cooperation proportion to determine state
+1. **TitForTat strategies**: In pairwise mode, TFT strategies defect if ANY opponent defected in the previous round, whereas in neighborhood mode they respond to a randomly selected neighbor.
 
-3. **LRAQLearningStrategy**:
-   - Updated learning rate adjustment logic to work with aggregate opponent data
+2. **Learning strategies**: Q-learning and similar strategies adapt to the aggregate cooperation rate across all opponents, rather than the specific neighborhood structure.
 
-4. **Utility Functions**:
-   - Added `get_pairwise_payoffs` function to calculate 2-player payoffs
+3. **Memory**: Agent memory in pairwise mode includes specific opponent moves as well as an aggregate cooperation rate.
 
-## Interpretation of Results
+## Testing and Validation
 
-When analyzing pairwise simulation results, note that:
+You can test the pairwise implementation using:
 
-1. **Scores**: Will generally be higher than in neighborhood model as agents play against all other agents
-2. **Cooperation Rate**: Measures global cooperation in the population
-3. **Strategy Performance**: Reflects how well each strategy does when playing against all other strategies
+```bash
+python test_pairwise.py
+```
+
+If you encounter issues with the TitForTat strategies in pairwise mode, you can apply the runtime fixes:
+
+```bash
+python run_patched_tests.py
+```
+
+Or apply permanent fixes to the codebase:
+
+```bash
+python apply_permanent_fixes.py
+```
+
+## Implementation Notes
+
+The pairwise mode still uses network structures for visualization purposes, but the actual interactions are not limited by network connections. Every agent interacts with every other agent, regardless of network structure.
+
+The payoff parameters (R, S, T, P) are used directly for 2-player games, rather than through the N-person payoff functions.
+
+## Comparing Pairwise and Neighborhood Modes
+
+You can compare the two interaction modes using the test script:
+
+```bash
+python test_pairwise.py
+```
+
+Key differences in results typically include:
+- Higher overall cooperation rates in pairwise mode (due to more targeted reciprocity)
+- Different relative performance of strategies
+- More pronounced effects of specific strategy interactions

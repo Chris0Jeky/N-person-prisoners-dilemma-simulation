@@ -755,6 +755,7 @@ class WolfPHCStrategy(QLearningStrategy):
             ) * current_avg + self.alpha_avg * action_prob
 
     def choose_move(self, agent, neighbors):
+        """Choose the highest-valued move while tracking policy statistics."""
         # Get current state
         current_state = self._get_current_state(agent)
         agent.last_state_representation = current_state

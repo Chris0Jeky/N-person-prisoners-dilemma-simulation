@@ -48,5 +48,12 @@ def visualize_sweep_results(csv_file, output_dir):
                 print(f"    (Limiting pair plot to first {6 - 1} params + coop rate)")
                 pair_plot_vars = param_cols[:(6 - 1)] + [target_coop]
 
+            # Select a param with few unique values for hue if possible
+            hue_param = None
+            for p in param_cols:
+                if df[p].nunique() < 6:  # Example threshold for hue categories
+                    hue_param = p
+                    break
+
     except Exception as e:
         print(f"  Error generating pair plot: {e}")

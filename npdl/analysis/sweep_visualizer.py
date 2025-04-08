@@ -20,3 +20,6 @@ def visualize_sweep_results(csv_file, output_dir):
     if df.empty:
         print(f"Warning: CSV file {csv_file} is empty.")
         return
+
+    print(f"Visualizing results from: {csv_file}")
+    os.makedirs(output_dir, exist_ok=True)

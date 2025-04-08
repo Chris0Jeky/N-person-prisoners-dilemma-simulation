@@ -500,3 +500,9 @@ def compare_scenarios_stats(scenario_names: List[str],
         Returns:
             Dictionary containing test results (ANOVA p-value, pairwise p-values).
         """
+
+    logger = logging.getLogger(__name__)
+    scenario_data = {}
+    metric_data = []
+
+    

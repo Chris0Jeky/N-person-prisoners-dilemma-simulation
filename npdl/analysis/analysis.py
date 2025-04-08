@@ -519,6 +519,9 @@ def compare_scenarios_stats(scenario_names: List[str],
                         if not final_round.empty:
                             coop_rate = (final_round['move'] == 'cooperate').mean()
                             run_metrics.append(coop_rate)
+                if run_metrics:
+                    scenario_data[name] = run_metrics
+                    metric_data.append(run_metrics)
 
         except FileNotFoundError:
             logger.error(f"Results not found for scenario: {name}. Skipping comparison.")

@@ -16,3 +16,7 @@ def visualize_sweep_results(csv_file, output_dir):
     except Exception as e:
         print(f"Error reading CSV file {csv_file}: {e}")
         return
+
+    if df.empty:
+        print(f"Warning: CSV file {csv_file} is empty.")
+        return

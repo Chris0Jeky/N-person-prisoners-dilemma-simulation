@@ -14,6 +14,6 @@ if __name__ == "__main__":
     scenarios_to_compare = [
         "Baseline_QL_BasicState",      # Original Baseline
         "Baseline_QL_PropDiscr",       # Intermediate Baseline
-        "HysQ_Opt_PropDiscr_vs_TFT",   # Your best optimized Hysteretic-Q run
-        "Wolf_Opt_PropDiscr_vs_TFT"    # Your best optimized Wolf-PHC run
+        "HysQ_Opt_PropDiscr_vs_TFT",   # Best optimized Hysteretic-Q run
+        "Wolf_Opt_PropDiscr_vs_TFT"    # Best optimized Wolf-PHC run
     ]

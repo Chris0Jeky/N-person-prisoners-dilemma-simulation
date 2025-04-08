@@ -126,3 +126,8 @@ if __name__ == "__main__":
     parser.add_argument('--out_dir', type=str, default=None,
                         help='Directory to save plots. Defaults to same directory as CSV.')
     args = parser.parse_args()
+
+    if args.out_dir is None:
+        args.out_dir = os.path.dirname(args.csv_file)
+
+    visualize_sweep_results(args.csv_file, args.out_dir)

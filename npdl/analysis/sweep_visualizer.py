@@ -55,5 +55,11 @@ def visualize_sweep_results(csv_file, output_dir):
                     hue_param = p
                     break
 
+            sns_plot = sns.pairplot(df[pair_plot_vars], height=2.5, hue=hue_param, diag_kind='kde')
+            plt.suptitle(f'Parameter Relationships vs Coop Rate ({os.path.basename(csv_file)})', y=1.02)
+            plot_path = os.path.join(output_dir, f"{os.path.basename(csv_file).replace('.csv', '_pairplot.png')}")
+            sns_plot.savefig(plot_path, dpi=150)
+            plt.close()
+
     except Exception as e:
         print(f"  Error generating pair plot: {e}")

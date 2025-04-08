@@ -6,9 +6,11 @@ import seaborn as sns
 import networkx as nx
 import os
 import json
+import logging
+import scipy.stats as stats
 from typing import Dict, List, Optional, Any, Tuple, Union
 
-def load_results(scenario_name: str, results_dir: str = "results", base_filename: str = "experiment_results"):
+def load_results(scenario_name: str, results_dir: str = "results", base_filename: str = "experiment_results", logger=None):
     """Load experiment results for a given scenario.
     
     Args:
@@ -26,6 +28,9 @@ def load_results(scenario_name: str, results_dir: str = "results", base_filename
     
     if not os.path.isdir(scenario_dir):
         raise FileNotFoundError(f"Scenario directory not found: {scenario_dir}")
+
+    if logger is None:
+        logger = logging.getLogger(__name__)
     
     # Directory structure with multiple runs
     all_agents = []
@@ -477,3 +482,114 @@ def analyze_multiple_scenarios(scenarios: List[str], results_dir: str = "results
         return comparative_df
     
     return None
+
+def compare_scenarios_stats(scenario_names: List[str],
+                            metric: str = 'final_cooperation_rate',
+                            results_dir: str = "results",
+                            alpha: float = 0.05) -> Dict[str, Any]:
+    """
+        Loads results for multiple scenarios, extracts a key metric across all runs,
+        and performs statistical tests (ANOVA + pairwise t-tests) to compare them.
+
+        Args:
+            scenario_names: List of scenario names to compare.
+            metric: The metric to compare ('final_cooperation_rate' or 'average_final_score').
+            results_dir: Directory containing the results folders.
+            alpha: Significance level for tests.
+
+        Returns:
+            Dictionary containing test results (ANOVA p-value, pairwise p-values).
+        """
+
+    logger = logging.getLogger(__name__)
+    scenario_data = {}
+    metric_data = []
+
+    for name in scenario_names:
+        try:
+            agents_df, rounds_df = load_results(name, results_dir)
+
+            if metric == 'final_cooperation_rate':
+                # Calculate final coop rate for each run
+                run_metrics = []
+                for run_num in rounds_df['run_number'].unique():
+                    run_df = rounds_df[rounds_df['run_number'] == run_num]
+                    if not run_df.empty:
+                        final_round = run_df[run_df['round'] == run_df['round'].max()]
+                        if not final_round.empty:
+                            coop_rate = (final_round['move'] == 'cooperate').mean()
+                            run_metrics.append(coop_rate)
+                if run_metrics:
+                    scenario_data[name] = run_metrics
+                    metric_data.append(run_metrics)
+                else:
+                    logger.warning(f"Could not extract final coop rate for scenario: {name}")
+
+            elif metric == 'average_final_score':
+                # Calculate average final score across all agents for each run
+                run_metrics = []
+                for run_num in agents_df['run_number'].unique():
+                    run_agents = agents_df[agents_df['run_number'] == run_num]
+                    if not run_agents.empty:
+                        avg_score = run_agents['final_score'].mean()
+                        run_metrics.append(avg_score)
+
+                if run_metrics:
+                    scenario_data[name] = run_metrics
+                    metric_data.append(run_metrics)
+                else:
+                    logger.warning(f"Could not extract average final score for scenario: {name}")
+
+            else:
+                logger.error(f"Unsupported metric for comparison: {metric}")
+                return {"error": f"Unsupported metric: {metric}"}
+
+        except FileNotFoundError:
+            logger.error(f"Results not found for scenario: {name}. Skipping comparison.")
+        except Exception as e:
+            logger.error(f"Error processing scenario {name}: {e}. Skipping comparison.")
+
+    if len(metric_data) < 2:
+        logger.warning("Need at least two scenarios with valid data to perform comparison.")
+        return {"error": "Insufficient data for comparison."}
+
+    # Perform ANOVA
+    try:
+        f_val, p_anova = stats.f_oneway(*metric_data)
+        logger.info(f"ANOVA test for metric '{metric}': F={f_val:.4f}, p={p_anova:.4g}")
+        results = {
+            "metric": metric,
+            "scenarios_compared": list(scenario_data.keys()),
+            "anova_f_value": f_val,
+            "anova_p_value": p_anova,
+            "pairwise_ttests": {}
+        }
+
+    except ValueError as e:
+        logger.error(f"ANOVA failed. Data might have issues (e.g., constant values): {e}")
+        return {"error": "ANOVA failed. Check data variance."}
+
+    # Perform pairwise t-tests if ANOVA is significant (or always, for exploration)
+    # Note: Using simple t-tests without correction for multiple comparisons here.
+    # For rigorous analysis, consider corrections like Bonferroni or Tukey's HSD.
+
+    if p_anova < alpha or True:  # Always do pairwise for exploration
+        logger.info("Performing pairwise t-tests (uncorrected):")
+        scenario_keys = list(scenario_data.keys())
+
+        for i in range(len(scenario_keys)):
+            for j in range(i + 1, len(scenario_keys)):
+                s1_name = scenario_keys[i]
+                s2_name = scenario_keys[j]
+                s1_data = scenario_data[s1_name]
+                s2_data = scenario_data[s2_name]
+                try:
+                    t_val, p_ttest = stats.ttest_ind(s1_data, s2_data, equal_var=False)  # Welch's t-test
+                    results["pairwise_ttests"][f"{s1_name}_vs_{s2_name}"] = {"t_value": t_val, "p_value": p_ttest}
+                    significance = "***" if p_ttest < 0.001 else "**" if p_ttest < 0.01 else "*" if p_ttest < alpha else "ns"
+                    logger.info(f"  {s1_name} vs {s2_name}: t={t_val:.3f}, p={p_ttest:.4g} ({significance})")
+                except ValueError as e:
+                    logger.error(f"  t-test failed for {s1_name} vs {s2_name}: {e}")
+                    results["pairwise_ttests"][f"{s1_name}_vs_{s2_name}"] = {"error": "t-test failed"}
+
+    return results

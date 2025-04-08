@@ -119,3 +119,10 @@ def visualize_sweep_results(csv_file, output_dir):
         plt.close(fig_score)
 
     print(f"  Visualizations saved in: {output_dir}")
+
+if __name__ == "__main__":
+    parser = argparse.ArgumentParser(description="Visualize parameter sweep results.")
+    parser.add_argument('csv_file', type=str, help='Path to the sweep results CSV file.')
+    parser.add_argument('--out_dir', type=str, default=None,
+                        help='Directory to save plots. Defaults to same directory as CSV.')
+    args = parser.parse_args()

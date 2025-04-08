@@ -27,3 +27,7 @@ def visualize_sweep_results(csv_file, output_dir):
     # --- Identify parameters and metrics ---
     metric_cols = [col for col in df.columns if col.startswith('avg_') or col.startswith('std_')]
     param_cols = [col for col in df.columns if col not in metric_cols]
+
+    # Target metrics for main plots
+    target_coop = 'avg_final_coop_rate_overall'
+    target_score = 'avg_avg_final_score_target'  # Adjusted based on CSV headers

@@ -63,3 +63,7 @@ def visualize_sweep_results(csv_file, output_dir):
 
     except Exception as e:
         print(f"  Error generating pair plot: {e}")
+
+    # 2. Individual Parameter vs. Metrics Plots
+    print("  Generating individual parameter plots...")
+    num_params = len(param_cols)

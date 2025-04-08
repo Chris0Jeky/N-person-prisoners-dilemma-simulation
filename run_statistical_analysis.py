@@ -33,3 +33,11 @@ if __name__ == "__main__":
     logger.info(f"Scenarios: {', '.join(scenarios_to_compare)}")
     logger.info(f"Results directory: {results_directory}")
     logger.info(f"Significance level (alpha): {significance_level}")
+
+    # --- Run Comparison ---
+    comparison_results = compare_scenarios_stats(
+        scenario_names=scenarios_to_compare,
+        metric=metric_to_compare,
+        results_dir=results_directory,
+        alpha=significance_level
+    )

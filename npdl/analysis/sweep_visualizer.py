@@ -75,3 +75,15 @@ def visualize_sweep_results(csv_file, output_dir):
     fig_score, axes_score = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows), squeeze=False)
     axes_coop_flat = axes_coop.flatten()
     axes_score_flat = axes_score.flatten()
+
+    for i, param in enumerate(param_cols):
+        # Cooperation Rate vs Parameter
+        if target_coop:
+            ax_c = axes_coop_flat[i]
+            # Use boxplot for clearer distribution, especially if other params vary
+            sns.boxplot(x=param, y=target_coop, data=df, ax=ax_c, palette="viridis")
+            sns.stripplot(x=param, y=target_coop, data=df, ax=ax_c, color=".3", alpha=0.5,
+                          size=3)  # Show individual points
+            ax_c.set_title(f'{target_coop} vs {param}')
+            ax_c.tick_params(axis='x', rotation=45)
+            ax_c.grid(True, axis='y', linestyle='--', alpha=0.6)

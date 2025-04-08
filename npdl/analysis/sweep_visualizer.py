@@ -23,3 +23,7 @@ def visualize_sweep_results(csv_file, output_dir):
 
     print(f"Visualizing results from: {csv_file}")
     os.makedirs(output_dir, exist_ok=True)
+
+    # --- Identify parameters and metrics ---
+    metric_cols = [col for col in df.columns if col.startswith('avg_') or col.startswith('std_')]
+    param_cols = [col for col in df.columns if col not in metric_cols]

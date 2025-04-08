@@ -67,3 +67,11 @@ def visualize_sweep_results(csv_file, output_dir):
     # 2. Individual Parameter vs. Metrics Plots
     print("  Generating individual parameter plots...")
     num_params = len(param_cols)
+    # Determine grid size dynamically
+    cols = 3
+    rows = math.ceil(num_params / cols)
+
+    fig_coop, axes_coop = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows), squeeze=False)
+    fig_score, axes_score = plt.subplots(rows, cols, figsize=(5 * cols, 4 * rows), squeeze=False)
+    axes_coop_flat = axes_coop.flatten()
+    axes_score_flat = axes_score.flatten()

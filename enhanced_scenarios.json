@@ -359,5 +359,106 @@
     "q_init_type": "zero",
     "memory_length": 30,
     "logging_interval": 20
-  }
+  },
+  {
+    "scenario_name": "HysQ_Opt_PropDiscr_vs_TFT",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "hysteretic_q": 15, "tit_for_tat": 15 },
+    "state_type": "proportion_discretized",
+    "q_init_type": "zero",
+    "memory_length": 10,
+    "logging_interval": 20,
+    "learning_rate": 0.05,
+    "beta": 0.01,
+    "epsilon": 0.05,
+    "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "Wolf_Opt_PropDiscr_vs_TFT",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "wolf_phc": 15, "tit_for_tat": 15 },
+    "state_type": "proportion_discretized",
+    "q_init_type": "zero",
+    "memory_length": 10,
+    "logging_interval": 20,
+    "learning_rate": 0.1,
+    "alpha_win": 0.01,
+    "alpha_lose": 0.1,
+    "alpha_avg": 0.01,
+    "epsilon": 0.1,
+    "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "HysQ_Opt_State_Count_vs_TFT",
+    "num_agents": 30, "num_rounds": 500, "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "hysteretic_q": 15, "tit_for_tat": 15 },
+    "state_type": "count",
+    "q_init_type": "zero", "memory_length": 10, "logging_interval": 20,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "HysQ_Opt_State_MemEnh5_vs_TFT",
+    "num_agents": 30, "num_rounds": 500, "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "hysteretic_q": 15, "tit_for_tat": 15 },
+    "state_type": "memory_enhanced",
+    "q_init_type": "zero", "memory_length": 5, "logging_interval": 20,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+   {
+    "scenario_name": "HysQ_Opt_State_Basic_vs_TFT",
+    "num_agents": 30, "num_rounds": 500, "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "hysteretic_q": 15, "tit_for_tat": 15 },
+    "state_type": "basic",
+    "q_init_type": "zero", "memory_length": 10, "logging_interval": 20,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+   {
+    "scenario_name": "HysQ_Opt_MemEnh_L1_vs_TFT",
+    "num_agents": 30, "num_rounds": 500, "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "hysteretic_q": 15, "tit_for_tat": 15 },
+    "state_type": "memory_enhanced", "memory_length": 1,
+    "q_init_type": "zero", "logging_interval": 20,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+   {
+    "scenario_name": "HysQ_Opt_MemEnh_L3_vs_TFT",
+    "num_agents": 30, "num_rounds": 500, "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "hysteretic_q": 15, "tit_for_tat": 15 },
+    "state_type": "memory_enhanced", "memory_length": 3,
+    "q_init_type": "zero", "logging_interval": 20,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "HysQ_Opt_GlobalBonus_vs_TFT",
+    "num_agents": 30, "num_rounds": 500, "network_type": "fully_connected", "network_params": {},
+    "agent_strategies": { "hysteretic_q": 15, "tit_for_tat": 15 },
+    "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10,
+    "use_global_bonus": true,
+    "logging_interval": 20,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "HysQ_Opt_NetworkRewiring_vs_TFT",
+    "num_agents": 30, "num_rounds": 500, "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "hysteretic_q": 15, "tit_for_tat": 15 },
+    "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10,
+    "logging_interval": 20,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.1,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+   {
+     "scenario_name": "LRAQ_SweepBest_PropDiscr_vs_TFT",
+     "num_agents": 30, "num_rounds": 500, "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
+     "agent_strategies": { "lra_q": 15, "tit_for_tat": 15 },
+     "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10, "logging_interval": 20,
+     "learning_rate": 0.1, "increase_rate": 0.05, "decrease_rate": 0.05, "epsilon": 0.1, "discount_factor": 0.9
+   }
+
 ]

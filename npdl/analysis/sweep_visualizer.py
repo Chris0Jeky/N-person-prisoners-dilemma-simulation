@@ -43,6 +43,10 @@ def visualize_sweep_results(csv_file, output_dir):
         if target_coop and len(param_cols) > 1:
             print("  Generating pair plot...")
             pair_plot_vars = param_cols + [target_coop]
+            # Limit number of parameters for readability if too many
+            if len(pair_plot_vars) > 6:
+                print(f"    (Limiting pair plot to first {6 - 1} params + coop rate)")
+                pair_plot_vars = param_cols[:(6 - 1)] + [target_coop]
 
     except Exception as e:
         print(f"  Error generating pair plot: {e}")

@@ -873,6 +873,7 @@ class UCB1QLearningStrategy(QLearningStrategy):
         self.total_steps = 0
 
     def choose_move(self, agent, neighbors):
+        """Pick the move with the highest upper confidence bound."""
         self.total_steps += 1
         current_state = self._get_current_state(agent)
         agent.last_state_representation = current_state

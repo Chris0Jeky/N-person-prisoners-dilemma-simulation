@@ -7,6 +7,7 @@ import networkx as nx
 import os
 import json
 import logging
+import scipy.stats as stats
 from typing import Dict, List, Optional, Any, Tuple, Union
 
 def load_results(scenario_name: str, results_dir: str = "results", base_filename: str = "experiment_results", logger=None):

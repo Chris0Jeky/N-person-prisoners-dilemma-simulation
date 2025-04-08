@@ -534,6 +534,10 @@ def compare_scenarios_stats(scenario_names: List[str],
                         avg_score = run_agents['final_score'].mean()
                         run_metrics.append(avg_score)
 
+                if run_metrics:
+                    scenario_data[name] = run_metrics
+                    metric_data.append(run_metrics)
+
         except FileNotFoundError:
             logger.error(f"Results not found for scenario: {name}. Skipping comparison.")
         except Exception as e:

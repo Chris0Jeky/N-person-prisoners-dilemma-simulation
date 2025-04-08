@@ -1,0 +1,37 @@
+{
+  "metric": "final_cooperation_rate",
+  "scenarios_compared": [
+    "Baseline_QL_BasicState",
+    "Baseline_QL_PropDiscr",
+    "HysQ_Opt_PropDiscr_vs_TFT",
+    "Wolf_Opt_PropDiscr_vs_TFT"
+  ],
+  "anova_f_value": 616.2080790607507,
+  "anova_p_value": 4.490852750982935e-71,
+  "pairwise_ttests": {
+    "Baseline_QL_BasicState_vs_Baseline_QL_PropDiscr": {
+      "t_value": -26.568067824230873,
+      "p_value": 7.407453825295398e-26
+    },
+    "Baseline_QL_BasicState_vs_HysQ_Opt_PropDiscr_vs_TFT": {
+      "t_value": -52.9648118717802,
+      "p_value": 5.096387327707989e-39
+    },
+    "Baseline_QL_BasicState_vs_Wolf_Opt_PropDiscr_vs_TFT": {
+      "t_value": -36.29795070375359,
+      "p_value": 5.832043873904384e-30
+    },
+    "Baseline_QL_PropDiscr_vs_HysQ_Opt_PropDiscr_vs_TFT": {
+      "t_value": -15.763352040337843,
+      "p_value": 2.517470701932935e-22
+    },
+    "Baseline_QL_PropDiscr_vs_Wolf_Opt_PropDiscr_vs_TFT": {
+      "t_value": -9.200404558283525,
+      "p_value": 6.680408862186199e-13
+    },
+    "HysQ_Opt_PropDiscr_vs_TFT_vs_Wolf_Opt_PropDiscr_vs_TFT": {
+      "t_value": 5.053524755345342,
+      "p_value": 5.2137024176041746e-06
+    }
+  }
+}

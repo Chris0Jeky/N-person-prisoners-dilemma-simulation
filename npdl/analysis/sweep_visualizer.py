@@ -96,3 +96,8 @@ def visualize_sweep_results(csv_file, output_dir):
             ax_s.set_title(f'{target_score} vs {param}')
             ax_s.tick_params(axis='x', rotation=45)
             ax_s.grid(True, axis='y', linestyle='--', alpha=0.6)
+
+    # Hide unused subplots
+    for j in range(i + 1, rows * cols):
+        fig_coop.delaxes(axes_coop_flat[j])
+        fig_score.delaxes(axes_score_flat[j])

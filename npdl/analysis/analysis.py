@@ -572,3 +572,7 @@ def compare_scenarios_stats(scenario_names: List[str],
     # Perform pairwise t-tests if ANOVA is significant (or always, for exploration)
     # Note: Using simple t-tests without correction for multiple comparisons here.
     # For rigorous analysis, consider corrections like Bonferroni or Tukey's HSD.
+
+    if p_anova < alpha or True:  # Always do pairwise for exploration
+        logger.info("Performing pairwise t-tests (uncorrected):")
+        scenario_keys = list(scenario_data.keys())

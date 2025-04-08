@@ -31,3 +31,7 @@ def visualize_sweep_results(csv_file, output_dir):
     # Target metrics for main plots
     target_coop = 'avg_final_coop_rate_overall'
     target_score = 'avg_avg_final_score_target'  # Adjusted based on CSV headers
+
+    if target_coop not in df.columns:
+        print(f"Warning: Primary metric '{target_coop}' not found in {csv_file}. Skipping some plots.")
+        target_coop = None  # Disable plots relying on it

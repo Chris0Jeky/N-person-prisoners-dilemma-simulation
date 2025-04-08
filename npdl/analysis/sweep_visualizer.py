@@ -35,3 +35,14 @@ def visualize_sweep_results(csv_file, output_dir):
     if target_coop not in df.columns:
         print(f"Warning: Primary metric '{target_coop}' not found in {csv_file}. Skipping some plots.")
         target_coop = None  # Disable plots relying on it
+
+    # --- Generate Plots ---
+
+    # 1. Pair Plot (Good overview, can be slow/dense for many params)
+    try:
+        if target_coop and len(param_cols) > 1:
+            print("  Generating pair plot...")
+            pair_plot_vars = param_cols + [target_coop]
+
+    except Exception as e:
+        print(f"  Error generating pair plot: {e}")

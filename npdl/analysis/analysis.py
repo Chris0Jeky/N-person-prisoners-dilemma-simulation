@@ -482,3 +482,21 @@ def analyze_multiple_scenarios(scenarios: List[str], results_dir: str = "results
         return comparative_df
     
     return None
+
+def compare_scenarios_stats(scenario_names: List[str],
+                            metric: str = 'final_cooperation_rate',
+                            results_dir: str = "results",
+                            alpha: float = 0.05) -> Dict[str, Any]:
+    """
+        Loads results for multiple scenarios, extracts a key metric across all runs,
+        and performs statistical tests (ANOVA + pairwise t-tests) to compare them.
+
+        Args:
+            scenario_names: List of scenario names to compare.
+            metric: The metric to compare ('final_cooperation_rate' or 'average_final_score').
+            results_dir: Directory containing the results folders.
+            alpha: Significance level for tests.
+
+        Returns:
+            Dictionary containing test results (ANOVA p-value, pairwise p-values).
+        """

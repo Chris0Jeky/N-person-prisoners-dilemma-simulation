@@ -548,3 +548,7 @@ def compare_scenarios_stats(scenario_names: List[str],
             logger.error(f"Results not found for scenario: {name}. Skipping comparison.")
         except Exception as e:
             logger.error(f"Error processing scenario {name}: {e}. Skipping comparison.")
+
+    if len(metric_data) < 2:
+        logger.warning("Need at least two scenarios with valid data to perform comparison.")
+        return {"error": "Insufficient data for comparison."}

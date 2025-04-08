@@ -117,3 +117,5 @@ def visualize_sweep_results(csv_file, output_dir):
                                        f"{os.path.basename(csv_file).replace('.csv', '_param_vs_score.png')}")
         fig_score.savefig(plot_path_score, dpi=150)
         plt.close(fig_score)
+
+    print(f"  Visualizations saved in: {output_dir}")

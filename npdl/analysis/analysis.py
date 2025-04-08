@@ -505,4 +505,11 @@ def compare_scenarios_stats(scenario_names: List[str],
     scenario_data = {}
     metric_data = []
 
-    
+    for name in scenario_names:
+        try:
+            agents_df, rounds_df = load_results(name, results_dir)
+
+        except FileNotFoundError:
+            logger.error(f"Results not found for scenario: {name}. Skipping comparison.")
+        except Exception as e:
+            logger.error(f"Error processing scenario {name}: {e}. Skipping comparison.")

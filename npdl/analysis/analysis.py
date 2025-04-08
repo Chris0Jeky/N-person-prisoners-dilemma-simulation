@@ -512,6 +512,13 @@ def compare_scenarios_stats(scenario_names: List[str],
             if metric == 'final_cooperation_rate':
                 # Calculate final coop rate for each run
                 run_metrics = []
+                for run_num in rounds_df['run_number'].unique():
+                    run_df = rounds_df[rounds_df['run_number'] == run_num]
+                    if not run_df.empty:
+                        final_round = run_df[run_df['round'] == run_df['round'].max()]
+                        if not final_round.empty:
+                            coop_rate = (final_round['move'] == 'cooperate').mean()
+                            run_metrics.append(coop_rate)
 
         except FileNotFoundError:
             logger.error(f"Results not found for scenario: {name}. Skipping comparison.")

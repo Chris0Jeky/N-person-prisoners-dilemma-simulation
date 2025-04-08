@@ -522,6 +522,8 @@ def compare_scenarios_stats(scenario_names: List[str],
                 if run_metrics:
                     scenario_data[name] = run_metrics
                     metric_data.append(run_metrics)
+                else:
+                    logger.warning(f"Could not extract final coop rate for scenario: {name}")
 
         except FileNotFoundError:
             logger.error(f"Results not found for scenario: {name}. Skipping comparison.")

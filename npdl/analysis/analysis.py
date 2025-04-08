@@ -540,6 +540,10 @@ def compare_scenarios_stats(scenario_names: List[str],
                 else:
                     logger.warning(f"Could not extract average final score for scenario: {name}")
 
+            else:
+                logger.error(f"Unsupported metric for comparison: {metric}")
+                return {"error": f"Unsupported metric: {metric}"}
+
         except FileNotFoundError:
             logger.error(f"Results not found for scenario: {name}. Skipping comparison.")
         except Exception as e:

@@ -552,3 +552,12 @@ def compare_scenarios_stats(scenario_names: List[str],
     if len(metric_data) < 2:
         logger.warning("Need at least two scenarios with valid data to perform comparison.")
         return {"error": "Insufficient data for comparison."}
+
+    # Perform ANOVA
+    try:
+        f_val, p_anova = stats.f_oneway(*metric_data)
+        logger.info(f"ANOVA test for metric '{metric}': F={f_val:.4f}, p={p_anova:.4g}")
+
+    except ValueError as e:
+        logger.error(f"ANOVA failed. Data might have issues (e.g., constant values): {e}")
+        return {"error": "ANOVA failed. Check data variance."}

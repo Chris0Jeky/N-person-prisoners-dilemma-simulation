@@ -524,10 +524,15 @@ def compare_scenarios_stats(scenario_names: List[str],
                     metric_data.append(run_metrics)
                 else:
                     logger.warning(f"Could not extract final coop rate for scenario: {name}")
-                    
+
             elif metric == 'average_final_score':
                 # Calculate average final score across all agents for each run
                 run_metrics = []
+                for run_num in agents_df['run_number'].unique():
+                    run_agents = agents_df[agents_df['run_number'] == run_num]
+                    if not run_agents.empty:
+                        avg_score = run_agents['final_score'].mean()
+                        run_metrics.append(avg_score)
 
         except FileNotFoundError:
             logger.error(f"Results not found for scenario: {name}. Skipping comparison.")

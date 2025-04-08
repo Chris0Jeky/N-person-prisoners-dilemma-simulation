@@ -509,6 +509,10 @@ def compare_scenarios_stats(scenario_names: List[str],
         try:
             agents_df, rounds_df = load_results(name, results_dir)
 
+            if metric == 'final_cooperation_rate':
+                # Calculate final coop rate for each run
+                run_metrics = []
+
         except FileNotFoundError:
             logger.error(f"Results not found for scenario: {name}. Skipping comparison.")
         except Exception as e:

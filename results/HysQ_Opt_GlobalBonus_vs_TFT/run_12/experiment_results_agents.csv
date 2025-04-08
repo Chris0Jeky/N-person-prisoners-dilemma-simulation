@@ -1,0 +1,31 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+HysQ_Opt_GlobalBonus_vs_TFT,12,0,hysteretic_q,2396.5656704980925,"{'avg_cooperate': 14.723605005415534, 'avg_defect': 6.460244831976147}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.717060226974574, 'defect': 19.38073449592844}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,1,hysteretic_q,2395.3266666666755,"{'avg_cooperate': 14.74003487285826, 'avg_defect': 4.289319794466611}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.766349829302754, 'defect': 12.867959383399832}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,2,hysteretic_q,2397.688275862077,"{'avg_cooperate': 14.700384683657818, 'avg_defect': 6.679099778050883}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.64739926170143, 'defect': 20.03729933415265}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,3,hysteretic_q,2395.6909578544146,"{'avg_cooperate': 14.742381427315658, 'avg_defect': 4.6512605827793765}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.77338949267495, 'defect': 13.95378174833813}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,4,hysteretic_q,2396.5110344827667,"{'avg_cooperate': 14.66014855771413, 'avg_defect': 5.516878358947622}","{'initial': {'cooperate': 0.0, 'defect': 0.25}, (1.0,): {'cooperate': 43.7649629145217, 'defect': 16.300635076842866}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,5,hysteretic_q,2396.5352490421537,"{'avg_cooperate': 14.741908649992636, 'avg_defect': 5.3770397790712}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.77197116070588, 'defect': 16.1311193372136}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,6,hysteretic_q,2394.4806130268285,"{'avg_cooperate': 14.766617292582284, 'avg_defect': 2.9405409113361807}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.84609708847483, 'defect': 8.821622734008542}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,7,hysteretic_q,2396.2980076628437,"{'avg_cooperate': 14.72123007015563, 'avg_defect': 5.504704726110657}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.709935421194864, 'defect': 16.514114178331972}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,8,hysteretic_q,2395.56835249043,"{'avg_cooperate': 14.767150055759034, 'avg_defect': 4.946197356343311}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.84769537800508, 'defect': 14.838592069029932}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,9,hysteretic_q,2395.5110344827667,"{'avg_cooperate': 14.742368095974626, 'avg_defect': 5.410475698945015}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.773349498651854, 'defect': 16.231427096835045}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,10,hysteretic_q,2394.9408429118857,"{'avg_cooperate': 14.758706041943555, 'avg_defect': 4.661847814914435}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.82236333655864, 'defect': 13.985543444743305}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,11,hysteretic_q,2395.572796934874,"{'avg_cooperate': 14.765742939717859, 'avg_defect': 4.985482270329592}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.84347402988155, 'defect': 14.956446810988776}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,12,hysteretic_q,2397.556781609203,"{'avg_cooperate': 14.71867535448149, 'avg_defect': 6.883579328210788}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.702271274172446, 'defect': 20.650737984632364}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,13,hysteretic_q,2395.467279693495,"{'avg_cooperate': 14.769519481472821, 'avg_defect': 5.101100479427358}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.85480365514644, 'defect': 15.303301438282075}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,14,hysteretic_q,2395.4475095785524,"{'avg_cooperate': 14.757145429684075, 'avg_defect': 5.750292771944532}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 43.8176814997802, 'defect': 17.250878315833596}, (0.8,): {'cooperate': 0.21548275862068966, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,12,15,tit_for_tat,2399.1358620689734,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,16,tit_for_tat,2397.769808429127,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,17,tit_for_tat,2398.2873563218463,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,18,tit_for_tat,2398.427739463609,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,19,tit_for_tat,2397.3795402298933,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,20,tit_for_tat,2400.0545593869806,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,21,tit_for_tat,2397.7826819923457,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,22,tit_for_tat,2401.703601532575,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,23,tit_for_tat,2398.6311877394714,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,24,tit_for_tat,2399.2784674329578,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,25,tit_for_tat,2398.8797701149506,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,26,tit_for_tat,2398.887509578552,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,27,tit_for_tat,2398.1993869731878,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,28,tit_for_tat,2399.1551724138008,,
+HysQ_Opt_GlobalBonus_vs_TFT,12,29,tit_for_tat,2399.2586973180155,,

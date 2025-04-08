@@ -17,3 +17,8 @@ if __name__ == "__main__":
         "HysQ_Opt_PropDiscr_vs_TFT",   # Best optimized Hysteretic-Q run
         "Wolf_Opt_PropDiscr_vs_TFT"    # Best optimized Wolf-PHC run
     ]
+
+    results_directory = "results"  # Where the simulation outputs are stored
+    output_directory = "analysis_results"  # Where to save comparison output
+    metric_to_compare = 'final_cooperation_rate'  # Or 'average_final_score'
+    significance_level = 0.05

@@ -87,3 +87,12 @@ def visualize_sweep_results(csv_file, output_dir):
             ax_c.set_title(f'{target_coop} vs {param}')
             ax_c.tick_params(axis='x', rotation=45)
             ax_c.grid(True, axis='y', linestyle='--', alpha=0.6)
+
+        # Target Score vs Parameter
+        if target_score in df.columns:
+            ax_s = axes_score_flat[i]
+            sns.boxplot(x=param, y=target_score, data=df, ax=ax_s, palette="viridis")
+            sns.stripplot(x=param, y=target_score, data=df, ax=ax_s, color=".3", alpha=0.5, size=3)
+            ax_s.set_title(f'{target_score} vs {param}')
+            ax_s.tick_params(axis='x', rotation=45)
+            ax_s.grid(True, axis='y', linestyle='--', alpha=0.6)

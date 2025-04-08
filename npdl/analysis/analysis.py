@@ -557,6 +557,13 @@ def compare_scenarios_stats(scenario_names: List[str],
     try:
         f_val, p_anova = stats.f_oneway(*metric_data)
         logger.info(f"ANOVA test for metric '{metric}': F={f_val:.4f}, p={p_anova:.4g}")
+        results = {
+            "metric": metric,
+            "scenarios_compared": list(scenario_data.keys()),
+            "anova_f_value": f_val,
+            "anova_p_value": p_anova,
+            "pairwise_ttests": {}
+        }
 
     except ValueError as e:
         logger.error(f"ANOVA failed. Data might have issues (e.g., constant values): {e}")

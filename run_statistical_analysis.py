@@ -22,3 +22,14 @@ if __name__ == "__main__":
     output_directory = "analysis_results"  # Where to save comparison output
     metric_to_compare = 'final_cooperation_rate'  # Or 'average_final_score'
     significance_level = 0.05
+
+    # --- Setup ---
+    os.makedirs(output_directory, exist_ok=True)
+    log_file = os.path.join(output_directory, "statistical_comparison.log")
+    setup_logging(log_file=log_file, level=logging.INFO, console=True)
+    logger = logging.getLogger(__name__)
+
+    logger.info(f"Starting statistical comparison for metric: {metric_to_compare}")
+    logger.info(f"Scenarios: {', '.join(scenarios_to_compare)}")
+    logger.info(f"Results directory: {results_directory}")
+    logger.info(f"Significance level (alpha): {significance_level}")

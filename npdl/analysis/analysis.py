@@ -6,9 +6,10 @@ import seaborn as sns
 import networkx as nx
 import os
 import json
+import logging
 from typing import Dict, List, Optional, Any, Tuple, Union
 
-def load_results(scenario_name: str, results_dir: str = "results", base_filename: str = "experiment_results"):
+def load_results(scenario_name: str, results_dir: str = "results", base_filename: str = "experiment_results", logger=None):
     """Load experiment results for a given scenario.
     
     Args:
@@ -26,6 +27,9 @@ def load_results(scenario_name: str, results_dir: str = "results", base_filename
     
     if not os.path.isdir(scenario_dir):
         raise FileNotFoundError(f"Scenario directory not found: {scenario_dir}")
+
+    if logger is None:
+        logger = logging.getLogger(__name__)
     
     # Directory structure with multiple runs
     all_agents = []

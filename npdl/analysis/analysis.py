@@ -576,3 +576,10 @@ def compare_scenarios_stats(scenario_names: List[str],
     if p_anova < alpha or True:  # Always do pairwise for exploration
         logger.info("Performing pairwise t-tests (uncorrected):")
         scenario_keys = list(scenario_data.keys())
+
+        for i in range(len(scenario_keys)):
+            for j in range(i + 1, len(scenario_keys)):
+                s1_name = scenario_keys[i]
+                s2_name = scenario_keys[j]
+                s1_data = scenario_data[s1_name]
+                s2_data = scenario_data[s2_name]

@@ -1,0 +1,31 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+HysQ_Opt_GlobalBonus_vs_TFT,22,0,hysteretic_q,2205.4727203065286,"{'avg_cooperate': 14.374175141163546, 'avg_defect': 5.3216061507256995}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 39.90841500560899, 'defect': 15.964818452177099}, (0.8,): {'cooperate': 2.975838387230312, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,1,hysteretic_q,2203.927203065149,"{'avg_cooperate': 14.450626013691702, 'avg_defect': 4.816106713815422}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 39.948059445092376, 'defect': 14.448320141446267}, (0.8,): {'cooperate': 3.1655465653313914, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,2,hysteretic_q,2205.87831417626,"{'avg_cooperate': 14.240370080929692, 'avg_defect': 4.443457033330788}","{'initial': {'cooperate': 0.0, 'defect': 0.25}, (1.0,): {'cooperate': 39.95788864547273, 'defect': 12.72893983385139}, (0.8,): {'cooperate': 2.7632215973163463, 'defect': 0.351431266140975}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,3,hysteretic_q,2206.13463601534,"{'avg_cooperate': 14.281516748256585, 'avg_defect': 5.16399560793169}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 39.992317072441644, 'defect': 14.902481232036195}, (0.8,): {'cooperate': 2.6139611416767727, 'defect': 0.589505591758876}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,4,hysteretic_q,2204.8147892720463,"{'avg_cooperate': 14.34349587333645, 'avg_defect': 5.423868832952873}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 40.00703786074854, 'defect': 16.271606498858617}, (0.8,): {'cooperate': 2.78517772860947, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,5,hysteretic_q,2202.1026819923527,"{'avg_cooperate': 14.477664466183164, 'avg_defect': 3.395855688655556}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 40.029174802566764, 'defect': 10.187567065966668}, (0.8,): {'cooperate': 3.1655465653313914, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,6,hysteretic_q,2205.5737931034637,"{'avg_cooperate': 14.375856590385519, 'avg_defect': 5.372071595599409}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 39.91345852636703, 'defect': 16.116214786798228}, (0.8,): {'cooperate': 2.975839214138194, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,7,hysteretic_q,2205.4811494253026,"{'avg_cooperate': 14.288764046027856, 'avg_defect': 5.057426943308539}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 40.04514214672839, 'defect': 15.172280829925619}, (0.8,): {'cooperate': 2.5828779607038426, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,8,hysteretic_q,2203.418544061318,"{'avg_cooperate': 14.44604659589259, 'avg_defect': 5.1321435429514946}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 39.93432119169504, 'defect': 15.396430628854484}, (0.8,): {'cooperate': 3.1655465653313914, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,9,hysteretic_q,2203.9227586207053,"{'avg_cooperate': 14.451963086124183, 'avg_defect': 5.118638423106302}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 39.95207066238982, 'defect': 15.355915269318906}, (0.8,): {'cooperate': 3.1655465653313914, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,10,hysteretic_q,2201.4403065134256,"{'avg_cooperate': 14.430072858914654, 'avg_defect': 2.4816374450309557}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 40.07610815886231, 'defect': 7.444912335092867}, (0.8,): {'cooperate': 2.975838387230312, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,11,hysteretic_q,2379.018084291179,"{'avg_cooperate': 8.113841766525242, 'avg_defect': 14.429388987978788}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 23.247601045162888, 'defect': 43.28816696393636}, (0.8,): {'cooperate': 0.8556522237614943, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,12,hysteretic_q,2210.9280459770252,"{'avg_cooperate': 13.48472107735546, 'avg_defect': 5.9946945010266335}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 40.03292568417366, 'defect': 15.07594587014606}, (0.8,): {'cooperate': 0.18296551724137933, 'defect': 2.9081376329338418}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,13,hysteretic_q,2204.3150191571035,"{'avg_cooperate': 14.386374432737384, 'avg_defect': 4.8841417047144535}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 39.93438813412274, 'defect': 14.65242511414336}, (0.8,): {'cooperate': 2.986463133438071, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,14,hysteretic_q,2205.161302682008,"{'avg_cooperate': 14.402225064557493, 'avg_defect': 4.452337335976751}","{'initial': {'cooperate': 0.23827203065134103, 'defect': 0.0}, (1.0,): {'cooperate': 39.98194002958307, 'defect': 13.357012007930255}, (0.8,): {'cooperate': 2.986463133438071, 'defect': 0.0}}"
+HysQ_Opt_GlobalBonus_vs_TFT,22,15,tit_for_tat,2211.831417624535,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,16,tit_for_tat,2224.4348659003967,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,17,tit_for_tat,2220.5719540230025,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,18,tit_for_tat,2219.7498850574843,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,19,tit_for_tat,2217.1796934866034,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,20,tit_for_tat,2218.7425287356455,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,21,tit_for_tat,2222.554176245224,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,22,tit_for_tat,2216.460689655186,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,23,tit_for_tat,2219.9642145594003,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,24,tit_for_tat,2211.7574712643823,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,25,tit_for_tat,2219.1983141762585,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,26,tit_for_tat,2217.6750191571014,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,27,tit_for_tat,2221.694559386985,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,28,tit_for_tat,2222.9504214559515,,
+HysQ_Opt_GlobalBonus_vs_TFT,22,29,tit_for_tat,2221.049961685836,,

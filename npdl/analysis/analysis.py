@@ -591,3 +591,5 @@ def compare_scenarios_stats(scenario_names: List[str],
                 except ValueError as e:
                     logger.error(f"  t-test failed for {s1_name} vs {s2_name}: {e}")
                     results["pairwise_ttests"][f"{s1_name}_vs_{s2_name}"] = {"error": "t-test failed"}
+
+    return results

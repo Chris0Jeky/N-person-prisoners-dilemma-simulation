@@ -109,3 +109,11 @@ def visualize_sweep_results(csv_file, output_dir):
         plot_path_coop = os.path.join(output_dir, f"{os.path.basename(csv_file).replace('.csv', '_param_vs_coop.png')}")
         fig_coop.savefig(plot_path_coop, dpi=150)
         plt.close(fig_coop)
+
+    if target_score in df.columns:
+        fig_score.suptitle(f'Target Score vs Individual Parameters ({os.path.basename(csv_file)})', fontsize=16, y=1.03)
+        fig_score.tight_layout(rect=[0, 0.03, 1, 0.98])  # Adjust layout
+        plot_path_score = os.path.join(output_dir,
+                                       f"{os.path.basename(csv_file).replace('.csv', '_param_vs_score.png')}")
+        fig_score.savefig(plot_path_score, dpi=150)
+        plt.close(fig_score)

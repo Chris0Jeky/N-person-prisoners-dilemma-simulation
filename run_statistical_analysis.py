@@ -70,3 +70,15 @@ if __name__ == "__main__":
                     significance = "***" if p_val < 0.001 else "**" if p_val < 0.01 else "*" if p_val < significance_level else "ns"
                     logger.info(f"  {pair}: t={res.get('t_value', 'N/A'):.3f}, p={p_val:.4g} ({significance})")
         logger.info("--------------------------------------")
+
+        # Save detailed results to JSON
+        output_json_file = os.path.join(output_directory, f"stats_comparison_{metric_to_compare}.json")
+        try:
+            with open(output_json_file, 'w') as f:
+                json.dump(comparison_results, f, indent=2)
+            logger.info(f"Detailed statistical results saved to: {output_json_file}")
+        except Exception as e:
+            logger.error(f"Failed to save statistical results to JSON: {e}")
+
+    else:
+        logger.error("Statistical comparison failed or produced no results.")

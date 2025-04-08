@@ -583,3 +583,11 @@ def compare_scenarios_stats(scenario_names: List[str],
                 s2_name = scenario_keys[j]
                 s1_data = scenario_data[s1_name]
                 s2_data = scenario_data[s2_name]
+                try:
+                    t_val, p_ttest = stats.ttest_ind(s1_data, s2_data, equal_var=False)  # Welch's t-test
+                    results["pairwise_ttests"][f"{s1_name}_vs_{s2_name}"] = {"t_value": t_val, "p_value": p_ttest}
+                    significance = "***" if p_ttest < 0.001 else "**" if p_ttest < 0.01 else "*" if p_ttest < alpha else "ns"
+                    logger.info(f"  {s1_name} vs {s2_name}: t={t_val:.3f}, p={p_ttest:.4g} ({significance})")
+                except ValueError as e:
+                    logger.error(f"  t-test failed for {s1_name} vs {s2_name}: {e}")
+                    results["pairwise_ttests"][f"{s1_name}_vs_{s2_name}"] = {"error": "t-test failed"}

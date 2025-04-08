@@ -568,3 +568,7 @@ def compare_scenarios_stats(scenario_names: List[str],
     except ValueError as e:
         logger.error(f"ANOVA failed. Data might have issues (e.g., constant values): {e}")
         return {"error": "ANOVA failed. Check data variance."}
+
+    # Perform pairwise t-tests if ANOVA is significant (or always, for exploration)
+    # Note: Using simple t-tests without correction for multiple comparisons here.
+    # For rigorous analysis, consider corrections like Bonferroni or Tukey's HSD.

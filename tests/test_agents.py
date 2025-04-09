@@ -12,6 +12,14 @@ from npdl.core.agents import (
 )
 
 
+class TestDailyT012RandomProbParam:
+    """Daily check: RandomProb keeps its configured cooperation probability."""
+
+    def test_randomprob_prob_coop(self):
+        agent = Agent(agent_id=2, strategy="randomprob", prob_coop=0.7)
+        assert agent.strategy.prob_coop == 0.7
+
+
 class TestDailyT002AlwaysDefectMove:
     """Daily check: AlwaysDefect agents defect on every move."""
 

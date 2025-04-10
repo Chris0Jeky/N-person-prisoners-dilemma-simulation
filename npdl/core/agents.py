@@ -982,6 +982,8 @@ def create_strategy(strategy_type, **kwargs):
 
 
 class Agent:
+    """An autonomous player with a strategy, memory, and score."""
+
     def __init__(
         self,
         agent_id,

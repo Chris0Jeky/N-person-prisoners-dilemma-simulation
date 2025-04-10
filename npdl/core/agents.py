@@ -916,6 +916,7 @@ class UCB1QLearningStrategy(QLearningStrategy):
         return chosen_action
 
     def update(self, agent, action, reward, neighbor_moves):
+        """Refresh Q-values and the running average payoff."""
         state_executed = agent.last_state_representation
         if state_executed is None:
             return

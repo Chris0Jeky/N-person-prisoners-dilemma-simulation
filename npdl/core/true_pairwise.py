@@ -22,6 +22,7 @@ try:
 except ImportError:
     # Fallback for systems without numpy
     class np:
+        """Fallback numpy shim used when numpy is not installed."""
         @staticmethod
         def random():
             return random.random()

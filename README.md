@@ -13,6 +13,7 @@ Key features:
 - Detailed analysis tools for understanding cooperation patterns
 - Interactive gameplay mode to compete against AI agents
 - Visualization dashboard for exploring simulation results
+- Scenario generation and analysis tools for discovering interesting parameter combinations
 - Comprehensive test suite for code validation
 
 ## Requirements
@@ -27,19 +28,22 @@ pip install -r requirements.txt
 
 ```
 npdl/
-├── analysis/        # Analysis tools for experiment results
-├── core/            # Core components (agents, environment, utils)
-│   ├── agents.py    # Agent classes and strategy implementations
-│   ├── environment.py # Environment and network simulation
-│   ├── utils.py     # Utility functions and payoff calculations
-│   └── logging_utils.py # Logging and data collection utilities
-├── interactive/     # Interactive gameplay mode
-├── simulation/      # Simulation runners
-└── visualization/   # Data visualization tools and dashboard
-    ├── dashboard.py # Web-based visualization dashboard 
-    ├── data_loader.py # Functions for loading simulation data
-    ├── data_processor.py # Data processing utilities
-    └── network_viz.py # Network visualization components
+├── analysis/                # Analysis tools for experiment results
+│   └── sweep_visualizer.py  # Visualization for scenario sweep results
+├── core/                    # Core components (agents, environment, utils)
+│   ├── agents.py            # Agent classes and strategy implementations
+│   ├── environment.py       # Environment and network simulation
+│   ├── utils.py             # Utility functions and payoff calculations
+│   └── logging_utils.py     # Logging and data collection utilities
+├── interactive/             # Interactive gameplay mode
+├── simulation/              # Simulation runners
+├── visualization/           # Data visualization tools and dashboard
+│   ├── dashboard.py         # Web-based visualization dashboard 
+│   ├── data_loader.py       # Functions for loading simulation data
+│   ├── data_processor.py    # Data processing utilities
+│   └── network_viz.py       # Network visualization components
+├── run_scenario_generator.py # Scenario generation and evaluation
+└── run_sweep_analysis.py    # Complete sweep workflow
 ```
 
 ## Usage
@@ -60,6 +64,51 @@ Options:
 - `--analyze`: Run analysis on results after experiments complete
 - `--verbose`: Enable verbose logging
 - `--num_runs`: Number of simulation runs (default: 10)
+
+### Automatic Scenario Generation & Analysis
+
+For systematic exploration of the parameter space, NPDL includes tools to generate, evaluate, and analyze diverse scenarios:
+
+```bash
+python run_sweep_analysis.py [options]
+```
+
+Options:
+- `--num_generate INT`: Number of random scenarios to generate (default: 30)
+- `--eval_runs INT`: Number of quick evaluation runs per scenario (default: 3)
+- `--save_runs INT`: Number of full runs for selected scenarios (default: 10)
+- `--top_n INT`: Number of top scenarios to save and analyze (default: 5)
+- `--results_dir DIR`: Directory to save scenario results (default: results/generated_scenarios)
+- `--analysis_dir DIR`: Directory to save analysis results (default: analysis_results)
+- `--log_level LEVEL`: Logging level (DEBUG, INFO, WARNING, ERROR)
+
+This workflow:
+1. Generates random scenarios by sampling from diverse parameter combinations
+2. Briefly simulates each scenario to evaluate its "interestingness"
+3. Selects the most interesting scenarios based on metrics like:
+   - Cooperation rate dynamics (changes over time)
+   - Variance in performance across different strategies
+   - Strategy dominance (difference between best and worst strategies)
+4. Runs more thorough simulations of the selected scenarios
+5. Generates visualizations comparing the selected scenarios
+
+The tool ranks scenarios by a composite "interestingness score" that considers:
+- Whether cooperation rates are changing over time (dynamic scenarios)
+- Whether different strategies achieve significantly different outcomes
+- Avoiding extreme cases where all agents cooperate or all defect
+
+Example output graphs include:
+- Scenario ranking by interestingness score
+- Comparison of cooperation rates across scenarios
+- Strategy performance distribution
+- Parameter frequency analysis
+- Correlation between different metrics
+
+For more targeted exploration, you can also run only the scenario generation step:
+
+```bash
+python run_scenario_generator.py --num_generate 50 --eval_runs 3 --save_runs 10 --top_n 5
+```
 
 ### Visualization Dashboard
 
@@ -175,76 +224,54 @@ coop_rate = sum(1 for move in final_round['moves'].values()
 print(f"Final cooperation rate: {coop_rate:.2f}")
 ```
 
-### Example Pairwise Scenarios
+## Customizing Scenario Generation
 
-Some interesting pairwise scenarios to try:
+When using the scenario generator, you can customize the parameter space to explore by modifying the parameter pools at the top of `run_scenario_generator.py`:
 
-1. **Mixed Strategies**: Compare how different strategy types perform against each other in a fully mixed population.
+```python
+# Define pools of options to combine
+AGENT_STRATEGY_POOL = [
+    "hysteretic_q", "wolf_phc", "lra_q",  # Learning strategies
+    "q_learning", "q_learning_adaptive", "ucb1_q",
+    "tit_for_tat", "tit_for_two_tats", "pavlov",  # Reactive strategies
+    "generous_tit_for_tat", "suspicious_tit_for_tat",
+    "always_cooperate", "always_defect", "random"  # Fixed/Simple strategies
+]
 
-```json
-{
-  "scenario_name": "Pairwise_Mixed",
-  "interaction_mode": "pairwise",
-  "num_agents": 20,
-  "num_rounds": 100,
-  "network_type": "fully_connected",
-  "network_params": {},
-  "agent_strategies": {
-    "q_learning": 5,
-    "tit_for_tat": 5,
-    "always_defect": 5,
-    "always_cooperate": 5
-  },
-  "payoff_params": { 
-    "R": 3, "S": 0, "T": 5, "P": 1
-  }
-}
+NETWORK_POOL = [
+    ("small_world", {"k": 4, "beta": 0.3}),
+    ("scale_free", {"m": 2}),
+    ("fully_connected", {}),
+    # Add your custom network configurations
+]
+
+# Add other parameter pools
+INTERACTION_MODE_POOL = ["neighborhood", "pairwise"]
+NUM_AGENTS_POOL = [20, 30, 40, 50]
+# ...
 ```
 
-2. **Evolution of Trust**: Simulate Axelrod-style tournaments with various strategies.
+You can also adjust the scenario evaluation function to focus on different aspects of "interestingness":
 
-```json
-{
-  "scenario_name": "Evolution_Of_Trust",
-  "interaction_mode": "pairwise",
-  "num_agents": 30,
-  "num_rounds": 300,
-  "network_type": "fully_connected",
-  "agent_strategies": {
-    "always_cooperate": 6,
-    "always_defect": 6,
-    "tit_for_tat": 6,
-    "tit_for_two_tats": 6,
-    "pavlov": 6
-  },
-  "payoff_params": { 
-    "R": 3, "S": 0, "T": 5, "P": 1
-  }
-}
-```
-
-3. **Learning Rate Adjustment**: Test how LRA-Q performs against fixed strategies.
-
-```json
-{
-  "scenario_name": "Pairwise_LRA_vs_TFT",
-  "interaction_mode": "pairwise",
-  "num_agents": 20,
-  "num_rounds": 100,
-  "network_type": "fully_connected",
-  "agent_strategies": {
-    "lra_q": 10,
-    "tit_for_tat": 10
-  },
-  "payoff_params": { 
-    "R": 3, "S": 0, "T": 5, "P": 1
-  },
-  "learning_rate": 0.1,
-  "discount_factor": 0.9,
-  "epsilon": 0.1,
-  "increase_rate": 0.1,
-  "decrease_rate": 0.05
-}
+```python
+def calculate_interestingness_score(eval_result):
+    """Calculate an 'interestingness' score based on multiple metrics."""
+    # Extract metrics (handle potential NaN values)
+    metrics = eval_result['metrics']
+    
+    # Get normalized metrics (0-1 range)
+    coop = metrics.get('avg_final_coop_rate', 0)
+    coop_change = abs(metrics.get('avg_coop_rate_change', 0))
+    variance = metrics.get('avg_score_variance', 0) / 1000  # Normalize
+    
+    # Weighted combination of metrics - adjust weights to your preference 
+    score = (
+        0.2 * (1 - abs(coop - 0.5)) +  # Prefer intermediate cooperation rates
+        0.4 * coop_change +            # Reward dynamics (changes over time)
+        0.4 * variance                 # Reward variance across strategies
+    )
+    
+    return score
 ```
 
 ## Agent Strategies
@@ -355,6 +382,9 @@ pytest --cov=npdl
 # Run basic functionality tests
 python -m npdl.core.test_basic
 
+# Generate and analyze random scenarios
+python run_sweep_analysis.py --num_generate 10 --top_n 3
+
 # Lint code
 black npdl/
 
@@ -372,6 +402,8 @@ Planned enhancements include:
 - Expanded test coverage
 - Per-opponent learning in pairwise mode
 - Multiple rounds per pairing in pairwise mode
+- Enhanced scenario generation and analysis capabilities
+- Evolutionary scenario selection
 
 ## License
 

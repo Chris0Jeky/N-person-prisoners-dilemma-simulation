@@ -438,6 +438,12 @@ python -m npdl.core.test_basic
 # Generate and analyze random scenarios
 python run_sweep_analysis.py --num_generate 10 --top_n 3
 
+# Run evolutionary scenario generation with parallel processing
+python run_evolutionary_generator.py --pop_size 20 --generations 5 --eval_runs 3
+
+# Analyze evolutionary results
+python -m analysis.evolution_visualizer --output evolution_report
+
 # Lint code
 black npdl/
 
@@ -455,8 +461,12 @@ Planned enhancements include:
 - Expanded test coverage
 - Per-opponent learning in pairwise mode
 - Multiple rounds per pairing in pairwise mode
-- Enhanced scenario generation and analysis capabilities
-- Evolutionary scenario selection
+- Further enhancements to evolutionary algorithms:
+  - Multi-objective optimization for scenario generation
+  - Diversity preservation mechanisms
+  - Interactive evolutionary computation with user feedback
+- Reinforcement learning for automatic scenario optimization
+- Integration with external machine learning frameworks
 
 ## License
 

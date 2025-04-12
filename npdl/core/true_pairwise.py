@@ -28,6 +28,7 @@ except ImportError:
             return random.random()
         
         class random:
+            """Fallback random-number source for the numpy shim."""
             @staticmethod
             def random():
                 """Return a uniform random float."""

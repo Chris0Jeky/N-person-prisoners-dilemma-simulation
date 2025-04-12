@@ -10,150 +10,154 @@
   "generation_stats": [
     {
       "generation": 1,
-      "avg_score": 0.47448066469075034,
-      "max_score": 0.9671813462683858,
-      "min_score": 0.20476149376279407,
-      "top_scenario_name": "GeneratedScenario_0007",
+      "avg_score": 0.5427201925476626,
+      "max_score": 1.118723234067484,
+      "min_score": 0.19744956467711303,
+      "top_scenario_name": "GeneratedScenario_0011",
       "scenario_types": {
-        "always_cooperate": 4,
-        "q_learning_adaptive": 5,
-        "tit_for_two_tats": 6,
-        "q_learning": 5,
-        "ucb1_q": 6,
-        "tit_for_tat": 3,
-        "wolf_phc": 3,
+        "tit_for_tat": 5,
+        "pavlov": 3,
+        "lra_q": 6,
+        "q_learning_adaptive": 12,
         "random": 6,
-        "hysteretic_q": 2,
+        "always_defect": 4,
         "suspicious_tit_for_tat": 4,
-        "lra_q": 3,
-        "always_defect": 5,
-        "pavlov": 2,
-        "generous_tit_for_tat": 4
+        "tit_for_two_tats": 5,
+        "generous_tit_for_tat": 4,
+        "ucb1_q": 3,
+        "always_cooperate": 2,
+        "q_learning": 3,
+        "hysteretic_q": 2,
+        "wolf_phc": 4
       }
     },
     {
       "generation": 2,
-      "avg_score": 0.6914270949724325,
-      "max_score": 1.0112402025038225,
-      "min_score": 0.29618246118737035,
-      "top_scenario_name": "Evo_1744500884_7458",
+      "avg_score": 0.874192621042823,
+      "max_score": 1.2756029529007236,
+      "min_score": 0.24351481685018364,
+      "top_scenario_name": "Evo_1744501745_5664",
       "scenario_types": {
-        "tit_for_two_tats": 7,
-        "q_learning": 10,
-        "tit_for_tat": 4,
-        "ucb1_q": 6,
-        "always_cooperate": 3,
-        "q_learning_adaptive": 4,
-        "wolf_phc": 5,
-        "random": 3,
-        "lra_q": 3,
-        "hysteretic_q": 2,
-        "generous_tit_for_tat": 1,
-        "suspicious_tit_for_tat": 3,
-        "always_defect": 4
+        "ucb1_q": 3,
+        "tit_for_tat": 8,
+        "q_learning_adaptive": 13,
+        "always_defect": 9,
+        "random": 6,
+        "suspicious_tit_for_tat": 7,
+        "generous_tit_for_tat": 2,
+        "tit_for_two_tats": 8,
+        "pavlov": 2,
+        "lra_q": 5,
+        "wolf_phc": 3,
+        "hysteretic_q": 3,
+        "q_learning": 2
       }
     },
     {
       "generation": 3,
-      "avg_score": 0.8947842867670976,
-      "max_score": 1.1705102993212737,
-      "min_score": 0.6093351839645833,
-      "top_scenario_name": "Evo_1744500886_9326",
+      "avg_score": 1.1100267712362686,
+      "max_score": 1.5246269631987794,
+      "min_score": 0.27306940003379865,
+      "top_scenario_name": "Evo_1744501749_5194",
       "scenario_types": {
-        "tit_for_two_tats": 15,
-        "always_cooperate": 9,
-        "q_learning": 14,
-        "tit_for_tat": 5,
-        "ucb1_q": 6,
-        "q_learning_adaptive": 3,
-        "wolf_phc": 3,
-        "random": 1,
-        "lra_q": 2
+        "lra_q": 3,
+        "tit_for_tat": 11,
+        "pavlov": 3,
+        "q_learning_adaptive": 15,
+        "ucb1_q": 4,
+        "always_defect": 14,
+        "random": 10,
+        "suspicious_tit_for_tat": 4,
+        "tit_for_two_tats": 4,
+        "generous_tit_for_tat": 3,
+        "hysteretic_q": 1
       }
     },
     {
       "generation": 4,
-      "avg_score": 0.9493854871283325,
-      "max_score": 1.1504692287671718,
-      "min_score": 0.7865366467837326,
-      "top_scenario_name": "Evo_1744500889_5953",
+      "avg_score": 1.3052411699740474,
+      "max_score": 1.5692037074704377,
+      "min_score": 0.8900344845755698,
+      "top_scenario_name": "Evo_1744501752_5144",
       "scenario_types": {
-        "tit_for_two_tats": 19,
-        "always_cooperate": 15,
-        "q_learning": 16,
-        "tit_for_tat": 5,
-        "ucb1_q": 4,
+        "ucb1_q": 13,
+        "tit_for_tat": 17,
         "hysteretic_q": 1,
-        "q_learning_adaptive": 4
+        "lra_q": 3,
+        "pavlov": 4,
+        "q_learning_adaptive": 8,
+        "always_defect": 5,
+        "random": 5
       }
     },
     {
       "generation": 5,
-      "avg_score": 1.057719570137389,
-      "max_score": 1.3369450405083914,
-      "min_score": 0.7742301684147997,
-      "top_scenario_name": "Evo_1744500891_7874",
+      "avg_score": 1.3287812114752695,
+      "max_score": 1.6967437553996048,
+      "min_score": 0.24564442996098493,
+      "top_scenario_name": "Evo_1744501756_8140",
       "scenario_types": {
-        "q_learning": 19,
-        "tit_for_tat": 9,
+        "lra_q": 9,
+        "tit_for_tat": 19,
+        "pavlov": 9,
+        "q_learning_adaptive": 10,
+        "ucb1_q": 12,
         "hysteretic_q": 3,
-        "tit_for_two_tats": 17,
-        "always_cooperate": 17,
-        "ucb1_q": 6,
-        "q_learning_adaptive": 1
+        "random": 2
       }
     }
   ],
   "best_scenarios_by_generation": [
     {
       "generation": 1,
-      "name": "Evo_1744500891_7874",
-      "score": 1.3369450405083914,
+      "name": "Evo_1744501756_8140",
+      "score": 1.6967437553996048,
       "strategies": {
-        "q_learning": 6,
-        "tit_for_tat": 33,
-        "hysteretic_q": 14
+        "lra_q": 35,
+        "tit_for_tat": 6,
+        "pavlov": 9,
+        "q_learning_adaptive": 27
       }
     },
     {
       "generation": 2,
-      "name": "Evo_1744500886_9326",
-      "score": 1.1705102993212737,
+      "name": "Evo_1744501752_5144",
+      "score": 1.5692037074704377,
       "strategies": {
-        "tit_for_two_tats": 32,
-        "always_cooperate": 8,
-        "q_learning": 6
+        "ucb1_q": 5,
+        "tit_for_tat": 54,
+        "hysteretic_q": 8
       }
     },
     {
       "generation": 3,
-      "name": "Evo_1744500889_5953",
-      "score": 1.1504692287671718,
+      "name": "Evo_1744501749_5194",
+      "score": 1.5246269631987794,
       "strategies": {
-        "tit_for_two_tats": 32,
-        "always_cooperate": 8,
-        "q_learning": 6
+        "lra_q": 35,
+        "tit_for_tat": 6,
+        "pavlov": 9,
+        "q_learning_adaptive": 27
       }
     },
     {
       "generation": 4,
-      "name": "Evo_1744500884_7458",
-      "score": 1.0112402025038225,
+      "name": "Evo_1744501745_5664",
+      "score": 1.2756029529007236,
       "strategies": {
-        "tit_for_two_tats": 3,
-        "q_learning": 5,
-        "tit_for_tat": 32,
-        "ucb1_q": 13
+        "ucb1_q": 13,
+        "tit_for_tat": 54
       }
     },
     {
       "generation": 5,
-      "name": "GeneratedScenario_0007",
-      "score": 0.9671813462683858,
+      "name": "GeneratedScenario_0011",
+      "score": 1.118723234067484,
       "strategies": {
-        "always_cooperate": 4,
-        "q_learning_adaptive": 1,
-        "tit_for_two_tats": 35
+        "tit_for_tat": 6,
+        "pavlov": 9,
+        "lra_q": 8,
+        "q_learning_adaptive": 27
       }
     }
   ]

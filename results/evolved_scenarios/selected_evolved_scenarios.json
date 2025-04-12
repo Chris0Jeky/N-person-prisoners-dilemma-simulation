@@ -1,147 +1,169 @@
 [
   {
-    "scenario_name": "Evo_1744500891_7874",
-    "num_agents": 40,
-    "num_rounds": 300,
-    "network_type": "fully_connected",
-    "network_params": {},
-    "interaction_mode": "pairwise",
-    "agent_strategies": {
-      "q_learning": 6,
-      "tit_for_tat": 33,
-      "hysteretic_q": 14
-    },
-    "payoff_type": "linear",
-    "payoff_params": {
-      "P": 1,
-      "T": 6,
-      "R": 4,
-      "S": 0
-    },
-    "state_type": "memory_enhanced",
-    "memory_length": 20,
-    "learning_rate": 0.05,
-    "discount_factor": 0.99,
-    "epsilon": 0.1,
-    "q_init_type": "zero",
-    "logging_interval": 301,
-    "beta": 0.0473,
-    "exploration_constant": 2.1,
-    "rewiring_interval": 20
-  },
-  {
-    "scenario_name": "Evo_1744500886_9326",
-    "num_agents": 40,
-    "num_rounds": 300,
-    "network_type": "fully_connected",
-    "network_params": {},
-    "interaction_mode": "pairwise",
-    "agent_strategies": {
-      "tit_for_two_tats": 32,
-      "always_cooperate": 8,
-      "q_learning": 6
-    },
-    "payoff_type": "linear",
-    "payoff_params": {
-      "P": 1,
-      "T": 6,
-      "R": 4,
-      "S": 0
-    },
-    "state_type": "count",
-    "memory_length": 5,
-    "learning_rate": 0.05,
-    "discount_factor": 0.99,
-    "epsilon": 0.3,
-    "q_init_type": "zero",
-    "logging_interval": 501,
-    "beta": 0.0473
-  },
-  {
-    "scenario_name": "Evo_1744500889_5953",
-    "num_agents": 40,
-    "num_rounds": 300,
-    "network_type": "fully_connected",
-    "network_params": {},
-    "interaction_mode": "pairwise",
-    "agent_strategies": {
-      "tit_for_two_tats": 32,
-      "always_cooperate": 8,
-      "q_learning": 6
-    },
-    "payoff_type": "linear",
-    "payoff_params": {
-      "P": 1,
-      "T": 6,
-      "R": 4,
-      "S": 0
-    },
-    "state_type": "memory_enhanced",
-    "memory_length": 5,
-    "learning_rate": 0.05,
-    "discount_factor": 0.99,
-    "epsilon": 0.1,
-    "q_init_type": "zero",
-    "logging_interval": 501,
-    "beta": 0.0473
-  },
-  {
-    "scenario_name": "Evo_1744500884_7458",
-    "num_agents": 40,
-    "num_rounds": 300,
-    "network_type": "scale_free",
+    "scenario_name": "Evo_1744501756_8140",
+    "num_agents": 50,
+    "num_rounds": 500,
+    "network_type": "small_world",
     "network_params": {
-      "m": 3
+      "k": 6,
+      "beta": 0.2
     },
     "interaction_mode": "pairwise",
     "agent_strategies": {
-      "tit_for_two_tats": 3,
-      "q_learning": 5,
-      "tit_for_tat": 32,
-      "ucb1_q": 13
+      "lra_q": 35,
+      "tit_for_tat": 6,
+      "pavlov": 9,
+      "q_learning_adaptive": 27
     },
     "payoff_type": "linear",
     "payoff_params": {
-      "P": 0,
-      "T": 5,
-      "R": 3,
-      "S": 0
+      "S": 0,
+      "T": 6,
+      "P": 1,
+      "R": 4
     },
     "state_type": "memory_enhanced",
-    "memory_length": 20,
+    "memory_length": 10,
+    "learning_rate": 0.05,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "q_init_type": "zero",
+    "logging_interval": 501,
+    "increase_rate": 0.171,
+    "decrease_rate": 0.023,
+    "exploration_constant": 1.5,
+    "rewiring_prob": 0.08
+  },
+  {
+    "scenario_name": "Evo_1744501752_5144",
+    "num_agents": 40,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {
+      "k": 6,
+      "beta": 0.2
+    },
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "ucb1_q": 5,
+      "tit_for_tat": 54,
+      "hysteretic_q": 8
+    },
+    "payoff_type": "linear",
+    "payoff_params": {
+      "R": 4,
+      "S": 0,
+      "T": 5,
+      "P": 1
+    },
+    "state_type": "memory_enhanced",
+    "memory_length": 3,
+    "learning_rate": 0.05,
+    "discount_factor": 0.99,
+    "epsilon": 0.1,
+    "q_init_type": "random",
+    "logging_interval": 501,
+    "exploration_constant": 1.5,
+    "use_global_bonus": true
+  },
+  {
+    "scenario_name": "Evo_1744501749_5194",
+    "num_agents": 50,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {
+      "k": 6,
+      "beta": 0.2
+    },
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "lra_q": 35,
+      "tit_for_tat": 6,
+      "pavlov": 9,
+      "q_learning_adaptive": 27
+    },
+    "payoff_type": "linear",
+    "payoff_params": {
+      "S": 0,
+      "T": 6,
+      "P": 1,
+      "R": 3
+    },
+    "state_type": "memory_enhanced",
+    "memory_length": 10,
     "learning_rate": 0.05,
     "discount_factor": 0.99,
     "epsilon": 0.1,
     "q_init_type": "zero",
-    "logging_interval": 301,
-    "exploration_constant": 2.1,
-    "rewiring_interval": 20
+    "logging_interval": 201,
+    "increase_rate": 0.171,
+    "decrease_rate": 0.023,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.08
   },
   {
-    "scenario_name": "GeneratedScenario_0007",
+    "scenario_name": "Evo_1744501745_5664",
     "num_agents": 40,
-    "num_rounds": 300,
-    "network_type": "fully_connected",
-    "network_params": {},
+    "num_rounds": 500,
+    "network_type": "random",
+    "network_params": {
+      "probability": 0.7
+    },
     "interaction_mode": "pairwise",
     "agent_strategies": {
-      "always_cooperate": 4,
-      "q_learning_adaptive": 1,
-      "tit_for_two_tats": 35
+      "ucb1_q": 13,
+      "tit_for_tat": 54
+    },
+    "payoff_type": "linear",
+    "payoff_params": {
+      "S": 0,
+      "T": 6,
+      "P": 1,
+      "R": 3
+    },
+    "state_type": "memory_enhanced",
+    "memory_length": 3,
+    "learning_rate": 0.05,
+    "discount_factor": 0.99,
+    "epsilon": 0.1,
+    "q_init_type": "random",
+    "logging_interval": 501,
+    "exploration_constant": 1.5,
+    "use_global_bonus": true
+  },
+  {
+    "scenario_name": "GeneratedScenario_0011",
+    "num_agents": 50,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {
+      "k": 6,
+      "beta": 0.2
+    },
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "tit_for_tat": 6,
+      "pavlov": 9,
+      "lra_q": 8,
+      "q_learning_adaptive": 27
     },
     "payoff_type": "linear",
     "payoff_params": {
       "R": 3,
       "S": 0,
-      "T": 5,
+      "T": 6,
       "P": 1
     },
-    "state_type": "count",
-    "memory_length": 10,
+    "state_type": "memory_enhanced",
+    "memory_length": 20,
     "q_init_type": "zero",
-    "learning_rate": 0.2,
+    "learning_rate": 0.05,
     "discount_factor": 0.99,
-    "epsilon": 0.3,
-    "logging_interval": 301
+    "epsilon": 0.1,
+    "increase_rate": 0.171,
+    "decrease_rate": 0.023,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.08,
+    "logging_interval": 501
   }
 ]

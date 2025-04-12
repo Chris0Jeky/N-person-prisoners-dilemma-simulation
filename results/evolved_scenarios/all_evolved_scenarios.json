@@ -1,19 +1,18 @@
 {
-  "generation_timestamp": "2025-04-13 00:34:54",
+  "generation_timestamp": "2025-04-13 00:49:20",
   "total_scenarios": 5,
   "parameters": {
     "agent_strategies": [
-      "tit_for_two_tats",
-      "q_learning",
       "q_learning_adaptive",
-      "hysteretic_q",
-      "always_cooperate",
+      "pavlov",
+      "ucb1_q",
       "tit_for_tat",
-      "ucb1_q"
+      "hysteretic_q",
+      "lra_q"
     ],
     "network_types": [
-      "fully_connected",
-      "scale_free"
+      "random",
+      "small_world"
     ],
     "interaction_modes": [
       "pairwise"
@@ -21,149 +20,150 @@
   },
   "scenarios": [
     {
-      "name": "Evo_1744500891_7874",
+      "name": "Evo_1744501756_8140",
       "metrics": {
-        "avg_strategy_countering": 0.6666666666666666,
-        "avg_social_welfare": 206.0251572327044,
-        "avg_coop_rate_change": -0.0062893081761006275,
-        "avg_coop_volatility": 0.021176190936865846,
-        "avg_score_variance": 21.715797430083132,
-        "avg_equilibrium_stability": 0.06709619882242668,
-        "avg_learning_convergence": NaN,
-        "avg_final_coop_rate": 0.9811320754716982,
-        "avg_strategy_adaptation_rate": NaN,
-        "avg_strategy_dominance": 7.666666666666667,
         "avg_network_clustering": 0.0,
-        "avg_pattern_complexity": 0.0226326431299563
-      },
-      "selection_score": 1.3369450405083914,
-      "config_summary": {
-        "strategies": {
-          "q_learning": 6,
-          "tit_for_tat": 33,
-          "hysteretic_q": 14
-        },
-        "network": "fully_connected",
-        "interaction": "pairwise",
-        "agents": 40,
-        "rounds": 300
-      }
-    },
-    {
-      "name": "Evo_1744500886_9326",
-      "metrics": {
-        "avg_coop_volatility": 0.020255590999326986,
-        "avg_pattern_complexity": 0.021741487188316967,
-        "avg_social_welfare": 173.24637681159422,
-        "avg_network_clustering": 0.0,
+        "avg_final_coop_rate": 0.6969696969696969,
+        "avg_strategy_countering": 0.18350341907227385,
+        "avg_coop_volatility": 0.057725078889319596,
+        "avg_coop_rate_change": -0.26406926406926406,
+        "avg_strategy_dominance": 84.81904761904762,
+        "avg_equilibrium_stability": 0.019064858297511256,
+        "avg_score_variance": 1322.9066470703508,
         "avg_learning_convergence": NaN,
-        "avg_equilibrium_stability": 0.08548480664081126,
-        "avg_score_variance": 707.4732510288064,
-        "avg_strategy_countering": 0.0,
-        "avg_strategy_adaptation_rate": NaN,
-        "avg_strategy_dominance": 50.444444444444436,
-        "avg_final_coop_rate": 0.927536231884058,
-        "avg_coop_rate_change": -0.07246376811594206
-      },
-      "selection_score": 1.1705102993212737,
-      "config_summary": {
-        "strategies": {
-          "tit_for_two_tats": 32,
-          "always_cooperate": 8,
-          "q_learning": 6
-        },
-        "network": "fully_connected",
-        "interaction": "pairwise",
-        "agents": 40,
-        "rounds": 300
-      }
-    },
-    {
-      "name": "Evo_1744500889_5953",
-      "metrics": {
-        "avg_score_variance": 36.36213991769544,
-        "avg_strategy_dominance": 10.444444444444438,
-        "avg_equilibrium_stability": 0.0,
-        "avg_final_coop_rate": 0.9855072463768115,
-        "avg_coop_volatility": 0.012856255158769635,
-        "avg_strategy_countering": 0.3333333333333333,
-        "avg_pattern_complexity": 0.013828153686450621,
-        "avg_learning_convergence": NaN,
-        "avg_coop_rate_change": -0.007246376811594198,
-        "avg_network_clustering": 0.0,
-        "avg_social_welfare": 178.69565217391303,
+        "avg_social_welfare": 250.9090909090909,
+        "avg_pattern_complexity": 0.09943447161645631,
         "avg_strategy_adaptation_rate": NaN
       },
-      "selection_score": 1.1504692287671718,
+      "selection_score": 1.6967437553996048,
       "config_summary": {
         "strategies": {
-          "tit_for_two_tats": 32,
-          "always_cooperate": 8,
-          "q_learning": 6
+          "lra_q": 35,
+          "tit_for_tat": 6,
+          "pavlov": 9,
+          "q_learning_adaptive": 27
         },
-        "network": "fully_connected",
+        "network": "small_world",
         "interaction": "pairwise",
-        "agents": 40,
-        "rounds": 300
+        "agents": 50,
+        "rounds": 500
       }
     },
     {
-      "name": "Evo_1744500884_7458",
+      "name": "Evo_1744501752_5144",
       "metrics": {
-        "avg_final_coop_rate": 0.7421383647798742,
-        "avg_coop_rate_change": -0.1509433962264151,
-        "avg_strategy_countering": 0.061167806357424616,
-        "avg_learning_convergence": NaN,
-        "avg_coop_volatility": 0.01687247200469494,
-        "avg_network_clustering": 0.0,
-        "avg_pattern_complexity": 0.04090286303304808,
-        "avg_social_welfare": 136.0251572327044,
+        "avg_equilibrium_stability": 0.5893926556702787,
+        "avg_coop_rate_change": -0.04477611940298506,
         "avg_strategy_adaptation_rate": NaN,
-        "avg_strategy_dominance": 81.66666666666667,
-        "avg_score_variance": 1209.5808333333332,
-        "avg_equilibrium_stability": 0.9534737358666286
+        "avg_strategy_dominance": 70.0,
+        "avg_pattern_complexity": 0.014836420205032216,
+        "avg_coop_volatility": 0.011517393672864725,
+        "avg_strategy_countering": 0.08931639747704086,
+        "avg_final_coop_rate": 0.9253731343283582,
+        "avg_learning_convergence": NaN,
+        "avg_score_variance": 1088.888888888889,
+        "avg_network_clustering": 0.0,
+        "avg_social_welfare": 249.22388059701493
       },
-      "selection_score": 1.0112402025038225,
+      "selection_score": 1.5692037074704377,
       "config_summary": {
         "strategies": {
-          "tit_for_two_tats": 3,
-          "q_learning": 5,
-          "tit_for_tat": 32,
-          "ucb1_q": 13
+          "ucb1_q": 5,
+          "tit_for_tat": 54,
+          "hysteretic_q": 8
         },
-        "network": "scale_free",
+        "network": "small_world",
         "interaction": "pairwise",
         "agents": 40,
-        "rounds": 300
+        "rounds": 500
       }
     },
     {
-      "name": "GeneratedScenario_0007",
+      "name": "Evo_1744501749_5194",
       "metrics": {
-        "avg_equilibrium_stability": 0.6251454954994153,
-        "avg_social_welfare": 116.35000000000001,
-        "avg_coop_volatility": 0.002739635496314038,
-        "avg_strategy_countering": 0.6666666666666666,
         "avg_network_clustering": 0.0,
+        "avg_final_coop_rate": 0.787878787878788,
+        "avg_coop_volatility": 0.02924386153056377,
+        "avg_equilibrium_stability": 0.0,
         "avg_strategy_adaptation_rate": NaN,
+        "avg_pattern_complexity": 0.057088123342135255,
+        "avg_strategy_dominance": 83.84761904761906,
+        "avg_score_variance": 1233.0231774726356,
+        "avg_strategy_countering": 0.24261149100803045,
+        "avg_social_welfare": 221.41991341991343,
         "avg_learning_convergence": NaN,
-        "avg_coop_rate_change": -0.01666666666666668,
-        "avg_final_coop_rate": 0.9833333333333334,
-        "avg_pattern_complexity": 0.00566346092044146,
-        "avg_strategy_dominance": 54.0,
-        "avg_score_variance": 972.0
+        "avg_coop_rate_change": -0.1731601731601731
       },
-      "selection_score": 0.9671813462683858,
+      "selection_score": 1.5246269631987794,
       "config_summary": {
         "strategies": {
-          "always_cooperate": 4,
-          "q_learning_adaptive": 1,
-          "tit_for_two_tats": 35
+          "lra_q": 35,
+          "tit_for_tat": 6,
+          "pavlov": 9,
+          "q_learning_adaptive": 27
         },
-        "network": "fully_connected",
+        "network": "small_world",
+        "interaction": "pairwise",
+        "agents": 50,
+        "rounds": 500
+      }
+    },
+    {
+      "name": "Evo_1744501745_5664",
+      "metrics": {
+        "avg_equilibrium_stability": 1.0,
+        "avg_coop_rate_change": -0.08955223880597014,
+        "avg_final_coop_rate": 0.8059701492537313,
+        "avg_social_welfare": 193.34328358208958,
+        "avg_learning_convergence": NaN,
+        "avg_coop_volatility": 0.0017225658675766836,
+        "avg_strategy_countering": 1.1102230246251565e-16,
+        "avg_strategy_dominance": 177.0,
+        "avg_network_clustering": 0.0,
+        "avg_score_variance": 7832.25,
+        "avg_pattern_complexity": 0.01875457393803912,
+        "avg_strategy_adaptation_rate": NaN
+      },
+      "selection_score": 1.2756029529007236,
+      "config_summary": {
+        "strategies": {
+          "ucb1_q": 13,
+          "tit_for_tat": 54
+        },
+        "network": "random",
         "interaction": "pairwise",
         "agents": 40,
-        "rounds": 300
+        "rounds": 500
+      }
+    },
+    {
+      "name": "GeneratedScenario_0011",
+      "metrics": {
+        "avg_network_clustering": 0.0,
+        "avg_learning_convergence": NaN,
+        "avg_equilibrium_stability": 0.14875548390988924,
+        "avg_strategy_countering": 0.3333333333333333,
+        "avg_score_variance": 886.8576924725652,
+        "avg_strategy_adaptation_rate": NaN,
+        "avg_final_coop_rate": 0.86,
+        "avg_coop_rate_change": -0.12,
+        "avg_coop_volatility": 0.02985158599264462,
+        "avg_social_welfare": 145.21333333333334,
+        "avg_strategy_dominance": 69.16666666666667,
+        "avg_pattern_complexity": 0.03189723009699747
+      },
+      "selection_score": 1.118723234067484,
+      "config_summary": {
+        "strategies": {
+          "tit_for_tat": 6,
+          "pavlov": 9,
+          "lra_q": 8,
+          "q_learning_adaptive": 27
+        },
+        "network": "small_world",
+        "interaction": "pairwise",
+        "agents": 50,
+        "rounds": 500
       }
     }
   ]

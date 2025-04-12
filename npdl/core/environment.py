@@ -52,9 +52,19 @@ class Environment:
     def _create_network_graph(self):
         """Create a NetworkX graph based on the specified network type and parameters."""
         num_agents = len(self.agents)
-        
+
+        agent_ids = [agent.agent_id for agent in self.agents]
+        num_agents = len(agent_ids)
+
+        # Use agent_ids when creating the graph structure
         if self.network_type == "fully_connected":
-            graph = nx.complete_graph(num_agents)
+            # Create graph and add nodes explicitly using agent IDs
+            graph = nx.Graph()
+            graph.add_nodes_from(agent_ids)
+            # Add edges between all pairs of agent IDs
+            for i in range(num_agents):
+                for j in range(i + 1, num_agents):
+                    graph.add_edge(agent_ids[i], agent_ids[j])
         elif self.network_type == "random":
             probability = self.network_params.get("probability", 0.5)
             graph = nx.erdos_renyi_graph(num_agents, probability)

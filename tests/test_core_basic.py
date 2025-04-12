@@ -1,9 +1,15 @@
-# test_basic.py
+# test_core_basic.py
 """
 Simple test script to verify that the core components are working correctly.
 """
 
 import logging
+import sys
+import os
+
+# Add the project root to the Python path to fix imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment
 from npdl.core.utils import create_payoff_matrix, plot_payoff_functions

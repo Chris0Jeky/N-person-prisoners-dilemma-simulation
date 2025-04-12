@@ -10,6 +10,12 @@ This script includes tests to verify:
 import random
 import logging
 import numpy as np
+import sys
+import os
+
+# Add the project root to the Python path to fix imports
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment
 from npdl.core.utils import create_payoff_matrix, get_pairwise_payoffs

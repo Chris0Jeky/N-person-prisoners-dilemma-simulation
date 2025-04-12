@@ -241,11 +241,9 @@ def plot_top_scenarios_comparison(scenarios: List[Dict], top_n: int = 5,
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         
-    plt.show()
+    plt.close()
     
-    # Also create a radar chart for better comparing scenario profiles
-    create_radar_chart(top_scenarios, save_path=save_path.replace('.png', '_radar.png') if save_path else None)
-    
+    # Return the DataFrame for further analysis
     return df
 
 
@@ -423,33 +421,77 @@ def create_evolution_report(metadata_file="results/evolved_scenarios/evolution_m
     except FileNotFoundError as e:
         print(f"Error: Could not load required files: {e}")
         return
+    except json.JSONDecodeError as e:
+        print(f"Error: JSON format issue in data files: {e}")
+        return
     
     print(f"Generating evolution analysis report in {output_dir}...")
     
     # Extract basic information
-    generations = metadata["parameters"]["generations"]
-    population_size = metadata["parameters"]["population_size"]
+    try:
+        generations = metadata["parameters"]["generations"]
+        population_size = metadata["parameters"]["population_size"]
+    except KeyError as e:
+        print(f"Error: Missing required parameter in metadata: {e}")
+        generations = 5  # Default fallback value
+        population_size = 20
+    
+    # Check if we have valid data
+    if not scenarios:
+        print("Warning: No scenario data available in the provided file")
+    
+    if not metadata.get("generation_stats"):
+        print("Warning: No generation statistics found in metadata")
     
     # 1. Plot evolution progress
-    plot_evolution_progress(metadata, save_path=os.path.join(output_dir, "evolution_progress.png"))
+    try:
+        plot_evolution_progress(metadata, save_path=os.path.join(output_dir, "evolution_progress.png"))
+    except Exception as e:
+        print(f"Error generating evolution progress plot: {e}")
     
     # 2. Plot strategy evolution
-    strategy_df = plot_strategy_evolution(metadata, save_path=os.path.join(output_dir, "strategy_evolution.png"))
-    strategy_df.to_csv(os.path.join(output_dir, "strategy_evolution.csv"))
+    try:
+        strategy_df = plot_strategy_evolution(metadata, save_path=os.path.join(output_dir, "strategy_evolution.png"))
+        if strategy_df is not None:
+            strategy_df.to_csv(os.path.join(output_dir, "strategy_evolution.csv"))
+    except Exception as e:
+        print(f"Error generating strategy evolution plot: {e}")
     
     # 3. Plot metric evolution
-    plot_metric_evolution(scenarios, generations, save_path=os.path.join(output_dir, "metric_evolution.png"))
+    try:
+        plot_metric_evolution(scenarios, generations, save_path=os.path.join(output_dir, "metric_evolution.png"))
+    except Exception as e:
+        print(f"Error generating metric evolution plot: {e}")
     
     # 4. Compare top scenarios
-    top_scenarios_df = plot_top_scenarios_comparison(scenarios, save_path=os.path.join(output_dir, "top_scenarios_comparison.png"))
-    top_scenarios_df.to_csv(os.path.join(output_dir, "top_scenarios.csv"))
+    try:
+        top_scenarios_df = plot_top_scenarios_comparison(scenarios, 
+                                           save_path=os.path.join(output_dir, "top_scenarios_comparison.png"))
+        if top_scenarios_df is not None:
+            top_scenarios_df.to_csv(os.path.join(output_dir, "top_scenarios.csv"))
+    except Exception as e:
+        print(f"Error generating top scenarios comparison: {e}")
+        
+    # Create radar chart separately since it can fail independently
+    try:
+        create_radar_chart(scenarios[:5] if len(scenarios) >= 5 else scenarios, 
+                         save_path=os.path.join(output_dir, "top_scenarios_radar.png"))
+    except Exception as e:
+        print(f"Error generating radar chart: {e}")
     
     # 5. Analyze strategy performance
-    strategy_stats = analyze_strategy_performance(scenarios, save_path=os.path.join(output_dir, "strategy_performance.png"))
-    strategy_stats.to_csv(os.path.join(output_dir, "strategy_stats.csv"))
+    try:
+        strategy_stats = analyze_strategy_performance(scenarios, save_path=os.path.join(output_dir, "strategy_performance.png"))
+        if strategy_stats is not None:
+            strategy_stats.to_csv(os.path.join(output_dir, "strategy_stats.csv"))
+    except Exception as e:
+        print(f"Error analyzing strategy performance: {e}")
     
     # 6. Generate summary report
-    generate_summary_html(metadata, scenarios, output_dir)
+    try:
+        generate_summary_html(metadata, scenarios, output_dir)
+    except Exception as e:
+        print(f"Error generating HTML summary: {e}")
     
     print(f"Evolution analysis report generated in {output_dir}")
 

@@ -52,59 +52,97 @@ class Environment:
     def _create_network_graph(self):
         """Create a NetworkX graph based on the specified network type and parameters."""
         num_agents = len(self.agents)
-        
+
+        agent_ids = [agent.agent_id for agent in self.agents]
+        num_agents = len(agent_ids)
+
+        # Use agent_ids when creating the graph structure
         if self.network_type == "fully_connected":
-            graph = nx.complete_graph(num_agents)
+            # Create graph and add nodes explicitly using agent IDs
+            graph = nx.Graph()
+            graph.add_nodes_from(agent_ids)
+            # Add edges between all pairs of agent IDs
+            for i in range(num_agents):
+                for j in range(i + 1, num_agents):
+                    graph.add_edge(agent_ids[i], agent_ids[j])
+
         elif self.network_type == "random":
-            probability = self.network_params.get("probability", 0.5)
-            graph = nx.erdos_renyi_graph(num_agents, probability)
-            
-            # Ensure the graph is connected
-            if not nx.is_connected(graph) and num_agents > 1:
-                # Get connected components
-                components = list(nx.connected_components(graph))
-                
-                # Connect components by adding edges between them
+            # Create graph with sequential nodes, then relabel
+            graph_seq = nx.erdos_renyi_graph(num_agents, self.network_params.get("probability", 0.5))
+            # Ensure connectivity (keep existing logic)
+            if not nx.is_connected(graph_seq) and num_agents > 1:
+                components = list(nx.connected_components(graph_seq))
                 for i in range(len(components) - 1):
-                    node1 = random.choice(list(components[i]))
-                    node2 = random.choice(list(components[i + 1]))
-                    graph.add_edge(node1, node2)
-                
+                    node1_seq = random.choice(list(components[i]))
+                    node2_seq = random.choice(list(components[i + 1]))
+                    graph_seq.add_edge(node1_seq, node2_seq)
                 self.logger.info("Random graph was disconnected. Added edges to connect components.")
+            # Relabel nodes 0..N-1 to the actual agent IDs
+            mapping = {i: agent_ids[i] for i in range(num_agents)}
+            graph = nx.relabel_nodes(graph_seq, mapping)
+
+
         elif self.network_type == "small_world":
             k = min(self.network_params.get("k", 4), num_agents - 1)
             beta = self.network_params.get("beta", 0.2)
-            
             if num_agents <= k:
-                self.logger.warning(f"Not enough agents for Small World with k={k}. Creating complete graph instead.")
-                graph = nx.complete_graph(num_agents)
+                # Create complete graph using agent IDs directly
+                graph = nx.Graph()
+                graph.add_nodes_from(agent_ids)
+                for i in range(num_agents):
+                    for j in range(i + 1, num_agents):
+                        graph.add_edge(agent_ids[i], agent_ids[j])
+                self.logger.warning(f"Not enough agents for SW k={k}. Creating complete graph.")
             else:
-                graph = nx.watts_strogatz_graph(num_agents, k, beta)
+                graph_seq = nx.watts_strogatz_graph(num_agents, k, beta)
+                mapping = {i: agent_ids[i] for i in range(num_agents)}
+                graph = nx.relabel_nodes(graph_seq, mapping)
+
+
         elif self.network_type == "scale_free":
             m = min(self.network_params.get("m", 2), num_agents - 1)
-            
             if num_agents <= m:
-                self.logger.warning(f"Not enough agents for Scale Free with m={m}. Creating complete graph instead.")
-                graph = nx.complete_graph(num_agents)
+                graph = nx.Graph()
+                graph.add_nodes_from(agent_ids)
+                for i in range(num_agents):
+                    for j in range(i + 1, num_agents):
+                        graph.add_edge(agent_ids[i], agent_ids[j])
+                self.logger.warning(f"Not enough agents for SF m={m}. Creating complete graph.")
             else:
-                graph = nx.barabasi_albert_graph(num_agents, m)
+                graph_seq = nx.barabasi_albert_graph(num_agents, m)
+                mapping = {i: agent_ids[i] for i in range(num_agents)}
+                graph = nx.relabel_nodes(graph_seq, mapping)
+
         elif self.network_type == "regular":
             k = min(self.network_params.get("k", 4), num_agents - 1)
-            
-            if num_agents <= k:
-                self.logger.warning(f"Not enough agents for Regular with k={k}. Creating complete graph instead.")
-                graph = nx.complete_graph(num_agents)
-            # k must be even for nx.random_regular_graph
-            elif k % 2 == 1 and num_agents % 2 == 1:
-                self.logger.warning(f"Both k={k} and num_agents={num_agents} are odd. Using k-1 instead.")
-                graph = nx.random_regular_graph(k - 1, num_agents)
+
+            adjusted_k = k  # logic to adjust k if needed
+            if num_agents <= adjusted_k:
+                graph = nx.Graph()
+                graph.add_nodes_from(agent_ids)
+                for i in range(num_agents):
+                    for j in range(i + 1, num_agents):
+                        graph.add_edge(agent_ids[i], agent_ids[j])
+                self.logger.warning(f"Not enough agents for Regular k={k}. Creating complete graph.")
+            elif adjusted_k % 2 == 1 and num_agents % 2 == 1:
+                # Handle this case as before (e.g., k-1 or error)
+                adjusted_k = k - 1
+                self.logger.warning(f"Both k={k} and N={num_agents} are odd. Using k={adjusted_k}.")
+                graph_seq = nx.random_regular_graph(adjusted_k, num_agents)
+                mapping = {i: agent_ids[i] for i in range(num_agents)}
+                graph = nx.relabel_nodes(graph_seq, mapping)
             else:
-                graph = nx.random_regular_graph(k, num_agents)
+                graph_seq = nx.random_regular_graph(adjusted_k, num_agents)
+                mapping = {i: agent_ids[i] for i in range(num_agents)}
+                graph = nx.relabel_nodes(graph_seq, mapping)
+
         else:
             raise ValueError(f"Unknown network type: {self.network_type}")
-        
-        return graph
 
+            # Ensure all provided agent IDs are nodes in the final graph
+        assert set(graph.nodes()) == set(agent_ids)
+
+        return graph
     def get_neighbors(self, agent_id):
         """Get the neighbors of an agent.
         

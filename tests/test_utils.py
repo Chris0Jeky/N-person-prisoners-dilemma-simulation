@@ -34,7 +34,7 @@ class TestPayoffFunctions:
         (threshold_payoff_C, 6, 10, {"R": 3, "S": 0, "threshold": 0.6}, 1.25), # Above thresh: S+(R-S)*(0.3 + 0.7*((6/9-0.6)/(1-0.6)))
         (threshold_payoff_D, 9, 10, {"T": 5, "P": 1, "threshold": 0.6}, 5.0),
         (threshold_payoff_D, 5, 10, {"T": 5, "P": 1, "threshold": 0.6}, 2.1111), # Below thresh P+(T-P)*((5/9)/0.6)*0.3
-        (threshold_payoff_D, 6, 10, {"T": 5, "P": 1, "threshold": 0.6}, 2.9), # Above thresh P+(T-P)*(0.3 + 0.7*((6/9-0.6)/(1-0.6)))
+        (threshold_payoff_D, 6, 10, {"T": 5, "P": 1, "threshold": 0.6}, 2.6667), # Above thresh P+(T-P)*(0.3 + 0.7*((6/9-0.6)/(1-0.6)))
         # Edge Case N=1
         (linear_payoff_C, 0, 1, {"R": 3, "S": 0}, 3.0), # Should return R
         (linear_payoff_D, 0, 1, {"T": 5, "P": 1}, 1.0), # Should return P

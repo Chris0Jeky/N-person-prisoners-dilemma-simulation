@@ -222,61 +222,124 @@ def plot_metric_evolution(scenarios: List[Dict], generations: int,
 def plot_top_scenarios_comparison(scenarios: List[Dict], top_n: int = 5, 
                                  save_path: Optional[str] = None):
     """Compare metrics of the top N scenarios."""
+    # Validate scenarios
+    valid_scenarios = []
+    for s in scenarios:
+        if not isinstance(s, dict):
+            continue
+        if "config" not in s or not isinstance(s["config"], dict):
+            continue
+        if "selection_score" not in s:
+            s["selection_score"] = 0.0  # Default score
+        if "metrics" not in s or not isinstance(s["metrics"], dict):
+            s["metrics"] = {}  # Empty metrics
+        valid_scenarios.append(s)
+    
+    if not valid_scenarios:
+        print("No valid scenarios for comparison")
+        plt.figure(figsize=(10, 6))
+        plt.text(0.5, 0.5, "No valid scenario data for comparison", 
+                ha='center', va='center', fontsize=14)
+        plt.axis('off')
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        return pd.DataFrame()
+    
     # Sort scenarios by score and take top N
-    sorted_scenarios = sorted(scenarios, key=lambda x: x.get("selection_score", 0), reverse=True)
-    top_scenarios = sorted_scenarios[:top_n]
+    sorted_scenarios = sorted(valid_scenarios, key=lambda x: x.get("selection_score", 0), reverse=True)
+    top_scenarios = sorted_scenarios[:min(top_n, len(sorted_scenarios))]
     
     # Extract metrics for comparison
     comparison_data = []
     for scenario in top_scenarios:
-        scenario_data = {
-            "name": scenario["config"].get("scenario_name", "Unknown"),
-            "score": scenario.get("selection_score", 0)
-        }
-        # Add metrics
-        for metric, value in scenario.get("metrics", {}).items():
-            if metric.startswith("avg_"):
-                scenario_data[metric] = value
-        
-        comparison_data.append(scenario_data)
+        try:
+            scenario_data = {
+                "name": scenario["config"].get("scenario_name", "Unknown"),
+                "score": scenario.get("selection_score", 0)
+            }
+            # Add metrics
+            for metric, value in scenario.get("metrics", {}).items():
+                if metric.startswith("avg_") and not pd.isna(value):
+                    scenario_data[metric] = value
+            
+            comparison_data.append(scenario_data)
+        except Exception as e:
+            print(f"Error processing scenario for comparison: {e}")
+    
+    if not comparison_data:
+        print("No comparison data available after processing")
+        plt.figure(figsize=(10, 6))
+        plt.text(0.5, 0.5, "No comparison data available", 
+                ha='center', va='center', fontsize=14)
+        plt.axis('off')
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        return pd.DataFrame()
     
     # Convert to DataFrame
-    df = pd.DataFrame(comparison_data)
-    
-    # Melt the DataFrame for easier plotting
-    id_vars = ["name", "score"]
-    value_vars = [col for col in df.columns if col.startswith("avg_")]
-    melted_df = df.melt(id_vars=id_vars, value_vars=value_vars, 
-                        var_name="metric", value_name="value")
-    
-    # Clean up metric names
-    melted_df["metric"] = melted_df["metric"].str.replace("avg_", "").str.replace("_", " ").str.title()
-    
-    # Create a plot
-    plt.figure(figsize=(14, 10))
-    
-    # Create a heatmap of metric values
-    pivot_df = melted_df.pivot(index="name", columns="metric", values="value")
-    
-    # Normalize each column to 0-1 scale
-    normalized_df = pivot_df.copy()
-    for col in normalized_df.columns:
-        col_min = normalized_df[col].min()
-        col_max = normalized_df[col].max()
-        if col_max > col_min:
-            normalized_df[col] = (normalized_df[col] - col_min) / (col_max - col_min)
-    
-    # Plot heatmap
-    plt.figure(figsize=(14, 8))
-    ax = sns.heatmap(normalized_df, annot=pivot_df.round(3), fmt=".3f", 
-                    cmap="viridis", linewidths=.5, cbar_kws={"label": "Normalized Value"})
-    
-    plt.title("Comparison of Top Scenario Metrics", fontsize=16)
-    plt.tight_layout()
+    try:
+        df = pd.DataFrame(comparison_data)
+        
+        # Check if we have any metric columns
+        metric_cols = [col for col in df.columns if col.startswith("avg_")]
+        if not metric_cols:
+            print("No metric columns available for heatmap")
+            plt.figure(figsize=(10, 6))
+            plt.text(0.5, 0.5, "No metrics available for comparison", 
+                    ha='center', va='center', fontsize=14)
+            plt.axis('off')
+            if save_path:
+                plt.savefig(save_path, dpi=300, bbox_inches='tight')
+            plt.close()
+            return df
+        
+        # Melt the DataFrame for easier plotting
+        id_vars = ["name", "score"]
+        value_vars = metric_cols
+        melted_df = df.melt(id_vars=id_vars, value_vars=value_vars, 
+                            var_name="metric", value_name="value")
+        
+        # Clean up metric names
+        melted_df["metric"] = melted_df["metric"].str.replace("avg_", "").str.replace("_", " ").str.title()
+        
+        # Create a heatmap of metric values
+        pivot_df = melted_df.pivot(index="name", columns="metric", values="value")
+        
+        # Create the plot
+        plt.figure(figsize=(14, max(6, len(top_scenarios) * 0.8)))
+        
+        # Check if the pivot has data
+        if pivot_df.empty or pivot_df.isnull().all().all():
+            plt.text(0.5, 0.5, "No data available for heatmap", 
+                    ha='center', va='center', fontsize=14)
+            plt.axis('off')
+        else:
+            # Normalize each column to 0-1 scale
+            normalized_df = pivot_df.copy()
+            for col in normalized_df.columns:
+                col_min = normalized_df[col].min()
+                col_max = normalized_df[col].max()
+                if col_max > col_min:
+                    normalized_df[col] = (normalized_df[col] - col_min) / (col_max - col_min)
+            
+            # Plot heatmap
+            ax = sns.heatmap(normalized_df, annot=pivot_df.round(3), fmt=".3f", 
+                            cmap="viridis", linewidths=.5, cbar_kws={"label": "Normalized Value"})
+            
+        plt.title("Comparison of Top Scenario Metrics", fontsize=16)
+        plt.tight_layout()
+    except Exception as e:
+        print(f"Error creating comparison plot: {e}")
+        plt.figure(figsize=(10, 6))
+        plt.text(0.5, 0.5, f"Error creating comparison: {str(e)}", 
+                ha='center', va='center', fontsize=14)
+        plt.axis('off')
     
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
-        
+    
     plt.close()
     
     # Return the DataFrame for further analysis

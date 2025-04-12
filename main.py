@@ -253,10 +253,14 @@ def print_comparative_summary(scenario_results_agg, logger=None):
 
     # Print cooperation rate chart (using averages)
     if avg_final_coop_rates:
-        chart = generate_ascii_chart(avg_final_coop_rates,
+        try:
+            chart = generate_ascii_chart(avg_final_coop_rates,
                                      title="Avg Final Cooperation Rates Across Scenarios",
                                      width=50, height=10)
-        print(chart)
+            print(chart)
+        except Exception as e:
+            logger.warning(f"Could not display ASCII chart: {e}")
+            print("Average cooperation rates: [" + ", ".join([f"{rate:.3f}" for rate in avg_final_coop_rates]) + "]")
 
     print("\n=== END OF AGGREGATED COMPARATIVE SUMMARY ===\n")
 

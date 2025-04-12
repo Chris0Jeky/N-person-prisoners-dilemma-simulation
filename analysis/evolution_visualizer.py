@@ -111,9 +111,10 @@ def plot_metric_evolution(scenarios: List[Dict], generations: int,
     # Organize scenarios by generation
     scenarios_by_gen = defaultdict(list)
     
+    # Calculate scenarios per generation, ensuring it's at least 1
+    scenarios_per_gen = max(1, len(scenarios) // generations)
+    
     # Assign each scenario to its generation based on index in the list
-    # This assumes scenarios are already sorted by generation
-    scenarios_per_gen = len(scenarios) // generations
     for i, scenario in enumerate(scenarios):
         gen = min(i // scenarios_per_gen + 1, generations)
         scenarios_by_gen[gen].append(scenario)

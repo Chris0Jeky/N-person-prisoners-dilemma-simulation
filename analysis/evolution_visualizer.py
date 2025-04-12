@@ -546,9 +546,17 @@ def create_evolution_report(metadata_file="results/evolved_scenarios/evolution_m
 def generate_summary_html(metadata, scenarios, output_dir):
     """Generate an HTML summary report of the evolutionary process."""
     # Extract key information
-    params = metadata["parameters"]
-    gen_stats = metadata["generation_stats"]
+    params = metadata.get("parameters", {})
+    gen_stats = metadata.get("generation_stats", [])
     best_scenarios = sorted(scenarios, key=lambda x: x.get("selection_score", 0), reverse=True)[:5]
+    
+    # Check for required files
+    has_progress_plot = os.path.exists(os.path.join(output_dir, "evolution_progress.png"))
+    has_strategy_plot = os.path.exists(os.path.join(output_dir, "strategy_evolution.png"))
+    has_metric_plot = os.path.exists(os.path.join(output_dir, "metric_evolution.png"))
+    has_comparison_plot = os.path.exists(os.path.join(output_dir, "top_scenarios_comparison.png"))
+    has_radar_plot = os.path.exists(os.path.join(output_dir, "top_scenarios_radar.png"))
+    has_performance_plot = os.path.exists(os.path.join(output_dir, "strategy_performance.png"))
     
     # Build HTML content
     html_content = f"""
@@ -575,85 +583,122 @@ def generate_summary_html(metadata, scenarios, output_dir):
         <h2>Parameters</h2>
         <table>
             <tr><th>Parameter</th><th>Value</th></tr>
-            <tr><td>Population Size</td><td>{params["population_size"]}</td></tr>
-            <tr><td>Generations</td><td>{params["generations"]}</td></tr>
-            <tr><td>Evaluation Runs</td><td>{params["evaluation_runs"]}</td></tr>
-            <tr><td>Elitism</td><td>{params["elitism"]}</td></tr>
-            <tr><td>Crossover Fraction</td><td>{params["crossover_fraction"]}</td></tr>
-            <tr><td>Mutation Rate</td><td>{params["mutation_rate"]}</td></tr>
+            <tr><td>Population Size</td><td>{params.get("population_size", "N/A")}</td></tr>
+            <tr><td>Generations</td><td>{params.get("generations", "N/A")}</td></tr>
+            <tr><td>Evaluation Runs</td><td>{params.get("evaluation_runs", "N/A")}</td></tr>
+            <tr><td>Elitism</td><td>{params.get("elitism", "N/A")}</td></tr>
+            <tr><td>Crossover Fraction</td><td>{params.get("crossover_fraction", "N/A")}</td></tr>
+            <tr><td>Mutation Rate</td><td>{params.get("mutation_rate", "N/A")}</td></tr>
         </table>
-        
+    """
+    
+    # Add evolution progress chart if available
+    if has_progress_plot:
+        html_content += f"""
         <h2>Evolution Progress</h2>
         <div class="chart-container">
             <img src="evolution_progress.png" alt="Evolution Progress" style="max-width: 100%;">
         </div>
-        
+        """
+    
+    # Add strategy evolution chart if available
+    if has_strategy_plot:
+        html_content += f"""
         <h2>Strategy Evolution</h2>
         <div class="chart-container">
             <img src="strategy_evolution.png" alt="Strategy Evolution" style="max-width: 100%;">
         </div>
-        
+        """
+    
+    # Add metric evolution chart if available
+    if has_metric_plot:
+        html_content += f"""
         <h2>Metric Evolution</h2>
         <div class="chart-container">
             <img src="metric_evolution.png" alt="Metric Evolution" style="max-width: 100%;">
         </div>
-        
+        """
+    
+    # Add top scenarios comparison chart if available
+    if has_comparison_plot:
+        html_content += f"""
         <h2>Top Scenarios Comparison</h2>
         <div class="chart-container">
             <img src="top_scenarios_comparison.png" alt="Top Scenarios Comparison" style="max-width: 100%;">
         </div>
+        """
+    
+    # Add radar chart if available
+    if has_radar_plot:
+        html_content += f"""
         <div class="chart-container">
-            <img src="top_scenarios_comparison_radar.png" alt="Top Scenarios Radar Chart" style="max-width: 100%;">
+            <img src="top_scenarios_radar.png" alt="Top Scenarios Radar Chart" style="max-width: 100%;">
         </div>
-        
+        """
+    
+    # Add strategy performance chart if available
+    if has_performance_plot:
+        html_content += f"""
         <h2>Strategy Performance</h2>
         <div class="chart-container">
             <img src="strategy_performance.png" alt="Strategy Performance" style="max-width: 100%;">
         </div>
-        
-        <h2>Top 5 Scenarios</h2>
-    """
+        """
     
     # Add top 5 scenarios details
-    for i, scenario in enumerate(best_scenarios[:5]):
-        config = scenario["config"]
-        metrics = scenario["metrics"]
-        score = scenario.get("selection_score", 0)
-        
-        html_content += f"""
-        <div class="scenario">
-            <h3>{i+1}. {config.get("scenario_name", "Unknown")} (Score: {score:.3f})</h3>
+    html_content += "<h2>Top Scenarios</h2>\n"
+    
+    # Add top 5 scenarios details only if we have scenarios
+    if best_scenarios:
+        for i, scenario in enumerate(best_scenarios[:5]):
+            if "config" not in scenario:
+                continue
+                
+            config = scenario["config"]
+            metrics = scenario.get("metrics", {})
+            score = scenario.get("selection_score", 0)
             
-            <h4>Configuration:</h4>
-            <ul>
-                <li><b>Agents:</b> {config.get("num_agents", "N/A")}</li>
-                <li><b>Rounds:</b> {config.get("num_rounds", "N/A")}</li>
-                <li><b>Network:</b> {config.get("network_type", "N/A")}</li>
-                <li><b>Interaction:</b> {config.get("interaction_mode", "N/A")}</li>
-                <li><b>Strategies:</b> {config.get("agent_strategies", {})}</li>
-            </ul>
+            html_content += f"""
+            <div class="scenario">
+                <h3>{i+1}. {config.get("scenario_name", "Unknown")} (Score: {score:.3f})</h3>
+                
+                <h4>Configuration:</h4>
+                <ul>
+                    <li><b>Agents:</b> {config.get("num_agents", "N/A")}</li>
+                    <li><b>Rounds:</b> {config.get("num_rounds", "N/A")}</li>
+                    <li><b>Network:</b> {config.get("network_type", "N/A")}</li>
+                    <li><b>Interaction:</b> {config.get("interaction_mode", "N/A")}</li>
+                    <li><b>Strategies:</b> {config.get("agent_strategies", {})}</li>
+                </ul>
+                
+                <h4>Key Metrics:</h4>
+                <ul>
+            """
             
-            <h4>Key Metrics:</h4>
-            <ul>
-        """
-        
-        # Add top metrics
-        top_metrics = [
-            "avg_final_coop_rate", "avg_coop_rate_change", "avg_score_variance",
-            "avg_coop_volatility", "avg_strategy_adaptation_rate", "avg_pattern_complexity"
-        ]
-        
-        for metric in top_metrics:
-            if metric in metrics:
-                display_name = metric.replace("avg_", "").replace("_", " ").title()
-                html_content += f"""
-                <li><span class="metric">{display_name}:</span> {metrics[metric]:.3f}</li>
-                """
-        
-        html_content += """
-            </ul>
-        </div>
-        """
+            # Add top metrics
+            top_metrics = [
+                "avg_final_coop_rate", "avg_coop_rate_change", "avg_score_variance",
+                "avg_coop_volatility", "avg_strategy_adaptation_rate", "avg_pattern_complexity"
+            ]
+            
+            metrics_added = False
+            for metric in top_metrics:
+                if metric in metrics and not pd.isna(metrics[metric]):
+                    display_name = metric.replace("avg_", "").replace("_", " ").title()
+                    html_content += f"""
+                    <li><span class="metric">{display_name}:</span> {metrics[metric]:.3f}</li>
+                    """
+                    metrics_added = True
+            
+            if not metrics_added:
+                html_content += "<li>No metrics available</li>"
+            
+            html_content += """
+                </ul>
+            </div>
+            """
+    else:
+        html_content += "<p>No scenario data available</p>"
     
     # Close HTML
     html_content += """

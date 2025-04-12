@@ -155,25 +155,32 @@ def plot_metric_evolution(scenarios: List[Dict], generations: int,
     rows = (num_metrics + 1) // cols
     
     for i, metric in enumerate(metrics):
-        ax = plt.subplot(rows, cols, i + 1)
-        
-        # Clean up metric name for display
-        display_name = metric.replace('avg_', '').replace('_', ' ').title()
-        
-        # Plot the metric evolution
-        evolution_df[metric].plot(ax=ax, marker='o', linestyle='-', linewidth=2)
-        
-        ax.set_xlabel('Generation')
-        ax.set_ylabel(display_name)
-        ax.set_title(f'Evolution of {display_name}')
-        ax.grid(True, alpha=0.3)
+        if i < rows * cols:  # Make sure we don't exceed the grid
+            ax = plt.subplot(rows, cols, i + 1)
+            
+            # Clean up metric name for display
+            display_name = metric.replace('avg_', '').replace('_', ' ').title()
+            
+            # Plot the metric evolution with error handling
+            try:
+                evolution_df[metric].plot(ax=ax, marker='o', linestyle='-', linewidth=2)
+                
+                ax.set_xlabel('Generation')
+                ax.set_ylabel(display_name)
+                ax.set_title(f'Evolution of {display_name}')
+                ax.grid(True, alpha=0.3)
+            except Exception as e:
+                print(f"Error plotting {display_name}: {e}")
+                ax.text(0.5, 0.5, f"No data available for {display_name}", 
+                        ha='center', va='center', fontsize=12)
+                ax.axis('off')
     
     plt.tight_layout()
     
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         
-    plt.show()
+    plt.close()  # Close instead of show to avoid displaying in scripts
 
 
 def plot_top_scenarios_comparison(scenarios: List[Dict], top_n: int = 5, 

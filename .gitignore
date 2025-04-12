@@ -1,6 +1,29 @@
+# Simulation Outputs / Logs
+results/
+logs/
+analysis_results/
+parameter_sweep_results/
+htmlcov/
+backups/
+docs/
+
+# Python caches & env
+.venv/
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
+
+# IDE files
+.idea/
 *.xml
 *.iml
-*.pyc
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Other
 main/simulation_results.csv
 /main/results
 *.log
@@ -10,5 +33,4 @@ fix_network_visualization.py
 .idea/dataSources/0b07669e-b4b4-46f7-846a-8575ff41eae4/storage_v2/_src_/schema/main.uQUzAA.meta
 
 # Backup files
-backups/
 *.bak

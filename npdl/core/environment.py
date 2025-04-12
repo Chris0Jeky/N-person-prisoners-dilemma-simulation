@@ -112,24 +112,37 @@ class Environment:
                 graph_seq = nx.barabasi_albert_graph(num_agents, m)
                 mapping = {i: agent_ids[i] for i in range(num_agents)}
                 graph = nx.relabel_nodes(graph_seq, mapping)
-                
+
         elif self.network_type == "regular":
             k = min(self.network_params.get("k", 4), num_agents - 1)
-            
-            if num_agents <= k:
-                self.logger.warning(f"Not enough agents for Regular with k={k}. Creating complete graph instead.")
-                graph = nx.complete_graph(num_agents)
-            # k must be even for nx.random_regular_graph
-            elif k % 2 == 1 and num_agents % 2 == 1:
-                self.logger.warning(f"Both k={k} and num_agents={num_agents} are odd. Using k-1 instead.")
-                graph = nx.random_regular_graph(k - 1, num_agents)
+
+            adjusted_k = k  # logic to adjust k if needed
+            if num_agents <= adjusted_k:
+                graph = nx.Graph()
+                graph.add_nodes_from(agent_ids)
+                for i in range(num_agents):
+                    for j in range(i + 1, num_agents):
+                        graph.add_edge(agent_ids[i], agent_ids[j])
+                self.logger.warning(f"Not enough agents for Regular k={k}. Creating complete graph.")
+            elif adjusted_k % 2 == 1 and num_agents % 2 == 1:
+                # Handle this case as before (e.g., k-1 or error)
+                adjusted_k = k - 1
+                self.logger.warning(f"Both k={k} and N={num_agents} are odd. Using k={adjusted_k}.")
+                graph_seq = nx.random_regular_graph(adjusted_k, num_agents)
+                mapping = {i: agent_ids[i] for i in range(num_agents)}
+                graph = nx.relabel_nodes(graph_seq, mapping)
             else:
-                graph = nx.random_regular_graph(k, num_agents)
+                graph_seq = nx.random_regular_graph(adjusted_k, num_agents)
+                mapping = {i: agent_ids[i] for i in range(num_agents)}
+                graph = nx.relabel_nodes(graph_seq, mapping)
+
         else:
             raise ValueError(f"Unknown network type: {self.network_type}")
-        
-        return graph
 
+            # Ensure all provided agent IDs are nodes in the final graph
+        assert set(graph.nodes()) == set(agent_ids)
+
+        return graph
     def get_neighbors(self, agent_id):
         """Get the neighbors of an agent.
         

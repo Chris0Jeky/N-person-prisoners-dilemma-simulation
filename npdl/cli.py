@@ -53,7 +53,7 @@ def run_simulation(args):
         # Convert args to parameters for the simulation runner
         sim_config = {
             'enhanced': args.enhanced,
-            'scenario_file': args.scenario_file if not args.enhanced else 'enhanced_scenarios.json',
+            'scenario_file': args.scenario_file if not args.enhanced else 'scenarios/enhanced_scenarios.json',
             'results_dir': args.results_dir,
             'log_dir': args.log_dir,
             'analyze': args.analyze,
@@ -124,7 +124,7 @@ def main():
     sim_parser = subparsers.add_parser("simulate", help="Run a simulation")
     sim_parser.add_argument('--enhanced', action='store_true',
                           help='Use enhanced scenarios from enhanced_scenarios.json')
-    sim_parser.add_argument('--scenario_file', type=str, default='scenarios.json',
+    sim_parser.add_argument('--scenario_file', type=str, default='scenarios/scenarios.json',
                           help='Path to the JSON file containing scenario definitions.')
     sim_parser.add_argument('--results_dir', type=str, default='results',
                           help='Directory to save experiment results.')

@@ -264,7 +264,7 @@ def main():
     parser = argparse.ArgumentParser(description="Run N-person IPD experiments")
     parser.add_argument('--enhanced', action='store_true',
                         help='Use enhanced_scenarios.json instead of scenarios.json')
-    parser.add_argument('--scenario_file', type=str, default='scenarios.json',
+    parser.add_argument('--scenario_file', type=str, default='scenarios/scenarios.json',
                         help='Path to the JSON file containing scenario definitions.')
     parser.add_argument('--num_runs', type=int, default=10, # New argument for number of runs
                         help='Number of runs (seeds) per scenario.')
@@ -301,11 +301,14 @@ def main():
     logger.info(f"Starting N-person IPD experiments: {args.num_runs} runs per scenario.")
     
     # Load scenarios
+    scenario_base_dir = "scenarios"
     if args.enhanced:
-        scenario_file = 'enhanced_scenarios.json'
-        logger.info("Using enhanced scenarios")
+        scenario_filename = 'enhanced_scenarios.json'
     else:
-        scenario_file = args.scenario_file
+        # Make sure args.scenario_file doesn't contain a path already
+        scenario_filename = os.path.basename(args.scenario_file)
+    scenario_file = os.path.join(scenario_base_dir, scenario_filename)
+    logger.info(f"Loading scenarios from: {scenario_file}")
     
     scenarios = load_scenarios(scenario_file)
     logger.info(f"Loaded {len(scenarios)} scenarios from {scenario_file}")

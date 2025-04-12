@@ -117,8 +117,8 @@ class TestPayoffCalculation:
          # Agent 2 (Defect): 2 coop neighbors. prop=1.0 > 0.6. norm=(1-0.6)/(1-0.6)=1. Payoff=D(2)=P+(T-P)*(0.3+0.7*1)=1+4*1=5.0
          {0: pytest.approx(0.75), 1: pytest.approx(0.75), 2: 5.0}),
          # Linear, N=1 edge case
-        ("linear", {}, {0: "cooperate"}, {0: 3.0}), # N=1, C should return R
-        ("linear", {}, {0: "defect"}, {0: 1.0}),    # N=1, D should return P
+        ("linear", {}, {0: "cooperate"}, {0: 0.0}),  # N=1, no neighbors -> payoff 0
+        ("linear", {}, {0: "defect"}, {0: 0.0}),  # N=1, no neighbors -> payoff 0
     ])
     def test_payoff_calculations(self, payoff_type, params, moves, expected_payoffs, setup_test_logging):
         """Test payoff calculation with different functions and scenarios."""

@@ -250,19 +250,31 @@ def plot_top_scenarios_comparison(scenarios: List[Dict], top_n: int = 5,
 def create_radar_chart(scenarios: List[Dict], metrics: Optional[List[str]] = None,
                       save_path: Optional[str] = None):
     """Create a radar chart to compare multiple scenarios across different metrics."""
+    # Check if we have any scenarios
+    if not scenarios:
+        plt.figure(figsize=(8, 8))
+        plt.text(0.5, 0.5, "No scenario data available for radar chart", 
+                ha='center', va='center', fontsize=14)
+        plt.axis('off')
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        return
+    
     # Sort scenarios by score
     sorted_scenarios = sorted(scenarios, key=lambda x: x.get("selection_score", 0), reverse=True)
     
-    # Use top 5 scenarios
-    top_scenarios = sorted_scenarios[:5]
+    # Use top 5 scenarios or fewer if not enough
+    top_scenarios = sorted_scenarios[:min(5, len(sorted_scenarios))]
     
     # If no metrics specified, find common metrics
     if not metrics:
         all_metrics = set()
         for scenario in top_scenarios:
-            for key in scenario.get("metrics", {}).keys():
-                if key.startswith("avg_"):
-                    all_metrics.add(key)
+            if "metrics" in scenario:
+                for key in scenario.get("metrics", {}).keys():
+                    if key.startswith("avg_"):
+                        all_metrics.add(key)
         
         # Select a subset of metrics for readability
         important_metrics = [
@@ -278,13 +290,27 @@ def create_radar_chart(scenarios: List[Dict], metrics: Optional[List[str]] = Non
         # Use important metrics if available, otherwise use all
         metrics = [m for m in important_metrics if m in all_metrics]
         if not metrics:
-            metrics = list(all_metrics)[:8]  # Limit to 8 for readability
+            metrics = list(all_metrics)[:8] if all_metrics else []  # Limit to 8 for readability
+    
+    # Check if we have any metrics to plot
+    if not metrics:
+        plt.figure(figsize=(8, 8))
+        plt.text(0.5, 0.5, "No metrics available for radar chart", 
+                ha='center', va='center', fontsize=14)
+        plt.axis('off')
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        return
     
     # Extract scenario data
     labels = []
     data = []
     
     for scenario in top_scenarios:
+        if "config" not in scenario:
+            continue
+            
         name = scenario["config"].get("scenario_name", "Unknown").replace("Evo_", "S")
         labels.append(name)
         
@@ -295,6 +321,17 @@ def create_radar_chart(scenarios: List[Dict], metrics: Optional[List[str]] = Non
             scenario_data.append(value)
         
         data.append(scenario_data)
+    
+    # Check if we have any data to plot
+    if not data or not labels:
+        plt.figure(figsize=(8, 8))
+        plt.text(0.5, 0.5, "No data available for radar chart", 
+                ha='center', va='center', fontsize=14)
+        plt.axis('off')
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        return
     
     # Clean metric names for display
     display_metrics = [m.replace("avg_", "").replace("_", " ").title() for m in metrics]
@@ -312,17 +349,27 @@ def create_radar_chart(scenarios: List[Dict], metrics: Optional[List[str]] = Non
     
     # Plot each scenario
     for i, scenario_data in enumerate(data):
-        # Normalize data for better visualization
-        max_vals = np.max(np.abs(data), axis=0)
-        normalized_data = np.array(scenario_data) / (max_vals + 1e-10)  # Avoid division by zero
-        
-        # Close the polygon by repeating the first value
-        values = normalized_data.tolist()
-        values += values[:1]
-        
-        # Plot the scenario
-        ax.plot(angles, values, linewidth=2, linestyle='solid', label=labels[i])
-        ax.fill(angles, values, alpha=0.1)
+        # Check for all-zero data
+        if sum(abs(v) for v in scenario_data) < 1e-10:
+            continue
+            
+        try:
+            # Normalize data for better visualization
+            # Avoid division by zero by adding a small epsilon
+            max_vals = np.max(np.abs(data), axis=0)
+            max_vals = np.where(max_vals < 1e-10, 1.0, max_vals)  # Replace zeros with ones
+            
+            normalized_data = np.array(scenario_data) / max_vals
+            
+            # Close the polygon by repeating the first value
+            values = normalized_data.tolist()
+            values += values[:1]
+            
+            # Plot the scenario
+            ax.plot(angles, values, linewidth=2, linestyle='solid', label=labels[i])
+            ax.fill(angles, values, alpha=0.1)
+        except Exception as e:
+            print(f"Error plotting scenario {labels[i]} in radar chart: {e}")
     
     # Set labels
     ax.set_xticks(angles[:-1])
@@ -336,7 +383,7 @@ def create_radar_chart(scenarios: List[Dict], metrics: Optional[List[str]] = Non
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         
-    plt.show()
+    plt.close()
 
 
 def analyze_strategy_performance(scenarios: List[Dict], save_path: Optional[str] = None):

@@ -387,16 +387,24 @@ class LRAQLearningStrategy(QLearningStrategy):
         self.max_learning_rate = 0.9
         
     def update(self, agent, action, reward, neighbor_moves):
-        # Count cooperating neighbors
-        coop_neighbors = sum(1 for move in neighbor_moves.values() if move == "cooperate")
-        total_neighbors = len(neighbor_moves) if neighbor_moves else 1
+        # Handle both pairwise and neighborhood modes
+        if isinstance(neighbor_moves, dict) and 'opponent_coop_proportion' in neighbor_moves:
+            # Pairwise mode - neighbor_moves contains opponent_coop_proportion
+            coop_proportion = neighbor_moves['opponent_coop_proportion']
+            coop_neighbors = coop_proportion  # Using the proportion directly
+            total_neighbors = 1  # In proportional terms
+        else:
+            # Standard neighborhood mode
+            coop_neighbors = sum(1 for move in neighbor_moves.values() if move == "cooperate")
+            total_neighbors = len(neighbor_moves) if neighbor_moves else 1
+            coop_proportion = coop_neighbors / total_neighbors if total_neighbors > 0 else 0
         
         # Adjust learning rate based on cooperation level and agent's own action
-        if action == "cooperate" and coop_neighbors / total_neighbors > 0.5:
+        if action == "cooperate" and coop_proportion > 0.5:
             # Cooperating with cooperators - increase learning rate
             self.learning_rate = min(self.max_learning_rate, 
                                     self.learning_rate + self.increase_rate)
-        elif action == "defect" and coop_neighbors / total_neighbors > 0.5:
+        elif action == "defect" and coop_proportion > 0.5:
             # Defecting against cooperators - decrease learning rate
             self.learning_rate = max(self.min_learning_rate, 
                                     self.learning_rate - self.decrease_rate)

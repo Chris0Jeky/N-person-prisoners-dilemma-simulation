@@ -1,11 +1,7 @@
 # Simulation Outputs / Logs
-results/
 logs/
-analysis_results/
-parameter_sweep_results/
 htmlcov/
 backups/
-docs/
 
 # Python caches & env
 .venv/

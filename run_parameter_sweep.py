@@ -194,13 +194,15 @@ def run_single_strategy_sweep(config, target_strategy, strategy_config, base_sce
 # --- Main Execution Block ---
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run parameter sweeps for N-IPD agent strategies based on a config file.")
-    parser.add_argument('--config', type=str, default='multi_sweep_config.json',
+    parser.add_argument('--config', type=str, default='configs/multi_sweep_config.json',
                         help='Path to the JSON configuration file defining multiple sweeps.')
     args = parser.parse_args()
 
     # Load sweep configuration from JSON
     try:
-        with open(args.config, 'r') as f:
+        config_dir = "configs" # Configs directory
+        config_file_path = os.path.join(config_dir, os.path.basename(args.config))
+        with open(config_file_path, 'r') as f:
             sweep_config = json.load(f)
     except FileNotFoundError:
         print(f"Error: Sweep configuration file '{args.config}' not found.")

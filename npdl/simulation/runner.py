@@ -349,7 +349,7 @@ def print_comparative_summary(scenario_results_agg: Dict[str, Dict[str, Union[fl
     print("\n=== END OF AGGREGATED COMPARATIVE SUMMARY ===\n")
 
 
-def run_simulation(enhanced: bool = False, scenario_file: str = "scenarios.json",
+def run_simulation(enhanced: bool = False, scenario_file: str = "scenarios/scenarios.json",
                   results_dir: str = "results", log_dir: str = "logs",
                   analyze: bool = False, verbose: bool = False,
                   num_runs: int = 10) -> int:
@@ -378,9 +378,11 @@ def run_simulation(enhanced: bool = False, scenario_file: str = "scenarios.json"
     logger.info(f"Starting N-person IPD experiments: {num_runs} runs per scenario.")
     
     # Load scenarios
+    scenario_base_dir = "scenarios"
     if enhanced:
-        scenario_file = 'enhanced_scenarios.json'
-        logger.info("Using enhanced scenarios")
+        scenario_filename = 'enhanced_scenarios.json'
+        scenario_file = os.path.join(scenario_base_dir, scenario_filename)
+        logger.info(f"Using enhanced scenarios from {scenario_file}")
     
     try:
         scenarios = load_scenarios(scenario_file)

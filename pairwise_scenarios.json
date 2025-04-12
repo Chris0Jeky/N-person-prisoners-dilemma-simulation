@@ -1,6 +1,6 @@
 [
   {
-    "scenario_name": "Pairwise_Mixed",
+    "scenario_name": "Pairwise_Mixed_Basic",
     "num_agents": 20,
     "num_rounds": 100,
     "network_type": "fully_connected",
@@ -92,6 +92,157 @@
       "T": 5,
       "P": 1
     },
+    "state_type": "proportion_discretized",
+    "logging_interval": 20
+  },
+  {
+    "scenario_name": "Pairwise_Tournament",
+    "num_agents": 40,
+    "num_rounds": 200,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "tit_for_tat": 5,
+      "generous_tit_for_tat": 5,
+      "suspicious_tit_for_tat": 5,
+      "tit_for_two_tats": 5,
+      "pavlov": 5,
+      "q_learning": 5,
+      "lra_q": 5,
+      "always_cooperate": 5
+    },
+    "payoff_params": { 
+      "R": 3,
+      "S": 0,
+      "T": 5,
+      "P": 1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "state_type": "proportion_discretized",
+    "logging_interval": 20
+  },
+  {
+    "scenario_name": "Pairwise_Altered_Payoffs",
+    "num_agents": 20,
+    "num_rounds": 200,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "q_learning": 10,
+      "tit_for_tat": 10
+    },
+    "payoff_params": { 
+      "R": 4,
+      "S": -1,
+      "T": 7,
+      "P": 0
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.2,
+    "state_type": "proportion_discretized",
+    "logging_interval": 20
+  },
+  {
+    "scenario_name": "Pairwise_Optimistic_QLearn",
+    "num_agents": 20,
+    "num_rounds": 150,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "q_learning": 20
+    },
+    "payoff_params": { 
+      "R": 3,
+      "S": 0,
+      "T": 5,
+      "P": 1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "state_type": "proportion_discretized",
+    "q_init_type": "optimistic",
+    "max_possible_payoff": 5.0,
+    "logging_interval": 10
+  },
+  {
+    "scenario_name": "Pairwise_Memory_Enhanced",
+    "num_agents": 20,
+    "num_rounds": 200,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "lra_q": 10,
+      "hysteretic_q": 10
+    },
+    "payoff_params": { 
+      "R": 3,
+      "S": 0,
+      "T": 5,
+      "P": 1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.95,
+    "epsilon": 0.1,
+    "increase_rate": 0.1,
+    "decrease_rate": 0.05,
+    "beta": 0.01,
+    "state_type": "memory_enhanced",
+    "memory_length": 5,
+    "logging_interval": 20
+  },
+  {
+    "scenario_name": "Pairwise_Wolf_PHC",
+    "num_agents": 25,
+    "num_rounds": 200,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "wolf_phc": 15,
+      "tit_for_tat": 10
+    },
+    "payoff_params": { 
+      "R": 3,
+      "S": 0,
+      "T": 5,
+      "P": 1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "alpha_win": 0.05,
+    "alpha_lose": 0.2,
+    "alpha_avg": 0.01,
+    "state_type": "proportion_discretized",
+    "logging_interval": 20
+  },
+  {
+    "scenario_name": "Pairwise_UCB1",
+    "num_agents": 25,
+    "num_rounds": 200,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "ucb1_q": 25
+    },
+    "payoff_params": { 
+      "R": 3,
+      "S": 0,
+      "T": 5,
+      "P": 1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "exploration_constant": 2.0,
     "state_type": "proportion_discretized",
     "logging_interval": 20
   }

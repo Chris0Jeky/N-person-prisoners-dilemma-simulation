@@ -203,67 +203,6 @@ class QLearningStrategy(Strategy):
         last_round_info = agent.memory[-1]  # Memory stores results of the round *leading* to this state
         neighbor_moves = last_round_info['neighbor_moves']
         
-        # Handle pairwise interaction mode with 'opponent_coop_proportion' in neighbor_moves
-        if isinstance(neighbor_moves, dict) and 'opponent_coop_proportion' in neighbor_moves:
-            coop_proportion = neighbor_moves['opponent_coop_proportion']
-            
-            if self.state_type == "proportion":
-                # Use the exact proportion as state
-                return (coop_proportion,)
-
-            elif self.state_type == "proportion_discretized":
-                # Discretize the proportion into bins (5 bins)
-                if coop_proportion <= 0.2:
-                    state_feature = 0.2
-                elif coop_proportion <= 0.4:
-                    state_feature = 0.4
-                elif coop_proportion <= 0.6:
-                    state_feature = 0.6
-                elif coop_proportion <= 0.8:
-                    state_feature = 0.8
-                else:
-                    state_feature = 1.0
-                return (state_feature,)
-            
-            elif self.state_type == "memory_enhanced":
-                # Example: Own last 2 moves + discretized opponent coop proportion
-                # Determine own moves (default to C if not enough history)
-                own_last_move = 'cooperate'
-                own_prev_move = 'cooperate'
-                if len(agent.memory) >= 1:
-                    own_last_move = agent.memory[-1]['my_move']
-                if len(agent.memory) >= 2:
-                    own_prev_move = agent.memory[-2]['my_move']
-
-                own_last_bin = 1 if own_last_move == "cooperate" else 0
-                own_prev_bin = 1 if own_prev_move == "cooperate" else 0
-
-                # Use discretized neighbor state (from previous state implementation)
-                if coop_proportion <= 0.33:
-                    opponent_state = 0  # Low
-                elif coop_proportion <= 0.67:
-                    opponent_state = 1  # Med
-                else:
-                    opponent_state = 2  # High
-
-                # State includes own last 2 moves and opponent cooperation summary
-                return (own_last_bin, own_prev_bin, opponent_state)
-            
-            elif self.state_type == "count":
-                # For pairwise mode, convert proportion to a discretized "count" representation
-                # This helps maintain compatibility with the standard mode
-                num_bins = 10  # Discretize into 10 bins
-                discretized_count = int(coop_proportion * num_bins)
-                return (discretized_count,)
-            
-            elif self.state_type == "threshold":
-                # Binary feature indicating if majority cooperated
-                return (coop_proportion > 0.5,)
-            
-            # Default fallback for pairwise mode
-            return ('pairwise', coop_proportion)
-        
-        # Standard neighborhood-based interaction mode logic
         num_neighbors = len(neighbor_moves)
         if num_neighbors == 0:
             return 'no_neighbors'  # Special state if isolated
@@ -320,6 +259,22 @@ class QLearningStrategy(Strategy):
         elif self.state_type == "threshold":
             # Binary feature indicating if majority cooperated
             return (coop_proportion > 0.5,)
+            
+        elif self.state_type == "memory_enhanced":
+            # Include agent's own last move
+            own_last_move = last_round_info['my_move']
+            # Convert to binary for compactness (1 for cooperate, 0 for defect)
+            own_move_binary = 1 if own_last_move == "cooperate" else 0
+            
+            # Discretize neighbor cooperation
+            if coop_proportion <= 0.33:
+                neighbor_state = 0  # Low cooperation
+            elif coop_proportion <= 0.67:
+                neighbor_state = 1  # Medium cooperation
+            else:
+                neighbor_state = 2  # High cooperation
+                
+            return (own_move_binary, neighbor_state)
             
         # Default fallback
         return 'standard'
@@ -432,24 +387,16 @@ class LRAQLearningStrategy(QLearningStrategy):
         self.max_learning_rate = 0.9
         
     def update(self, agent, action, reward, neighbor_moves):
-        # Handle both pairwise and neighborhood modes
-        if isinstance(neighbor_moves, dict) and 'opponent_coop_proportion' in neighbor_moves:
-            # Pairwise mode - neighbor_moves contains opponent_coop_proportion
-            coop_proportion = neighbor_moves['opponent_coop_proportion']
-            coop_neighbors = coop_proportion  # Using the proportion directly
-            total_neighbors = 1  # In proportional terms
-        else:
-            # Standard neighborhood mode
-            coop_neighbors = sum(1 for move in neighbor_moves.values() if move == "cooperate")
-            total_neighbors = len(neighbor_moves) if neighbor_moves else 1
-            coop_proportion = coop_neighbors / total_neighbors if total_neighbors > 0 else 0
+        # Count cooperating neighbors
+        coop_neighbors = sum(1 for move in neighbor_moves.values() if move == "cooperate")
+        total_neighbors = len(neighbor_moves) if neighbor_moves else 1
         
         # Adjust learning rate based on cooperation level and agent's own action
-        if action == "cooperate" and coop_proportion > 0.5:
+        if action == "cooperate" and coop_neighbors / total_neighbors > 0.5:
             # Cooperating with cooperators - increase learning rate
             self.learning_rate = min(self.max_learning_rate, 
                                     self.learning_rate + self.increase_rate)
-        elif action == "defect" and coop_proportion > 0.5:
+        elif action == "defect" and coop_neighbors / total_neighbors > 0.5:
             # Defecting against cooperators - decrease learning rate
             self.learning_rate = max(self.min_learning_rate, 
                                     self.learning_rate - self.decrease_rate)

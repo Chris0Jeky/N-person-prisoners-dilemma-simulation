@@ -179,7 +179,7 @@ class TestDataProcessing:
         assert node0['move'] == 'cooperate'
         assert node0['payoff'] == 1.5
 
-    def test_prepare_network_data_empty_missing(self):
+    def test_prepare_network_data_empty_missing(self, sample_agents_df, sample_rounds_df):
         """Test prepare_network_data with missing/empty data."""
         empty_agents = pd.DataFrame(columns=['agent_id', 'strategy', 'final_score'])
         empty_rounds = pd.DataFrame(columns=['round', 'agent_id', 'move', 'payoff'])
@@ -188,12 +188,13 @@ class TestDataProcessing:
         res = prepare_network_data(empty_agents, empty_rounds, round_num=0)
         assert res['nodes'] == [] and res['edges'] == [] and res['round'] == 0
 
-        # Round doesn't exist
-        res = prepare_network_data(sample_agents_df(), sample_rounds_df(), round_num=99)
+        # Round doesn't exist - use the actual fixture data here
+        res = prepare_network_data(sample_agents_df, sample_rounds_df, round_num=99)
         assert res['nodes'] == [] and res['edges'] == [] and res['round'] == 99
 
-        # Missing columns
-        res = prepare_network_data(sample_agents_df().drop('strategy', axis=1), sample_rounds_df(), round_num=0)
+        # Missing columns - use the actual fixture data here
+        agents_missing_col = sample_agents_df.drop('strategy', axis=1)
+        res = prepare_network_data(agents_missing_col, sample_rounds_df, round_num=0)
         assert res['nodes'] == [] and res['edges'] == [] and res['round'] == 0
 
 

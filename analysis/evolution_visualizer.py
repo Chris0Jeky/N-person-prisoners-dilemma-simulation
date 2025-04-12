@@ -424,68 +424,111 @@ def create_radar_chart(scenarios: List[Dict], metrics: Optional[List[str]] = Non
 
 def analyze_strategy_performance(scenarios: List[Dict], save_path: Optional[str] = None):
     """Analyze which strategies performed well across all scenarios."""
+    # Check if we have any valid scenarios
+    valid_scenarios = []
+    for scenario in scenarios:
+        if not isinstance(scenario, dict):
+            continue
+        if "config" not in scenario or not isinstance(scenario["config"], dict):
+            continue
+        if "selection_score" not in scenario:
+            continue
+        valid_scenarios.append(scenario)
+    
+    if not valid_scenarios:
+        print("No valid scenarios found for strategy performance analysis")
+        plt.figure(figsize=(8, 6))
+        plt.text(0.5, 0.5, "No valid scenario data for strategy analysis", 
+                ha='center', va='center', fontsize=14)
+        plt.axis('off')
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        return pd.DataFrame()
+    
     # Extract strategy performance data
     strategy_data = []
     
-    for scenario in scenarios:
-        # Skip if missing required data
-        if "config" not in scenario or "selection_score" not in scenario:
-            continue
-        
+    for scenario in valid_scenarios:
         scenario_score = scenario["selection_score"]
-        strategies = scenario["config"].get("agent_strategies", {})
-        
-        for strategy, count in strategies.items():
-            strategy_data.append({
-                "strategy": strategy,
-                "count": count,
-                "scenario_score": scenario_score,
-                "scenario_name": scenario["config"].get("scenario_name", "Unknown")
-            })
+        try:
+            strategies = scenario["config"].get("agent_strategies", {})
+            if not isinstance(strategies, dict):
+                continue
+                
+            for strategy, count in strategies.items():
+                strategy_data.append({
+                    "strategy": strategy,
+                    "count": count,
+                    "scenario_score": scenario_score,
+                    "scenario_name": scenario["config"].get("scenario_name", "Unknown")
+                })
+        except Exception as e:
+            print(f"Error processing scenario strategies: {e}")
     
+    if not strategy_data:
+        print("No strategy data found after processing")
+        plt.figure(figsize=(8, 6))
+        plt.text(0.5, 0.5, "No strategy data available for analysis", 
+                ha='center', va='center', fontsize=14)
+        plt.axis('off')
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        return pd.DataFrame()
+        
     # Convert to DataFrame
     df = pd.DataFrame(strategy_data)
     
     # Group by strategy and calculate statistics
-    strategy_stats = df.groupby("strategy").agg(
-        count=("count", "sum"),
-        avg_scenario_score=("scenario_score", "mean"),
-        max_scenario_score=("scenario_score", "max"),
-        num_scenarios=("scenario_name", "nunique")
-    ).reset_index()
-    
-    # Sort by average scenario score
-    strategy_stats = strategy_stats.sort_values("avg_scenario_score", ascending=False)
+    try:
+        strategy_stats = df.groupby("strategy").agg(
+            count=("count", "sum"),
+            avg_scenario_score=("scenario_score", "mean"),
+            max_scenario_score=("scenario_score", "max"),
+            num_scenarios=("scenario_name", "nunique")
+        ).reset_index()
+        
+        # Sort by average scenario score
+        strategy_stats = strategy_stats.sort_values("avg_scenario_score", ascending=False)
+    except Exception as e:
+        print(f"Error calculating strategy statistics: {e}")
+        return pd.DataFrame()
     
     # Plot strategy performance
     plt.figure(figsize=(12, 8))
     
-    # Create a bar plot with error bars
-    ax = sns.barplot(
-        x="strategy", 
-        y="avg_scenario_score", 
-        data=strategy_stats,
-        palette="viridis"
-    )
-    
-    # Add number of scenarios as text
-    for i, row in strategy_stats.iterrows():
-        ax.text(
-            i, 
-            row["avg_scenario_score"] + 0.01, 
-            f"n={row['num_scenarios']}", 
-            ha='center'
+    try:
+        # Create a bar plot with error bars
+        ax = sns.barplot(
+            x="strategy", 
+            y="avg_scenario_score", 
+            data=strategy_stats,
+            palette="viridis"
         )
-    
-    plt.title("Average Scenario Score by Strategy", fontsize=14)
-    plt.xlabel("Strategy", fontsize=12)
-    plt.ylabel("Average Scenario Score", fontsize=12)
-    plt.xticks(rotation=45, ha='right')
+        
+        # Add number of scenarios as text
+        for i, row in strategy_stats.iterrows():
+            ax.text(
+                i, 
+                row["avg_scenario_score"] + 0.01, 
+                f"n={row['num_scenarios']}", 
+                ha='center'
+            )
+        
+        plt.title("Average Scenario Score by Strategy", fontsize=14)
+        plt.xlabel("Strategy", fontsize=12)
+        plt.ylabel("Average Scenario Score", fontsize=12)
+        plt.xticks(rotation=45, ha='right')
+    except Exception as e:
+        print(f"Error creating strategy performance plot: {e}")
+        plt.text(0.5, 0.5, "Error creating plot", 
+                ha='center', va='center', fontsize=14)
+        plt.axis('off')
     
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
-        
-    plt.show()
+    plt.close()
     
     return strategy_stats
 

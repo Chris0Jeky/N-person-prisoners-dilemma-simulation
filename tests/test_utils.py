@@ -31,7 +31,7 @@ class TestPayoffFunctions:
         (exponential_payoff_D, 4, 10, {"T": 5, "P": 1, "exponent": 2}, 1.7901), # P+(T-P)*(4/9)^2
         (threshold_payoff_C, 9, 10, {"R": 3, "S": 0, "threshold": 0.6}, 3.0),
         (threshold_payoff_C, 5, 10, {"R": 3, "S": 0, "threshold": 0.6}, 0.8333), # Below thresh: S+(R-S)*( (5/9)/0.6 )*0.3
-        (threshold_payoff_C, 6, 10, {"R": 3, "S": 0, "threshold": 0.6}, 1.15), # Above thresh: S+(R-S)*(0.3 + 0.7*((6/9-0.6)/(1-0.6)))
+        (threshold_payoff_C, 6, 10, {"R": 3, "S": 0, "threshold": 0.6}, 1.25), # Above thresh: S+(R-S)*(0.3 + 0.7*((6/9-0.6)/(1-0.6)))
         (threshold_payoff_D, 9, 10, {"T": 5, "P": 1, "threshold": 0.6}, 5.0),
         (threshold_payoff_D, 5, 10, {"T": 5, "P": 1, "threshold": 0.6}, 2.1111), # Below thresh P+(T-P)*((5/9)/0.6)*0.3
         (threshold_payoff_D, 6, 10, {"T": 5, "P": 1, "threshold": 0.6}, 2.9), # Above thresh P+(T-P)*(0.3 + 0.7*((6/9-0.6)/(1-0.6)))

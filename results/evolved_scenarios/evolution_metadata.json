@@ -1,0 +1,171 @@
+{
+  "parameters": {
+    "population_size": 20,
+    "generations": 5,
+    "evaluation_runs": 3,
+    "elitism": 2,
+    "crossover_fraction": 0.7,
+    "mutation_rate": 0.2
+  },
+  "generation_stats": [
+    {
+      "generation": 1,
+      "avg_score": 0.5904282714319411,
+      "max_score": 1.111105,
+      "min_score": 0.21011116832842547,
+      "top_scenario_name": "GeneratedScenario_0013",
+      "scenario_types": {
+        "always_defect": 3,
+        "tit_for_tat": 3,
+        "wolf_phc": 6,
+        "lra_q": 5,
+        "q_learning": 8,
+        "pavlov": 3,
+        "hysteretic_q": 2,
+        "q_learning_adaptive": 8,
+        "generous_tit_for_tat": 4,
+        "suspicious_tit_for_tat": 5,
+        "random": 7,
+        "ucb1_q": 2,
+        "always_cooperate": 2,
+        "tit_for_two_tats": 2
+      }
+    },
+    {
+      "generation": 2,
+      "avg_score": 0.8382768055822947,
+      "max_score": 1.2032800000000001,
+      "min_score": 0.1875,
+      "top_scenario_name": "Evo_1744500710_1691",
+      "scenario_types": {
+        "always_defect": 5,
+        "tit_for_tat": 5,
+        "q_learning": 6,
+        "wolf_phc": 8,
+        "suspicious_tit_for_tat": 7,
+        "random": 9,
+        "pavlov": 5,
+        "lra_q": 7,
+        "hysteretic_q": 3,
+        "q_learning_adaptive": 4,
+        "generous_tit_for_tat": 4,
+        "ucb1_q": 2,
+        "always_cooperate": 1
+      }
+    },
+    {
+      "generation": 3,
+      "avg_score": 1.0251258306321516,
+      "max_score": 1.366624360985417,
+      "min_score": 0.3971367562338908,
+      "top_scenario_name": "Evo_1744500714_1846",
+      "scenario_types": {
+        "tit_for_tat": 11,
+        "lra_q": 11,
+        "always_defect": 9,
+        "pavlov": 7,
+        "q_learning": 9,
+        "random": 9,
+        "wolf_phc": 9,
+        "suspicious_tit_for_tat": 6,
+        "hysteretic_q": 2,
+        "q_learning_adaptive": 1,
+        "generous_tit_for_tat": 1,
+        "always_cooperate": 1
+      }
+    },
+    {
+      "generation": 4,
+      "avg_score": 1.140327703946308,
+      "max_score": 1.4021812965538478,
+      "min_score": 0.31234650186661156,
+      "top_scenario_name": "Evo_1744500714_1846",
+      "scenario_types": {
+        "tit_for_tat": 14,
+        "lra_q": 12,
+        "always_defect": 13,
+        "pavlov": 11,
+        "q_learning": 12,
+        "random": 11,
+        "wolf_phc": 7,
+        "suspicious_tit_for_tat": 5
+      }
+    },
+    {
+      "generation": 5,
+      "avg_score": 1.1629868454669288,
+      "max_score": 1.3980828076392182,
+      "min_score": 0.35300093414416517,
+      "top_scenario_name": "Evo_1744500720_2243",
+      "scenario_types": {
+        "tit_for_tat": 15,
+        "lra_q": 17,
+        "always_defect": 16,
+        "pavlov": 17,
+        "q_learning": 17,
+        "random": 17,
+        "wolf_phc": 4,
+        "suspicious_tit_for_tat": 4
+      }
+    }
+  ],
+  "best_scenarios_by_generation": [
+    {
+      "generation": 1,
+      "name": "Evo_1744500714_1846",
+      "score": 1.4021812965538478,
+      "strategies": {
+        "tit_for_tat": 1,
+        "lra_q": 9,
+        "always_defect": 5,
+        "pavlov": 22,
+        "q_learning": 13,
+        "random": 19
+      }
+    },
+    {
+      "generation": 2,
+      "name": "Evo_1744500720_2243",
+      "score": 1.3980828076392182,
+      "strategies": {
+        "tit_for_tat": 1,
+        "lra_q": 9,
+        "always_defect": 5,
+        "pavlov": 22,
+        "q_learning": 13,
+        "random": 19
+      }
+    },
+    {
+      "generation": 3,
+      "name": "Evo_1744500714_1846",
+      "score": 1.366624360985417,
+      "strategies": {
+        "tit_for_tat": 1,
+        "lra_q": 9,
+        "always_defect": 5,
+        "pavlov": 22,
+        "q_learning": 13,
+        "random": 19
+      }
+    },
+    {
+      "generation": 4,
+      "name": "Evo_1744500710_1691",
+      "score": 1.2032800000000001,
+      "strategies": {
+        "always_defect": 11,
+        "tit_for_tat": 39
+      }
+    },
+    {
+      "generation": 5,
+      "name": "GeneratedScenario_0013",
+      "score": 1.111105,
+      "strategies": {
+        "always_defect": 11,
+        "tit_for_tat": 39
+      }
+    }
+  ]
+}

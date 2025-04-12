@@ -1,0 +1,163 @@
+[
+  {
+    "scenario_name": "Evo_1744500714_1846",
+    "num_agents": 50,
+    "num_rounds": 200,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "tit_for_tat": 1,
+      "lra_q": 9,
+      "always_defect": 5,
+      "pavlov": 22,
+      "q_learning": 13,
+      "random": 19
+    },
+    "payoff_type": "linear",
+    "payoff_params": {
+      "P": 1,
+      "S": 0,
+      "T": 5,
+      "R": 4
+    },
+    "state_type": "count",
+    "memory_length": 5,
+    "learning_rate": 0.2,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "q_init_type": "optimistic",
+    "logging_interval": 501,
+    "beta": 0.0308,
+    "increase_rate": 0.086,
+    "decrease_rate": 0.028,
+    "alpha_win": 0.017,
+    "alpha_lose": 0.155
+  },
+  {
+    "scenario_name": "Evo_1744500720_2243",
+    "num_agents": 50,
+    "num_rounds": 500,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "tit_for_tat": 1,
+      "lra_q": 9,
+      "always_defect": 5,
+      "pavlov": 22,
+      "q_learning": 13,
+      "random": 19
+    },
+    "payoff_type": "linear",
+    "payoff_params": {
+      "P": 1,
+      "S": 0,
+      "T": 5,
+      "R": 4
+    },
+    "state_type": "count",
+    "memory_length": 3,
+    "learning_rate": 0.05,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "q_init_type": "optimistic",
+    "logging_interval": 501,
+    "beta": 0.0308,
+    "increase_rate": 0.086,
+    "decrease_rate": 0.028,
+    "alpha_win": 0.017,
+    "alpha_lose": 0.155
+  },
+  {
+    "scenario_name": "Evo_1744500714_1846",
+    "num_agents": 50,
+    "num_rounds": 200,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "tit_for_tat": 1,
+      "lra_q": 9,
+      "always_defect": 5,
+      "pavlov": 22,
+      "q_learning": 13,
+      "random": 19
+    },
+    "payoff_type": "linear",
+    "payoff_params": {
+      "P": 1,
+      "S": 0,
+      "T": 5,
+      "R": 4
+    },
+    "state_type": "count",
+    "memory_length": 5,
+    "learning_rate": 0.2,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "q_init_type": "optimistic",
+    "logging_interval": 501,
+    "beta": 0.0308,
+    "increase_rate": 0.086,
+    "decrease_rate": 0.028,
+    "alpha_win": 0.017,
+    "alpha_lose": 0.155
+  },
+  {
+    "scenario_name": "Evo_1744500710_1691",
+    "num_agents": 50,
+    "num_rounds": 300,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "always_defect": 11,
+      "tit_for_tat": 39
+    },
+    "payoff_type": "linear",
+    "payoff_params": {
+      "P": 1,
+      "S": 0,
+      "T": 6,
+      "R": 4
+    },
+    "state_type": "count",
+    "memory_length": 3,
+    "learning_rate": 0.2,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "q_init_type": "optimistic",
+    "logging_interval": 301,
+    "beta": 0.0308,
+    "alpha_win": 0.074,
+    "alpha_lose": 0.151,
+    "use_global_bonus": true
+  },
+  {
+    "scenario_name": "GeneratedScenario_0013",
+    "num_agents": 50,
+    "num_rounds": 300,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "always_defect": 11,
+      "tit_for_tat": 39
+    },
+    "payoff_type": "linear",
+    "payoff_params": {
+      "R": 4,
+      "S": 0,
+      "T": 5,
+      "P": 1
+    },
+    "state_type": "count",
+    "memory_length": 10,
+    "q_init_type": "optimistic",
+    "learning_rate": 0.05,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "logging_interval": 301
+  }
+]

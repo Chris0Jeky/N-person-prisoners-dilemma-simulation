@@ -301,49 +301,55 @@ def generate_ascii_chart(values, title="", width=50, height=10):
     Returns:
         String containing ASCII chart
     """
-    if not values:
-        return "No data to plot"
-    
-    # Find min and max values
-    min_val = min(values)
-    max_val = max(values)
-    
-    # Avoid division by zero
-    if max_val == min_val:
-        max_val = min_val + 1
-    
-    # Create chart
-    chart = [" " * width for _ in range(height)]
-    
-    # Plot points
-    for i, val in enumerate(values):
-        # Scale x-coordinate to fit width
-        x = int((i / (len(values) - 1 if len(values) > 1 else 1)) * (width - 1))
+    try:
+        if not values:
+            return "No data to plot"
         
-        # Scale y-coordinate to fit height, and invert (0 at bottom)
-        y = height - 1 - int(((val - min_val) / (max_val - min_val)) * (height - 1))
+        # Find min and max values
+        min_val = min(values)
+        max_val = max(values)
         
-        # Plot point
-        if 0 <= y < height:
-            chart[y] = chart[y][:x] + "*" + chart[y][x+1:]
-    
-    # Add title
-    result = title + "\n" if title else ""
-    
-    # Add y-axis labels
-    max_str = f"{max_val:.2f}"
-    mid_str = f"{(min_val + max_val) / 2:.2f}"
-    min_str = f"{min_val:.2f}"
-    
-    # Add chart with axes
-    result += max_str + " ┌" + "─" * width + "┐\n"
-    for i, line in enumerate(chart):
-        if i == 0:
-            result += " " * len(max_str) + "│" + line + "│\n"
-        elif i == height // 2:
-            result += mid_str + "│" + line + "│\n"
-        else:
-            result += " " * len(max_str) + "│" + line + "│\n"
-    result += min_str + " └" + "─" * width + "┘\n"
-    
-    return result
+        # Avoid division by zero
+        if max_val == min_val:
+            max_val = min_val + 1
+        
+        # Create chart
+        chart = [" " * width for _ in range(height)]
+        
+        # Plot points
+        for i, val in enumerate(values):
+            # Scale x-coordinate to fit width
+            x = int((i / (len(values) - 1 if len(values) > 1 else 1)) * (width - 1))
+            
+            # Scale y-coordinate to fit height, and invert (0 at bottom)
+            y = height - 1 - int(((val - min_val) / (max_val - min_val)) * (height - 1))
+            
+            # Plot point
+            if 0 <= y < height:
+                chart[y] = chart[y][:x] + "*" + chart[y][x+1:]
+        
+        # Add title
+        result = title + "\n" if title else ""
+        
+        # Add y-axis labels
+        max_str = f"{max_val:.2f}"
+        mid_str = f"{(min_val + max_val) / 2:.2f}"
+        min_str = f"{min_val:.2f}"
+        
+        # Add chart with ASCII-only box drawing characters
+        result += max_str + " +" + "-" * width + "+\n"
+        for i, line in enumerate(chart):
+            if i == 0:
+                result += " " * len(max_str) + "|" + line + "|\n"
+            elif i == height // 2:
+                result += mid_str + "|" + line + "|\n"
+            else:
+                result += " " * len(max_str) + "|" + line + "|\n"
+        result += min_str + " +" + "-" * width + "+\n"
+        
+        return result
+    except Exception as e:
+        # Fallback to a simple text summary in case of errors
+        if values:
+            return f"Data summary (min: {min(values):.2f}, max: {max(values):.2f}, len: {len(values)})"
+        return "No data to plot (chart generation failed)"

@@ -24,8 +24,44 @@ def load_evolution_metadata(file_path="results/evolved_scenarios/evolution_metad
 
 def load_evolved_scenarios(file_path="results/evolved_scenarios/all_evolved_scenarios.json") -> List[Dict]:
     """Load the data about all evaluated scenarios."""
-    with open(file_path, 'r') as f:
-        return json.load(f)
+    try:
+        with open(file_path, 'r') as f:
+            data = json.load(f)
+            
+        # Check if we have a list of scenarios or a different format
+        if isinstance(data, list):
+            # Already in the expected format
+            return data
+        elif isinstance(data, dict) and 'scenarios' in data:
+            # Extract scenarios from a metadata format
+            return data['scenarios']
+        else:
+            # Try to parse the format - handling string content
+            scenarios = []
+            
+            if isinstance(data, dict):
+                # Add the entire object as a single scenario
+                return [data]
+            elif isinstance(data, str):
+                print(f"Warning: File contains string data instead of JSON. Attempting to parse...")
+                # Try to parse string content if it's a serialized JSON string
+                try:
+                    parsed_data = json.loads(data)
+                    if isinstance(parsed_data, list):
+                        return parsed_data
+                    elif isinstance(parsed_data, dict):
+                        return [parsed_data]
+                except json.JSONDecodeError:
+                    print("Error: Could not parse string data as JSON")
+                    # Return a minimal stub that won't crash the visualization
+                    return [{"config": {"scenario_name": "Unknown"}, "metrics": {}, "selection_score": 0}]
+            
+            print(f"Warning: Unexpected data format in {file_path}")
+            return [{"config": {"scenario_name": "Unknown"}, "metrics": {}, "selection_score": 0}]
+    except Exception as e:
+        print(f"Error loading scenarios file: {e}")
+        # Return a minimal stub that won't crash the visualization
+        return [{"config": {"scenario_name": "Unknown"}, "metrics": {}, "selection_score": 0}]
 
 
 def plot_evolution_progress(metadata: Dict, save_path: Optional[str] = None):

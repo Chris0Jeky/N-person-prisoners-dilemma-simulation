@@ -1,0 +1,65 @@
+
+    <!DOCTYPE html>
+    <html>
+    <head>
+        <title>Evolutionary Scenario Generation Report</title>
+        <style>
+            body { font-family: Arial, sans-serif; margin: 20px; }
+            h1, h2, h3 { color: #2c3e50; }
+            table { border-collapse: collapse; width: 100%; margin-bottom: 20px; }
+            th, td { text-align: left; padding: 12px; }
+            th { background-color: #3498db; color: white; }
+            tr:nth-child(even) { background-color: #f2f2f2; }
+            .metric { font-weight: bold; }
+            .chart-container { margin: 20px 0; }
+            .scenario { border: 1px solid #ddd; padding: 15px; margin-bottom: 20px; border-radius: 5px; }
+            .scenario h3 { margin-top: 0; }
+        </style>
+    </head>
+    <body>
+        <h1>Evolutionary Scenario Generation Report</h1>
+        
+        <h2>Parameters</h2>
+        <table>
+            <tr><th>Parameter</th><th>Value</th></tr>
+            <tr><td>Population Size</td><td>20</td></tr>
+            <tr><td>Generations</td><td>5</td></tr>
+            <tr><td>Evaluation Runs</td><td>3</td></tr>
+            <tr><td>Elitism</td><td>2</td></tr>
+            <tr><td>Crossover Fraction</td><td>0.7</td></tr>
+            <tr><td>Mutation Rate</td><td>0.2</td></tr>
+        </table>
+    
+        <h2>Evolution Progress</h2>
+        <div class="chart-container">
+            <img src="evolution_progress.png" alt="Evolution Progress" style="max-width: 100%;">
+        </div>
+        
+        <h2>Strategy Evolution</h2>
+        <div class="chart-container">
+            <img src="strategy_evolution.png" alt="Strategy Evolution" style="max-width: 100%;">
+        </div>
+        
+        <h2>Metric Evolution</h2>
+        <div class="chart-container">
+            <img src="metric_evolution.png" alt="Metric Evolution" style="max-width: 100%;">
+        </div>
+        
+        <h2>Top Scenarios Comparison</h2>
+        <div class="chart-container">
+            <img src="top_scenarios_comparison.png" alt="Top Scenarios Comparison" style="max-width: 100%;">
+        </div>
+        
+        <div class="chart-container">
+            <img src="top_scenarios_radar.png" alt="Top Scenarios Radar Chart" style="max-width: 100%;">
+        </div>
+        
+        <h2>Strategy Performance</h2>
+        <div class="chart-container">
+            <img src="strategy_performance.png" alt="Strategy Performance" style="max-width: 100%;">
+        </div>
+        <h2>Top Scenarios</h2>
+
+    </body>
+    </html>
+    

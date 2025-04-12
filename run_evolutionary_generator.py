@@ -157,7 +157,11 @@ def calculate_enhanced_metrics(env, round_results) -> Dict[str, float]:
             # Calculate rank correlation
             if len(strats) > 1:
                 try:
-                    correlation, _ = stats.spearmanr(mid_values, late_values)
+                    # Check if either array is constant before calculating correlation
+                    if len(set(mid_values)) > 1 and len(set(late_values)) > 1:
+                        correlation, _ = stats.spearmanr(mid_values, late_values)
+                    else:
+                        correlation = 0.0  # Default to no correlation if data is constant
                     # Invert so that higher values mean more countering (rank changes)
                     metrics['strategy_countering'] = 1.0 - abs(correlation)
                 except:

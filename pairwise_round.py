@@ -1,4 +1,10 @@
-from npdl.core.utils import get_pairwise_payoffs
+                # Pass opponent cooperation proportion for next state calculation
+                neighbor_moves = {'opponent_coop_proportion': round_opponent_coop_proportion[agent.agent_id]}
+                agent.update_q_value(
+                    action=agent_moves_for_round[agent.agent_id],
+                    reward=round_payoffs_avg[agent.agent_id],
+                    next_state_actions=neighbor_moves
+                )
 
 def _run_pairwise_round(self, rewiring_prob=0.0):
     """Run a single round using pairwise interactions between all agents.

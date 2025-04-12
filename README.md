@@ -69,6 +69,8 @@ Options:
 
 For systematic exploration of the parameter space, NPDL includes tools to generate, evaluate, and analyze diverse scenarios:
 
+#### Basic Random Scenario Generation
+
 ```bash
 python run_sweep_analysis.py [options]
 ```
@@ -92,10 +94,60 @@ This workflow:
 4. Runs more thorough simulations of the selected scenarios
 5. Generates visualizations comparing the selected scenarios
 
+#### Advanced Evolutionary Scenario Generation
+
+For more sophisticated scenario discovery, the evolutionary algorithm approach iteratively improves scenarios through selection, crossover, and mutation:
+
+```bash
+python run_evolutionary_generator.py [options]
+```
+
+Options:
+- `--pop_size INT`: Population size for evolutionary algorithm (default: 20)
+- `--generations INT`: Number of generations to evolve (default: 5)
+- `--eval_runs INT`: Number of evaluation runs per scenario (default: 3)
+- `--elitism INT`: Number of best scenarios to keep unchanged in each generation (default: 2)
+- `--crossover FLOAT`: Fraction of new generation created through crossover (default: 0.7)
+- `--mutation FLOAT`: Mutation rate for scenario parameters (default: 0.2)
+- `--save_runs INT`: Number of full runs for selected scenarios (default: 10)
+- `--top_n INT`: Number of top scenarios to save (default: 5)
+- `--results_dir DIR`: Directory to save results (default: results/evolved_scenarios)
+- `--log_level LEVEL`: Logging level (DEBUG, INFO, WARNING, ERROR)
+
+The evolutionary approach offers several advantages:
+1. **Parallel evaluation** using multiple CPU cores for faster processing
+2. **Enhanced interestingness metrics** including:
+   - Cooperation volatility (fluctuations in cooperation rates)
+   - Strategy adaptation rate (how quickly learning agents adapt)
+   - Pattern complexity (complexity of cooperation dynamics)
+   - Equilibrium stability (whether the system reaches stable states)
+3. **Iterative improvement** through:
+   - Tournament selection of promising scenarios
+   - Crossover (combining parameters from high-scoring scenarios)
+   - Mutation (random variations to explore new possibilities)
+   - Generational improvement tracking
+
+To visualize and analyze the evolutionary process:
+
+```bash
+python -m analysis.evolution_visualizer [options]
+```
+
+This generates a comprehensive evolution report including:
+- Evolution progress across generations
+- Strategy composition changes over time
+- Metric improvements through evolution
+- Comparison of top evolved scenarios
+- Strategy performance analysis
+
+#### Interestingness Metrics
+
 The tool ranks scenarios by a composite "interestingness score" that considers:
 - Whether cooperation rates are changing over time (dynamic scenarios)
 - Whether different strategies achieve significantly different outcomes
 - Avoiding extreme cases where all agents cooperate or all defect
+- Volatility and complexity in cooperation patterns
+- Strategy adaptation and learning characteristics
 
 Example output graphs include:
 - Scenario ranking by interestingness score
@@ -103,8 +155,9 @@ Example output graphs include:
 - Strategy performance distribution
 - Parameter frequency analysis
 - Correlation between different metrics
+- Radar charts for multidimensional scenario comparison
 
-For more targeted exploration, you can also run only the scenario generation step:
+For more targeted exploration, you can also run only the basic scenario generation step:
 
 ```bash
 python run_scenario_generator.py --num_generate 50 --eval_runs 3 --save_runs 10 --top_n 5

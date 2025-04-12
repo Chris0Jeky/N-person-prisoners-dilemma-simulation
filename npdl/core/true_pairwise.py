@@ -30,6 +30,7 @@ except ImportError:
         class random:
             @staticmethod
             def random():
+                """Return a uniform random float."""
                 return random.random()
             
             @staticmethod

@@ -558,34 +558,31 @@ def analyze_strategy_performance(scenarios: List[Dict], save_path: Optional[str]
                 "scenario_name": scenario.get("name", "Unknown")
             })
     
+    # If we still have no data, return
     if not strategy_data:
-        print("No strategy data found after processing")
-        plt.figure(figsize=(8, 6))
-        plt.text(0.5, 0.5, "No strategy data available for analysis", 
+        print("No strategy data extracted from scenarios")
+        plt.figure(figsize=(12, 8))
+        plt.text(0.5, 0.5, "No strategy data extracted from scenarios", 
                 ha='center', va='center', fontsize=14)
         plt.axis('off')
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
         plt.close()
-        return pd.DataFrame()
-        
+        return None
+    
     # Convert to DataFrame
     df = pd.DataFrame(strategy_data)
     
     # Group by strategy and calculate statistics
-    try:
-        strategy_stats = df.groupby("strategy").agg(
-            count=("count", "sum"),
-            avg_scenario_score=("scenario_score", "mean"),
-            max_scenario_score=("scenario_score", "max"),
-            num_scenarios=("scenario_name", "nunique")
-        ).reset_index()
-        
-        # Sort by average scenario score
-        strategy_stats = strategy_stats.sort_values("avg_scenario_score", ascending=False)
-    except Exception as e:
-        print(f"Error calculating strategy statistics: {e}")
-        return pd.DataFrame()
+    strategy_stats = df.groupby("strategy").agg(
+        count=("count", "sum"),
+        avg_scenario_score=("scenario_score", "mean"),
+        max_scenario_score=("scenario_score", "max"),
+        num_scenarios=("scenario_name", "nunique")
+    ).reset_index()
+    
+    # Sort by average scenario score
+    strategy_stats = strategy_stats.sort_values("avg_scenario_score", ascending=False)
     
     # Plot strategy performance
     plt.figure(figsize=(12, 8))
@@ -620,6 +617,7 @@ def analyze_strategy_performance(scenarios: List[Dict], save_path: Optional[str]
     
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        
     plt.close()
     
     return strategy_stats

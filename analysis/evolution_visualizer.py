@@ -32,8 +32,14 @@ def load_evolved_scenarios(file_path="results/evolved_scenarios/all_evolved_scen
         # Print data structure for debugging
         if isinstance(data, dict):
             print(f"Loaded a dictionary with keys: {list(data.keys())}")
+            if "scenarios" in data:
+                print(f"Found 'scenarios' key with {len(data['scenarios'])} items")
+            if len(data.keys()) > 0 and list(data.keys())[0] in ["config", "name", "metrics"]:
+                print(f"Dictionary appears to be a single scenario")
         elif isinstance(data, list):
             print(f"Loaded a list with {len(data)} items")
+            if data and isinstance(data[0], dict):
+                print(f"First item keys: {list(data[0].keys())}")
         else:
             print(f"Loaded data of type: {type(data)}")
             

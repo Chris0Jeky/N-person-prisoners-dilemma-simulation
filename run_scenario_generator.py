@@ -35,7 +35,7 @@ NETWORK_POOL = [
     ("random", {"probability": 0.7})
 ]
 
-INTERACTION_MODE_POOL = ["neighborhood", "pairwise"]
+INTERACTION_MODE_POOL = ["neighborhood"]
 NUM_AGENTS_POOL = [20, 30, 40, 50]
 NUM_ROUNDS_POOL = [200, 300, 500]  # Use shorter rounds for evaluation initially
 STATE_TYPE_POOL = ["proportion_discretized", "memory_enhanced", "count"]

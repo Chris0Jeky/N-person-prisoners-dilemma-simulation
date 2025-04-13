@@ -487,47 +487,76 @@ def create_radar_chart(scenarios: List[Dict], metrics: Optional[List[str]] = Non
 
 def analyze_strategy_performance(scenarios: List[Dict], save_path: Optional[str] = None):
     """Analyze which strategies performed well across all scenarios."""
-    # Check if we have any valid scenarios
-    valid_scenarios = []
-    for scenario in scenarios:
-        if not isinstance(scenario, dict):
-            continue
-        if "config" not in scenario or not isinstance(scenario["config"], dict):
-            continue
-        if "selection_score" not in scenario:
-            continue
-        valid_scenarios.append(scenario)
+    # Extract strategy performance data
+    strategy_data = []
     
-    if not valid_scenarios:
-        print("No valid scenarios found for strategy performance analysis")
-        plt.figure(figsize=(8, 6))
+    # First check if we have valid scenarios
+    if not scenarios:
+        print("No valid scenarios for strategy performance analysis")
+        # Create an empty plot with a message
+        plt.figure(figsize=(12, 8))
         plt.text(0.5, 0.5, "No valid scenario data for strategy analysis", 
                 ha='center', va='center', fontsize=14)
         plt.axis('off')
         if save_path:
             plt.savefig(save_path, dpi=300, bbox_inches='tight')
         plt.close()
-        return pd.DataFrame()
+        return None
     
-    # Extract strategy performance data
-    strategy_data = []
+    # Process scenarios to extract strategy data
+    valid_scenarios = []
+    for scenario in scenarios:
+        # Check if the scenario has the required structure
+        if (
+            isinstance(scenario, dict) and 
+            "config_summary" in scenario and 
+            isinstance(scenario["config_summary"], dict) and
+            "strategies" in scenario["config_summary"] and
+            isinstance(scenario["config_summary"]["strategies"], dict) and
+            "selection_score" in scenario
+        ):
+            valid_scenarios.append(scenario)
+        elif (
+            isinstance(scenario, dict) and 
+            "config" in scenario and 
+            isinstance(scenario["config"], dict) and
+            "agent_strategies" in scenario["config"] and
+            isinstance(scenario["config"]["agent_strategies"], dict) and
+            "selection_score" in scenario
+        ):
+            # Convert to expected format
+            scenario_copy = scenario.copy()
+            if "config_summary" not in scenario_copy:
+                scenario_copy["config_summary"] = {}
+            scenario_copy["config_summary"]["strategies"] = scenario["config"]["agent_strategies"]
+            valid_scenarios.append(scenario_copy)
     
+    if not valid_scenarios:
+        print("No valid scenarios found for strategy performance analysis")
+        # Create an empty plot with a message
+        plt.figure(figsize=(12, 8))
+        plt.text(0.5, 0.5, "No valid scenario data for strategy analysis", 
+                ha='center', va='center', fontsize=14)
+        plt.axis('off')
+        if save_path:
+            plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        plt.close()
+        return None
+        
+    # Now extract strategy data from valid scenarios
     for scenario in valid_scenarios:
+        # Get the score for this scenario
         scenario_score = scenario["selection_score"]
-        try:
-            strategies = scenario["config"].get("agent_strategies", {})
-            if not isinstance(strategies, dict):
-                continue
-                
-            for strategy, count in strategies.items():
-                strategy_data.append({
-                    "strategy": strategy,
-                    "count": count,
-                    "scenario_score": scenario_score,
-                    "scenario_name": scenario["config"].get("scenario_name", "Unknown")
-                })
-        except Exception as e:
-            print(f"Error processing scenario strategies: {e}")
+        strategies = scenario["config_summary"]["strategies"]
+        
+        # Add entry for each strategy
+        for strategy, count in strategies.items():
+            strategy_data.append({
+                "strategy": strategy,
+                "count": count,
+                "scenario_score": scenario_score,
+                "scenario_name": scenario.get("name", "Unknown")
+            })
     
     if not strategy_data:
         print("No strategy data found after processing")

@@ -1,0 +1,15 @@
+{
+  "total_rounds": 200,
+  "total_agents": 200,
+  "final_cooperation_rate": 0.0,
+  "strategy_cooperation_rates": {
+    "tit_for_two_tats": 0.0,
+    "ucb1_q": 0.0
+  },
+  "strategy_average_scores": {
+    "tit_for_two_tats": 66.70977443609023,
+    "ucb1_q": 157.1902834008098
+  },
+  "average_final_q_cooperate": -0.07988066148560881,
+  "average_final_q_defect": 0.6694277894703192
+}

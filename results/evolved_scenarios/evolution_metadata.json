@@ -1,0 +1,161 @@
+{
+  "parameters": {
+    "population_size": 30,
+    "generations": 5,
+    "evaluation_runs": 3,
+    "elitism": 2,
+    "crossover_fraction": 0.7,
+    "mutation_rate": 0.3
+  },
+  "generation_stats": [
+    {
+      "generation": 1,
+      "avg_score": 0.4941465543951143,
+      "max_score": 1.1282874310642772,
+      "min_score": 0.1979702222410758,
+      "top_scenario_name": "GeneratedScenario_0021",
+      "scenario_types": {
+        "random": 8,
+        "generous_tit_for_tat": 9,
+        "wolf_phc": 7,
+        "q_learning": 5,
+        "pavlov": 6,
+        "q_learning_adaptive": 7,
+        "lra_q": 4,
+        "tit_for_tat": 5,
+        "ucb1_q": 7,
+        "hysteretic_q": 6,
+        "suspicious_tit_for_tat": 6,
+        "tit_for_two_tats": 6,
+        "always_defect": 6,
+        "always_cooperate": 4
+      }
+    },
+    {
+      "generation": 2,
+      "avg_score": 0.6666949859834591,
+      "max_score": 1.1400651294674164,
+      "min_score": 0.277956253890717,
+      "top_scenario_name": "GeneratedScenario_0021",
+      "scenario_types": {
+        "random": 11,
+        "generous_tit_for_tat": 17,
+        "wolf_phc": 10,
+        "q_learning": 5,
+        "pavlov": 7,
+        "tit_for_tat": 8,
+        "q_learning_adaptive": 6,
+        "lra_q": 5,
+        "ucb1_q": 7,
+        "suspicious_tit_for_tat": 3,
+        "always_defect": 4,
+        "tit_for_two_tats": 2,
+        "hysteretic_q": 2,
+        "always_cooperate": 1
+      }
+    },
+    {
+      "generation": 3,
+      "avg_score": 0.9029290831721624,
+      "max_score": 1.4021194105815467,
+      "min_score": 0.1891048366074951,
+      "top_scenario_name": "Evo_1744501967_8008",
+      "scenario_types": {
+        "pavlov": 8,
+        "generous_tit_for_tat": 26,
+        "wolf_phc": 8,
+        "q_learning": 8,
+        "tit_for_tat": 15,
+        "random": 8,
+        "q_learning_adaptive": 2,
+        "lra_q": 2,
+        "ucb1_q": 2
+      }
+    },
+    {
+      "generation": 4,
+      "avg_score": 1.053059638356884,
+      "max_score": 2.0574793244481344,
+      "min_score": 0.5079735938559212,
+      "top_scenario_name": "Evo_1744501970_4378",
+      "scenario_types": {
+        "generous_tit_for_tat": 30,
+        "random": 14,
+        "tit_for_tat": 10,
+        "pavlov": 10,
+        "wolf_phc": 7,
+        "q_learning": 9,
+        "q_learning_adaptive": 2,
+        "lra_q": 2,
+        "hysteretic_q": 1
+      }
+    },
+    {
+      "generation": 5,
+      "avg_score": 1.3058726963727993,
+      "max_score": 2.100395364120903,
+      "min_score": 0.1875,
+      "top_scenario_name": "Evo_1744501970_4378",
+      "scenario_types": {
+        "generous_tit_for_tat": 30,
+        "random": 21,
+        "tit_for_tat": 15,
+        "pavlov": 13,
+        "q_learning": 11,
+        "wolf_phc": 6
+      }
+    }
+  ],
+  "best_scenarios_by_generation": [
+    {
+      "generation": 1,
+      "name": "Evo_1744501970_4378",
+      "score": 2.100395364120903,
+      "strategies": {
+        "generous_tit_for_tat": 47,
+        "random": 3,
+        "tit_for_tat": 42
+      }
+    },
+    {
+      "generation": 2,
+      "name": "Evo_1744501970_4378",
+      "score": 2.0574793244481344,
+      "strategies": {
+        "generous_tit_for_tat": 47,
+        "random": 3,
+        "tit_for_tat": 42
+      }
+    },
+    {
+      "generation": 3,
+      "name": "Evo_1744501967_8008",
+      "score": 1.4021194105815467,
+      "strategies": {
+        "pavlov": 32,
+        "generous_tit_for_tat": 5,
+        "wolf_phc": 1,
+        "q_learning": 2,
+        "tit_for_tat": 29
+      }
+    },
+    {
+      "generation": 4,
+      "name": "GeneratedScenario_0021",
+      "score": 1.1400651294674164,
+      "strategies": {
+        "random": 13,
+        "generous_tit_for_tat": 37
+      }
+    },
+    {
+      "generation": 5,
+      "name": "GeneratedScenario_0021",
+      "score": 1.1282874310642772,
+      "strategies": {
+        "random": 13,
+        "generous_tit_for_tat": 37
+      }
+    }
+  ]
+}

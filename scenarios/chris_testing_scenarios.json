@@ -9,5 +9,28 @@
     "rewiring_prob": 0.1,
     "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
   },
-
+  {
+    "scenario_name": "10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected",
+    "num_agents": 30, "num_rounds": 1000, "network_type": "fully_connected", "network_params": {},
+    "agent_strategies": { "hysteretic_q": 10, "tit_for_tat": 10, "always_defect": 10 },
+    "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10,
+    "logging_interval": 30,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "5xHysQ_vs_5xTFT_vs_20xalways_defect_FullyConnected",
+    "num_agents": 30, "num_rounds": 1000, "network_type": "fully_connected", "network_params": {},
+    "agent_strategies": { "hysteretic_q": 5, "tit_for_tat": 5, "always_defect": 20 },
+    "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10,
+    "logging_interval": 30,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "5xHysQ_vs_5xwolf_phc_vs_5xlraQ_vs_15xalways_defect_FullyConnected",
+    "num_agents": 30, "num_rounds": 1000, "network_type": "fully_connected", "network_params": {},
+    "agent_strategies": { "hysteretic_q": 5, "wolf_phc": 5, "lra_q": 5, "always_defect": 15},
+    "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10,
+    "logging_interval": 30,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  }
 ]

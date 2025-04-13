@@ -16,6 +16,14 @@ from npdl.core.utils import create_payoff_matrix, plot_payoff_functions
 from npdl.core.logging_utils import setup_logging
 
 
+class TestDailyT013PavlovInitial:
+    """Daily check: Pavlov starts with its configured initial move."""
+
+    def test_pavlov_initial_move(self):
+        agent = Agent(agent_id=3, strategy="pavlov")
+        assert agent.strategy.initial_move == "cooperate"
+
+
 class TestDailyT003GenerousTft:
     """Daily check: GenerousTFT keeps its configured generosity."""
 

@@ -25,8 +25,17 @@ def load_evolution_metadata(file_path="results/evolved_scenarios/evolution_metad
 def load_evolved_scenarios(file_path="results/evolved_scenarios/all_evolved_scenarios.json") -> List[Dict]:
     """Load the data about all evaluated scenarios."""
     try:
+        print(f"Opening file: {file_path}")
         with open(file_path, 'r') as f:
             data = json.load(f)
+            
+        # Print data structure for debugging
+        if isinstance(data, dict):
+            print(f"Loaded a dictionary with keys: {list(data.keys())}")
+        elif isinstance(data, list):
+            print(f"Loaded a list with {len(data)} items")
+        else:
+            print(f"Loaded data of type: {type(data)}")
             
         # Check if we have a list of scenarios or a different format
         if isinstance(data, list):
@@ -34,6 +43,7 @@ def load_evolved_scenarios(file_path="results/evolved_scenarios/all_evolved_scen
             return data
         elif isinstance(data, dict) and 'scenarios' in data:
             # Extract scenarios from a metadata format
+            print(f"Extracted {len(data['scenarios'])} scenarios from container")
             return data['scenarios']
         else:
             # Try to parse the format - handling string content
@@ -41,6 +51,7 @@ def load_evolved_scenarios(file_path="results/evolved_scenarios/all_evolved_scen
             
             if isinstance(data, dict):
                 # Add the entire object as a single scenario
+                print("Treating dictionary as a single scenario")
                 return [data]
             elif isinstance(data, str):
                 print(f"Warning: File contains string data instead of JSON. Attempting to parse...")
@@ -227,6 +238,24 @@ def plot_top_scenarios_comparison(scenarios: List[Dict], top_n: int = 5,
     for s in scenarios:
         if not isinstance(s, dict):
             continue
+            
+        # Check if we have the new format (with name and config_summary)
+        if "name" in s and "config_summary" in s and "selection_score" in s and "metrics" in s:
+            # Create a compatible structure
+            scenario_copy = s.copy()
+            scenario_copy["config"] = {
+                "scenario_name": s["name"],
+                # Add other config fields from config_summary if needed
+                "num_agents": s["config_summary"].get("agents", 0),
+                "num_rounds": s["config_summary"].get("rounds", 0),
+                "network_type": s["config_summary"].get("network", "unknown"),
+                "interaction_mode": s["config_summary"].get("interaction", "unknown"),
+                "agent_strategies": s["config_summary"].get("strategies", {})
+            }
+            valid_scenarios.append(scenario_copy)
+            continue
+            
+        # Original validation for old format
         if "config" not in s or not isinstance(s["config"], dict):
             continue
         if "selection_score" not in s:
@@ -506,7 +535,10 @@ def analyze_strategy_performance(scenarios: List[Dict], save_path: Optional[str]
     # Process scenarios to extract strategy data
     valid_scenarios = []
     for scenario in scenarios:
-        # Check if the scenario has the required structure
+        # Print scenario structure for debugging
+        print(f"Processing scenario: {scenario.get('name', 'unknown')}")
+        
+        # Check if the scenario has the required structure (new format)
         if (
             isinstance(scenario, dict) and 
             "config_summary" in scenario and 
@@ -516,6 +548,7 @@ def analyze_strategy_performance(scenarios: List[Dict], save_path: Optional[str]
             "selection_score" in scenario
         ):
             valid_scenarios.append(scenario)
+        # Check if the scenario has the required structure (old format)
         elif (
             isinstance(scenario, dict) and 
             "config" in scenario and 
@@ -588,10 +621,12 @@ def analyze_strategy_performance(scenarios: List[Dict], save_path: Optional[str]
     plt.figure(figsize=(12, 8))
     
     try:
-        # Create a bar plot with error bars
+        # Create a bar plot with correct parameters for newer Seaborn versions
         ax = sns.barplot(
             x="strategy", 
             y="avg_scenario_score", 
+            hue="strategy",  # Add hue parameter to fix the deprecation warning
+            legend=False,    # Don't show redundant legend
             data=strategy_stats,
             palette="viridis"
         )
@@ -630,10 +665,35 @@ def create_evolution_report(metadata_file="results/evolved_scenarios/evolution_m
     # Create output directory
     os.makedirs(output_dir, exist_ok=True)
     
+    # Add debug logging
+    import logging
+    logging.basicConfig(level=logging.DEBUG, 
+                       format='%(asctime)s - %(levelname)s - %(message)s')
+    logger = logging.getLogger(__name__)
+    
     # Load data
     try:
+        logger.debug(f"Loading evolution metadata from {metadata_file}")
         metadata = load_evolution_metadata(metadata_file)
-        scenarios = load_evolved_scenarios(scenarios_file)
+        logger.debug(f"Successfully loaded metadata with {len(metadata.get('generation_stats', []))} generations")
+        
+        logger.debug(f"Loading evolved scenarios from {scenarios_file}")
+        loaded_data = load_evolved_scenarios(scenarios_file)
+        
+        # Check if we need to extract scenarios from a container object
+        if isinstance(loaded_data, dict) and "scenarios" in loaded_data:
+            scenarios = loaded_data["scenarios"]
+            logger.debug(f"Extracted {len(scenarios)} scenarios from scenarios container")
+        else:
+            scenarios = loaded_data
+            logger.debug(f"Loaded {len(scenarios)} scenarios directly")
+            
+        # Print first scenario structure for debugging
+        if scenarios:
+            logger.debug(f"First scenario structure: {json.dumps(scenarios[0], indent=2)[:500]}...")
+        else:
+            logger.warning("No scenarios loaded")
+            
     except FileNotFoundError as e:
         print(f"Error: Could not load required files: {e}")
         return

@@ -1,0 +1,19 @@
+{
+  "total_rounds": 500,
+  "total_agents": 200,
+  "final_cooperation_rate": 0.12,
+  "strategy_cooperation_rates": {
+    "wolf_phc": 0.15,
+    "q_learning": 0.225,
+    "q_learning_adaptive": 0.0,
+    "hysteretic_q": 0.12857142857142856
+  },
+  "strategy_average_scores": {
+    "wolf_phc": 37.75789473684201,
+    "q_learning": 33.29210526315789,
+    "q_learning_adaptive": 59.41999999999998,
+    "hysteretic_q": -17.332330827067633
+  },
+  "average_final_q_cooperate": 0.15789847882866148,
+  "average_final_q_defect": 0.7417108374845036
+}

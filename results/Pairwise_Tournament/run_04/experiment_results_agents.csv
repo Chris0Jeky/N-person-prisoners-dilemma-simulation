@@ -1,0 +1,41 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+Pairwise_Tournament,4,0,tit_for_tat,500.2051282051283,,
+Pairwise_Tournament,4,1,tit_for_tat,505.0769230769231,,
+Pairwise_Tournament,4,2,tit_for_tat,488.12820512820525,,
+Pairwise_Tournament,4,3,tit_for_tat,469.4102564102565,,
+Pairwise_Tournament,4,4,tit_for_tat,480.7435897435899,,
+Pairwise_Tournament,4,5,generous_tit_for_tat,471.0512820512823,,
+Pairwise_Tournament,4,6,generous_tit_for_tat,482.79487179487205,,
+Pairwise_Tournament,4,7,generous_tit_for_tat,497.8974358974358,,
+Pairwise_Tournament,4,8,generous_tit_for_tat,481.35897435897425,,
+Pairwise_Tournament,4,9,generous_tit_for_tat,493.23076923076934,,
+Pairwise_Tournament,4,10,suspicious_tit_for_tat,498.8461538461537,,
+Pairwise_Tournament,4,11,suspicious_tit_for_tat,500.20512820512806,,
+Pairwise_Tournament,4,12,suspicious_tit_for_tat,475.948717948718,,
+Pairwise_Tournament,4,13,suspicious_tit_for_tat,483.871794871795,,
+Pairwise_Tournament,4,14,suspicious_tit_for_tat,504.2820512820514,,
+Pairwise_Tournament,4,15,tit_for_two_tats,439.30769230769243,,
+Pairwise_Tournament,4,16,tit_for_two_tats,442.9743589743589,,
+Pairwise_Tournament,4,17,tit_for_two_tats,437.99999999999994,,
+Pairwise_Tournament,4,18,tit_for_two_tats,441.6410256410257,,
+Pairwise_Tournament,4,19,tit_for_two_tats,436.89743589743586,,
+Pairwise_Tournament,4,20,pavlov,673.2307692307693,,
+Pairwise_Tournament,4,21,pavlov,673.2307692307693,,
+Pairwise_Tournament,4,22,pavlov,673.2307692307693,,
+Pairwise_Tournament,4,23,pavlov,673.2307692307693,,
+Pairwise_Tournament,4,24,pavlov,673.2307692307693,,
+Pairwise_Tournament,4,25,q_learning,368.6666666666668,"{'avg_cooperate': 4.510691650897634, 'avg_defect': 0.9416265357195904}","{'initial': {'cooperate': 0.24615384615384617, 'defect': 0.0}, (1.0,): {'cooperate': 0.4362307692307692, 'defect': 0.0}, (0.8,): {'cooperate': 11.273182726753507, 'defect': 2.069891516709758}, (0.6,): {'cooperate': 10.390198604657739, 'defect': 2.6382411618881942}, (0.4,): {'cooperate': 0.20769230769230768, 'defect': 0.0}}"
+Pairwise_Tournament,4,26,q_learning,376.9743589743591,"{'avg_cooperate': 4.448436782183847, 'avg_defect': 1.4557251734537113}","{'initial': {'cooperate': 0.24615384615384617, 'defect': 0.0}, (1.0,): {'cooperate': 0.4362307692307692, 'defect': 0.0}, (0.8,): {'cooperate': 11.33648525541785, 'defect': 1.8995395146889509}, (0.6,): {'cooperate': 10.015621732424462, 'defect': 5.3790863525796055}, (0.4,): {'cooperate': 0.20769230769230768, 'defect': 0.0}}"
+Pairwise_Tournament,4,27,q_learning,506.76923076923066,"{'avg_cooperate': 3.245946270354593, 'avg_defect': 4.429025299496414}","{'initial': {'cooperate': 0.24615384615384617, 'defect': 0.0}, (1.0,): {'cooperate': 0.4362307692307692, 'defect': 0.0}, (0.8,): {'cooperate': 11.94548537146334, 'defect': 3.1249296117789545}, (0.6,): {'cooperate': 3.3941690572327, 'defect': 19.020196885703115}, (0.4,): {'cooperate': 0.20769230769230768, 'defect': 0.0}}"
+Pairwise_Tournament,4,28,q_learning,365.1794871794873,"{'avg_cooperate': 4.5427118193326415, 'avg_defect': 0.6224136853260951}","{'initial': {'cooperate': 0.24615384615384617, 'defect': 0.0}, (1.0,): {'cooperate': 0.4362307692307692, 'defect': 0.0}, (0.8,): {'cooperate': 11.315953947638992, 'defect': 2.2361355609637217}, (0.6,): {'cooperate': 10.507528225947294, 'defect': 0.8759328656667535}, (0.4,): {'cooperate': 0.20769230769230768, 'defect': 0.0}}"
+Pairwise_Tournament,4,29,q_learning,532.846153846154,"{'avg_cooperate': 3.105837648968872, 'avg_defect': 4.988434692143651}","{'initial': {'cooperate': 0.0, 'defect': 0.4384615384615385}, (1.0,): {'cooperate': 0.6549453846153845, 'defect': 0.0}, (0.8,): {'cooperate': 4.835677221079127, 'defect': 21.84509589050237}, (0.6,): {'cooperate': 9.830873331457543, 'defect': 2.658616031754344}, (0.4,): {'cooperate': 0.20769230769230768, 'defect': 0.0}}"
+Pairwise_Tournament,4,30,lra_q,588.6923076923075,"{'avg_cooperate': 5.7814979083653295, 'avg_defect': 9.154922597285774}","{'initial': {'cooperate': 0.49230769230769234, 'defect': 0.0}, (1.0,): {'cooperate': 1.6288253846153846, 'defect': 0.0}, (0.8,): {'cooperate': 22.1914691650782, 'defect': 25.668140001891555}, (0.6,): {'cooperate': 4.324887299825375, 'defect': 20.106472984537316}, (0.4,): {'cooperate': 0.26999999999999996, 'defect': 0.0}}"
+Pairwise_Tournament,4,31,lra_q,485.9487179487181,"{'avg_cooperate': 9.560414012443514, 'avg_defect': 11.208379753743568}","{'initial': {'cooperate': 0.49230769230769234, 'defect': 0.0}, (1.0,): {'cooperate': 1.6288253846153846, 'defect': 0.0}, (0.8,): {'cooperate': 28.35638342792288, 'defect': 32.758760382203846}, (0.6,): {'cooperate': 17.054553557371616, 'defect': 23.283138386513997}, (0.4,): {'cooperate': 0.26999999999999996, 'defect': 0.0}}"
+Pairwise_Tournament,4,32,lra_q,561.2307692307694,"{'avg_cooperate': 9.667438078824112, 'avg_defect': 11.106062005976323}","{'initial': {'cooperate': 0.49230769230769234, 'defect': 0.0}, (1.0,): {'cooperate': 0.0, 'defect': 1.2367071794871796}, (0.8,): {'cooperate': 30.216818953619864, 'defect': 32.246731810797584}, (0.6,): {'cooperate': 17.358063748193, 'defect': 22.046871039596855}, (0.4,): {'cooperate': 0.26999999999999996, 'defect': 0.0}}"
+Pairwise_Tournament,4,33,lra_q,559.6666666666669,"{'avg_cooperate': 8.663305087510228, 'avg_defect': 10.406486514626945}","{'initial': {'cooperate': 0.0, 'defect': 0.21923076923076926}, (1.0,): {'cooperate': 1.0770953846153846, 'defect': 0.0}, (0.8,): {'cooperate': 26.526056584531293, 'defect': 30.652054341341145}, (0.6,): {'cooperate': 15.111065776096776, 'defect': 21.161147462562816}, (0.4,): {'cooperate': 0.6023076923076923, 'defect': 0.0}}"
+Pairwise_Tournament,4,34,lra_q,613.7948717948719,"{'avg_cooperate': 9.115289641976824, 'avg_defect': 10.329828695737543}","{'initial': {'cooperate': 0.49230769230769234, 'defect': 0.0}, (1.0,): {'cooperate': 1.6288253846153846, 'defect': 0.0}, (0.8,): {'cooperate': 27.056933224087405, 'defect': 31.05481130418436}, (0.6,): {'cooperate': 16.128381908873635, 'defect': 20.594332174503364}, (0.4,): {'cooperate': 0.26999999999999996, 'defect': 0.0}}"
+Pairwise_Tournament,4,35,always_cooperate,360.3846153846155,,
+Pairwise_Tournament,4,36,always_cooperate,360.3846153846155,,
+Pairwise_Tournament,4,37,always_cooperate,360.3846153846155,,
+Pairwise_Tournament,4,38,always_cooperate,360.3846153846155,,
+Pairwise_Tournament,4,39,always_cooperate,360.3846153846155,,

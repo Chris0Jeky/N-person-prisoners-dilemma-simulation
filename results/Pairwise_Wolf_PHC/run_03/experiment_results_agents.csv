@@ -1,0 +1,26 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+Pairwise_Wolf_PHC,3,0,wolf_phc,603.1666666666667,"{'avg_cooperate': 8.72554545838686, 'avg_defect': 3.9926915185348104}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.30109091677372, 'defect': 7.985383037069621}}"
+Pairwise_Wolf_PHC,3,1,wolf_phc,586.5,"{'avg_cooperate': 8.933625533249621, 'avg_defect': 1.8008620275643932}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.717251066499244, 'defect': 3.6017240551287864}}"
+Pairwise_Wolf_PHC,3,2,wolf_phc,588.7916666666666,"{'avg_cooperate': 8.900150747491686, 'avg_defect': 2.3870921504965574}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.650301494983374, 'defect': 4.774184300993115}}"
+Pairwise_Wolf_PHC,3,3,wolf_phc,578.25,"{'avg_cooperate': 9.033284169812125, 'avg_defect': 0.8296630905316265}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.916568339624252, 'defect': 1.659326181063253}}"
+Pairwise_Wolf_PHC,3,4,wolf_phc,590.75,"{'avg_cooperate': 8.879260786054378, 'avg_defect': 2.4307717083601177}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.608521572108756, 'defect': 4.861543416720235}}"
+Pairwise_Wolf_PHC,3,5,wolf_phc,599.0000000000001,"{'avg_cooperate': 8.78114228071482, 'avg_defect': 3.59413274910632}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.41228456142964, 'defect': 7.18826549821264}}"
+Pairwise_Wolf_PHC,3,6,wolf_phc,601.1666666666666,"{'avg_cooperate': 8.744683234168626, 'avg_defect': 3.3445595903497485}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.339366468337253, 'defect': 6.689119180699497}}"
+Pairwise_Wolf_PHC,3,7,wolf_phc,603.25,"{'avg_cooperate': 8.722158618408683, 'avg_defect': 3.9209596394697375}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.294317236817367, 'defect': 7.841919278939475}}"
+Pairwise_Wolf_PHC,3,8,wolf_phc,586.5416666666667,"{'avg_cooperate': 8.933748248760834, 'avg_defect': 2.449896908216421}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.71749649752167, 'defect': 4.899793816432842}}"
+Pairwise_Wolf_PHC,3,9,wolf_phc,596.8333333333334,"{'avg_cooperate': 8.80470322217585, 'avg_defect': 2.8172807653755907}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.4594064443517, 'defect': 5.634561530751181}}"
+Pairwise_Wolf_PHC,3,10,wolf_phc,594.9166666666666,"{'avg_cooperate': 8.827299735820366, 'avg_defect': 2.8720669689486833}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.504599471640734, 'defect': 5.744133937897367}}"
+Pairwise_Wolf_PHC,3,11,wolf_phc,584.4583333333334,"{'avg_cooperate': 8.961367419131422, 'avg_defect': 1.9620734210191229}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.772734838262846, 'defect': 3.9241468420382457}}"
+Pairwise_Wolf_PHC,3,12,wolf_phc,592.9583333333333,"{'avg_cooperate': 8.85261339002189, 'avg_defect': 2.9844889437871713}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.555226780043782, 'defect': 5.968977887574343}}"
+Pairwise_Wolf_PHC,3,13,wolf_phc,592.8333333333334,"{'avg_cooperate': 8.855872489035509, 'avg_defect': 2.9982187196163865}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.56174497807102, 'defect': 5.996437439232773}}"
+Pairwise_Wolf_PHC,3,14,wolf_phc,588.8333333333333,"{'avg_cooperate': 8.898655198388042, 'avg_defect': 2.5325370609128384}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (1.0,): {'cooperate': 17.647310396776085, 'defect': 5.065074121825677}}"
+Pairwise_Wolf_PHC,3,15,tit_for_tat,586.5,,
+Pairwise_Wolf_PHC,3,16,tit_for_tat,586.5833333333334,,
+Pairwise_Wolf_PHC,3,17,tit_for_tat,592.7500000000001,,
+Pairwise_Wolf_PHC,3,18,tit_for_tat,588.7083333333333,,
+Pairwise_Wolf_PHC,3,19,tit_for_tat,584.4583333333333,,
+Pairwise_Wolf_PHC,3,20,tit_for_tat,592.7083333333331,,
+Pairwise_Wolf_PHC,3,21,tit_for_tat,591.0,,
+Pairwise_Wolf_PHC,3,22,tit_for_tat,588.5833333333333,,
+Pairwise_Wolf_PHC,3,23,tit_for_tat,578.125,,
+Pairwise_Wolf_PHC,3,24,tit_for_tat,588.8333333333335,,

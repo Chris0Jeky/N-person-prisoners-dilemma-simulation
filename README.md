@@ -108,7 +108,7 @@ Options:
 - `--eval_runs INT`: Number of evaluation runs per scenario (default: 3)
 - `--elitism INT`: Number of best scenarios to keep unchanged in each generation (default: 2)
 - `--crossover FLOAT`: Fraction of new generation created through crossover (default: 0.7)
-- `--mutation FLOAT`: Mutation rate for scenario parameters (default: 0.2)
+- `--mutation FLOAT`: Mutation rate for scenario parameters (default: 0.3)
 - `--save_runs INT`: Number of full runs for selected scenarios (default: 10)
 - `--top_n INT`: Number of top scenarios to save (default: 5)
 - `--results_dir DIR`: Directory to save results (default: results/evolved_scenarios)

@@ -287,10 +287,14 @@ def plot_top_scenarios_comparison(scenarios: List[Dict], top_n: int = 5,
     
     # Extract metrics for comparison
     comparison_data = []
-    for scenario in top_scenarios:
+    for i, scenario in enumerate(top_scenarios):
         try:
+            # Get base name and ensure uniqueness with index
+            base_name = scenario["config"].get("scenario_name", "Unknown")
+            unique_name = f"{base_name}_{i+1}"  # Add index to make name unique
+            
             scenario_data = {
-                "name": scenario["config"].get("scenario_name", "Unknown"),
+                "name": unique_name,  # Use unique name instead
                 "score": scenario.get("selection_score", 0)
             }
             # Add metrics
@@ -339,8 +343,15 @@ def plot_top_scenarios_comparison(scenarios: List[Dict], top_n: int = 5,
         # Clean up metric names
         melted_df["metric"] = melted_df["metric"].str.replace("avg_", "").str.replace("_", " ").str.title()
         
-        # Create a heatmap of metric values
-        pivot_df = melted_df.pivot(index="name", columns="metric", values="value")
+        # Create a heatmap of metric values with handling for unique index
+        try:
+            # First reset_index to ensure we have unique indices
+            melted_df_reset = melted_df.reset_index()
+            pivot_df = melted_df_reset.pivot(index="name", columns="metric", values="value")
+        except Exception as e:
+            print(f"Error creating pivot table: {e}")
+            # Provide a fallback empty DataFrame
+            pivot_df = pd.DataFrame()
         
         # Create the plot
         plt.figure(figsize=(14, max(6, len(top_scenarios) * 0.8)))

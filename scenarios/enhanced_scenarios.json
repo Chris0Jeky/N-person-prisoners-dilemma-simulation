@@ -453,21 +453,27 @@
     "rewiring_prob": 0.1,
     "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
   },
-   {
-     "scenario_name": "LRAQ_SweepBest_PropDiscr_vs_TFT",
-     "num_agents": 30, "num_rounds": 500, "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
-     "agent_strategies": { "lra_q": 15, "tit_for_tat": 15 },
-     "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10, "logging_interval": 20,
-     "learning_rate": 0.1, "increase_rate": 0.05, "decrease_rate": 0.05, "epsilon": 0.1, "discount_factor": 0.9
-   },
   {
-    "scenario_name": "ChrisTesting",
-    "num_agents": 30, "num_rounds": 500, "network_type": "small_world", "network_params": {"k": 4, "beta": 0.3},
-    "agent_strategies": { "hysteretic_q": 5, "tit_for_tat": 5, "lra_q": 5,  "wolf_phc": 5, "q_learning": 5},
-    "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10,
+    "scenario_name": "LRAQ_SweepBest_PropDiscr_vs_TFT",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {
+      "k": 4,
+      "beta": 0.3
+    },
+    "agent_strategies": {
+      "lra_q": 15,
+      "tit_for_tat": 15
+    },
+    "state_type": "proportion_discretized",
+    "q_init_type": "zero",
+    "memory_length": 10,
     "logging_interval": 20,
-    "rewiring_interval": 20,
-    "rewiring_prob": 0.1,
-    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+    "learning_rate": 0.1,
+    "increase_rate": 0.05,
+    "decrease_rate": 0.05,
+    "epsilon": 0.1,
+    "discount_factor": 0.9
   }
 ]

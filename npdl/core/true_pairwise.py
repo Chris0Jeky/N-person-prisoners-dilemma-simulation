@@ -37,6 +37,7 @@ except ImportError:
             
             @staticmethod
             def choice(seq):
+                """Return a random element of seq from the standard library."""
                 return random.choice(seq)
             
             @staticmethod

@@ -25,6 +25,7 @@ except ImportError:
         """Fallback numpy shim used when numpy is not installed."""
         @staticmethod
         def random():
+            """Return a uniform random float from the standard library."""
             return random.random()
         
         class random:

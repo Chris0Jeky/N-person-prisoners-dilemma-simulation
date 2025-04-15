@@ -42,6 +42,7 @@ except ImportError:
             
             @staticmethod
             def seed(s):
+                """Seed the shared random-number generator."""
                 random.seed(s)
 
 # Define get_pairwise_payoffs locally to avoid numpy dependency in utils

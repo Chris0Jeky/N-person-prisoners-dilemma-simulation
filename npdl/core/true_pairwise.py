@@ -228,6 +228,7 @@ class TruePairwiseGTFT(TruePairwiseAgent):
         self.generosity = generosity
         
     def choose_action_for_opponent(self, opponent_id: str, round_num: int) -> str:
+        """Copy this opponent's last move, forgiving defections generously."""
         memory = self.get_opponent_memory(opponent_id)
         last_move = memory.get_last_move()
         

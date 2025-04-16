@@ -203,6 +203,7 @@ class TruePairwiseTFT(TruePairwiseAgent):
         self.forgiving_probability = forgiving_probability
         
     def choose_action_for_opponent(self, opponent_id: str, round_num: int) -> str:
+        """Mirror this opponent's last move, opening with the configured stance."""
         memory = self.get_opponent_memory(opponent_id)
         last_move = memory.get_last_move()
         

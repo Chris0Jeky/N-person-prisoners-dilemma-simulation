@@ -251,6 +251,7 @@ class TruePairwisePavlov(TruePairwiseAgent):
         super().__init__(agent_id)
         
     def choose_action_for_opponent(self, opponent_id: str, round_num: int) -> str:
+        """Repeat winning moves and switch after poor rewards."""
         memory = self.get_opponent_memory(opponent_id)
         
         if not memory.interaction_history:

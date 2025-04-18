@@ -356,6 +356,7 @@ class TruePairwiseQLearning(TruePairwiseAgent):
         self.q_tables[opponent_id][state][action] = new_q
         
     def choose_action_for_opponent(self, opponent_id: str, round_num: int) -> str:
+        """Choose per-opponent actions epsilon-greedily from Q-values."""
         state = self.get_state_for_opponent(opponent_id)
         
         # Epsilon-greedy exploration

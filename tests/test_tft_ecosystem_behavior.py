@@ -10,6 +10,24 @@ from typing import List, Dict
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment
 import networkx as nx
+from npdl.core.utils import create_payoff_matrix
+
+
+class TestDailyT018TftRetaliates:
+    """Daily check: TFT defects after facing only defectors."""
+
+    def test_tft_defects_against_defectors(self):
+        agents = [
+            Agent(agent_id=0, strategy="tit_for_tat"),
+            Agent(agent_id=1, strategy="always_defect"),
+            Agent(agent_id=2, strategy="always_defect"),
+        ]
+        env = Environment(
+            agents, create_payoff_matrix(3), network_type="fully_connected"
+        )
+        env.run_round()
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"defect"}
 
 
 class TestDailyT008FreshTftCooperates:

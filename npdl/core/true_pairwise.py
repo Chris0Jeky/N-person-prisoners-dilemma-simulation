@@ -415,6 +415,7 @@ class TruePairwiseAdaptive(TruePairwiseAgent):
         return "mixed"
         
     def choose_action_for_opponent(self, opponent_id: str, round_num: int) -> str:
+        """Respond to this opponent using its assessed strategy."""
         memory = self.get_opponent_memory(opponent_id)
         
         # Reassess strategy periodically

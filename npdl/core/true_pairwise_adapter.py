@@ -13,6 +13,7 @@ try:
 except ImportError:
     # Minimal numpy compatibility
     class np:
+        """Minimal numpy shim used when numpy is not installed."""
         @staticmethod
         def random():
             class Random:

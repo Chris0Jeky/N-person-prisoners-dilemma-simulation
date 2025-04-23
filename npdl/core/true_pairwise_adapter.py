@@ -16,6 +16,7 @@ except ImportError:
         """Minimal numpy shim used when numpy is not installed."""
         @staticmethod
         def random():
+            """Build a minimal Random replacement when numpy is absent."""
             class Random:
                 @staticmethod
                 def choice(seq):

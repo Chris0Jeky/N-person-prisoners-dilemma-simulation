@@ -25,6 +25,14 @@ from npdl.core.true_pairwise_adapter import (
 )
 
 
+class TestDailyT019CooperationRateDefault:
+    """Daily check: unknown opponents start at fifty percent cooperation."""
+
+    def test_cooperation_rate_default(self):
+        memory = OpponentSpecificMemory("stranger", memory_length=4)
+        assert memory.get_cooperation_rate() == 0.5
+
+
 class TestDailyT009DefectionTracking:
     """Daily check: opponent memory counts defections correctly."""
 

@@ -18,6 +18,7 @@ except ImportError:
         def random():
             """Build a minimal Random replacement when numpy is absent."""
             class Random:
+                """Fallback Random class for the numpy shim."""
                 @staticmethod
                 def choice(seq):
                     return random.choice(seq)

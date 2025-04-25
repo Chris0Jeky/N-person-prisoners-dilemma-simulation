@@ -21,6 +21,7 @@ except ImportError:
                 """Fallback Random class for the numpy shim."""
                 @staticmethod
                 def choice(seq):
+                    """Choose a random element from seq using the standard library."""
                     return random.choice(seq)
                 @staticmethod
                 def randint(low, high=None):

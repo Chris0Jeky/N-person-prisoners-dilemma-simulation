@@ -25,6 +25,7 @@ except ImportError:
                     return random.choice(seq)
                 @staticmethod
                 def randint(low, high=None):
+                    """Return a random integer below the bound, numpy-style."""
                     if high is None:
                         return random.randint(0, low-1)
                     return random.randint(low, high-1)

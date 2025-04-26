@@ -192,6 +192,7 @@ app.layout = dbc.Container(
     Input("scenario-dropdown", "options"),  # Dummy input to trigger on load
 )
 def populate_scenarios(dummy):
+    """Build dropdown options from the available scenarios."""
     try:
         scenarios = get_available_scenarios()
         return [{"label": s, "value": s} for s in scenarios]

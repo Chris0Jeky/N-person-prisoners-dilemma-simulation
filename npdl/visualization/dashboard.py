@@ -207,6 +207,7 @@ def populate_scenarios(dummy):
     [Input("scenario-dropdown", "value")],
 )
 def update_run_dropdown(scenario):
+    """Refresh the run dropdown when a scenario is picked."""
     if scenario is None:
         return [], None
 

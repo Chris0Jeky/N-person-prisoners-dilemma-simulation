@@ -247,6 +247,7 @@ def update_run_dropdown(scenario):
     ],
 )
 def update_controls(scenario, run_value, n_clicks):
+    """Refresh control options for the selected scenario."""
     if scenario is None:
         return [], [], 0, 100, [0, 100], None, 0, 100, 0, None
 

@@ -14,6 +14,14 @@ from npdl.core.utils import (
 )
 
 
+class TestDailyT020ThresholdBounds:
+    """Daily check: threshold payoffs hit their top endpoints."""
+
+    def test_threshold_top_bounds(self):
+        assert threshold_payoff_C(9, 10, R=3, S=0, threshold=0.6) == pytest.approx(3.0)
+        assert threshold_payoff_D(9, 10, T=5, P=1, threshold=0.6) == pytest.approx(5.0)
+
+
 class TestDailyT010LinearPayoffBounds:
     """Daily check: linear cooperate payoff hits its endpoints."""
 

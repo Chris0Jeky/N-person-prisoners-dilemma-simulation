@@ -462,6 +462,7 @@ def update_cooperation_graph(
 def update_payoff_graph(
     scenario, run_value, selected_strategies, round_range, n_clicks
 ):
+    """Rebuild the average-payoff figure for the chosen scenario and strategies."""
     if scenario is None or selected_strategies is None or len(selected_strategies) == 0:
         # Return empty figure with informational message
         fig = go.Figure()

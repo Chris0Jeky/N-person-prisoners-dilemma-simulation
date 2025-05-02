@@ -591,6 +591,7 @@ def update_payoff_graph(
     ],
 )
 def update_score_graph(scenario, run_value, selected_strategies, n_clicks):
+    """Rebuild the final-scores figure for the chosen scenario and strategies."""
     if scenario is None or selected_strategies is None or len(selected_strategies) == 0:
         # Return empty figure with informational message
         fig = go.Figure()

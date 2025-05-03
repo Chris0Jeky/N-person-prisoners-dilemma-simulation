@@ -672,6 +672,7 @@ def update_score_graph(scenario, run_value, selected_strategies, n_clicks):
     ],
 )
 def update_network_graph(scenario, run_value, round_num, n_clicks):
+    """Rebuild the network-structure figure for the chosen scenario."""
     if scenario is None:
         # Return empty figure with informational message
         fig = go.Figure()

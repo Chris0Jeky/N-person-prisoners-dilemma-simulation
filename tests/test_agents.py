@@ -12,6 +12,14 @@ from npdl.core.agents import (
 )
 
 
+class TestDailyT022PavlovDefectStart:
+    """Daily check: Pavlov honours a defecting initial move."""
+
+    def test_pavlov_defect_start(self):
+        agent = Agent(agent_id=2, strategy="pavlov", initial_move="defect")
+        assert agent.strategy.initial_move == "defect"
+
+
 class TestDailyT012RandomProbParam:
     """Daily check: RandomProb keeps its configured cooperation probability."""
 

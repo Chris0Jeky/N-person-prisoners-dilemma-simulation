@@ -198,6 +198,7 @@ def calculate_enhanced_interestingness_score(eval_result):
     
     # Helper function to safely get metric values
     def get_metric(key, default=0.0):
+        """Fetch a metric value, guarding against missing data."""
         value = metrics.get(key, default)
         return default if pd.isna(value) else value
     

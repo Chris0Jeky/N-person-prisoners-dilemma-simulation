@@ -433,6 +433,7 @@ def mutate(scenario: Dict, mutation_rate: float = 0.2) -> Dict:
     
     # Function to decide whether to mutate a parameter
     def should_mutate():
+        """Decide whether to mutate this offspring."""
         return random.random() < mutation_rate
     
     # 1. Mutate basic parameters

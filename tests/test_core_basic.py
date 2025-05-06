@@ -16,6 +16,14 @@ from npdl.core.utils import create_payoff_matrix, plot_payoff_functions
 from npdl.core.logging_utils import setup_logging
 
 
+class TestDailyT023SuspiciousFirstMove:
+    """Daily check: suspicious TFT defects with no history."""
+
+    def test_suspicious_first_move(self):
+        agent = Agent(agent_id=4, strategy="suspicious_tit_for_tat")
+        assert agent.choose_move([]) == "defect"
+
+
 class TestDailyT013PavlovInitial:
     """Daily check: Pavlov starts with its configured initial move."""
 

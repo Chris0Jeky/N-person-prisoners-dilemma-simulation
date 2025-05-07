@@ -11,6 +11,8 @@ from enum import Enum
 
 
 class Action(Enum):
+    """The two moves available to an agent."""
+
     COOPERATE = "C"
     DEFECT = "D"
 

@@ -18,6 +18,8 @@ class Action(Enum):
 
 
 class Strategy(Enum):
+    """Named strategies available in the simple game."""
+
     ALWAYS_COOPERATE = "Always Cooperate"
     ALWAYS_DEFECT = "Always Defect"
     TIT_FOR_TAT = "Tit-for-Tat"

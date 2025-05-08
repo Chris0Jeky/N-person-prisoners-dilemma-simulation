@@ -13,6 +13,17 @@ from npdl.core.environment import Environment
 from npdl.core.utils import create_payoff_matrix
 
 
+class TestDailyT024FiveCooperators:
+    """Daily check: five cooperators produce unanimous moves."""
+
+    def test_five_cooperators(self):
+        agents = [Agent(agent_id=i, strategy="always_cooperate") for i in range(5)]
+        env = Environment(agents, create_payoff_matrix(5), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert len(moves) == 5
+        assert set(moves.values()) == {"cooperate"}
+
+
 class TestDailyT014FourCooperatorRounds:
     """Daily check: four cooperators stay unanimous for two rounds."""
 

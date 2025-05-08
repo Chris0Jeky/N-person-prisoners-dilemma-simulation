@@ -18,6 +18,8 @@ from npdl.core.utils import linear_payoff_C, linear_payoff_D
 
 
 class Action(Enum):
+    """The two moves available to an agent."""
+
     COOPERATE = "C"
     DEFECT = "D"
 

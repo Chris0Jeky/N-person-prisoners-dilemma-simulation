@@ -27,6 +27,16 @@ from npdl.core.logging_utils import (
 from npdl.core.agents import Agent
 
 
+class TestDailyT025QuietLogFile:
+    """Daily check: file logging works without console output."""
+
+    def test_quiet_log_file(self, tmp_path):
+        log_file = str(tmp_path / "daily3.log")
+        logger = setup_logging(log_file=log_file, console=False)
+        assert isinstance(logger, logging.Logger)
+        assert os.path.exists(log_file)
+
+
 class TestDailyT015SecondLogFile:
     """Daily check: a second log file is created independently."""
 

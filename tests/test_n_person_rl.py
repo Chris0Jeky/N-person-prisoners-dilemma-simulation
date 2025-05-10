@@ -17,6 +17,22 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from npdl.core.agents import Agent, create_strategy
 
 
+class TestDailyT026EvenSplitFeatures:
+    """Daily check: an even pairwise split reads fifty percent."""
+
+    def test_even_split_features(self):
+        mixin = NPersonStateMixin()
+        agent = type('MockAgent', (), {})()
+        agent.memory = deque(maxlen=10)
+        context = {
+            'opponent_coop_proportion': 0.5,
+            'specific_opponent_moves': {1: 'cooperate', 2: 'cooperate', 3: 'defect', 4: 'defect'}
+        }
+        features = mixin._extract_group_features(agent, context)
+        assert features['cooperation_rate'] == 0.5
+        assert features['mode'] == 'pairwise'
+
+
 class TestDailyT016NPersonStateSeven:
     """Daily check: N-person state carries a larger group size."""
 

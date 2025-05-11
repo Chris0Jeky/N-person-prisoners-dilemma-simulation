@@ -21,6 +21,27 @@ from npdl.core.environment import Environment
 from npdl.core.utils import create_payoff_matrix, get_pairwise_payoffs
 
 
+class TestDailyT027PairwiseMixed:
+    """Daily check: a mixed group shows both moves in round one."""
+
+    def test_pairwise_mixed_first_round(self):
+        agents = [
+            Agent(agent_id=0, strategy="always_cooperate"),
+            Agent(agent_id=1, strategy="always_cooperate"),
+            Agent(agent_id=2, strategy="always_defect"),
+            Agent(agent_id=3, strategy="always_defect"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate", "defect"}
+
+
 class TestDailyT017PairwiseDuo:
     """Daily check: a cooperator-defector pair runs a valid round."""
 

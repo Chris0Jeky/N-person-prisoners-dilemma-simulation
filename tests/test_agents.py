@@ -194,6 +194,7 @@ class TestQLearningAgents:
         
         # Create a new simple strategy for testing
         class TestStrategy(Strategy):
+            """Stub strategy used to exercise the Agent interface."""
             def choose_move(self, agent, neighbors):
                 return "defect" if agent.q_values.get(agent.last_state_representation, {}).get("defect", 0) > \
                                    agent.q_values.get(agent.last_state_representation, {}).get("cooperate", 0) \

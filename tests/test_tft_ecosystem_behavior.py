@@ -13,6 +13,19 @@ import networkx as nx
 from npdl.core.utils import create_payoff_matrix
 
 
+class TestDailyT028TftWithCooperators:
+    """Daily check: TFT keeps cooperating among cooperators."""
+
+    def test_tft_with_cooperators(self):
+        agents = [Agent(agent_id=0, strategy="tit_for_tat")] + [
+            Agent(agent_id=i, strategy="always_cooperate") for i in range(1, 4)
+        ]
+        env = Environment(agents, create_payoff_matrix(4), network_type="fully_connected")
+        env.run_round()
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}
+
+
 class TestDailyT018TftRetaliates:
     """Daily check: TFT defects after facing only defectors."""
 

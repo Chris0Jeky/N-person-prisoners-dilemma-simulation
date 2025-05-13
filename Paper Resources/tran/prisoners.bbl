@@ -1,0 +1,25 @@
+\begin{thebibliography}{1}
+
+\bibitem{Axelrod}
+R.~Axelrod and W.~Hamilton, ``The evolution of cooperation,'' {\em Science},
+  vol.~211(4489), pp.~1390--1396, 1981.
+
+\bibitem{Huyck}
+C.~Huyck, ``Learning categories with spiking nets and spike timing dependent
+  plasticity,'' in {\em SGAI 2020}, pp.~139--144, 2020.
+
+\bibitem{Huyck-Samey}
+C.~Huyck and C.~Samey, ``Extended category learning with spiking nets and spike
+  timing dependent plasticity,'' in {\em SGAI 2021}, pp.~33--43, 2021.
+
+\bibitem{HuyckErekpaine}
+C.~Huyck and O.~Erekpaine, ``Competitive learning with spiking nets and spike
+  timing dependent plasticity,'' in {\em SGAI 2022}, pp.~153--166, Springer,
+  2022.
+
+\bibitem{Diehl}
+P.~Diehl and M.~Cook, ``Unsupervised learning of digit recognition using
+  spike-timing-dependent plasticity,'' {\em Frontiers in computational
+  neuroscience}, vol.~9, p.~99, 2015.
+
+\end{thebibliography}

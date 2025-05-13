@@ -1,0 +1,1050 @@
+@misc{Bache,
+   author = "K. Bache and M. Lichman",
+   year = "2013",
+   title = "{UCI} Machine Learning Repository",
+   url = "http://archive.ics.uci.edu/ml",
+   institution = "University of California, Irvine, School of Information 
+   and Computer Sciences" } 
+
+
+@ARTICLE{Bi,
+  author =     "G. Bi and M. Poo",
+  title =      "Synaptic modifications in cultured hippocampal
+                  neurons: dependence on spike timing, synaptic
+                  strength, and postsynaptic cell type",
+  journal =    "Journal of neuroscience",
+  year =       "1998",
+  volume =     "18",
+  number =     "24",
+  pages =      "10464--10472",
+}
+
+@article{brette,
+    title=      "Adaptive exponential integrate-and-fire model as an 
+                 effective description of neuronal activity",
+  author=       "R. Brette and W. Gerstner",
+  journal=      "J. Neurophysiol.",
+  volume=       "94",
+  pages=        "3637--3642",
+  year=         "2005",
+  publisher=    "American Physiological Society"
+}
+
+@Book{Churchland,
+   author =     "P. Churchland and T. Sejnowski",
+   title =      "The Computational Brain",
+   year =       "1999",
+   publisher  =  "MIT Press"
+}
+
+@article{Davison,
+  title={{PyNN}: towards a universal neural simulator {API} in Python},
+  author={A. Davison and P. Yger and J. Kremkow and L. Perrinet and E. Muller},
+  journal={BMC neuroscience},
+  volume={8},
+  number={S2},
+  pages={P2},
+  year={2007},
+  publisher={Springer}
+}
+
+@Article{Diehl,
+   author =     "P. Diehl and M. Cook",
+   title =      "Unsupervised learning of digit recognition using 
+                 spike-timing-dependent plasticity",
+   journal =    "Frontiers in computational neuroscience",
+   year =       "2015",
+   volume =     "9",
+   pages =      "99",
+}
+
+@ARTICLE{Eppler,
+  author =     "J. Eppler and M. Helias and E. Muller and M. Diesmann, M. and
+                M. Gewaltig",
+  title =      "PyNEST: a convenient interface to the NEST simulator",
+  journal =    "Frontiers in neuroinformatics",
+  year =       "2009",
+  volume =     "2",
+  pages =      "363"
+}
+
+
+
+@ARTICLE{Gewaltig,
+  author =     "M. Gewaltig and M. Diesmann",
+  title =      "{NEST (NEural Simulation Tool)}",
+  journal =    "Scholarpedia",
+  year =       "2007",
+  volume =     "2",
+  pages =      "1430",
+  number =     "4"
+}
+
+@Article{Granger,
+   author =     "R. Granger",
+   title =     "Engines of the brain: The computational instruction set of 
+                 human cognition",
+   journal =    "AI Mag.",
+   year =       "2006",
+   volume =     "27:2",
+   pages =      "15--32"
+}
+
+@inproceedings{Habenschuss,
+  title={Homeostatic plasticity in Bayesian spiking networks as Expectation
+         Maximization with posterior constraints plasticity},
+  author={S. Habenschuss and J. Bill, J and B. Nessler},
+  booktitle={Advances in neural information processing systems 25},
+  year={2012}
+}
+
+@misc{Nest35,
+  author = {N. Haug and S. Well and H. Mørk and et al. and H. Plesser},
+  year = {2024},
+  title = {Nest 3.5},
+  url = {https://zenodo.org/records/8069926},
+  urldate = {2024-09-05}
+} 
+
+@inproceedings{Huyck,
+  title={Learning categories with spiking nets and spike timing dependent 
+         plasticity},
+  author={C. Huyck},
+  booktitle={SGAI 2020},
+  pages={139--144},
+  year={2020}
+}
+
+@Inproceedings{HuyckErekpaine,
+   author =     "C. Huyck and O. Erekpaine",
+   title =      "Competitive Learning with Spiking Nets and Spike Timing
+                 Dependent Plasticity",
+   booktitle =  "SGAI 2022",
+   location =   "Cambridge, UK",
+   year =       "2022",
+   pages =      "153--166",
+   publisher  =  "Springer",
+}
+
+@Article{Huyck-Mitchell,
+   author =     "C. Huyck and I. Mitchell",
+   title =      "Post and Pre-Compensatory {Hebbian} Learning for 
+                 Categorisation",
+   journal =    "Computational Neurodynamics",
+   year =       "2014",
+   volume =     "8:4",
+   pages =      "299--311",
+}
+
+@inproceedings{Huyck-Samey,
+  title={Extended Category Learning with Spiking Nets and Spike Timing Dependent Plasticity},
+  author={C. Huyck and C. Samey},
+  booktitle={SGAI 2021},
+  pages={33--43},
+  year={2021}
+}
+
+@Article{Raizada,
+   author =     "R. Raizada and S. Grossberg",
+   title =      "Towards a theory of the laminar architecture of cerebral
+                 cortex: computational clues from the visual system",
+   journal =    "Cerebral Cortex",
+   year =       "2003",
+   volume =     "13(1)",
+   pages =      "100--113",
+}
+
+@Article{Rybka,
+   author =     "R. Rybka and Y. Davydov and D. Vlasov and A. Serenko ans
+   A. Sboev and V. Ilyin",
+   title =      "Comparison of Bagging and Sparcity Methods for Connectivity Reduction in Spiking Neural Networks with Memristive Plasticity",
+   journal =    "Big Data and Cognitive Computing",
+   year =       "2024",
+   volume =     "8:3",
+   pages =      "22",
+}
+
+
+
+
+
+#-----------
+@Article{Benda,
+   author =     "J. Benda",
+   title =      "Neural adaptation",
+   journal =    "Current Biology",
+   year =       "2021",
+   volume =     "31(3)",
+   pages =      "R110--R116.",
+}
+
+@Article{Devlin,
+  author =       {J. Devlin and M. Chang and K.Lee and K. Toutanova},
+  title =        {BERT: Pre-training of deep bidirectional transformers for
+                   language understanding},
+  journal =      {arXiv preprint},
+  year =         2018,
+  pages =        {arXiv:1810.04805.}
+}
+
+@book{Hebb,
+  title={The organization of behavior: A neuropsychological theory},
+  author={D. Hebb},
+  year={1949},
+  publisher={New York: Wiley}
+}
+
+@Article{Hsu,
+   author =     "D. Hsu and A. Tan and M. Hsu and J. Beggs",
+   title =      "A simple spontaneously active Hebbian learning model:
+                 homeostasis of activity and connectivity, and 
+                 consequences for learning and epileptogensis",
+   journal =    "Physical Review E",
+   year =       "2007",
+   volume =     "76",
+   pages =      "041909",
+}
+
+@Inproceedings{HuyckAAAI17,
+   author =     "C. Huyck",
+   title =      "The Neural Cognitive Architecture",
+   booktitle =  "AAAI Fall Symposium on A A Standard Model of the Mind",
+   location =   "Washington D.C.",
+   year =       "2017",
+}
+
+@Book{Kohonen,
+   author =     "T. Kohonen",
+   title =      "Self-Organizing Maps",
+   year =       "1997",
+   publisher  =  "Springer"
+}
+
+
+@article{AlphaGo,
+  author    = {D. Silver and J. Schrittwieser and  K. Simonyan and et al.
+and D. Hassabis},
+  title     = {Mastering the game of Go without human knowledge},
+  journal   = {Nature},
+  volume    = {550},
+  year      = {2017},
+  pages     = {354-59},
+}
+
+@article{Song,
+  author    = {S. Song and K. Miller and L. Abbott},
+  title     = { Competitive Hebbian learning through
+                  spike-timing-dependent synaptic plasticity},
+  journal   = {Nature neuroscience},
+  volume    = {3:9},
+  year      = {2000},
+  pages     = {919--926}
+}
+
+@article{Taherkhani,
+  author    = {A. Taherkhani and A. Belatreche and Y. Li and G. Cosma and
+               L. Maguire and T. McGinnity },
+  title     = {A review of learning in biologically plausible spiking neural
+               networks},
+  journal   = {Neural Networks},
+  volume    = {122},
+  year      = {2020},
+  pages     = {243--272}
+}
+
+
+
+
+@Article{Belavkin,
+   author =     "R. Belavkin and C. Huyck",
+   title =      "Conflict Resolution and Learning Probability Matching in
+                 a Neural Cell-Assembly Architecture",
+   journal =    "Cognitive Systems Research",
+   year =       "2010",
+   volume =     "12",
+   pages =      "93--101"
+}
+
+@inproceedings{Diehl-Cook,
+  title={Efficient implementation of STDP rules on SpiNNaker neuromorphic 
+         hardware},
+  author={P. Diehl and M. Cook},
+  booktitle={International Joint Conference on Neural Networks (IJCNN)},
+  pages={4288--4295},
+  year={2014}
+}
+
+
+@article{Furber, 
+author="S.  Furber and F. Galluppi and S. Temple and L. A. Plana", 
+journal="Proceedings of the IEEE", 
+title="The SpiNNaker Project", 
+year="2014", 
+volume="102", 
+number="5", 
+pages="652-665",
+doi="10.1109/JPROC.2014.2304638"} 
+}
+
+@ARTICLE{Goldberg,
+  author =     "Y. Goldberg  and  O. Levy",
+  title =      "Word2Vec Explained: deriving Mikolov et al.'s negative-sampling word-embedding method",
+  journal =    "arXiv",
+  volume =     "arXiv:1402.3722",
+  year =       "2014",
+}
+
+@ARTICLE{Hao,
+  author =     "Y. Hao and X. Huang and M. Dong and B. Xu",
+  title =      "A biologically plausible supervised learning method for spiking neural networks using the symmetric STDP rule",
+  year =       "2020",
+ journal =    "Neural Networks",
+  volume =     "121",
+  pages =      "387",
+  number =     "8"
+}
+
+@Article{Harnad,
+   author =     "S. Harnad",
+   title =      "The Symbol Grounding Problem",
+   journal =    "Physica D",
+   year =       "1990",
+   volume =     "42",
+   pages =      "335--346",
+}
+
+@misc{KaggleNewsGeneral,
+  author =     "Kaggle",
+  title =      "News Article Classifier with different models",
+  year =       "2020",
+  url = {https://www.kaggle.com/amananandrai/ag-news-classification-dataset?select=train.csv},
+   
+  urldate = {2021-06-07}}
+
+@misc{KaggleLSTMs,
+   author =     "Kaggle",
+   title =      "New Article classification using LSTMs",
+   year =       "2020",
+   url = {https://www.kaggle.com/atechnohazard/news-article-classification-using-lstms},
+   urldate = {2021-06-07}
+   
+}
+
+@ARTICLE{Kenter ,
+  author =     "T. Kenter and  A. Borisov and M. De Rijke",
+  title =      "Siamese cbow: Optimizing word embeddings for sentence 
+                representationst",
+  journal =    "arXiv",
+  volume =     "arXiv:1606.04640.",
+  year =       "2016"
+}
+
+@Article{Lisman,
+   author =     "J. Lisman",
+   title =      "The challenge of understanding the brain: where we stand in 
+                 2015",
+   journal =    "Neuron",
+   year =       "2015",
+   volume =     "86(4)",
+   pages =      "864--882",
+}
+
+@Article{Mcculloch,
+   author =     "W. McCulloch and W. Pitts",
+   title =      "A Logical Calculus of Ideas Immanent in Nervous Activity",
+   journal =    "Bulletin of Mathematical Biophysics",
+   year =       "1943",
+   volume =     "5",
+   pages =      "115--133",
+}
+
+@Article{Oja,
+   author =     "E. Oja",
+   title =      "A Simplified Neuron Model as a Principal Component Analyzer",
+   journal =    "Journal of Mathematical Biology",
+   year =       "1982",
+   volume =     "15",
+   pages =      "267--273",
+}
+
+@article{Rochester,
+  author    = {N. Rochester and J. Holland and L. Haibt and W. Dudag},
+  title     = {Tests on a Cell Assembly Theory of the Action of the
+Brain Using a Large Digital Computer},
+  journal   = {Transaction on Information Theory},
+  volume    = {IT-2},
+  year      = {1956},
+  pages     = {80--93}
+}
+
+@inproceedings{RybkaImage,
+   author =     "R. Rybka and Y. Davydov and A. Sboev and D. Vlasov and A. 
+                 Serenko",
+   title =      "Image and Audio Data Classification Using Bagging Ensembles 
+                 of Spiking Neural Networks with Memristive Plasticity",
+   booktitle =  "In International Conference on Innovative Techniques and
+                 Applications of Artificial Intelligence",
+   year =       "2023",
+   pages =      "741--749",
+   publisher  =  "Springer Nature"
+}
+
+@techreport{Thrun,
+author = {Sebastian Thrun and J. Bala and E. Bloedorn and I. Bratko and B. Cestnik and J. Cheng and K. De Jong and S. Dzeroski and R. Hamann and K. Kaufman and S. Keller and I. Kononenko and J. Kreuziger and R.S. Michalski and Tom Mitchell and P. Pachowicz and B. Roger and H. Vafaie and W. Van de Velde and W. Wenzel and J. Wnek and J. Zhang},
+title = {The MONK’s Problems: A Performance Comparison of Different Learning Algorithms},
+year = {1991},
+month = {January},
+institution = {Carnegie Mellon University},
+address = {Pittsburgh, PA},
+number = {CMU-CS-91-197},
+}
+
+
+@inproceedings{vigneron,
+  title={A critical survey of STDP in Spiking Neural Networks for Pattern
+         Recognition},
+  author={A. Vigneron and J. Martinet},
+  booktitle={N In 2020 International Joint Conference on on Neural Networks (IJCNN)},
+  pages={1--9},
+  year={2020},
+  organization={IEEE}
+}
+
+
+
+
+#-----------Error
+
+
+
+@article{Atari,
+  title     = {Human-level control through deep reinforcement learning},
+
+  author    = { V. Mnih and K. Kavukcuoglu and D.  Silver and A. Rusu
+                  and J. Veness and M.. Bellemare and A. Graves and
+                  M. Riedmiller and A. K. Fidjeland and G. Ostrovski
+                  and S. Petersen and C. Beattie and A. Sadik and
+                  I. Antonoglou and H. King and D. Kumaran and
+                  D. Wierstra and S. Legg and D. Hassabis },
+  journal   = {Nature},
+  volume    = {518},
+  year      = {2015},
+  pages     = {529-33},
+}
+
+@Article{Bienenstock-Cooper,
+   author =     "E. Bienenstock and L. Cooper and P. Munro",
+   title =      "Theory for the development of neuron selectivity:
+                 orientation specificity and binocular interaction
+                 in the visual cortex",
+   journal =    "Jouranl of Neuroscience",
+   year =       "1982",
+   volume =     "2:1",
+   pages =      "32--48",
+}
+
+@misc{Cortez,
+   author = "P. Cortez and A. Silva",
+   year = "2014",
+   title = "{UCI} Machine Learning Repository",
+   url = "https://archive.ics.uci.edu/ml/datasets/student+performance",
+   institution = "University of California, Irvine, School of Information 
+   and Computer Sciences" } 
+
+@Article{Fardet,
+  author =     " T. Fardet and D. Rajalekshmi and J. Mitchell and J. Eppler
+  and  S. Spreizer and J. Hahne and I. Kitayama and ... and  H. Plesser",
+   title =      "NEST 2.20.1",
+   journal =    "Computational and Systems Neuroscience",
+   year =       "2020"
+}
+
+@Article{Hinton,
+   author =     "G. Hinton and S. Osindero and Y. Teh",
+   title =      "A fast learning algorithm for deep belief nets",
+   journal =    "Neural Computation",
+   year =       "2006",
+   volume =     "18:7",
+   pages =      "1527--1554",
+}
+
+@Article{Hodgkin,
+   author =     "A. Hodgkin and A. Huxley",
+   title =      "A quantitative description of membrane current and its 
+                 application to conduction and excitation in nerve",
+   journal =    "Journal of Physiology",
+   year =       "1952",
+   volume =     "117",
+   pages =      "500--544",
+}
+
+@Article{Lillicrap,
+   author =     "T. Lillicrap and A. Santoro and L. Marris and C. Akerman and 
+                 G. Hinton",
+   title =      "Backpropagation and the brain",
+   journal =    "Nature Reviews Neuroscience",
+   year =       "2020",
+   volume =     "21:4",
+   pages =      "1--12",
+}
+
+@Book{Rumelhart,
+   author =     "D.  Rumelhart and J. McClelland",
+   title =      "Parallel Distributed Processing",
+   year =       "1986",
+   publisher  =  "MIT Press"
+}
+
+@article{Sejnowski,
+  author={T. Sejnowski and C. Koch and P. Churchland},
+  title={Computataional neuroscience},
+  journal={Science},
+  volume={241:4871},
+  pages={1299--1306},
+  year={1988}
+}
+
+
+@article{SunEtAl15,
+  author    = {Y. Sun and D. Liang and X. Wang and X. Tang},
+  title     = {DeepID3: Face Recognition with Very Deep Neural Networks},
+  journal   = {CoRR},
+  volume    = {abs/1502.00873},
+  year      = {2015},
+  url       = {http://arxiv.org/abs/1502.00873},
+  archivePrefix = {arXiv},
+  eprint    = {1502.00873},
+  timestamp = {Wed, 07 Jun 2017 14:40:15 +0200},
+  biburl    = {https://dblp.org/rec/bib/journals/corr/SunLWT15},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@Article{Turing,
+   author =     "A. Turing",
+   title =      "Computing Machinery \& Intelligence",
+   journal =    "Mind",
+   year =       "1950",
+   volume =     "59",
+   pages =      "433--460",
+}
+
+@article{Wade,
+  author    = { J. Wade and L. McDaid and J. Santos and H. Sayers}, 
+  title     = {SWAT: a spiking neural network training algorithm for classification problems},
+  journal   = {IEEE Transactions on Neural Networks},
+  volume    = {21:11},
+  year      = {2010},
+  pages     = {1817-1830},
+}
+
+@article{Watson,
+  author    = { D. Ferrucci and E. Brown and J. Chu-Carroll and J. Fan
+                  and D. Gondek and A. Kalyanpur and A. Lally and
+                  J. Murdock and E. Nyberg and J. Prager and N.
+                  Schlaefer and C. Welty},
+  title     = {Building Watson: An Overview of the DeepQA Project},
+  journal   = {AI Magazine},
+  volume    = {31},
+  number = {3},
+  year      = {2010},
+  pages     = {59-79},
+}
+
+
+
+
+%--------------------------------
+
+%Bichler, O., Querlioz, D., Thorpe, S. J., Bourgoin, J. P., & Gamrat, C. (2012). Extraction of temporally correlated features from dynamic vision sensors with spike-timing-dependent plasticity. Neural Networks, 32, 339-348.
+%Wu, Q. X., McGinnity, T. M., Maguire, L. P., Glackin, B., & Belatreche, A. (2006). Learning under weight constraints in networks of temporal encoding spiking neurons. Neurocomputing, 69(16-18), 1912-1922.
+%Barrett, L. F., & Satpute, A. B. (2013). Large-scale brain networks in affective and social neuroscience: towards an integrative functional architecture of the brain. Current opinion in neurobiology, 23(3), 361-372.
+%--------------------------------
+
+@article{amaral2000classes,
+  title={Classes of small-world networks},
+  author={Amaral, Lu{\i}s A Nunes and Scala, Antonio and Barthelemy, Marc and Stanley, H Eugene},
+  journal={Proceedings of the national academy of sciences},
+  volume={97},
+  number={21},
+  pages={11149--11152},
+  year={2000},
+  publisher={National Acad Sciences}
+}
+
+@inproceedings{arena2010insect,
+  title={An insect brain computational model inspired by Drosophila melanogaster: simulation results},
+  author={Arena, Paolo and Patan{\'e}, Luca and Termini, Pietro Savio},
+  booktitle={Neural Networks (IJCNN), The 2010 International Joint Conference on},
+  pages={1--8},
+  year={2010},
+  organization={IEEE}
+}
+
+@article{barch1999benefits,
+  title={The" benefits" of distractibility: mechanisms underlying increased Stroop effects in schizophrenia.},
+  author={Barch, Deanna M and Carter, Cameron S and Hachten, P Charles and Usher, Marius and Cohen, Jonathan D},
+  journal={Schizophrenia Bulletin},
+  volume={25},
+  number={4},
+  pages={749},
+  year={1999},
+  publisher={National Institute of Mental Health}
+}
+
+@inproceedings{benbassat2015examining,
+  title={Examining The Stroop Effect using A Develomental Spatial Neuroevolution System},
+  author={Benbassat, Amit and Henik, Avishai},
+  booktitle={Proceedings of the Companion Publication of the 2015 Annual Conference on Genetic and Evolutionary Computation},
+  pages={747--748},
+  year={2015},
+  organization={ACM}
+}
+
+@article{brette2007simulation,
+  title={Simulation of networks of spiking neurons: a review of tools and strategies},
+  author={Brette, Romain and Rudolph, Michelle and Carnevale, Ted and Hines, Michael and Beeman, David and Bower, James M and Diesmann, Markus and Morrison, Abigail and Goodman, Philip H and Harris, Frederick C and others},
+  journal={Journal of computational neuroscience},
+  volume={23},
+  number={3},
+  pages={349--398},
+  year={2007},
+  publisher={Springer}
+}
+
+@article{buzsaki2010neural,
+  title={Neural syntax: cell assemblies, synapsembles, and readers},
+  author={Buzs{\'a}ki, Gy{\"o}rgy},
+  journal={Neuron},
+  volume={68},
+  number={3},
+  pages={362--385},
+  year={2010},
+  publisher={Elsevier}
+}
+
+@article{cohen1990control,
+  title={On the control of automatic processes: a parallel distributed processing account of the Stroop effect.},
+  author={Cohen, Jonathan D and Dunbar, Kevin and McClelland, James L},
+  journal={Psychological review},
+  volume={97},
+  number={3},
+  pages={332},
+  year={1990},
+  publisher={American Psychological Association}
+}
+
+@article{davison2009pynn,
+  title={PyNN: a common interface for neuronal network simulators},
+  author={Davison, Andrew P and Br{\"u}derle, Daniel and Eppler, Jochen M and Kremkow, Jens and Muller, Eilif and Pecevski, Dejan and Perrinet, Laurent and Yger, Pierre},
+  journal={Frontiers in neuroinformatics},
+  volume={2},
+  pages={11},
+  year={2009},
+  publisher={Frontiers}
+}
+
+@article{dunbar1984horse,
+  title={A horse race of a different color: Stroop interference patterns with transformed words.},
+  author={Dunbar, Kevin and MacLeod, Colin M},
+  journal={Journal of Experimental Psychology: Human Perception and Performance},
+  volume={10},
+  number={5},
+  pages={622},
+  year={1984},
+  publisher={American Psychological Association}
+}
+
+
+@phdthesis{fennell2017does,
+  title={Does Response Modality Influence Conflict? Modelling Vocal and Manual Response Stroop Interference},
+  author={Fennell, Alex},
+  year={2017},
+  school={The Ohio State University}
+}
+
+@ARTICLE{SpiNNaker, 
+author={S. B. Furber and F. Galluppi and S. Temple and L. A. Plana}, 
+journal={Proceedings of the IEEE}, 
+title={The SpiNNaker Project}, 
+year={2014}, 
+volume={102}, 
+number={5}, 
+pages={652-665}, 
+keywords={multiprocessing systems;neural net architecture;parallel processing;real-time systems;SpiNNaker project;data packets;interconnect architecture;mammalian brain;parallel million-core computer;real-time event-driven programming model;spiking neural network architecture;Brain modeling;Computational modeling;Computer architecture;Multitasking;Neural networks;Neuroscience;Parallel programming;Program processors;Brain modeling;multicast algorithms;multiprocessor interconnection networks;neural network hardware;parallel programming}, 
+doi={10.1109/JPROC.2014.2304638}, 
+ISSN={0018-9219}, 
+month={May},}
+
+@article{gerstein2001neural,
+  title={Neural assemblies: technical issues, analysis, and modeling},
+  author={Gerstein, George L and Kirkland, Kyle L},
+  journal={Neural Networks},
+  volume={14},
+  number={6-7},
+  pages={589--598},
+  year={2001},
+  publisher={Elsevier}
+}
+
+@article{glaser1982time,
+  title={Time course analysis of the Stroop phenomenon.},
+  author={Glaser, Margrit O and Glaser, Wilhelm R},
+  journal={Journal of Experimental Psychology: Human Perception and Performance},
+  volume={8},
+  number={6},
+  pages={875},
+  year={1982},
+  publisher={American Psychological Association}
+}
+
+@article{glaser1984time,
+  title={The time course of picture-word interference.},
+  author={Glaser, Wilhelm R and D{\"u}ngelhoff, Franz-Josef},
+  journal={Journal of Experimental Psychology: Human Perception and Performance},
+  volume={10},
+  number={5},
+  pages={640},
+  year={1984},
+  publisher={American Psychological Association}
+}
+
+@article{gold2007neural,
+  title={The neural basis of decision making},
+  author={Gold, Joshua I and Shadlen, Michael N},
+  journal={Annual review of neuroscience},
+  volume={30},
+  year={2007}
+}
+
+@article{hepp1996stroop,
+  title={The Stroop effect in schizophrenic patients},
+  author={Hepp, HH and Maier, S and Hermle, L and Spitzer, M},
+  journal={Schizophrenia research},
+  volume={22},
+  number={3},
+  pages={187--195},
+  year={1996},
+  publisher={Elsevier}
+}
+
+@article{hilgetag2016brain,
+  title={Is the brain really a small-world network?},
+  author={Hilgetag, Claus C and Goulas, Alexandros},
+  journal={Brain Structure and Function},
+  volume={221},
+  number={4},
+  pages={2361--2366},
+  year={2016},
+  publisher={Springer}
+}
+
+@Article{Hodgkin-Huxley,
+   author =     "A. Hodgkin and A. Huxley",
+   title =      "A quantitative description of membrane current and its 
+                 application to conduction and excitation in nerve",
+   journal =    "Journal of Physiology",
+   year =       "1952",
+   volume =     "117",
+   pages =      "500--544",
+}
+
+@article{huyck2013review,
+  title={A review of cell assemblies},
+  author={Huyck, Christian R and Passmore, Peter J},
+  journal={Biological cybernetics},
+  volume={107},
+  number={3},
+  pages={263--288},
+  year={2013},
+  publisher={Springer}
+}
+
+@misc{IBMDebaterURL,
+    author    = "IBM",
+    title     = "Project Debater",
+    url       = "https://www.research.ibm.com/artificial-intelligence/project-debater/"
+}
+
+@Article{Izhikevich,
+   author =     "E. Izhikevich",
+   title =      "Which Model to Use for Cortical Spiking Neurons?",
+   journal =    "IEEE Transactions on Neural Networks",
+   year =       "2004",
+   volume =     "15:5",
+   pages =      "1063--1070.",
+}
+
+@article{kaplan2007modelling,
+  title={Modelling the Stroop effect: A connectionist approach},
+  author={Kaplan, G B{\"u}y{\"u}kaksoy and {\c{S}}eng{\"o}r, NS and G{\"u}rvit, Hakan and G{\"u}zeli{\c{s}}, C},
+  journal={Neurocomputing},
+  volume={70},
+  number={7-9},
+  pages={1414--1423},
+  year={2007},
+  publisher={Elsevier}
+}
+
+@article{kello2000task,
+  title={The task dependence of staged versus cascaded processing: An empirical and computational study of Stroop interference in speech perception.},
+  author={Kello, Christopher T and Plaut, David C and MacWhinney, Brian},
+  journal={Journal of Experimental Psychology: General},
+  volume={129},
+  number={3},
+  pages={340},
+  year={2000},
+  publisher={US: American Psychological Association}
+}
+
+@article{laeng2005reduced,
+  title={Reduced Stroop interference for opponent colors may be due to input factors: Evidence from individual differences and a neural network simulation.},
+  author={Laeng, Bruno and L{\aa}g, Torstein and Brennen, Tim},
+  journal={Journal of experimental psychology: human perception and performance},
+  volume={31},
+  number={3},
+  pages={438},
+  year={2005},
+  publisher={American Psychological Association}
+}
+
+@article{macleod1988training,
+  title={Training and Stroop-like interference: Evidence for a continuum of automaticity.},
+  author={MacLeod, Colin M and Dunbar, Kevin},
+  journal={Journal of Experimental Psychology: Learning, Memory, and Cognition},
+  volume={14},
+  number={1},
+  pages={126},
+  year={1988},
+  publisher={American Psychological Association}
+}
+
+@article{macleod1991half,
+  title={Half a century of research on the Stroop effect: an integrative review.},
+  author={MacLeod, Colin M},
+  journal={Psychological bulletin},
+  volume={109},
+  number={2},
+  pages={163},
+  year={1991},
+  publisher={American Psychological Association}
+}
+
+@article{macleod2014stroop,
+  title={The stroop effect},
+  author={MacLeod, Colin M},
+  journal={Encyclopedia of Color Science and Technology},
+  pages={1--6},
+  year={2014},
+  publisher={Springer}
+}
+
+@article{Marcus18,
+  author    = {Gary Marcus},
+  title     = {Deep Learning: {A} Critical Appraisal},
+  journal   = {CoRR},
+  volume    = {abs/1801.00631},
+  year      = {2018},
+  url       = {http://arxiv.org/abs/1801.00631},
+  archivePrefix = {arXiv},
+  eprint    = {1801.00631},
+  timestamp = {Thu, 01 Feb 2018 19:52:26 +0100},
+  biburl    = {https://dblp.org/rec/bib/journals/corr/abs-1801-00631},
+  bibsource = {dblp computer science bibliography, https://dblp.org}
+}
+
+@article{markram2012human,
+  title={The human brain project},
+  author={Markram, Henry},
+  journal={Scientific American},
+  volume={306},
+  number={6},
+  pages={50--55},
+  year={2012},
+  publisher={JSTOR}
+}
+
+@article{melara2003driven,
+  title={Driven by information: a tectonic theory of Stroop effects.},
+  author={Melara, Robert D and Algom, Daniel},
+  journal={Psychological review},
+  volume={110},
+  number={3},
+  pages={422},
+  year={2003},
+  publisher={American Psychological Association}
+}
+
+@article{muldoon2016small,
+  title={Small-world propensity and weighted brain networks},
+  author={Muldoon, Sarah Feldt and Bridgeford, Eric W and Bassett, Danielle S},
+  journal={Scientific reports},
+  volume={6},
+  pages={22057},
+  year={2016},
+  publisher={Nature Publishing Group}
+}
+
+@article{nabavi2014engineering,
+  title={Engineering a memory with LTD and LTP},
+  author={Nabavi, Sadegh and Fox, Rocky and Proulx, Christophe D and Lin, John Y and Tsien, Roger Y and Malinow, Roberto},
+  journal={Nature},
+  volume={511},
+  number={7509},
+  pages={348},
+  year={2014},
+  publisher={Nature Publishing Group}
+}
+
+@article{phaf1990slam,
+  title={SLAM: A connectionist model for attention in visual selection tasks},
+  author={Phaf, R Hans and Van der Heijden, AHC and Hudson, Patrick TW},
+  journal={Cognitive psychology},
+  volume={22},
+  number={3},
+  pages={273--341},
+  year={1990},
+  publisher={Elsevier}
+}
+
+@article{roelofs2003goal,
+  title={Goal-referenced selection of verbal action: modeling attentional control in the Stroop task.},
+  author={Roelofs, Ardi},
+  journal={Psychological review},
+  volume={110},
+  number={1},
+  pages={88},
+  year={2003},
+  publisher={American Psychological Association}
+}
+
+@article{rumelhart1982interactive,
+  title={An interactive activation model of context effects in letter perception: II. The contextual enhancement effect and some tests and extensions of the model.},
+  author={Rumelhart, David E and McClelland, James L},
+  journal={Psychological review},
+  volume={89},
+  number={1},
+  pages={60},
+  year={1982},
+  publisher={American Psychological Association}
+}
+
+@article{song2015fmri,
+  title={An fMRI study of the functional mechanisms of Stroop/reverse-Stroop effects},
+  author={Song, Yongning and Hakoda, Yuji},
+  journal={Behavioural brain research},
+  volume={290},
+  pages={187--196},
+  year={2015},
+  publisher={Elsevier}
+}
+
+@article{sporns2004small,
+  title={The small world of the cerebral cortex},
+  author={Sporns, Olaf and Zwi, Jonathan D},
+  journal={Neuroinformatics},
+  volume={2},
+  number={2},
+  pages={145--162},
+  year={2004},
+  publisher={Springer}
+}
+
+@article{stroop1935studies,
+  title={Studies of interference in serial verbal reactions.},
+  author={Stroop, J Ridley},
+  journal={Journal of experimental psychology},
+  volume={18},
+  number={6},
+  pages={643},
+  year={1935},
+  publisher={Psychological Review Company}
+}
+
+@article{stroop1938factors,
+  title={Factors affecting speed in serial verbal reactions.},
+  author={Stroop, J Ridley},
+  journal={Psychological monographs},
+  volume={50},
+  number={5},
+  pages={38},
+  year={1938},
+  publisher={Psychological Review Company}
+}
+
+
+@article{szigeti2014openworm,
+  title={OpenWorm: an open-science approach to modeling Caenorhabditis elegans},
+  author={Szigeti, Bal{\'a}zs and Gleeson, Padraig and Vella, Michael and Khayrulin, Sergey and Palyanov, Andrey and Hokanson, Jim and Currie, Michael and Cantarelli, Matteo and Idili, Giovanni and Larson, Stephen},
+  journal={Frontiers in computational neuroscience},
+  volume={8},
+  pages={137},
+  year={2014},
+  publisher={Frontiers}
+}
+
+@article{tikidji2017software,
+  title={software for Brain network simulations: a comparative study},
+  author={Tikidji-Hamburyan, Ruben A and Narayana, Vikram and Bozkus, Zeki and El-Ghazawi, Tarek A},
+  journal={Frontiers in neuroinformatics},
+  volume={11},
+  pages={46},
+  year={2017},
+  publisher={Frontiers}
+}
+
+@inproceedings{van2006accumulator,
+  title={An accumulator model account of semantic interference in memory retrieval},
+  author={Van Maanen, Leendert and Van Rijn, Hedderik},
+  booktitle={Proceedings of the Seventh International Conference on Cognitive Modeling},
+  pages={322--327},
+  year={2006}
+}
+
+@article{van2018performance,
+  title={Performance comparison of the digital neuromorphic hardware SpiNNaker and the neural network simulation software NEST for a full-scale cortical microcircuit model},
+  author={van Albada, Sacha J and Rowley, Andrew G and Senk, Johanna and Hopkins, Michael and Schmidt, Maximilian and Stokes, Alan B and Lester, David R and Diesmann, Markus and Furber, Steve B},
+  journal={Frontiers in neouroscience},
+  volume={12},
+  year={2018},
+  publisher={Frontiers Media SA}
+}
+
+@article{watts1998collective,
+  title={Collective dynamics of ‘small-world’networks},
+  author={Watts, Duncan J and Strogatz, Steven H},
+  journal={nature},
+  volume={393},
+  number={6684},
+  pages={440},
+  year={1998},
+  publisher={Nature Publishing Group}
+}
+
+@article{yamamoto2016reverse,
+  title={A reverse Stroop task with mouse tracking},
+  author={Yamamoto, Naohide and Incera, Sara and McLennan, Conor T},
+  journal={Frontiers in psychology},
+  volume={7},
+  pages={670},
+  year={2016},
+  publisher={Frontiers}
+}
+
+@incollection{yusoff2011modelling,
+  title={Modelling the Stroop effect: Dynamics in inhibition of automatic stimuli processing},
+  author={Yusoff, Nooraini and Gr{\"u}ning, Andr{\'e} and Browne, Antony},
+  booktitle={Advances in cognitive neurodynamics (II)},
+  pages={641--645},
+  year={2011},
+  publisher={Springer}
+}
+
+@article{zenke2015diverse,
+  title={Diverse synaptic plasticity mechanisms orchestrated to form and retrieve memories in spiking neural networks},
+  author={Zenke, Friedemann and Agnes, Everton J and Gerstner, Wulfram},
+  journal={Nature communications},
+  volume={6},
+  pages={6922},
+  year={2015},
+  publisher={Nature Publishing Group}
+}

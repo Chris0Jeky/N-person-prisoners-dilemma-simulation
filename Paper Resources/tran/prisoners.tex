@@ -1,0 +1,97 @@
+% LLNCS macro package for Springer Computer Science procedings;
+% Version 2.20 of 2017/10/04
+%\documentclass[runningheads]{llncs}
+\documentclass[]{llncs}
+
+%\usepackage{natbib} %chris for citep
+%\usepackage{amsmath}  %chris for multiline stdp equation
+%\usepackage{caption} %chris for table captions
+
+%\pagestyle{plain} %undone remove these to get rid of page numbers
+%\pagenumbering{arabic}
+
+\begin{document}
+
+\title{Prisoners}
+%\titlerunning{Categorising with Spiking Nets}
+\author{Chris Tcacik\inst{1}}
+%\authorrunning{Huyck }
+\institute{Middlesex University, London NW4 4BT UK\\
+\email{c.huyck@mdx.ac.uk}\\
+\url{https://cwa.mdx.ac.uk/chris/chrisroot.html}}
+
+\maketitle              
+
+%\today %put in to get draft date
+
+\begin{abstract}
+undone we need to write something
+
+
+% doesn't latex at home
+\keywords{The Tragic Valley: The Prisoners Dilemmas and Cooperation}
+\end{abstract}
+
+\section{Introduction}
+
+The basic priosners dilemma is a well known phenomena.  \cite {Axelrod}
+ran his well known experiments on the two person prisoner's dilemma... undone
+
+The N-Person prisoners' dilemma involves $n$ people participating in the
+dilemma.
+
+The take home points are:
+1. When prisoners only have one choice per turn, most algorithms descend into
+the tragic valley.  When each prisoner has n-1 choices, it is relatively easy
+to stay on top of the reciprocity hill.
+
+2.  Contex is crucial in overcoming the tragic valley. History, value
+(distance in lit).
+
+3.  Adaptive MARL can rise out of the tragic valley.
+
+4.  Optimistic tit for tat (and tit for tat) vs. standard reinforcement
+learning descend into the valley.  
+
+The human brain is the basis of intelligent behaviour, including
+with biology (discussed in section \ref {secDiscussion}), but the overall
+{secDiehl}.  The simulations use spiking neurons with dynamic
+thresholds for some of the neurons.  A three population topology is
+
+relatively easily using these mechanisms.  Biological plausibility
+and future work are discussed in section \ref {secDiscussion}.
+
+\section{Literature Review}
+\label {secLitRev}
+
+The work reported in this paper is the fourth in a series of papers
+using biologically motivated simulated neurons and learning rules.
+The first two papers in the series \cite {Huyck,Huyck-Samey} were
+based on simulations that used a feed forward topology with input
+neurons connected to category neurons.  The third was based on
+competitive topology with three populations \cite
+{HuyckErekpaine}. This topology and mechanism are derived from work by
+Diehl and Cook \cite {Diehl}.  This is the basic topology, shown in
+described below.
+
+
+\section{Discussion}
+\label {secDiscussion}
+
+\section{Conclusion}
+
+So, it is clear that these adaptive spiking neuron systems learning
+with STDP can be used for categorisation.  This is not novel, but the
+basics of this mechanism have been described above and it has been
+extended to a novel digit recognition task. As a machine learning
+
+neurobiology to see how it is done in brains and in petri dishes.  It
+is quasi-neurobiologically plausible learning.
+
+
+%\bibliographystyle{spbasic} % basic style, author-year citations
+%\bibliographystyle{splncs04} %Bibliography names
+\bibliographystyle{ieeetr}
+\bibliography{prisoners}
+\end{document}
+

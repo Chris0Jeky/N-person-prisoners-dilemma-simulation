@@ -1,0 +1,115 @@
+% LLNCS macro package for Springer Computer Science procedings;
+% Version 2.20 of 2017/10/04
+%\documentclass[runningheads]{llncs}
+\documentclass[]{llncs}
+
+%\usepackage{natbib} %chris for citep
+%\usepackage{amsmath}  %chris for multiline stdp equation
+%\usepackage{caption} %chris for table captions
+
+%\pagestyle{plain} %undone remove these to get rid of page numbers
+%\pagenumbering{arabic}
+
+\begin{document}
+
+\title{Prisoners}
+%\titlerunning{Categorising with Spiking Nets}
+\author{Chris Tcacik\inst{1}}
+%\authorrunning{Huyck }
+\institute{Middlesex University, London NW4 4BT UK\\
+\email{c.huyck@mdx.ac.uk}\\
+\url{https://cwa.mdx.ac.uk/chris/chrisroot.html}}
+
+\maketitle              
+
+%\today %put in to get draft date
+
+\begin{abstract}
+This paper explores machine learning using adaptive spiking neurons
+mathematical exploration and the portion of the parameter space where
+categorisation works is small.  This is just a proof of concept that
+categorisation can be done by these spiking competitive nets with
+STDP.  The parameter space could be further explored to find better
+results, or how to apply this to new categorisation tasks.  This work
+provides support for further exploration of neurobiologically
+plausible category learning.
+
+% doesn't latex at home
+\keywords{Spiking Neurons \and Spike Timing Dependent Plasticity \and  
+Categorisation \and MNIST}
+\end{abstract}
+
+\section{Introduction}
+
+
+The human brain is the basis of intelligent behaviour, including
+categorisation.  Many machine learning algorithms are used to categorise,
+but none accurately duplicates the behaviour of the brain.  Despite
+using neuron-like units, most neural network learning algorithms do not
+attempt to duplicate the brain's behaviour.  Part of the problem is that
+the academic community does not completely understand how the brain works
+in general, or how it learns to categorise in particular.
+
+None the less, things are known about the brain that are widely ignored
+in machine learning.  Neurons spike, as opposed to have continuous
+valued outputs; the structure of the network of neurons is not layered,
+but instead is recurrently connected; and learning is done by a Hebbian
+learning rule instead of gradient descent to reduce an error gradient.
+
+This paper presents a categorisation system using spiking neurons,
+with recurrent connections, and learning using spike timing dependent
+plasticity  \cite{Bi}, a Hebbian learning rule.  There are inconsistencies
+with biology (discussed in section \ref {secDiscussion}), but the overall
+system is much closer to a biological system than typical machine learning
+algorithms.
+
+
+In the brain, most if not all learning is Hebbian \cite {Hebb}.  If
+the pre-synaptic neuron tends to cause the post-synaptic neuron to
+spike, the weight of the excitatory synapses will tend to increase.
+There are many variations of this rule, but a great deal of biological
+evidence supports STDP \cite{Bi}.  Bi and Poo \cite{Bi} have perhaps the first
+published example that shows the performance of the changing
+efficiency of biological synapses, and Song et al. \cite{Song} have developed an
+idealised curve that fits the biological data.
+
+The simulations described below are a modification of the work of
+Diehl and Cook \cite {Diehl}, described more fully in section \ref
+{secDiehl}.  The simulations use spiking neurons with dynamic
+thresholds for some of the neurons.  A three population topology is
+
+relatively easily using these mechanisms.  Biological plausibility
+and future work are discussed in section \ref {secDiscussion}.
+
+\section{Literature Review}
+\label {secLitRev}
+
+The work reported in this paper is the fourth in a series of papers
+using biologically motivated simulated neurons and learning rules.
+The first two papers in the series \cite {Huyck,Huyck-Samey} were
+based on simulations that used a feed forward topology with input
+neurons connected to category neurons.  The third was based on
+competitive topology with three populations \cite
+{HuyckErekpaine}. This topology and mechanism are derived from work by
+Diehl and Cook \cite {Diehl}.  This is the basic topology, shown in
+figure \ref {figCompetitiveTopology}, used by the simulations
+described below.
+
+
+\section{Conclusion}
+
+So, it is clear that these adaptive spiking neuron systems learning
+with STDP can be used for categorisation.  This is not novel, but the
+basics of this mechanism have been described above and it has been
+extended to a novel digit recognition task. As a machine learning
+
+neurobiology to see how it is done in brains and in petri dishes.  It
+is quasi-neurobiologically plausible learning.
+
+
+%\bibliographystyle{spbasic} % basic style, author-year citations
+%\bibliographystyle{splncs04} %Bibliography names
+\bibliographystyle{ieeetr}
+\bibliography{prisoners}
+\end{document}
+

@@ -25,6 +25,19 @@ from npdl.core.true_pairwise_adapter import (
 )
 
 
+class TestDailyT029MixedMemory:
+    """Daily check: mixed interactions counted once each."""
+
+    def test_mixed_memory_counts(self):
+        memory = OpponentSpecificMemory("mix", memory_length=5)
+        memory.add_interaction("cooperate", "cooperate", 3)
+        memory.add_interaction("cooperate", "defect", 0)
+        memory.add_interaction("defect", "cooperate", 5)
+        assert memory.total_interactions == 3
+        assert memory.cooperation_count == 2
+        assert memory.defection_count == 1
+
+
 class TestDailyT019CooperationRateDefault:
     """Daily check: unknown opponents start at fifty percent cooperation."""
 

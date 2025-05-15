@@ -59,6 +59,7 @@ class TestNeighborhoodVsPairwise:
         
         # Create identical agent configurations
         def create_agents():
+            """Build the agent list for a fixed test scenario."""
             return [
                 Agent(agent_id=0, strategy="always_cooperate"),
                 Agent(agent_id=1, strategy="always_defect"),

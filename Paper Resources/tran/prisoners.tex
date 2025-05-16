@@ -90,7 +90,7 @@ To address these, we implemented:
 We developed \texttt{npdl}, a Python-based ABM platform. Key components include agent architecture and distinct interaction models.
 
 \subsection{Agent Architecture}
-Agents use learning strategies. Standard Q-learning agents perceive states based on their local neighbourhood. The `proportion_discretized` state representation, quantifying neighbour cooperation, is a critical contextual input. Advanced agents use Hysteretic-Q or Wolf-PHC.
+Agents use learning strategies. Standard Q-learning agents perceive states based on their local neighbourhood. The \texttt{proportion_discretized} state representation, quantifying neighbour cooperation, is a critical contextual input. Advanced agents use Hysteretic-Q or Wolf-PHC.
 
 \subsection{Interaction Models: Neighbourhood vs. Pairwise}
 \texttt{npdl} simulates two N-IPD interaction structures:
@@ -106,7 +106,7 @@ The pairwise model required careful agent memory handling for reactive strategie
 \section{Methodology and Experiments}
 \label{sec:methodology}
 Simulations typically involved $N=30$ agents, 500 rounds, Small-World networks, and standard PD payoffs ($R=3, S=0, T=5, P=1$).
-We evaluated: Baseline Q-learning (minimal `basic` and contextual `proportion_discretized` states), optimized Hysteretic-Q and Wolf-PHC (often against TFT agents), global cooperation bonuses, and both Neighbourhood and Pairwise interaction models. Performance was measured by average cooperation rate.
+We evaluated: \item Baseline Q-learning agents with minimal (\texttt{basic}) and contextual (\texttt{proportion_discretized}) state representations., optimized Hysteretic-Q and Wolf-PHC (often against TFT agents), global cooperation bonuses, and both Neighbourhood and Pairwise interaction models. Performance was measured by average cooperation rate.
 
 \section{Results}
 \label{sec:results}
@@ -115,7 +115,7 @@ This section presents key experimental results.
 \subsection{The Tragedy Valley and the Importance of Context}
 Standard Q-learning agents with a `basic` state (no neighbour information) rapidly converged to near-zero cooperation (the "Tragedy Valley").
 %%% IMAGE GOES HERE: Baseline Performance: Q-learning with `basic` state. (Figure \ref{fig:baseline_basic_state})
-Providing `proportion_discretized` state (fraction of cooperating neighbours) improved performance to unstable ~50\% cooperation. Context is critical but not solely sufficient.
+Providing \texttt{proportion_discretized} state (fraction of cooperating neighbours) improved performance to unstable ~50\% cooperation. Context is critical but not solely sufficient.
 %%% IMAGE GOES HERE: Impact of Minimal Context: Q-learning with `proportion_discretized` state. (Figure \ref{fig:baseline_prop_discr_state})
 
 \subsection{Adaptive MARL Achieves High Cooperation in Neighbourhood N-IPD}

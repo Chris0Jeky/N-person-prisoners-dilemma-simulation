@@ -126,6 +126,7 @@ class TestNeighborhoodVsPairwise:
         """Test Q-learning convergence in both modes with appropriate parameters."""
         # Create environments with only Q-learning vs always_defect
         def create_scenario(interaction_mode):
+            """Build a 10-agent Q-learning vs always-defect scenario."""
             agents = [
                 Agent(agent_id=i, strategy="q_learning", 
                       epsilon=0.4,  # Even higher exploration to find defect action

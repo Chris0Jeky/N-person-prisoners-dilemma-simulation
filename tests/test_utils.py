@@ -14,6 +14,14 @@ from npdl.core.utils import (
 )
 
 
+class TestDailyT030ExponentialBounds:
+    """Daily check: exponential payoffs hit their top endpoints."""
+
+    def test_exponential_top_bounds(self):
+        assert exponential_payoff_C(9, 10, R=3, S=0, exponent=2) == pytest.approx(3.0)
+        assert exponential_payoff_D(9, 10, T=5, P=1, exponent=2) == pytest.approx(5.0)
+
+
 class TestDailyT020ThresholdBounds:
     """Daily check: threshold payoffs hit their top endpoints."""
 

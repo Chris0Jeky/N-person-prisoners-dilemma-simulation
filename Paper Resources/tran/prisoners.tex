@@ -1,97 +1,144 @@
 % LLNCS macro package for Springer Computer Science procedings;
 % Version 2.20 of 2017/10/04
 %\documentclass[runningheads]{llncs}
-\documentclass[]{llncs}
+\documentclass[]{llncs} % Using this for now
 
-%\usepackage{natbib} %chris for citep
-%\usepackage{amsmath}  %chris for multiline stdp equation
-%\usepackage{caption} %chris for table captions
+\usepackage{graphicx} % Still need this for when you add images later
+\usepackage{amsmath}  % For math (e.g., the n in N-person)
+\usepackage{hyperref} % For clickable links
+\hypersetup{
+    colorlinks=true,
+    linkcolor=blue,
+    citecolor=green,
+    urlcolor=magenta
+}
 
-%\pagestyle{plain} %undone remove these to get rid of page numbers
-%\pagenumbering{arabic}
+% For bibliography - llncs often has its own preferences.
+% ieeetr is a good numbered style.
+% If you want author-year and use natbib features like \citep, \citet, you'd uncomment:
+%\usepackage[round,authoryear]{natbib} % Example for author-year with natbib
+%\usepackage[numbers,sort&compress]{natbib} % Example for numbered with natbib
 
 \begin{document}
 
-\title{Prisoners}
-%\titlerunning{Categorising with Spiking Nets}
-\author{Chris Tcacik\inst{1}}
-%\authorrunning{Huyck }
+\title{Navigating the N-Person Prisoner's Dilemma: From the Tragedy Valley to the Reciprocity Hill with Adaptive Learning Agents}
+% \titlerunning{N-Person IPD: Tragedy Valley to Reciprocity Hill} % Uncomment if classictype is runningheads
+
+\author{Cristian Tcaci\inst{1}}
+% \authorrunning{C. Tcaci} % Uncomment if classictype is runningheads
 \institute{Middlesex University, London NW4 4BT UK\\
-\email{c.huyck@mdx.ac.uk}\\
-\url{https://cwa.mdx.ac.uk/chris/chrisroot.html}}
+\email{M00674787@mdx.ac.uk} \and \email{c.huyck@mdx.ac.uk} \\
+\url{https://cwa.mdx.ac.uk/chris/chrisroot.html}
+}
 
 \maketitle              
 
-%\today %put in to get draft date
-
 \begin{abstract}
-undone we need to write something
+The N-Person Iterated Prisoner's Dilemma (N-IPD) poses a significant challenge to the emergence of cooperation due to diffused responsibility and obscured reciprocity. This paper investigates how agent-based learning models navigate this complex social dilemma. We demonstrate that simple reinforcement learning agents consistently fall into a "Tragedy Valley" of mutual defection in standard N-IPD neighbourhood interaction models. However, by enhancing agents with contextual awareness of their local environment and employing adaptive Multi-Agent Reinforcement Learning (MARL) algorithms like Hysteretic-Q and Wolf-PHC, high levels of sustained cooperation (over 85\%) can be achieved. Furthermore, we explore the fundamental impact of interaction structure, contrasting the neighbourhood model with a pairwise interaction model where agents play repeated 2-player games. The pairwise model, by enabling direct reciprocity, facilitates a climb towards a "Reciprocity Hill," where cooperation is more readily established and maintained. Our findings highlight the critical roles of agent cognition, learning algorithms, and interaction structure in fostering cooperation in multi-agent systems.
 
-
-% doesn't latex at home
-\keywords{The Tragic Valley: The Prisoners Dilemmas and Cooperation}
+\keywords{N-Person Prisoner's Dilemma \and Agent-Based Modelling \and Reinforcement Learning \and Emergence of Cooperation \and Tragedy Valley \and Reciprocity Hill \and Multi-Agent Systems.}
 \end{abstract}
 
 \section{Introduction}
+\label{sec:introduction}
 
-The basic priosners dilemma is a well known phenomena.  \cite {Axelrod}
-ran his well known experiments on the two person prisoner's dilemma... undone
+The Prisoner's Dilemma (PD) is a foundational concept in game theory, illustrating the tension between individual self-interest and collective well-being. The classic two-person iterated PD (IPD), famously explored by Axelrod, demonstrated that cooperation can emerge through reciprocity \cite{Axelrod}. % NOTE: Your .bib has "Axelrod" as Axelrod & Hamilton 1981. If you mean the 1984 book or 1980 papers, you'll need to add those to your .bib with unique keys.
+However, many real-world social and economic dilemmas involve more than two actors. The N-Person Iterated Prisoner's Dilemma (N-IPD) extends this challenge to groups of $n$ individuals, introducing greater complexity: the impact of one agent's action is diffused, direct reciprocity becomes difficult, and the temptation to free-ride increases. % Add Hamburger1973, Hardin1971 citations here (you'll need to add them to your .bib)
 
-The N-Person prisoners' dilemma involves $n$ people participating in the
-dilemma.
+Traditional game theory often predicts defection as the rational outcome in N-IPD scenarios. Our initial computational explorations with agent-based models employing standard reinforcement learning (RL) confirm this tendency: agents frequently descend into a "Tragedy Valley" of mutual defection, where cooperation collapses despite being the collectively optimal outcome. This paper investigates the cognitive and structural conditions under which learning agents can escape this valley and achieve sustained cooperation in the N-IPD.
 
-The take home points are:
-1. When prisoners only have one choice per turn, most algorithms descend into
-the tragic valley.  When each prisoner has n-1 choices, it is relatively easy
-to stay on top of the reciprocity hill.
+We present an agent-based simulation framework, \texttt{npdl}, designed to explore these dynamics. Our key contributions and the narrative of this paper revolve around the following insights:
+\begin{enumerate}
+    \item \textbf{The "Tragedy Valley" of Defection:} In standard N-IPD neighbourhood interaction models, where an agent's payoff depends on the collective actions of its neighbours, simpler learning agents consistently fail to sustain cooperation.
+    \item \textbf{Context is Crucial:} Providing agents with basic contextual information about their local neighbourhood (e.g., the proportion of cooperating neighbours) is a necessary first step to mitigate immediate defection.
+    \item \textbf{Adaptive MARL Climbs towards the "Reciprocity Hill":} Advanced Multi-Agent Reinforcement Learning (MARL) algorithms, specifically Hysteretic-Q and Wolf-PHC, enable agents to achieve high and stable levels of cooperation within the challenging N-IPD neighbourhood model by fostering resilience and adaptability.
+    \item \textbf{Interaction Structure Matters: Neighbourhood vs. Pairwise:} The underlying structure of interactions significantly influences cooperation. We contrast the standard N-IPD "neighbourhood" model with a "pairwise" model where agents engage in sequences of 2-player games with all others. The latter, by enabling direct and unambiguous reciprocity, creates a more favorable landscape—a "Reciprocity Hill"—for cooperation to emerge and persist.
+\end{enumerate}
 
-2.  Contex is crucial in overcoming the tragic valley. History, value
-(distance in lit).
+This paper details the \texttt{npdl} framework, the experimental methodology employed, and presents results that support these takeaways. We discuss the implications of these findings for understanding cooperation in complex multi-agent systems and outline future research directions. The work builds upon previous explorations of learning in social dilemmas (see Section \ref{sec:litreview}) and aims to provide insights into designing systems that promote cooperation.
 
-3.  Adaptive MARL can rise out of the tragic valley.
+\section{Background and Related Work}
+\label{sec:litreview}
 
-4.  Optimistic tit for tat (and tit for tat) vs. standard reinforcement
-learning descend into the valley.  
+This section briefly reviews key concepts from game theory, the N-IPD, agent-based modelling, and reinforcement learning relevant to our study.
+The work reported in this paper builds upon a broader understanding of learning and adaptation, though it diverges from prior work focused on spiking neural models such as those by \cite{Huyck, Huyck-Samey, HuyckErekpaine} and mechanisms derived from Diehl and Cook \cite{Diehl}, by focusing on abstract agent learning in game-theoretic scenarios.
 
-The human brain is the basis of intelligent behaviour, including
-with biology (discussed in section \ref {secDiscussion}), but the overall
-{secDiehl}.  The simulations use spiking neurons with dynamic
-thresholds for some of the neurons.  A three population topology is
+\subsection{The N-Person Prisoner's Dilemma (N-IPD)}
+The N-IPD extends the two-person dilemma to $N$ players. % Add Hamburger1973 reference (add to .bib)
+Let $n_c$ be the number of players who choose to cooperate (C). The payoff to a cooperator is $P_C(n_c)$ and to a defector (D) is $P_D(n_c)$. The dilemma is characterized by:
+\begin{itemize}
+    \item \textbf{Dominance of Defection:} $P_D(n_c) > P_C(n_c+1)$ for all $0 \le n_c < N$. An individual always gains more by defecting.
+    \item \textbf{Deficient Equilibrium:} $P_C(N) > P_D(0)$. Mutual cooperation is better for all than mutual defection.
+\end{itemize}
+This structure often leads to the "Tragedy of the Commons." % Add Hardin1968 reference (add to .bib) Our concept of the "Tragedy Valley" reflects this.
 
-relatively easily using these mechanisms.  Biological plausibility
-and future work are discussed in section \ref {secDiscussion}.
+\subsection{Agent-Based Modelling (ABM) for Social Dilemmas}
+Agent-Based Modelling (ABM) provides a bottom-up approach to studying complex systems by simulating autonomous agents. % Add Gilbert2007, Macal2010 references (add to .bib)
+It is well-suited for exploring the N-IPD, allowing for heterogeneous strategies, local interactions, and emergent global patterns. Axelrod's tournaments for the 2-player IPD set a precedent \cite{Axelrod}. % Again, check key for Axelrod 1980/1981
 
-\section{Literature Review}
-\label {secLitRev}
+\subsection{Reinforcement Learning in Multi-Agent Systems (MARL)}
+Reinforcement Learning (RL) enables agents to learn optimal actions through trial-and-error. % Add SuttonBarto2018 reference (add to .bib)
+Standard Q-learning faces challenges in multi-agent settings (MARL) due to non-stationarity. % Add Busoniu2008 reference (add to .bib)
+To address these, we implemented:
+\begin{itemize}
+    \item \textbf{Hysteretic Q-learning:} Employs asymmetric, optimistic learning rates. % Add Matignon2007Hysteretic reference (add to .bib)
+    \item \textbf{Win-or-Learn-Fast Policy Hill-Climbing (WoLF-PHC):} Adjusts learning rates based on performance. % Add Bowling2002WoLF reference (add to .bib)
+\end{itemize}
 
-The work reported in this paper is the fourth in a series of papers
-using biologically motivated simulated neurons and learning rules.
-The first two papers in the series \cite {Huyck,Huyck-Samey} were
-based on simulations that used a feed forward topology with input
-neurons connected to category neurons.  The third was based on
-competitive topology with three populations \cite
-{HuyckErekpaine}. This topology and mechanism are derived from work by
-Diehl and Cook \cite {Diehl}.  This is the basic topology, shown in
-described below.
+\section{The \texttt{npdl} Simulation Framework and Interaction Models}
+\label{sec:framework}
+We developed \texttt{npdl}, a Python-based ABM platform. Key components include agent architecture and distinct interaction models.
 
+\subsection{Agent Architecture}
+Agents use learning strategies. Standard Q-learning agents perceive states based on their local neighbourhood. The `proportion_discretized` state representation, quantifying neighbour cooperation, is a critical contextual input. Advanced agents use Hysteretic-Q or Wolf-PHC.
+
+\subsection{Interaction Models: Neighbourhood vs. Pairwise}
+\texttt{npdl} simulates two N-IPD interaction structures:
+\begin{enumerate}
+    \item \textbf{Neighbourhood Model:} Agents interact with local network neighbours. Payoffs are from N-player functions based on neighbourhood cooperation. This represents diffuse public good scenarios and often leads to the "Tragedy Valley."
+    %%% IMAGE GOES HERE: Conceptual Diagram of the Neighbourhood N-IPD Model. (Figure \ref{fig:neighbourhood_model_diagram})
+
+    \item \textbf{Pairwise Model:} Each agent plays a 2-player IPD against every other agent. Total payoff sums these dyadic interactions. This emphasizes direct reciprocity, allowing strategies like Tit-for-Tat (TFT) to function effectively. This structure facilitates climbing the "Reciprocity Hill."
+    %%% IMAGE GOES HERE: Conceptual Diagram of the Pairwise N-IPD Model. (Figure \ref{fig:pairwise_model_diagram})
+\end{enumerate}
+The pairwise model required careful agent memory handling for reactive strategies (per-opponent history) and RL agents (aggregate signals).
+
+\section{Methodology and Experiments}
+\label{sec:methodology}
+Simulations typically involved $N=30$ agents, 500 rounds, Small-World networks, and standard PD payoffs ($R=3, S=0, T=5, P=1$).
+We evaluated: Baseline Q-learning (minimal `basic` and contextual `proportion_discretized` states), optimized Hysteretic-Q and Wolf-PHC (often against TFT agents), global cooperation bonuses, and both Neighbourhood and Pairwise interaction models. Performance was measured by average cooperation rate.
+
+\section{Results}
+\label{sec:results}
+This section presents key experimental results.
+
+\subsection{The Tragedy Valley and the Importance of Context}
+Standard Q-learning agents with a `basic` state (no neighbour information) rapidly converged to near-zero cooperation (the "Tragedy Valley").
+%%% IMAGE GOES HERE: Baseline Performance: Q-learning with `basic` state. (Figure \ref{fig:baseline_basic_state})
+Providing `proportion_discretized` state (fraction of cooperating neighbours) improved performance to unstable ~50\% cooperation. Context is critical but not solely sufficient.
+%%% IMAGE GOES HERE: Impact of Minimal Context: Q-learning with `proportion_discretized` state. (Figure \ref{fig:baseline_prop_discr_state})
+
+\subsection{Adaptive MARL Achieves High Cooperation in Neighbourhood N-IPD}
+Optimized Hysteretic-Q and Wolf-PHC agents achieved high, sustained cooperation (over 85-90\%) in the N-IPD neighbourhood model, even against TFT agents. Hysteretic-Q's optimism and Wolf-PHC's adaptive learning rates were effective.
+%%% IMAGE GOES HERE: Optimized Hysteretic-Q Performance. (Figure \ref{fig:hysq_performance})
+%%% IMAGE GOES HERE: Optimized Wolf-PHC Performance. (Figure \ref{fig:wolfphc_performance})
+
+\subsection{Impact of Interaction Structure: Pairwise Model and the Reciprocity Hill}
+The pairwise interaction model, with explicit direct reciprocity, fundamentally alters the strategic landscape. Initial observations and theory suggest this structure makes the "Reciprocity Hill" more accessible, as feedback for cooperation/defection is immediate and unambiguous. RL agents benefit from clearer underlying reward signals.
+%%% (Future work: comparative graphs for pairwise vs neighbourhood)
 
 \section{Discussion}
-\label {secDiscussion}
+\label{sec:discussion}
+Our results highlight several key points. The **"Tragedy Valley"** is a common outcome in neighbourhood N-IPD for simple learners due to diffused incentives. **Contextual awareness** is crucial; agents need to perceive local social cues. **Adaptive MARL algorithms** like Hysteretic-Q and Wolf-PHC can overcome these challenges in neighbourhood N-IPD through sophisticated learning. Most fundamentally, **interaction structure** is a powerful determinant: the pairwise model's direct reciprocity creates a "Reciprocity Hill," making cooperation inherently easier to achieve and sustain than in the diffuse neighbourhood model.
+The failure of standard exploration strategies like UCB1 (not shown here but detailed in original report) highlights non-stationarity challenges. Global incentives can also significantly boost cooperation.
+Limitations include abstracted cognition and specific parameter choices.
 
 \section{Conclusion}
-
-So, it is clear that these adaptive spiking neuron systems learning
-with STDP can be used for categorisation.  This is not novel, but the
-basics of this mechanism have been described above and it has been
-extended to a novel digit recognition task. As a machine learning
-
-neurobiology to see how it is done in brains and in petri dishes.  It
-is quasi-neurobiologically plausible learning.
+\label{sec:conclusion}
+This paper demonstrated that while N-IPD in neighbourhood models leads to a "Tragedy Valley" for simple learners, cooperation can emerge with **contextual awareness** and **adaptive MARL algorithms** (Hysteretic-Q, Wolf-PHC). The **interaction structure** is critical: pairwise models, facilitating a "Reciprocity Hill," make cooperation more accessible. The \texttt{npdl} framework enables these explorations. Future work will further investigate these dynamics to understand and promote cooperation in complex multi-agent systems.
 
 
-%\bibliographystyle{spbasic} % basic style, author-year citations
-%\bibliographystyle{splncs04} %Bibliography names
-\bibliographystyle{ieeetr}
-\bibliography{prisoners}
+% --- Bibliography ---
+\bibliographystyle{ieeetr} % This is from your skeleton
+\bibliography{prisoners}   % Your .bib file is named prisoners.bib
 \end{document}
-

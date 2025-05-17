@@ -482,3 +482,12 @@ class TestStrategyComparison:
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
+
+
+class TestDailyT031WolfPhcDefaults:
+    """Daily check: Wolf-PHC exposes its configured learning rate."""
+
+    def test_wolf_phc_learning_rate(self):
+        agent = Agent(agent_id=2, strategy="wolf_phc", learning_rate=0.3)
+        assert agent.strategy_type == "wolf_phc"
+        assert agent.strategy.learning_rate == 0.3

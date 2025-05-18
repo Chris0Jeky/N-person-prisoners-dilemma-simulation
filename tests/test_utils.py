@@ -122,6 +122,7 @@ class TestPairwisePayoffs:
         ("defect",    "defect",    {"R": 10, "S": -1, "T": 12, "P": 0}, 0, 0),
     ])
     def test_get_pairwise_payoffs(self, move1, move2, params, expected_p1, expected_p2):
+        """Payoffs follow the R/S/T/P table for each move pair."""
         # Check if function exists before testing
         try:
             from npdl.core.utils import get_pairwise_payoffs

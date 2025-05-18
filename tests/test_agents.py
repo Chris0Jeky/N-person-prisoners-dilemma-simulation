@@ -267,3 +267,10 @@ class TestQLearningAgents:
             expected_q_value = 0.0 + 0.5 * (5 + 0.9 * 1.0)
         
         assert agent.q_values[state]["cooperate"] == pytest.approx(expected_q_value)
+
+
+class TestDailyT032TftFactory:
+    """Daily check: the strategy factory builds TitForTat agents."""
+
+    def test_tft_factory(self):
+        assert isinstance(create_strategy("tit_for_tat"), TitForTatStrategy)

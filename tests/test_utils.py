@@ -133,6 +133,7 @@ class TestPairwisePayoffs:
         assert p2 == expected_p2
 
     def test_get_pairwise_payoffs_invalid_move(self):
+         """Invalid moves raise ValueError."""
          try:
             from npdl.core.utils import get_pairwise_payoffs
          except ImportError:

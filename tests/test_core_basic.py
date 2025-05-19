@@ -180,3 +180,11 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+class TestDailyT033TftFirstMove:
+    """Daily check: plain TFT cooperates with no history."""
+
+    def test_tft_first_move(self):
+        agent = Agent(agent_id=6, strategy="tit_for_tat")
+        assert agent.choose_move([]) == "cooperate"

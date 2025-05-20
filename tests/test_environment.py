@@ -378,3 +378,14 @@ class TestExportFunctionality:
         assert export_data["network_params"] == {}
         assert isinstance(export_data["metrics"], dict)
         assert export_data["metrics"]["num_nodes"] == 4
+
+
+class TestDailyT034ThreeDefectors:
+    """Daily check: three defectors produce an all-defect round."""
+
+    def test_three_defectors(self):
+        agents = [Agent(agent_id=i, strategy="always_defect") for i in range(3)]
+        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert len(moves) == 3
+        assert set(moves.values()) == {"defect"}

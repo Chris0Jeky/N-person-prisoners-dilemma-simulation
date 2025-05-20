@@ -34,6 +34,7 @@ from npdl.visualization.network_viz import (
 # --- Fixtures (keep existing ones) ---
 @pytest.fixture
 def sample_rounds_df():
+    """Small rounds DataFrame shared by visualization tests."""
     # ... (keep existing fixture) ...
     return pd.DataFrame({
         'round': [0, 0, 0, 0, 1, 1, 1, 1, 2, 2, 2, 2],

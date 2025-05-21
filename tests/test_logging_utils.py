@@ -456,3 +456,14 @@ class TestGenerateAsciiChart:
 
 if __name__ == '__main__':
     pytest.main([__file__, '-v'])
+
+
+class TestDailyT035FileHandlerPresent:
+    """Daily check: file logging attaches a FileHandler."""
+
+    def test_file_handler_present(self, tmp_path):
+        log_file = str(tmp_path / "daily5.log")
+        logger = setup_logging(log_file=log_file, console=False)
+        assert isinstance(logger, logging.Logger)
+        assert os.path.exists(log_file)
+        assert any(isinstance(h, logging.FileHandler) for h in logger.handlers)

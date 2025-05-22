@@ -52,6 +52,7 @@ def sample_rounds_df():
 
 @pytest.fixture
 def sample_agents_df():
+     """Small agents DataFrame shared by visualization tests."""
     # ... (keep existing fixture) ...
      return pd.DataFrame({
         'scenario_name': ['test'] * 4,

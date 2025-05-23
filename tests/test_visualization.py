@@ -123,6 +123,7 @@ class TestDataProcessing:
     """Test data processing functions."""
 
     def test_get_payoffs_by_strategy_valid(self, sample_rounds_df):
+        """Valid rounds data yields payoffs grouped by strategy."""
         # ... (Keep existing test - seems okay) ...
         payoffs = get_payoffs_by_strategy(sample_rounds_df)
         assert not payoffs.empty

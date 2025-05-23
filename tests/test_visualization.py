@@ -71,6 +71,7 @@ def sample_agents_df():
 
 @pytest.fixture
 def sample_network():
+    """Small four-node graph shared by visualization tests."""
     # ... (keep existing fixture) ...
     G = nx.Graph()
     G.add_nodes_from([0, 1, 2, 3])

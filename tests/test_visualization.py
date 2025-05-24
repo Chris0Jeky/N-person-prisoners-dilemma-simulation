@@ -146,6 +146,7 @@ class TestDataProcessing:
         assert get_payoffs_by_strategy(missing_col_df).empty # Should return empty with warning
 
     def test_get_strategy_scores_valid(self, sample_agents_df):
+         """Valid agents data yields mean scores by strategy."""
          # ... (Keep existing test - seems okay) ...
          scores = get_strategy_scores(sample_agents_df)
          assert not scores.empty

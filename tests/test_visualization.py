@@ -167,6 +167,7 @@ class TestDataProcessing:
         assert get_strategy_scores(missing_col_df).empty
 
     def test_get_strategy_colors(self):
+        """Strategy colors map names to hex codes."""
         # ... (Keep existing test - seems okay) ...
         colors = get_strategy_colors()
         assert "always_cooperate" in colors

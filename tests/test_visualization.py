@@ -174,6 +174,7 @@ class TestDataProcessing:
         assert colors['always_cooperate'].startswith("#")
 
     def test_prepare_network_data_valid(self, sample_agents_df, sample_rounds_df):
+        """Valid inputs yield network data for the round."""
         # ... (Keep existing test - seems okay) ...
         round_data = sample_rounds_df[sample_rounds_df["round"] == 1]
         network_data = prepare_network_data(sample_agents_df, round_data, round_num=1)

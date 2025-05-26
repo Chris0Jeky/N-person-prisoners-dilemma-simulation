@@ -248,6 +248,7 @@ class TestDataLoading:
              load_scenario_results("EmptyScenario", str(mock_results_dir))
 
     def test_get_cooperation_rates_valid(self, sample_rounds_df):
+         """Valid rounds data yields per-round cooperation rates."""
          # ... (Keep existing test - seems okay) ...
          coop_rates = get_cooperation_rates(sample_rounds_df)
          assert coop_rates[coop_rates["round"] == 2]["cooperation_rate"].iloc[0] == pytest.approx(0.75)

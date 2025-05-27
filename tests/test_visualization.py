@@ -299,6 +299,7 @@ class TestNetworkVisualization:
     """Test network visualization functions."""
 
     def test_generate_network_positions(self, sample_network):
+        """Spring layout positions cover every network node."""
         # ... (Keep existing test - seems okay) ...
         positions = generate_network_positions(sample_network, layout_type="spring")
         assert len(positions) == sample_network.number_of_nodes()

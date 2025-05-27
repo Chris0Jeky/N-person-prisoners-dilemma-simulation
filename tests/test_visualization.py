@@ -254,6 +254,7 @@ class TestDataLoading:
          assert coop_rates[coop_rates["round"] == 2]["cooperation_rate"].iloc[0] == pytest.approx(0.75)
 
     def test_get_strategy_cooperation_rates_valid(self, sample_rounds_df):
+         """Valid rounds data yields per-strategy cooperation rates."""
          # ... (Keep existing test - seems okay) ...
          coop_rates = get_strategy_cooperation_rates(sample_rounds_df)
          r0_tft = coop_rates[(coop_rates["round"] == 0) & (coop_rates["strategy"] == "tit_for_tat")]

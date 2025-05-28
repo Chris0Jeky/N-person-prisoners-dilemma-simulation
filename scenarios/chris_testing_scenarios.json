@@ -74,6 +74,46 @@
     "logging_interval": 20
   },
   {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo015",
+    "num_agents": 30, "num_rounds": 500, "network_type": "fully_connected", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "q_learning": 20, "tit_for_tat":  10},
+
+    "logging_interval": 20,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.1,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.1, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo016",
+    "num_agents": 30, "num_rounds": 500, "network_type": "fully_connected", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "q_learning": 10, "tit_for_tat":  20},
+
+    "logging_interval": 20,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.1,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.1, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo017",
+    "num_agents": 30, "num_rounds": 500, "network_type": "fully_connected", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "q_learning": 10, "tit_for_tat":  10, "always_defect": 10},
+
+    "logging_interval": 20,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.1,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.1, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo018",
+    "num_agents": 30, "num_rounds": 500, "network_type": "fully_connected", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "hysteretic_q": 10, "tit_for_tat":  10, "always_defect": 10},
+
+    "logging_interval": 20,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.1,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.1, "discount_factor": 0.9
+  },
+  {
     "scenario_name": "10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected",
     "num_agents": 30, "num_rounds": 1000, "network_type": "fully_connected", "network_params": {},
     "agent_strategies": { "hysteretic_q": 10, "tit_for_tat": 10, "always_defect": 10 },

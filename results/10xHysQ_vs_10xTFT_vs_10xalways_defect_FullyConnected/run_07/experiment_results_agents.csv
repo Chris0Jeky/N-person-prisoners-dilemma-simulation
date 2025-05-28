@@ -1,0 +1,31 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,0,hysteretic_q,1453.3448275862127,"{'avg_cooperate': 5.232416057540442, 'avg_defect': 2.868798093133925}","{'initial': {'cooperate': 0.09310344827586209, 'defect': 0.0}, (0.8,): {'cooperate': 0.8829328997080952, 'defect': 0.0}, (0.6,): {'cooperate': 14.586074698412801, 'defect': 10.465425189270192}, (0.4,): {'cooperate': 5.36755318376501, 'defect': 1.009767183265507}}"
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,1,hysteretic_q,1579.758620689659,"{'avg_cooperate': 4.217974997071668, 'avg_defect': 4.23504578079255}","{'initial': {'cooperate': 0.09310344827586209, 'defect': 0.0}, (0.8,): {'cooperate': 0.9463199933985066, 'defect': 0.0}, (0.6,): {'cooperate': 14.608105094856434, 'defect': 6.2627680600556195}, (0.4,): {'cooperate': 1.2243714517558688, 'defect': 10.67741506311458}}"
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,2,hysteretic_q,1451.8620689655231,"{'avg_cooperate': 5.216276048322863, 'avg_defect': 2.5558714386896955}","{'initial': {'cooperate': 0.09310344827586209, 'defect': 0.0}, (0.8,): {'cooperate': 0.8829328997080952, 'defect': 0.0}, (0.6,): {'cooperate': 14.571666426270365, 'defect': 9.012083850512068}, (0.4,): {'cooperate': 5.317401419037129, 'defect': 1.2114019042467135}}"
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,3,hysteretic_q,1440.9655172413857,"{'avg_cooperate': 5.235759048308177, 'avg_defect': 2.1183671479602864}","{'initial': {'cooperate': 0.09310344827586209, 'defect': 0.0}, (0.8,): {'cooperate': 0.8829328997080952, 'defect': 0.0}, (0.6,): {'cooperate': 14.58048837321622, 'defect': 7.994599293307447}, (0.4,): {'cooperate': 5.386511472032532, 'defect': 0.47886929853369903}}"
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,4,hysteretic_q,1442.8620689655233,"{'avg_cooperate': 5.223623322283226, 'avg_defect': 2.3415449508408024}","{'initial': {'cooperate': 0.09310344827586209, 'defect': 0.0}, (0.8,): {'cooperate': 0.8041693932259489, 'defect': 0.19605516956328561}, (0.6,): {'cooperate': 14.586739893798914, 'defect': 8.559543417878745}, (0.4,): {'cooperate': 5.410480553832178, 'defect': 0.6105812159211793}}"
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,5,hysteretic_q,1466.5517241379375,"{'avg_cooperate': 5.246175919867561, 'avg_defect': 3.1694303373931976}","{'initial': {'cooperate': 0.09310344827586209, 'defect': 0.0}, (0.8,): {'cooperate': 0.9613025886578305, 'defect': 0.0}, (0.6,): {'cooperate': 14.550569768677805, 'defect': 12.030199878677205}, (0.4,): {'cooperate': 5.379727873858745, 'defect': 0.6475214708955852}}"
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,6,hysteretic_q,1458.4482758620748,"{'avg_cooperate': 5.214905186911862, 'avg_defect': 2.8815209033077513}","{'initial': {'cooperate': 0.09310344827586209, 'defect': 0.0}, (0.8,): {'cooperate': 0.8829328997080952, 'defect': 0.0}, (0.6,): {'cooperate': 14.564570158992282, 'defect': 10.669412398364122}, (0.4,): {'cooperate': 5.3190142406712075, 'defect': 0.8566712148668845}}"
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,7,hysteretic_q,1437.6551724137994,"{'avg_cooperate': 5.232301261191141, 'avg_defect': 1.9896714147649517}","{'initial': {'cooperate': 0.09310344827586209, 'defect': 0.0}, (0.8,): {'cooperate': 0.8829328997080952, 'defect': 0.0}, (0.6,): {'cooperate': 14.584990121327378, 'defect': 7.143272052000803}, (0.4,): {'cooperate': 5.3681785754532285, 'defect': 0.8154136070590035}}"
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,8,hysteretic_q,1452.5172413793157,"{'avg_cooperate': 5.230978830365731, 'avg_defect': 2.770769484824587}","{'initial': {'cooperate': 0.0, 'defect': 0.1810344827586207}, (0.8,): {'cooperate': 0.8829328997080952, 'defect': 0.0}, (0.6,): {'cooperate': 14.578332874215317, 'defect': 10.376520224463654}, (0.4,): {'cooperate': 5.462649547539514, 'defect': 0.5255232320760739}}"
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,9,hysteretic_q,1434.793103448282,"{'avg_cooperate': 5.247370517572431, 'avg_defect': 2.0017450710064693}","{'initial': {'cooperate': 0.09310344827586209, 'defect': 0.0}, (0.8,): {'cooperate': 0.8829328997080952, 'defect': 0.0}, (0.6,): {'cooperate': 14.58724388932425, 'defect': 7.5992307600414915}, (0.4,): {'cooperate': 5.426201832981517, 'defect': 0.407749523984385}}"
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,10,tit_for_tat,2230.275862068962,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,11,tit_for_tat,2188.0689655172378,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,12,tit_for_tat,2238.4827586206843,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,13,tit_for_tat,2146.4137931034466,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,14,tit_for_tat,2201.9655172413763,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,15,tit_for_tat,2211.620689655167,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,16,tit_for_tat,2208.8965517241345,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,17,tit_for_tat,2227.4827586206875,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,18,tit_for_tat,2202.4482758620643,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,19,tit_for_tat,2237.2413793103433,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,20,always_defect,3017.37931034483,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,21,always_defect,3017.37931034483,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,22,always_defect,3017.37931034483,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,23,always_defect,3017.37931034483,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,24,always_defect,3017.37931034483,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,25,always_defect,3017.37931034483,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,26,always_defect,3017.37931034483,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,27,always_defect,3017.37931034483,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,28,always_defect,3017.37931034483,,
+10xHysQ_vs_10xTFT_vs_10xalways_defect_FullyConnected,7,29,always_defect,3017.37931034483,,

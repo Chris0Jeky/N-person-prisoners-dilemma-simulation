@@ -1,0 +1,4 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+ChrisTesting3AgentsTrialsNo014,0,0,hysteretic_q,496.0,"{'avg_cooperate': 3.8630108487087065, 'avg_defect': 5.049162315662139}","{'initial': {'cooperate': 0.15000000000000002, 'defect': 0.0}, (0.6,): {'cooperate': 1.2246143428562999, 'defect': 3.1272483126222093}, (0.2,): {'cooperate': 10.214418203269819, 'defect': 12.020238634364208}}"
+ChrisTesting3AgentsTrialsNo014,0,1,tit_for_tat,622.0,,
+ChrisTesting3AgentsTrialsNo014,0,2,always_defect,768.0,,

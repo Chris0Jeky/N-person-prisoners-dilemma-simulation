@@ -1,0 +1,98 @@
+[
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo007",
+    "num_agents": 3, "num_rounds": 500, "network_type": "fully_connected", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "q_learning": 2, "tit_for_tat":  1},
+    "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10,
+    "logging_interval": 20,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.1,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo008",
+    "num_agents": 3,
+    "num_rounds": 500,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "agent_strategies": {
+      "q_learning": 2, "tit_for_tat":  1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.3,
+    "logging_interval": 20
+  },
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo009",
+    "num_agents": 3, "num_rounds": 500, "network_type": "fully_connected", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "q_learning": 1, "tit_for_tat":  2},
+    "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10,
+    "logging_interval": 20,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.1,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo010",
+    "num_agents": 3,
+    "num_rounds": 500,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "agent_strategies": {
+      "q_learning": 1, "tit_for_tat":  2
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.3,
+    "logging_interval": 20
+  },
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo011",
+    "num_agents": 3, "num_rounds": 500, "network_type": "fully_connected", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "q_learning": 1, "tit_for_tat":  1, "always_defect": 1},
+    "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10,
+    "logging_interval": 20,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.1,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo012",
+    "num_agents": 3,
+    "num_rounds": 500,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "agent_strategies": {
+      "q_learning": 1, "tit_for_tat":  1, "always_defect": 1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.3,
+    "logging_interval": 20
+  },
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo013",
+    "num_agents": 3, "num_rounds": 500, "network_type": "fully_connected", "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": { "hysteretic_q": 1, "tit_for_tat":  1, "always_defect": 1},
+    "state_type": "proportion_discretized", "q_init_type": "zero", "memory_length": 10,
+    "logging_interval": 20,
+    "rewiring_interval": 20,
+    "rewiring_prob": 0.1,
+    "learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9
+  },
+  {
+    "scenario_name": "ChrisTesting3AgentsTrialsNo014",
+    "num_agents": 3,
+    "num_rounds": 500,
+    "network_type": "fully_connected",
+    "network_params": {},
+    "agent_strategies": {
+      "hysteretic_q": 1, "tit_for_tat":  1, "always_defect": 1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.3,
+    "logging_interval": 20
+  }
+]

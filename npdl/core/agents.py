@@ -275,36 +275,20 @@ class QLearningStrategy(Strategy):
 
     def _get_current_state(self, agent: "Agent") -> Hashable:
         """Get the current state representation for Q-learning.
-
-        Constructs a state representation based on the agent's memory of past
-        interactions, particularly focusing on neighbor cooperation patterns.
-        The specific representation depends on the state_type parameter.
-
-        Args:
-            agent: The agent making the decision
-
-        Returns:
-            A hashable state representation (string, tuple, or other hashable type)
-            that captures relevant information from the agent's memory and neighbors
+        Handles both neighborhood and pairwise (aggregate) interaction context.
         """
-
         if not agent.memory:
-            return "initial"  # Special state for the first move
+            return "initial"
+
+        last_round_info = agent.memory[-1]
+        interaction_context = last_round_info.get('neighbor_moves', {}) # Use 'neighbor_moves' as key
 
         if self.state_type == "basic":
-            return "standard"  # Default state for backward compatibility
+            return 'standard'
 
-        last_round_info = agent.memory[
-            -1
-        ]  # Memory stores results of the round *leading* to this state
-        neighbor_moves = last_round_info["neighbor_moves"]
-
-        # Handle pairwise interaction mode with 'opponent_coop_proportion' in neighbor_moves
-        if (
-            isinstance(neighbor_moves, dict)
-            and "opponent_coop_proportion" in neighbor_moves
-        ):
-            coop_proportion = neighbor_moves["opponent_coop_proportion"]
+        # Check for pairwise mode aggregate information first
+        if isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
+            coop_proportion = interaction_context['opponent_coop_proportion']
 
             if self.state_type == "proportion":
                 # Use the exact proportion as state

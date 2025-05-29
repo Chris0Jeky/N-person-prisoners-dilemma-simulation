@@ -167,90 +167,64 @@ class SuspiciousTitForTatStrategy(Strategy):
 
 class TitForTwoTatsStrategy(Strategy):
     def choose_move(self, agent, neighbors):
-        # Cooperate for the first two rounds or if insufficient memory
         if len(agent.memory) < 2:
             return "cooperate"
 
         last_round = agent.memory[-1]
         prev_round = agent.memory[-2]
 
-        # Handle pairwise interaction format with specific opponent moves
-        if (
-                isinstance(last_round["neighbor_moves"], dict)
-                and "specific_opponent_moves" in last_round["neighbor_moves"]
-                and isinstance(prev_round["neighbor_moves"], dict)
-                and "specific_opponent_moves" in prev_round["neighbor_moves"]
-        ):
-            # In pairwise mode, check specific opponent history
-            last_specific = last_round["neighbor_moves"]["specific_opponent_moves"]
-            prev_specific = prev_round["neighbor_moves"]["specific_opponent_moves"]
+        last_interaction_context = last_round.get('neighbor_moves', {})
+        prev_interaction_context = prev_round.get('neighbor_moves', {})
 
-            # For each opponent, check if they defected in both of the last two rounds
-            for opponent_id in last_specific:
-                if opponent_id in prev_specific:
-                    # This opponent was present in both rounds
-                    if (last_specific[opponent_id] == "defect" and
-                            prev_specific[opponent_id] == "defect"):
-                        # This opponent defected twice in a row - defect
-                        return "defect"
+        # CASE 1: Pairwise mode with specific opponent moves
+        if isinstance(last_interaction_context, dict) and 'specific_opponent_moves' in last_interaction_context and \
+                isinstance(prev_interaction_context, dict) and 'specific_opponent_moves' in prev_interaction_context:
 
-            # No opponent defected twice in a row
-            return "cooperate"
+            last_specific = last_interaction_context['specific_opponent_moves']
+            prev_specific = prev_interaction_context['specific_opponent_moves']
 
-        # Fallback to proportion-based decision (for backward compatibility)
-        elif (
-                isinstance(last_round["neighbor_moves"], dict)
-                and "opponent_coop_proportion" in last_round["neighbor_moves"]
-                and isinstance(prev_round["neighbor_moves"], dict)
-                and "opponent_coop_proportion" in prev_round["neighbor_moves"]
-        ):
-            last_coop_prop = last_round["neighbor_moves"]["opponent_coop_proportion"]
-            prev_coop_prop = prev_round["neighbor_moves"]["opponent_coop_proportion"]
+            if last_specific and prev_specific:  # Ensure there are opponent records
+                # Check common opponents or all opponents from last round if list changes
+                # For simplicity, check if ANY opponent defected twice.
+                # A more complex TF2T would track each opponent's last two moves individually.
+                # This current logic for TF2T in pairwise will defect if any single opponent
+                # has defected against it in both of the previous two rounds.
+                for opp_id in last_specific:
+                    if opp_id in prev_specific:
+                        if last_specific[opp_id] == "defect" and prev_specific[opp_id] == "defect":
+                            return "defect"
+                return "cooperate"  # No such opponent found
+            return "cooperate"  # Not enough specific history
 
-            # For this strategy, defect only if cooperation was low (< 0.5) for two rounds in a row
+        # CASE 2: Pairwise mode fallback or general aggregate
+        elif isinstance(last_interaction_context, dict) and 'opponent_coop_proportion' in last_interaction_context and \
+                isinstance(prev_interaction_context, dict) and 'opponent_coop_proportion' in prev_interaction_context:
+
+            last_coop_prop = last_interaction_context['opponent_coop_proportion']
+            prev_coop_prop = prev_interaction_context['opponent_coop_proportion']
+            # Defect if aggregate cooperation was low (<0.5 implies majority defected) in both previous rounds
             if last_coop_prop < 0.5 and prev_coop_prop < 0.5:
                 return "defect"
-            else:
+            return "cooperate"
+
+        # CASE 3: Standard neighborhood mode
+        elif isinstance(last_interaction_context, dict) and last_interaction_context and \
+                isinstance(prev_interaction_context, dict) and prev_interaction_context:
+
+            # Original logic: Pick a random common neighbor's two past moves
+            common_neighbors = list(set(last_interaction_context.keys()) & set(prev_interaction_context.keys()))
+            if not common_neighbors:
                 return "cooperate"
 
-        # Standard neighborhood-based logic
-        # Need a consistent way to get "an" opponent's move
-        # Using the same random neighbor logic as TitForTat for simplicity
-        last_neighbor_moves = last_round["neighbor_moves"]
-        prev_neighbor_moves = prev_round["neighbor_moves"]
-
-        # Handle cases where neighbors might not exist in both rounds
-        if not last_neighbor_moves or not prev_neighbor_moves:
-            return "cooperate"  # Default to cooperate if neighbors info are missing
-
-        # Try to find a neighbor present in both rounds
-        common_neighbors = list(
-            set(last_neighbor_moves.keys()) & set(prev_neighbor_moves.keys())
-        )
-
-        if not common_neighbors:
-            # If no common neighbors, pick randomly from last round's neighbors
-            if not last_neighbor_moves:
-                return "cooperate"  # Should not happen if reached here
-            random_neighbor_id = random.choice(list(last_neighbor_moves.keys()))
-            last_opponent_move = last_neighbor_moves.get(
-                random_neighbor_id, "cooperate"
-            )
-            prev_opponent_move = "cooperate"  # Default to cooperate if no memory
-        else:
             random_neighbor_id = random.choice(common_neighbors)
-            last_opponent_move = last_neighbor_moves.get(
-                random_neighbor_id, "cooperate"
-            )
-            prev_opponent_move = prev_neighbor_moves.get(
-                random_neighbor_id, "cooperate"
-            )
+            last_opponent_move = last_interaction_context.get(random_neighbor_id, "cooperate")
+            prev_opponent_move = prev_interaction_context.get(random_neighbor_id, "cooperate")
 
-        # Defect only if the chosen opponent defected twice in a row
-        if last_opponent_move == "defect" and prev_opponent_move == "defect":
-            return "defect"
-        else:
+            if last_opponent_move == "defect" and prev_opponent_move == "defect":
+                return "defect"
             return "cooperate"
+
+        return "cooperate"
 
 
 class PavlovStrategy(Strategy):

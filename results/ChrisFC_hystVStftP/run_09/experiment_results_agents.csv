@@ -1,31 +1,31 @@
 scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
-ChrisFC_hystVStftP,9,0,hysteretic_q,1373.5862068965469,"{'avg_cooperate': 11.87683887384526, 'avg_defect': 7.304241496524799}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.95696247184685, 'defect': 21.912724489574398}, (0.8,): {'cooperate': 8.38389897727514, 'defect': 0.0}}"
-ChrisFC_hystVStftP,9,1,hysteretic_q,1399.4137931034427,"{'avg_cooperate': 11.67013024966772, 'avg_defect': 8.453802197273276}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.90581028967845, 'defect': 25.36140659181983}, (0.8,): {'cooperate': 7.814925286910916, 'defect': 0.0}}"
-ChrisFC_hystVStftP,9,2,hysteretic_q,1383.5862068965466,"{'avg_cooperate': 11.575674968517035, 'avg_defect': 7.779450170795133}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.939794018917635, 'defect': 23.3383505123854}, (0.8,): {'cooperate': 7.497575714219678, 'defect': 0.0}}"
-ChrisFC_hystVStftP,9,3,hysteretic_q,1383.9655172413745,"{'avg_cooperate': 11.692568326531662, 'avg_defect': 8.202301478206044}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.93050963957955, 'defect': 24.60690443461813}, (0.8,): {'cooperate': 7.8575401676016385, 'defect': 0.0}}"
-ChrisFC_hystVStftP,9,4,hysteretic_q,1393.7931034482706,"{'avg_cooperate': 11.707694047308985, 'avg_defect': 8.396292544783025}","{'initial': {'cooperate': 0.0, 'defect': 0.5}, (1.0,): {'cooperate': 26.91621146559051, 'defect': 24.688877634349073}, (0.8,): {'cooperate': 8.20687067633645, 'defect': 0.0}}"
-ChrisFC_hystVStftP,9,5,hysteretic_q,1383.6206896551676,"{'avg_cooperate': 11.701362373718501, 'avg_defect': 8.420015380303893}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.945173603474622, 'defect': 24.16745093489304}, (0.8,): {'cooperate': 7.869258345267086, 'defect': 1.0925952060186361}}"
-ChrisFC_hystVStftP,9,6,hysteretic_q,1383.9655172413745,"{'avg_cooperate': 11.577896200436001, 'avg_defect': 8.434224329446605}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.916284382656613, 'defect': 22.76328057177689}, (0.8,): {'cooperate': 7.527749046237596, 'defect': 2.53939241656293}}"
-ChrisFC_hystVStftP,9,7,hysteretic_q,1371.5862068965469,"{'avg_cooperate': 11.814481690334153, 'avg_defect': 6.586196501107099}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.938023891589612, 'defect': 19.758589503321296}, (0.8,): {'cooperate': 8.215766006999054, 'defect': 0.0}}"
-ChrisFC_hystVStftP,9,8,hysteretic_q,1395.862068965512,"{'avg_cooperate': 11.74561486028651, 'avg_defect': 8.313490183709051}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.904488546842735, 'defect': 24.940470551127156}, (0.8,): {'cooperate': 8.042700861603004, 'defect': 0.0}}"
-ChrisFC_hystVStftP,9,9,hysteretic_q,1385.1724137930985,"{'avg_cooperate': 11.581311719888527, 'avg_defect': 8.751098976627864}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.960285423037814, 'defect': 23.794038609056813}, (0.8,): {'cooperate': 7.4939945642139785, 'defect': 2.4592583208267755}}"
-ChrisFC_hystVStftP,9,10,hysteretic_q,2260.586206896544,"{'avg_cooperate': 14.379772169924252, 'avg_defect': 15.93477404029236}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 39.433715566403976, 'defect': 47.03826631183596}, (0.8,): {'cooperate': 3.415945770954982, 'defect': 0.7660558090411208}}"
-ChrisFC_hystVStftP,9,11,hysteretic_q,1389.6896551724085,"{'avg_cooperate': 11.559926197937836, 'avg_defect': 8.465695448414305}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.932462187642585, 'defect': 24.376102086219493}, (0.8,): {'cooperate': 7.4576612337571335, 'defect': 1.0209842590234226}}"
-ChrisFC_hystVStftP,9,12,hysteretic_q,1404.1379310344773,"{'avg_cooperate': 11.733170090274484, 'avg_defect': 8.463805251365166}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.87912599425489, 'defect': 25.391415754095497}, (0.8,): {'cooperate': 8.030729104154773, 'defect': 0.0}}"
-ChrisFC_hystVStftP,9,13,hysteretic_q,1381.8275862068917,"{'avg_cooperate': 11.646921821766426, 'avg_defect': 8.078656776271893}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.929680638782074, 'defect': 24.235970328815682}, (0.8,): {'cooperate': 7.721429654103412, 'defect': 0.0}}"
-ChrisFC_hystVStftP,9,14,hysteretic_q,1394.1724137930983,"{'avg_cooperate': 11.614816519127698, 'avg_defect': 8.690524927820993}","{'initial': {'cooperate': 0.2896551724137931, 'defect': 0.0}, (1.0,): {'cooperate': 26.897885589676378, 'defect': 24.443655682732704}, (0.8,): {'cooperate': 7.6569087952929245, 'defect': 1.6279191007302782}}"
-ChrisFC_hystVStftP,9,15,tit_for_tat,1437.8275862068913,,
-ChrisFC_hystVStftP,9,16,tit_for_tat,1427.5517241379255,,
-ChrisFC_hystVStftP,9,17,tit_for_tat,1431.75862068965,,
-ChrisFC_hystVStftP,9,18,tit_for_tat,1455.344827586201,,
-ChrisFC_hystVStftP,9,19,tit_for_tat,1461.1724137930973,,
-ChrisFC_hystVStftP,9,20,tit_for_tat,1439.5862068965462,,
-ChrisFC_hystVStftP,9,21,tit_for_tat,1441.2413793103387,,
-ChrisFC_hystVStftP,9,22,tit_for_tat,1433.137931034477,,
-ChrisFC_hystVStftP,9,23,tit_for_tat,1417.2413793103392,,
-ChrisFC_hystVStftP,9,24,tit_for_tat,1430.620689655167,,
-ChrisFC_hystVStftP,9,25,tit_for_tat,1433.1034482758566,,
-ChrisFC_hystVStftP,9,26,tit_for_tat,1435.379310344822,,
-ChrisFC_hystVStftP,9,27,tit_for_tat,1454.7586206896497,,
-ChrisFC_hystVStftP,9,28,tit_for_tat,1443.689655172408,,
-ChrisFC_hystVStftP,9,29,tit_for_tat,1446.6206896551669,,
+ChrisFC_hystVStftP,9,0,wolf_phc,339.7931034482774,"{'avg_cooperate': 2.720134047685081, 'avg_defect': 1.390996947492032}","{'initial': {'cooperate': 0.046551724137931044, 'defect': 0.0}, (0.4,): {'cooperate': 4.627619277203648, 'defect': 2.925055332640609}, (0.2,): {'cooperate': 3.4862311417136658, 'defect': 1.247935509835488}}"
+ChrisFC_hystVStftP,9,1,wolf_phc,493.1034482758647,"{'avg_cooperate': 2.6943377838553375, 'avg_defect': 4.191779719818207}","{'initial': {'cooperate': 0.046551724137931044, 'defect': 0.0}, (0.4,): {'cooperate': 4.926437380629665, 'defect': 4.073287340367359}, (0.2,): {'cooperate': 3.1100242467984165, 'defect': 8.502051819087262}}"
+ChrisFC_hystVStftP,9,2,wolf_phc,833.9310344827571,"{'avg_cooperate': 3.8982376949961215, 'avg_defect': 5.570200336186215}","{'initial': {'cooperate': 0.046551724137931044, 'defect': 0.0}, (0.4,): {'cooperate': 9.870323236061887, 'defect': 16.411221256804726}, (0.2,): {'cooperate': 1.7778381247885469, 'defect': 0.29937975175391757}}"
+ChrisFC_hystVStftP,9,3,wolf_phc,838.310344827585,"{'avg_cooperate': 3.6849354129056704, 'avg_defect': 5.528877348834574}","{'initial': {'cooperate': 0.046551724137931044, 'defect': 0.0}, (0.4,): {'cooperate': 9.139348606576508, 'defect': 16.476363341977862}, (0.2,): {'cooperate': 1.868905908002572, 'defect': 0.11026870452586207}}"
+ChrisFC_hystVStftP,9,4,wolf_phc,357.0344827586221,"{'avg_cooperate': 2.6741986928729418, 'avg_defect': 1.94586129461299}","{'initial': {'cooperate': 0.046551724137931044, 'defect': 0.0}, (0.4,): {'cooperate': 4.626330977313052, 'defect': 3.774841196840797}, (0.2,): {'cooperate': 3.3497133771678422, 'defect': 2.0627426869981735}}"
+ChrisFC_hystVStftP,9,5,wolf_phc,362.2068965517257,"{'avg_cooperate': 2.6476783678135702, 'avg_defect': 2.013029469752294}","{'initial': {'cooperate': 0.046551724137931044, 'defect': 0.0}, (0.4,): {'cooperate': 4.653753180977934, 'defect': 3.62385909192985}, (0.2,): {'cooperate': 3.242730198324845, 'defect': 2.4152293173270314}}"
+ChrisFC_hystVStftP,9,6,wolf_phc,353.27586206896706,"{'avg_cooperate': 2.669086524255054, 'avg_defect': 1.9175998163643444}","{'initial': {'cooperate': 0.046551724137931044, 'defect': 0.0}, (0.4,): {'cooperate': 4.636004519965914, 'defect': 3.3334964761359855}, (0.2,): {'cooperate': 3.3247033286613186, 'defect': 2.419302972957048}}"
+ChrisFC_hystVStftP,9,7,wolf_phc,351.17241379310485,"{'avg_cooperate': 2.70453168975232, 'avg_defect': 1.7370079422399367}","{'initial': {'cooperate': 0.046551724137931044, 'defect': 0.0}, (0.4,): {'cooperate': 4.622387186225773, 'defect': 3.6250360504192867}, (0.2,): {'cooperate': 3.4446561588932543, 'defect': 1.5859877763005228}}"
+ChrisFC_hystVStftP,9,8,wolf_phc,854.6206896551711,"{'avg_cooperate': 4.201295075356944, 'avg_defect': 6.139517930970755}","{'initial': {'cooperate': 0.046551724137931044, 'defect': 0.0}, (0.4,): {'cooperate': 10.831722242154894, 'defect': 17.85471326210031}, (0.2,): {'cooperate': 1.7256112597780067, 'defect': 0.5638405308119558}}"
+ChrisFC_hystVStftP,9,9,wolf_phc,338.5862068965533,"{'avg_cooperate': 2.903375891114846, 'avg_defect': 1.9205330154137605}","{'initial': {'cooperate': 0.046551724137931044, 'defect': 0.0}, (0.4,): {'cooperate': 5.21619168136988, 'defect': 3.674028325899681}, (0.2,): {'cooperate': 3.447384267836727, 'defect': 2.0875707203416005}}"
+ChrisFC_hystVStftP,9,10,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,11,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,12,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,13,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,14,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,15,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,16,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,17,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,18,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,19,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,20,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,21,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,22,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,23,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,24,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,25,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,26,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,27,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,28,always_defect,967.9999999999984,,
+ChrisFC_hystVStftP,9,29,always_defect,967.9999999999984,,

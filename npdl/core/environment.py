@@ -294,7 +294,9 @@ class Environment:
         1. Each agent chooses a single move (C or D) for the entire round
         2. Every agent plays a 2-player PD game with every other agent
         3. Payoffs are accumulated for each agent from all their pairwise games
-        4. Information about opponents' moves is stored as proportion of cooperators
+        4. Information about opponents' moves is stored both as:
+           - proportion of cooperators (for RL agents)
+           - specific opponent moves (for reactive strategies like TFT)
 
         Args:
             rewiring_prob: Probability to rewire network edges after this round
@@ -325,6 +327,10 @@ class Environment:
             agent.agent_id: 0 for agent in self.agents
         }  # Track how many opponents cooperated *against* this agent
         opponent_total_counts = {agent.agent_id: 0 for agent in self.agents}
+        # NEW: Store specific opponent moves for each agent
+        specific_opponent_moves = {
+            agent.agent_id: {} for agent in self.agents
+        }
 
         agent_ids = [a.agent_id for a in self.agents]
         for i in range(len(agent_ids)):
@@ -349,6 +355,10 @@ class Environment:
                     opponent_coop_counts[agent_i_id] += 1
                 if move_i == "cooperate":
                     opponent_coop_counts[agent_j_id] += 1
+                
+                # NEW: Store specific opponent moves
+                specific_opponent_moves[agent_i_id][agent_j_id] = move_j
+                specific_opponent_moves[agent_j_id][agent_i_id] = move_i
 
         # Step 3: Aggregate Results & Update Agents
         round_payoffs_avg = {}
@@ -375,10 +385,13 @@ class Environment:
             # Update agent score (using total payoff)
             agent.score += agent_total_payoff
 
-            # Store the aggregate state info instead of individual neighbor moves
-            neighbor_moves = {"opponent_coop_proportion": opp_coop_prop}
+            # Store BOTH aggregate state info AND specific opponent moves
+            neighbor_moves = {
+                "opponent_coop_proportion": opp_coop_prop,
+                "specific_opponent_moves": specific_opponent_moves[agent_id].copy()
+            }
 
-            # Update memory with average reward and aggregate opponent state
+            # Update memory with average reward and both aggregate and specific opponent info
             agent.update_memory(
                 my_move=agent_moves_for_round[agent_id],
                 neighbor_moves=neighbor_moves,

@@ -290,7 +290,8 @@ class QLearningStrategy(Strategy):
             return "initial"
 
         last_round_info = agent.memory[-1]
-        interaction_context = last_round_info.get('neighbor_moves', {}) # Use 'neighbor_moves' as key
+        # Use a consistent key for the interaction context
+        interaction_context = last_round_info.get('neighbor_moves', {})
 
         if self.state_type == "basic":
             return 'standard'
@@ -299,11 +300,49 @@ class QLearningStrategy(Strategy):
         if isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
 
+            # PAIRWISE STATE LOGIC
             if self.state_type == "proportion":
-                # Use the exact proportion as state
-                return (coop_proportion,)
-
+                return (round(coop_proportion, 2),)  # Round for fewer states
             elif self.state_type == "proportion_discretized":
+                # Discretize cooperation proportion into bins
+                if coop_proportion <= 0.2: state_feature = 0.2
+                elif coop_proportion <= 0.4: state_feature = 0.4
+                elif coop_proportion <= 0.6: state_feature = 0.6
+                elif coop_proportion <= 0.8: state_feature = 0.8
+                else: state_feature = 1.0
+                return (state_feature,)
+            elif self.state_type == "memory_enhanced":
+                own_last_move = agent.memory[-1]['my_move']
+                # Default previous move to current if memory is short
+                own_prev_move = agent.memory[-2]['my_move'] if len(agent.memory) >= 2 else own_last_move
+                own_last_bin = 1 if own_last_move == "cooperate" else 0
+                own_prev_bin = 1 if own_prev_move == "cooperate" else 0
+                
+                opponent_state_bin = 0  # Low
+                if coop_proportion > 0.67: opponent_state_bin = 2  # High
+                elif coop_proportion > 0.33: opponent_state_bin = 1  # Med
+                return (own_last_bin, own_prev_bin, opponent_state_bin)
+            elif self.state_type == "count":  # For pairwise, this is a discretized proportion
+                num_bins = agent.memory.maxlen if agent.memory.maxlen else 10  # Or a fixed reasonable number like 5 or 10
+                discretized_count = int(round(coop_proportion * (num_bins-1)))  # Bins 0 to N-1
+                return (discretized_count,)
+            elif self.state_type == "threshold":
+                return (coop_proportion > 0.5,)
+            else:  # Fallback for unhandled pairwise state type
+                 return ('pairwise_agg', round(coop_proportion, 1))  # Simple tuple
+
+        # NEIGHBORHOOD STATE LOGIC
+        elif isinstance(interaction_context, dict) and interaction_context:  # Standard neighborhood dict
+            num_neighbors = len(interaction_context)
+            if num_neighbors == 0: return 'no_neighbors'  # Should be caught by empty interaction_context earlier
+            
+            num_cooperating_neighbors = sum(1 for move in interaction_context.values() if move == "cooperate")
+            coop_proportion = num_cooperating_neighbors / num_neighbors
+            
+            if self.state_type == "proportion":
+                return (round(coop_proportion, 2),)
+            elif self.state_type == "proportion_discretized":
+                # Discretize the proportion into bins (5 bins)
                 if coop_proportion <= 0.2: state_feature = 0.2
                 elif coop_proportion <= 0.4: state_feature = 0.4
                 elif coop_proportion <= 0.6: state_feature = 0.6
@@ -315,89 +354,19 @@ class QLearningStrategy(Strategy):
                 own_prev_move = agent.memory[-2]['my_move'] if len(agent.memory) >= 2 else own_last_move
                 own_last_bin = 1 if own_last_move == "cooperate" else 0
                 own_prev_bin = 1 if own_prev_move == "cooperate" else 0
-                if coop_proportion <= 0.33: opponent_state_bin = 0
-                elif coop_proportion <= 0.67: opponent_state_bin = 1
-                else: opponent_state_bin = 2
-                return (own_last_bin, own_prev_bin, opponent_state_bin)
 
+                neighbor_state_bin = 0  # Low
+                if coop_proportion > 0.67: neighbor_state_bin = 2  # High
+                elif coop_proportion > 0.33: neighbor_state_bin = 1  # Med
+                return (own_last_bin, own_prev_bin, neighbor_state_bin)
             elif self.state_type == "count":
-                # For pairwise mode, convert proportion to a discretized "count" representation
-                # This helps maintain compatibility with the standard mode
-                num_bins = 10  # Discretize into 10 bins
-                discretized_count = int(coop_proportion * num_bins)
-                return (discretized_count,)
-
-            elif self.state_type == "threshold":
-                # Binary feature indicating if majority cooperated
-                return (coop_proportion > 0.5,)
-
-            else:  # Fallback for unhandled pairwise state type
-                return ('pairwise_agg', round(coop_proportion, 1))
-
-        elif isinstance(interaction_context, dict):
-            num_neighbors = len(interaction_context)
-            if num_neighbors == 0:
-                return 'no_neighbors'
-
-            num_cooperating_neighbors = sum(1 for move in interaction_context.values() if move == "cooperate")
-            coop_proportion = num_cooperating_neighbors / num_neighbors
-
-            if self.state_type == "proportion":
-                # Use the exact proportion as state
-                return (coop_proportion,)
-
-            elif self.state_type == "memory_enhanced":
-                # Example: Own last 2 moves + discretized neighbor coop proportion
-                # Determine own moves (default to C if not enough history)
-                own_last_move = "cooperate"
-                own_prev_move = "cooperate"
-                if len(agent.memory) >= 1:
-                    own_last_move = agent.memory[-1]["my_move"]
-                if len(agent.memory) >= 2:
-                    own_prev_move = agent.memory[-2]["my_move"]
-
-                own_last_bin = 1 if own_last_move == "cooperate" else 0
-                own_prev_bin = 1 if own_prev_move == "cooperate" else 0
-
-                # Use discretized neighbor state (from previous state implementation)
-                if coop_proportion <= 0.33:
-                    neighbor_state = 0  # Low
-                elif coop_proportion <= 0.67:
-                    neighbor_state = 1  # Med
-                else:
-                    neighbor_state = 2  # High
-
-                # State includes own last 2 moves and neighbor summary
-                return (own_last_bin, own_prev_bin, neighbor_state)
-
-            elif self.state_type == "proportion_discretized":
-                # Discretize the proportion into bins (5 bins)
-                if coop_proportion <= 0.2:
-                    state_feature = 0.2
-                elif coop_proportion <= 0.4:
-                    state_feature = 0.4
-                elif coop_proportion <= 0.6:
-                    state_feature = 0.6
-                elif coop_proportion <= 0.8:
-                    state_feature = 0.8
-                else:
-                    state_feature = 1.0
-                return (state_feature,)
-
-            elif self.state_type == "count":
-                # Use absolute count of cooperating neighbors
                 return (num_cooperating_neighbors,)
-
             elif self.state_type == "threshold":
-                # Binary feature indicating if majority cooperated
                 return (coop_proportion > 0.5,)
-
-            else:
-                # Default fallback
-                return "standard"
-
-        # Fallback if interaction_context is not a dict (should not happen with proper memory update)
-        return "unknown_context"
+            else:  # Fallback for unhandled neighborhood state type
+                return 'standard_neighborhood'
+        
+        return 'unknown_context_fallback'  # Fallback if interaction_context is not recognized
 
 
 
@@ -450,30 +419,33 @@ class QLearningStrategy(Strategy):
             return "defect"
 
     def update(self, agent, action, reward, interaction_context_for_next_state):
-        # Use the state that was stored during choose_move
+        """Update Q-values based on the Q-learning formula.
+        
+        Args:
+            agent: The agent whose Q-values are being updated
+            action: The action that was taken
+            reward: The reward received
+            interaction_context_for_next_state: The interaction context from this round's outcomes
+        
+        Note: The 'next_state' is determined based on the *newest* entry in memory,
+        which reflects the outcome of 'action' taken in 'state_executed'.
+        """
         state_executed = agent.last_state_representation
         if state_executed is None:
-            # This should not happen after the first round, but just in case
             return
 
-        # Calculate the state for the next step (based on the current memory after this round)
-        next_state = self._get_current_state(agent)
-
+        # The 'next_state' is determined based on the *newest* entry in memory,
+        # which reflects the outcome of 'action' taken in 'state_executed'.
+        next_state = self._get_current_state(agent)  # This correctly uses the latest memory
         self._ensure_state_exists(agent, next_state)
 
-        # Ensure next state exists in Q-table, initialize if not
-        if next_state not in agent.q_values:
-            agent.q_values[next_state] = {"cooperate": 0.0, "defect": 0.0}
-
-        # Find max Q-value for the next state
         best_next_q = max(agent.q_values[next_state].values())
-
-        # Update Q-value for the chosen action using the Q-learning formula
         current_q = agent.q_values[state_executed][action]
+        
+        # Standard Q-update rule
         agent.q_values[state_executed][action] = (
-            1 - self.learning_rate
-        ) * current_q + self.learning_rate * (
-            reward + self.discount_factor * best_next_q
+            (1 - self.learning_rate) * current_q +
+            self.learning_rate * (reward + self.discount_factor * best_next_q)
         )
 
 

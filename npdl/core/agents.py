@@ -3,7 +3,6 @@ import random
 import math
 from collections import deque
 
-from networkx.classes import common_neighbors
 from typing import List, Dict, Tuple, Any, Optional, Union, Hashable
 
 
@@ -387,7 +386,7 @@ class QLearningStrategy(Strategy):
                 # Default fallback
                 return "standard"
 
-
+        # Fallback if interaction_context is not a dict (should not happen with proper memory update)
         return "unknown_context"
 
 
@@ -426,10 +425,6 @@ class QLearningStrategy(Strategy):
         agent.last_state_representation = current_state
 
         self._ensure_state_exists(agent, current_state)
-
-        # Ensure state exists in Q-table, initialize if not
-        if current_state not in agent.q_values:
-            agent.q_values[current_state] = {"cooperate": 0.0, "defect": 0.0}
 
         # Exploration (epsilon-greedy)
         if random.random() < self.epsilon:

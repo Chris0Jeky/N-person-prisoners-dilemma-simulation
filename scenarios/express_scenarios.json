@@ -6,13 +6,14 @@
     "network_type": "fully_connected",
     "network_params": {"k": 4, "beta": 0.3},
     "agent_strategies": {
-      "hysteretic_q": 15,
-      "tit_for_tat": 15
+      "wolf_phc": 10,
+      "tit_for_tat": 0,
+      "always_defect": 20
     },
-    "learning_rate": 0.1,
+    "learning_rate": 0.2,
     "discount_factor": 0.9,
-    "epsilon": 0.1,
-    "generosity": 0.1,
+    "epsilon": 0.15,
+    "generosity": 0.0,
     "logging_interval": 50
   },
   {
@@ -23,8 +24,9 @@
     "network_params": {},
     "interaction_mode": "pairwise",
     "agent_strategies": {
-      "hysteretic_q": 15,
-      "tit_for_tat": 15
+      "wolf_phc": 10,
+      "tit_for_tat": 0,
+      "always_defect": 20
     },
     "payoff_params": {
       "R": 3,
@@ -32,10 +34,10 @@
       "T": 5,
       "P": 1
     },
-    "learning_rate": 0.1,
+    "learning_rate": 0.2,
     "discount_factor": 0.9,
-    "epsilon": 0.1,
-    "generosity": 0.1,
+    "epsilon": 0.15,
+    "generosity": 0.0,
     "state_type": "proportion_discretized",
     "logging_interval": 50
   },
@@ -46,13 +48,14 @@
     "network_type": "small_world",
     "network_params": {"k": 4, "beta": 0.3},
     "agent_strategies": {
-      "hysteretic_q": 15,
-      "tit_for_tat": 15
+      "wolf_phc": 10,
+      "tit_for_tat": 0,
+      "always_defect": 20
     },
-    "learning_rate": 0.1,
+    "learning_rate": 0.2,
     "discount_factor": 0.9,
-    "epsilon": 0.1,
-    "generosity": 0.1,
+    "epsilon": 0.15,
+    "generosity": 0.0,
     "logging_interval": 50
   },
   {
@@ -63,8 +66,9 @@
     "network_params": {},
     "interaction_mode": "pairwise",
     "agent_strategies": {
-      "hysteretic_q": 15,
-      "tit_for_tat": 15
+      "wolf_phc": 10,
+      "tit_for_tat": 0,
+      "always_defect": 20
     },
     "payoff_params": {
       "R": 3,
@@ -72,10 +76,10 @@
       "T": 5,
       "P": 1
     },
-    "learning_rate": 0.1,
+    "learning_rate": 0.2,
     "discount_factor": 0.9,
-    "epsilon": 0.1,
-    "generosity": 0.1,
+    "epsilon": 0.15,
+    "generosity": 0.0,
     "state_type": "proportion_discretized",
     "logging_interval": 50
   }

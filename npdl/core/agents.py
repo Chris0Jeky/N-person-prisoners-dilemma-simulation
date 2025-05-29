@@ -61,22 +61,38 @@ class TitForTatStrategy(Strategy):
         if not agent.memory:
             return "cooperate"  # Cooperate on first move
 
-        # Get a random neighbor's move from the last round
+        # Get the last round information
         last_round = agent.memory[-1]
         neighbor_moves = last_round["neighbor_moves"]
 
-        # Handle pairwise interaction format with opponent_coop_proportion
+        # Handle pairwise interaction format with specific opponent moves
         if (
+            isinstance(neighbor_moves, dict)
+            and "specific_opponent_moves" in neighbor_moves
+        ):
+            # In pairwise mode, use specific opponent history
+            specific_moves = neighbor_moves["specific_opponent_moves"]
+            if specific_moves:
+                # True TFT: defect if ANY opponent defected
+                for opponent_id, opponent_move in specific_moves.items():
+                    if opponent_move == "defect":
+                        return "defect"
+                # All opponents cooperated
+                return "cooperate"
+            else:
+                # No opponents (shouldn't happen, but handle gracefully)
+                return "cooperate"
+
+        # Fallback to proportion-based decision (for backward compatibility)
+        elif (
             isinstance(neighbor_moves, dict)
             and "opponent_coop_proportion" in neighbor_moves
         ):
-            # Convert proportion to binary decision based on majority behavior
-            # In the pairwise model, we want to defect if more than half of opponents defected
+            # Convert proportion to binary decision based on ANY defection
             coop_proportion = neighbor_moves["opponent_coop_proportion"]
-            # Default tit-for-tat behavior - match what others did
-            # If most cooperated (coop_prop > 0.5), then cooperate
-            # If most defected (coop_prop < 0.5), then defect
-            return "defect" if coop_proportion < 0.5 else "cooperate"
+            # Only cooperate if ALL opponents cooperated (proportion = 1.0)
+            # Small tolerance for floating point
+            return "cooperate" if coop_proportion >= 0.99 else "defect"
 
         # Standard neighborhood format
         if neighbor_moves:
@@ -96,13 +112,32 @@ class GenerousTitForTatStrategy(Strategy):
         last_round = agent.memory[-1]
         neighbor_moves = last_round["neighbor_moves"]
 
-        # Handle pairwise interaction format with opponent_coop_proportion
+        # Handle pairwise interaction format with specific opponent moves
         if (
+            isinstance(neighbor_moves, dict)
+            and "specific_opponent_moves" in neighbor_moves
+        ):
+            # In pairwise mode, use specific opponent history
+            specific_moves = neighbor_moves["specific_opponent_moves"]
+            if specific_moves:
+                # Check if any opponent defected
+                any_defected = any(move == "defect" for move in specific_moves.values())
+                if any_defected:
+                    # Apply generosity - sometimes cooperate even when should defect
+                    return "cooperate" if random.random() < self.generosity else "defect"
+                else:
+                    # All cooperated
+                    return "cooperate"
+            else:
+                # No opponents
+                return "cooperate"
+
+        # Fallback to proportion-based decision (for backward compatibility)
+        elif (
             isinstance(neighbor_moves, dict)
             and "opponent_coop_proportion" in neighbor_moves
         ):
             # Convert proportion to binary decision based on majority behavior
-            # If more than half of opponents cooperated, cooperate; otherwise maybe defect with generosity
             coop_proportion = neighbor_moves["opponent_coop_proportion"]
             if coop_proportion >= 0.5:
                 return "cooperate"
@@ -129,15 +164,32 @@ class SuspiciousTitForTatStrategy(Strategy):
         last_round = agent.memory[-1]
         neighbor_moves = last_round["neighbor_moves"]
 
-        # Handle pairwise interaction format with opponent_coop_proportion
+        # Handle pairwise interaction format with specific opponent moves
         if (
+            isinstance(neighbor_moves, dict)
+            and "specific_opponent_moves" in neighbor_moves
+        ):
+            # In pairwise mode, use specific opponent history
+            specific_moves = neighbor_moves["specific_opponent_moves"]
+            if specific_moves:
+                # Cooperate only if ALL opponents cooperated
+                for opponent_id, opponent_move in specific_moves.items():
+                    if opponent_move == "defect":
+                        return "defect"
+                # All opponents cooperated
+                return "cooperate"
+            else:
+                # No opponents
+                return "defect"
+
+        # Fallback to proportion-based decision (for backward compatibility)
+        elif (
             isinstance(neighbor_moves, dict)
             and "opponent_coop_proportion" in neighbor_moves
         ):
-            # Convert proportion to binary decision based on majority behavior
-            # If more than half of opponents cooperated, cooperate; otherwise defect
+            # Convert proportion to binary decision - need ALL to cooperate
             coop_proportion = neighbor_moves["opponent_coop_proportion"]
-            return "cooperate" if coop_proportion >= 0.5 else "defect"
+            return "cooperate" if coop_proportion >= 0.99 else "defect"
 
         # Standard neighborhood format
         if neighbor_moves:
@@ -522,14 +574,36 @@ class TitForTwoTatsStrategy(Strategy):
         last_round = agent.memory[-1]
         prev_round = agent.memory[-2]
 
-        # Handle pairwise interaction format with opponent_coop_proportion
+        # Handle pairwise interaction format with specific opponent moves
         if (
+            isinstance(last_round["neighbor_moves"], dict)
+            and "specific_opponent_moves" in last_round["neighbor_moves"]
+            and isinstance(prev_round["neighbor_moves"], dict)
+            and "specific_opponent_moves" in prev_round["neighbor_moves"]
+        ):
+            # In pairwise mode, check specific opponent history
+            last_specific = last_round["neighbor_moves"]["specific_opponent_moves"]
+            prev_specific = prev_round["neighbor_moves"]["specific_opponent_moves"]
+            
+            # For each opponent, check if they defected in both of the last two rounds
+            for opponent_id in last_specific:
+                if opponent_id in prev_specific:
+                    # This opponent was present in both rounds
+                    if (last_specific[opponent_id] == "defect" and 
+                        prev_specific[opponent_id] == "defect"):
+                        # This opponent defected twice in a row - defect
+                        return "defect"
+            
+            # No opponent defected twice in a row
+            return "cooperate"
+
+        # Fallback to proportion-based decision (for backward compatibility)
+        elif (
             isinstance(last_round["neighbor_moves"], dict)
             and "opponent_coop_proportion" in last_round["neighbor_moves"]
             and isinstance(prev_round["neighbor_moves"], dict)
             and "opponent_coop_proportion" in prev_round["neighbor_moves"]
         ):
-
             last_coop_prop = last_round["neighbor_moves"]["opponent_coop_proportion"]
             prev_coop_prop = prev_round["neighbor_moves"]["opponent_coop_proportion"]
 

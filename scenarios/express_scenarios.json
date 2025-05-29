@@ -1,29 +1,13 @@
 [
   {
-    "scenario_name": "ChrisSmallWorld_GTFT_vs_QL",
-    "num_agents": 50,
-    "num_rounds": 500,
-    "network_type": "small_world",
-    "network_params": {"k": 4, "beta": 0.3},
-    "agent_strategies": {
-      "q_learning": 25,
-      "generous_tit_for_tat": 25
-    },
-    "learning_rate": 0.1,
-    "discount_factor": 0.9,
-    "epsilon": 0.1,
-    "generosity": 0.1,
-    "logging_interval": 50
-  },
-  {
-    "scenario_name": "ChrisFullyConnected_GTFT_vs_QL",
-    "num_agents": 50,
+    "scenario_name": "ChrisFC_hystVStft",
+    "num_agents": 30,
     "num_rounds": 500,
     "network_type": "fully_connected",
     "network_params": {"k": 4, "beta": 0.3},
     "agent_strategies": {
-      "q_learning": 25,
-      "generous_tit_for_tat": 25
+      "hysteretic_q": 15,
+      "tit_for_tat": 15
     },
     "learning_rate": 0.1,
     "discount_factor": 0.9,
@@ -32,15 +16,55 @@
     "logging_interval": 50
   },
   {
-    "scenario_name": "ChrisSmallWorld_GTFT_vs_QLP",
-    "num_agents": 50,
+    "scenario_name": "ChrisFC_hystVStftP",
+    "num_agents": 30,
     "num_rounds": 500,
     "network_type": "fully_connected",
     "network_params": {},
     "interaction_mode": "pairwise",
     "agent_strategies": {
-      "q_learning": 25,
-      "generous_tit_for_tat": 25
+      "hysteretic_q": 15,
+      "tit_for_tat": 15
+    },
+    "payoff_params": {
+      "R": 3,
+      "S": 0,
+      "T": 5,
+      "P": 1
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "generosity": 0.1,
+    "state_type": "proportion_discretized",
+    "logging_interval": 50
+  },
+  {
+    "scenario_name": "ChrisSW_hystVStft",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {"k": 4, "beta": 0.3},
+    "agent_strategies": {
+      "hysteretic_q": 15,
+      "tit_for_tat": 15
+    },
+    "learning_rate": 0.1,
+    "discount_factor": 0.9,
+    "epsilon": 0.1,
+    "generosity": 0.1,
+    "logging_interval": 50
+  },
+  {
+    "scenario_name": "ChrisSW_hystVStftP",
+    "num_agents": 30,
+    "num_rounds": 500,
+    "network_type": "small_world",
+    "network_params": {},
+    "interaction_mode": "pairwise",
+    "agent_strategies": {
+      "hysteretic_q": 15,
+      "tit_for_tat": 15
     },
     "payoff_params": {
       "R": 3,

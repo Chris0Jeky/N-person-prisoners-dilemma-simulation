@@ -237,7 +237,7 @@ class Environment:
             Tuple of (moves, payoffs) dictionaries
         """
         if self.interaction_mode == "pairwise":
-            return self._run_pairwise_round(rewiring_prob)
+            return self._run_pairwise_round(rewiring_prob=rewiring_prob)
         else:
             # Original neighborhood-based interaction
             return self._run_neighborhood_round(use_global_bonus, rewiring_prob)

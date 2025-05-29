@@ -1,41 +1,41 @@
 scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
-Pairwise_Tournament,0,0,tit_for_tat,510.38461538461536,,
-Pairwise_Tournament,0,1,tit_for_tat,501.28205128205144,,
-Pairwise_Tournament,0,2,tit_for_tat,499.43589743589746,,
-Pairwise_Tournament,0,3,tit_for_tat,485.97435897435923,,
-Pairwise_Tournament,0,4,tit_for_tat,513.8205128205129,,
-Pairwise_Tournament,0,5,generous_tit_for_tat,472.0256410256412,,
-Pairwise_Tournament,0,6,generous_tit_for_tat,490.0000000000001,,
-Pairwise_Tournament,0,7,generous_tit_for_tat,509.846153846154,,
-Pairwise_Tournament,0,8,generous_tit_for_tat,489.17948717948724,,
-Pairwise_Tournament,0,9,generous_tit_for_tat,507.5641025641028,,
-Pairwise_Tournament,0,10,suspicious_tit_for_tat,508.10256410256443,,
-Pairwise_Tournament,0,11,suspicious_tit_for_tat,495.23076923076934,,
-Pairwise_Tournament,0,12,suspicious_tit_for_tat,505.00000000000017,,
-Pairwise_Tournament,0,13,suspicious_tit_for_tat,518.2820512820513,,
-Pairwise_Tournament,0,14,suspicious_tit_for_tat,499.2820512820511,,
-Pairwise_Tournament,0,15,tit_for_two_tats,441.4871794871795,,
-Pairwise_Tournament,0,16,tit_for_two_tats,441.3333333333333,,
-Pairwise_Tournament,0,17,tit_for_two_tats,456.6666666666668,,
-Pairwise_Tournament,0,18,tit_for_two_tats,456.7435897435897,,
-Pairwise_Tournament,0,19,tit_for_two_tats,440.10256410256414,,
-Pairwise_Tournament,0,20,pavlov,709.0512820512818,,
-Pairwise_Tournament,0,21,pavlov,709.0512820512818,,
-Pairwise_Tournament,0,22,pavlov,709.0512820512818,,
-Pairwise_Tournament,0,23,pavlov,709.0512820512818,,
-Pairwise_Tournament,0,24,pavlov,709.0512820512818,,
-Pairwise_Tournament,0,25,q_learning,382.23076923076934,"{'avg_cooperate': 5.775478827062217, 'avg_defect': 1.1907237371686852}","{'initial': {'cooperate': 0.26153846153846155, 'defect': 0.0}, (1.0,): {'cooperate': 0.45146153846153847, 'defect': 0.0}, (0.8,): {'cooperate': 12.185704842541995, 'defect': 2.9297047215336676}, (0.6,): {'cooperate': 10.20321046570687, 'defect': 1.8331902271410734}}"
-Pairwise_Tournament,0,26,q_learning,390.5128205128207,"{'avg_cooperate': 5.714272482240782, 'avg_defect': 2.1021212887412113}","{'initial': {'cooperate': 0.26153846153846155, 'defect': 0.0}, (1.0,): {'cooperate': 0.45146153846153847, 'defect': 0.0}, (0.8,): {'cooperate': 12.026706933795314, 'defect': 6.821970305451917}, (0.6,): {'cooperate': 10.11738299516781, 'defect': 1.586514849512928}}"
-Pairwise_Tournament,0,27,q_learning,378.5897435897437,"{'avg_cooperate': 5.828216401926367, 'avg_defect': 0.9592407025195071}","{'initial': {'cooperate': 0.26153846153846155, 'defect': 0.0}, (1.0,): {'cooperate': 0.45146153846153847, 'defect': 0.0}, (0.8,): {'cooperate': 12.236888074858179, 'defect': 2.376206497602869}, (0.6,): {'cooperate': 10.362977532847287, 'defect': 1.4607563124751592}}"
-Pairwise_Tournament,0,28,q_learning,388.74358974359,"{'avg_cooperate': 5.732591148471338, 'avg_defect': 1.9662614124123374}","{'initial': {'cooperate': 0.26153846153846155, 'defect': 0.0}, (1.0,): {'cooperate': 0.45146153846153847, 'defect': 0.0}, (0.8,): {'cooperate': 12.059880006723889, 'defect': 3.9875288397522874}, (0.6,): {'cooperate': 10.157484587161463, 'defect': 3.8775168098970627}}"
-Pairwise_Tournament,0,29,q_learning,385.2820512820514,"{'avg_cooperate': 5.756137352074264, 'avg_defect': 1.787577812176647}","{'initial': {'cooperate': 0.26153846153846155, 'defect': 0.0}, (1.0,): {'cooperate': 0.45146153846153847, 'defect': 0.0}, (0.8,): {'cooperate': 12.197889145172827, 'defect': 3.6315057070896373}, (0.6,): {'cooperate': 10.113660263124228, 'defect': 3.5188055416169512}}"
-Pairwise_Tournament,0,30,lra_q,535.7435897435897,"{'avg_cooperate': 13.33351324676078, 'avg_defect': 10.126625075149226}","{'initial': {'cooperate': 0.5230769230769231, 'defect': 0.0}, (1.0,): {'cooperate': 2.5677615384615384, 'defect': 0.0}, (0.8,): {'cooperate': 31.554780192172313, 'defect': 33.477953490100546}, (0.6,): {'cooperate': 18.688434333332342, 'defect': 7.028546810496357}}"
-Pairwise_Tournament,0,31,lra_q,631.2051282051281,"{'avg_cooperate': 8.255697027430557, 'avg_defect': 12.368822358376814}","{'initial': {'cooperate': 0.5230769230769231, 'defect': 0.0}, (1.0,): {'cooperate': 2.5677615384615384, 'defect': 0.0}, (0.8,): {'cooperate': 19.93931098476643, 'defect': 24.562222979557472}, (0.6,): {'cooperate': 9.992638663417342, 'defect': 24.913066453949785}}"
-Pairwise_Tournament,0,32,lra_q,563.4615384615385,"{'avg_cooperate': 13.001109398689588, 'avg_defect': 13.832909389392267}","{'initial': {'cooperate': 0.5230769230769231, 'defect': 0.0}, (1.0,): {'cooperate': 2.5677615384615384, 'defect': 0.0}, (0.8,): {'cooperate': 31.453901064173436, 'defect': 33.35321375178694}, (0.6,): {'cooperate': 17.459698069046453, 'defect': 21.978423805782125}}"
-Pairwise_Tournament,0,33,lra_q,590.6153846153848,"{'avg_cooperate': 10.305438521341515, 'avg_defect': 9.516369066116164}","{'initial': {'cooperate': 0.5230769230769231, 'defect': 0.0}, (1.0,): {'cooperate': 0.0, 'defect': 2.2487445989743575}, (0.8,): {'cooperate': 25.2764789414137, 'defect': 30.421514201332815}, (0.6,): {'cooperate': 15.422198220875433, 'defect': 5.395217464157482}}"
-Pairwise_Tournament,0,34,lra_q,549.7435897435898,"{'avg_cooperate': 13.225218125288755, 'avg_defect': 12.000069636487599}","{'initial': {'cooperate': 0.5230769230769231, 'defect': 0.0}, (1.0,): {'cooperate': 2.5677615384615384, 'defect': 0.0}, (0.8,): {'cooperate': 31.78174830855476, 'defect': 33.57103489606977}, (0.6,): {'cooperate': 18.0282857310618, 'defect': 14.429243649880624}}"
-Pairwise_Tournament,0,35,always_cooperate,372.0000000000001,,
-Pairwise_Tournament,0,36,always_cooperate,372.0000000000001,,
-Pairwise_Tournament,0,37,always_cooperate,372.0000000000001,,
-Pairwise_Tournament,0,38,always_cooperate,372.0000000000001,,
-Pairwise_Tournament,0,39,always_cooperate,372.0000000000001,,
+Pairwise_Tournament,0,0,tit_for_tat,18203,,
+Pairwise_Tournament,0,1,tit_for_tat,18203,,
+Pairwise_Tournament,0,2,tit_for_tat,18203,,
+Pairwise_Tournament,0,3,tit_for_tat,18203,,
+Pairwise_Tournament,0,4,tit_for_tat,18203,,
+Pairwise_Tournament,0,5,generous_tit_for_tat,17757,,
+Pairwise_Tournament,0,6,generous_tit_for_tat,17760,,
+Pairwise_Tournament,0,7,generous_tit_for_tat,17869,,
+Pairwise_Tournament,0,8,generous_tit_for_tat,17866,,
+Pairwise_Tournament,0,9,generous_tit_for_tat,17589,,
+Pairwise_Tournament,0,10,suspicious_tit_for_tat,18280,,
+Pairwise_Tournament,0,11,suspicious_tit_for_tat,18280,,
+Pairwise_Tournament,0,12,suspicious_tit_for_tat,18280,,
+Pairwise_Tournament,0,13,suspicious_tit_for_tat,18280,,
+Pairwise_Tournament,0,14,suspicious_tit_for_tat,18280,,
+Pairwise_Tournament,0,15,tit_for_two_tats,18136,,
+Pairwise_Tournament,0,16,tit_for_two_tats,18136,,
+Pairwise_Tournament,0,17,tit_for_two_tats,18136,,
+Pairwise_Tournament,0,18,tit_for_two_tats,18136,,
+Pairwise_Tournament,0,19,tit_for_two_tats,18136,,
+Pairwise_Tournament,0,20,pavlov,18075,,
+Pairwise_Tournament,0,21,pavlov,18075,,
+Pairwise_Tournament,0,22,pavlov,18075,,
+Pairwise_Tournament,0,23,pavlov,18075,,
+Pairwise_Tournament,0,24,pavlov,18075,,
+Pairwise_Tournament,0,25,q_learning,7745,"{'avg_cooperate': 1.687682045719995, 'avg_defect': 0.8772322650726}","{'initial': {'cooperate': 0.26153846153846155, 'defect': 0.0}, (1.0,): {'cooperate': 0.18461538461538463, 'defect': 0.0}, (0.8,): {'cooperate': 0.13846153846153847, 'defect': 0.0}, (0.6,): {'cooperate': 0.1, 'defect': 0.0}, (0.4,): {'cooperate': 7.753794843984591, 'defect': 4.386161325363}}"
+Pairwise_Tournament,0,26,q_learning,7802,"{'avg_cooperate': 1.6849837846914841, 'avg_defect': 0.9994182317738953}","{'initial': {'cooperate': 0.26153846153846155, 'defect': 0.0}, (1.0,): {'cooperate': 0.18461538461538463, 'defect': 0.0}, (0.8,): {'cooperate': 0.13846153846153847, 'defect': 0.0}, (0.6,): {'cooperate': 0.1, 'defect': 0.0}, (0.4,): {'cooperate': 7.740303538842037, 'defect': 4.997091158869477}}"
+Pairwise_Tournament,0,27,q_learning,7531,"{'avg_cooperate': 1.6951599046372259, 'avg_defect': 0.5521434582993061}","{'initial': {'cooperate': 0.26153846153846155, 'defect': 0.0}, (1.0,): {'cooperate': 0.18461538461538463, 'defect': 0.0}, (0.8,): {'cooperate': 0.13846153846153847, 'defect': 0.0}, (0.6,): {'cooperate': 0.1, 'defect': 0.0}, (0.4,): {'cooperate': 7.791184138570745, 'defect': 2.7607172914965306}}"
+Pairwise_Tournament,0,28,q_learning,17739,"{'avg_cooperate': 1.2405100179212314, 'avg_defect': 3.9512143918284623}","{'initial': {'cooperate': 0.26153846153846155, 'defect': 0.0}, (1.0,): {'cooperate': 0.18461538461538463, 'defect': 0.0}, (0.8,): {'cooperate': 0.13846153846153847, 'defect': 0.0}, (0.6,): {'cooperate': 0.1, 'defect': 0.0}, (0.4,): {'cooperate': 5.517934704990772, 'defect': 19.75607195914231}}"
+Pairwise_Tournament,0,29,q_learning,8069,"{'avg_cooperate': 1.673554760546812, 'avg_defect': 1.1883236110169764}","{'initial': {'cooperate': 0.26153846153846155, 'defect': 0.0}, (1.0,): {'cooperate': 0.18461538461538463, 'defect': 0.0}, (0.8,): {'cooperate': 0.13846153846153847, 'defect': 0.0}, (0.6,): {'cooperate': 0.1, 'defect': 0.0}, (0.4,): {'cooperate': 7.683158418118675, 'defect': 5.941618055084882}}"
+Pairwise_Tournament,0,30,lra_q,7972,"{'avg_cooperate': 1.795357786896736, 'avg_defect': 1.3362752538906608}","{'initial': {'cooperate': 0.5230769230769231, 'defect': 0.0}, (1.0,): {'cooperate': 0.5353846153846155, 'defect': 0.0}, (0.8,): {'cooperate': 0.0, 'defect': 0.8256410256410258}, (0.6,): {'cooperate': 0.0, 'defect': 0.6576923076923077}, (0.4,): {'cooperate': 7.918327396022143, 'defect': 5.198042936119971}}"
+Pairwise_Tournament,0,31,lra_q,7694,"{'avg_cooperate': 1.930522287369803, 'avg_defect': 0.8632049511588178}","{'initial': {'cooperate': 0.5230769230769231, 'defect': 0.0}, (1.0,): {'cooperate': 0.5353846153846155, 'defect': 0.0}, (0.8,): {'cooperate': 0.3876923076923077, 'defect': 0.0}, (0.6,): {'cooperate': 0.27, 'defect': 0.0}, (0.4,): {'cooperate': 7.936457590695168, 'defect': 4.316024755794089}}"
+Pairwise_Tournament,0,32,lra_q,7854,"{'avg_cooperate': 1.9295317033210178, 'avg_defect': 1.143361272480182}","{'initial': {'cooperate': 0.5230769230769231, 'defect': 0.0}, (1.0,): {'cooperate': 0.5353846153846155, 'defect': 0.0}, (0.8,): {'cooperate': 0.3876923076923077, 'defect': 0.0}, (0.6,): {'cooperate': 0.27, 'defect': 0.0}, (0.4,): {'cooperate': 7.931504670451243, 'defect': 5.71680636240091}}"
+Pairwise_Tournament,0,33,lra_q,17287,"{'avg_cooperate': 2.4346099873569362, 'avg_defect': 3.965085162037164}","{'initial': {'cooperate': 0.5230769230769231, 'defect': 0.0}, (1.0,): {'cooperate': 0.5353846153846155, 'defect': 0.0}, (0.8,): {'cooperate': 0.3876923076923077, 'defect': 0.0}, (0.6,): {'cooperate': 0.27, 'defect': 0.0}, (0.4,): {'cooperate': 10.456896090630835, 'defect': 19.82542581018582}}"
+Pairwise_Tournament,0,34,lra_q,7746,"{'avg_cooperate': 1.9333480959679104, 'avg_defect': 1.0355493845615757}","{'initial': {'cooperate': 0.5230769230769231, 'defect': 0.0}, (1.0,): {'cooperate': 0.5353846153846155, 'defect': 0.0}, (0.8,): {'cooperate': 0.3876923076923077, 'defect': 0.0}, (0.6,): {'cooperate': 0.27, 'defect': 0.0}, (0.4,): {'cooperate': 7.950586633685705, 'defect': 5.177746922807879}}"
+Pairwise_Tournament,0,35,always_cooperate,7260,,
+Pairwise_Tournament,0,36,always_cooperate,7260,,
+Pairwise_Tournament,0,37,always_cooperate,7260,,
+Pairwise_Tournament,0,38,always_cooperate,7260,,
+Pairwise_Tournament,0,39,always_cooperate,7260,,

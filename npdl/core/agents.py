@@ -119,7 +119,7 @@ class GenerousTitForTatStrategy(Strategy):
         # CASE 2: Pairwise mode fallback or general aggregate
         elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
-            if coop_proportion < 0.999:  # If not all cooperated
+            if coop_proportion < 0.99:  # If not all cooperated
                 any_defected_flag = True
             
         # CASE 3: Standard neighborhood mode

@@ -232,6 +232,15 @@ class TestEndToEndSimulation:
              scenario.update({"learning_rate": 0.05, "beta": 0.01, "epsilon": 0.05, "discount_factor": 0.9})
         if "WolfOpt" in scenario_name:
              scenario.update({"learning_rate": 0.1, "alpha_win": 0.01, "alpha_lose": 0.1, "epsilon": 0.1, "discount_factor": 0.9})
+        
+        # For basic Q-learning vs all defect, ensure we have better learning parameters
+        if "BasicQL_vs_AllD" in scenario_name:
+            scenario.update({
+                "learning_rate": 0.2,  # Higher learning rate for faster convergence
+                "epsilon": 0.2,  # Start with moderate exploration
+                "discount_factor": 0.95,
+                "state_type": "proportion_discretized"
+            })
 
         # Run simulation (only 1 run for this focused test)
         env, _ = setup_experiment(scenario, logger)

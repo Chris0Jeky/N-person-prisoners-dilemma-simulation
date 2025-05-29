@@ -322,18 +322,16 @@ class QLearningStrategy(Strategy):
                 # Binary feature indicating if majority cooperated
                 return (coop_proportion > 0.5,)
 
-            # Default fallback for pairwise mode
-            return ("pairwise", coop_proportion)
+            else:  # Fallback for unhandled pairwise state type
+                return ('pairwise_agg', round(coop_proportion, 1))
 
-        # Standard neighborhood-based interaction mode logic
-        num_neighbors = len(neighbor_moves)
-        if num_neighbors == 0:
-            return "no_neighbors"  # Special state if isolated
+        elif isinstance(interaction_context, dict):
+            num_neighbors = len(interaction_context)
+            if num_neighbors == 0:
+                return 'no_neighbors'
 
-        num_cooperating_neighbors = sum(
-            1 for move in neighbor_moves.values() if move == "cooperate"
-        )
-        coop_proportion = num_cooperating_neighbors / num_neighbors
+            num_cooperating_neighbors = sum(1 for move in interaction_context.values() if move == "cooperate")
+            coop_proportion = num_cooperating_neighbors / num_neighbors
 
         if self.state_type == "proportion":
             # Use the exact proportion as state

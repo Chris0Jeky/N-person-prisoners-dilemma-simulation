@@ -154,7 +154,7 @@ class SuspiciousTitForTatStrategy(Strategy):
         # CASE 2: Pairwise mode fallback or general aggregate
         elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
-            return "cooperate" if coop_proportion >= 0.999 else "defect"
+            return "cooperate" if coop_proportion >= 0.99 else "defect"
             
         # CASE 3: Standard neighborhood mode
         elif isinstance(interaction_context, dict) and interaction_context:

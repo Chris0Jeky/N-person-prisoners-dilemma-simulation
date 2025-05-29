@@ -57,80 +57,81 @@ class AlwaysDefectStrategy(Strategy):
 
 class TitForTatStrategy(Strategy):
     def choose_move(self, agent, neighbors):  # neighbors arg kept for API consistency
-        """Choose the move for a TitForTat agent, handling both interaction modes.
-        This version prioritizes specific opponent moves for pairwise mode.
+        """Choose the move for a TitForTat agent.
+        In pairwise mode, it defects if ANY specific opponent defected last round.
+        In neighborhood mode, it (currently) mimics a random neighbor.
+        Defaults to cooperate.
         """
         if not agent.memory:
-            return "cooperate"  # Cooperate on first move
+            return "cooperate"
 
-        last_round = agent.memory[-1]
-        interaction_context = last_round.get('neighbor_moves',
-                                             {})  # Using 'neighbor_moves' as the key for interaction context
+        last_round_info = agent.memory[-1]
+        interaction_context = last_round_info.get('neighbor_moves', {})
 
         # CASE 1: Pairwise mode with specific opponent moves
         if isinstance(interaction_context, dict) and 'specific_opponent_moves' in interaction_context:
             specific_moves = interaction_context['specific_opponent_moves']
-            if specific_moves:  # Check if there were any opponents
-                # True TFT: defect if ANY specific opponent defected against this agent last round
-                if any(move == "defect" for move in specific_moves.values()):
-                    return "defect"
-                return "cooperate"  # All specific opponents cooperated
-            return "cooperate"  # No specific opponents, default to coop
+            if not specific_moves:  # No opponents played against this agent
+                return "cooperate"
+            # True TFT: defect if ANY specific opponent defected
+            if any(move == "defect" for move in specific_moves.values()):
+                return "defect"
+            return "cooperate"  # All specific opponents cooperated
 
-        # CASE 2: Pairwise mode fallback (old format) or general aggregate if no specific
+        # CASE 2: Pairwise mode fallback (old format) or general aggregate (if specific_opponent_moves is missing)
         elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
             # For TFT, be strict: only cooperate if all (or almost all) opponents cooperated
-            return "cooperate" if coop_proportion >= 0.99 else "defect"
+            return "cooperate" if coop_proportion >= 0.99 else "defect"  # Use a high threshold
 
         # CASE 3: Standard neighborhood mode
-        elif isinstance(interaction_context, dict) and interaction_context:  # Ensure it's a non-empty dict
-            # Original logic: pick a random neighbor's move
-            # This is a simplification for N-IPD TFT. A more robust N-IPD TFT might
-            # defect if *any* neighbor defected, or based on majority.
-            # Keeping original random neighbor logic for now for neighborhood mode.
+        elif isinstance(interaction_context, dict) and interaction_context:
+            # Current N-IPD TFT mimics a random neighbor.
+            # Consider changing to: defect if *any* neighbor defected for stricter N-IPD TFT.
+            # if any(move == "defect" for move in interaction_context.values()):
+            #     return "defect"
+            # return "cooperate"
             random_neighbor_id = random.choice(list(interaction_context.keys()))
-            return interaction_context[random_neighbor_id]
-
-        # Default if no memory, or empty/unrecognized interaction_context
+            return interaction_context.get(random_neighbor_id, "cooperate")  # Default if key somehow missing
+        
         return "cooperate"
 
 
 class GenerousTitForTatStrategy(Strategy):
     def __init__(self, generosity=0.1):
         self.generosity = generosity
-
+        
     def choose_move(self, agent, neighbors):
         if not agent.memory:
             return "cooperate"
+        
+        last_round_info = agent.memory[-1]
+        interaction_context = last_round_info.get('neighbor_moves', {})
 
-        last_round = agent.memory[-1]
-        interaction_context = last_round.get('neighbor_moves', {})
-
+        any_defected_flag = False
         # CASE 1: Pairwise mode with specific opponent moves
         if isinstance(interaction_context, dict) and 'specific_opponent_moves' in interaction_context:
             specific_moves = interaction_context['specific_opponent_moves']
-            if specific_moves:
-                if any(move == "defect" for move in specific_moves.values()):
-                    return "cooperate" if random.random() < self.generosity else "defect"
-                return "cooperate"
-            return "cooperate"
-
+            if not specific_moves: return "cooperate"
+            if any(move == "defect" for move in specific_moves.values()):
+                any_defected_flag = True
+        
         # CASE 2: Pairwise mode fallback or general aggregate
         elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
             if coop_proportion < 0.99:  # If not all cooperated
-                return "cooperate" if random.random() < self.generosity else "defect"
-            return "cooperate"
-
+                any_defected_flag = True
+            
         # CASE 3: Standard neighborhood mode
         elif isinstance(interaction_context, dict) and interaction_context:
-            random_neighbor_id = random.choice(list(interaction_context.keys()))
-            move = interaction_context[random_neighbor_id]
-            if move == "defect" and random.random() < self.generosity:
-                return "cooperate"
-            return move
+            # GTFT traditionally reacts to a single opponent's move. Here, if any neighbor defects.
+            if any(move == "defect" for move in interaction_context.values()):
+                any_defected_flag = True
+        else:  # No context or empty context
+            return "cooperate"
 
+        if any_defected_flag:
+            return "cooperate" if random.random() < self.generosity else "defect"
         return "cooperate"
 
 
@@ -138,29 +139,29 @@ class SuspiciousTitForTatStrategy(Strategy):
     def choose_move(self, agent, neighbors):
         if not agent.memory:
             return "defect"  # Start with defection
-
-        last_round = agent.memory[-1]
-        interaction_context = last_round.get('neighbor_moves', {})
+        
+        last_round_info = agent.memory[-1]
+        interaction_context = last_round_info.get('neighbor_moves', {})
 
         # CASE 1: Pairwise mode with specific opponent moves
         if isinstance(interaction_context, dict) and 'specific_opponent_moves' in interaction_context:
             specific_moves = interaction_context['specific_opponent_moves']
-            if specific_moves:
-                if any(move == "defect" for move in specific_moves.values()):
-                    return "defect"
-                return "cooperate"
-            return "defect"  # No specific opponents, maintain suspicion
+            if not specific_moves: return "defect"  # No opponents, maintain suspicion
+            if any(move == "defect" for move in specific_moves.values()):
+                return "defect"
+            return "cooperate"
 
         # CASE 2: Pairwise mode fallback or general aggregate
         elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
             return "cooperate" if coop_proportion >= 0.99 else "defect"
-
+            
         # CASE 3: Standard neighborhood mode
         elif isinstance(interaction_context, dict) and interaction_context:
+            # Similar to TFT, but after the initial defection.
             random_neighbor_id = random.choice(list(interaction_context.keys()))
-            return interaction_context[random_neighbor_id]
-
+            return interaction_context.get(random_neighbor_id, "defect")
+        
         return "defect"
 
 
@@ -169,52 +170,60 @@ class TitForTwoTatsStrategy(Strategy):
         if len(agent.memory) < 2:
             return "cooperate"
 
-        last_round = agent.memory[-1]
-        prev_round = agent.memory[-2]
-
-        last_interaction_context = last_round.get('neighbor_moves', {})
-        prev_interaction_context = prev_round.get('neighbor_moves', {})
+        last_round_info = agent.memory[-1]
+        prev_round_info = agent.memory[-2]
+        
+        last_interaction_context = last_round_info.get('neighbor_moves', {})
+        prev_interaction_context = prev_round_info.get('neighbor_moves', {})
 
         # CASE 1: Pairwise mode with specific opponent moves
         if isinstance(last_interaction_context, dict) and 'specific_opponent_moves' in last_interaction_context and \
-                isinstance(prev_interaction_context, dict) and 'specific_opponent_moves' in prev_interaction_context:
-
+           isinstance(prev_interaction_context, dict) and 'specific_opponent_moves' in prev_interaction_context:
+            
             last_specific = last_interaction_context['specific_opponent_moves']
             prev_specific = prev_interaction_context['specific_opponent_moves']
 
-            if last_specific and prev_specific:  # Ensure there are opponent records
-                # Check common opponents or all opponents from last round if list changes
-                # For simplicity, check if ANY opponent defected twice.
-                # A more complex TF2T would track each opponent's last two moves individually.
-                # This current logic for TF2T in pairwise will defect if any single opponent
-                # has defected against it in both of the previous two rounds.
-                for opp_id in last_specific:
-                    if opp_id in prev_specific:
-                        if last_specific[opp_id] == "defect" and prev_specific[opp_id] == "defect":
-                            return "defect"
-                return "cooperate"  # No such opponent found
-            return "cooperate"  # Not enough specific history
+            if not last_specific or not prev_specific: return "cooperate"
+
+            # Defect if ANY opponent defected against this agent in both of the last two rounds
+            # This requires checking common opponents if the set of opponents can change.
+            # Assuming for simplicity that the set of opponents is relatively stable or we react to any such pattern.
+            common_opponents = set(last_specific.keys()) & set(prev_specific.keys())
+            if not common_opponents:  # No common opponents from last two rounds with specific data
+                 # Fallback: if *overall average* cooperation was low twice, defect.
+                 # This is a weaker heuristic for TF2T in pairwise if opponent sets change rapidly.
+                 last_coop_prop = last_interaction_context.get('opponent_coop_proportion', 1.0)
+                 prev_coop_prop = prev_interaction_context.get('opponent_coop_proportion', 1.0)
+                 if last_coop_prop < 0.5 and prev_coop_prop < 0.5:  # Heuristic: majority defected twice
+                     return "defect"
+                 return "cooperate"
+
+            for opp_id in common_opponents:
+                if last_specific.get(opp_id) == "defect" and prev_specific.get(opp_id) == "defect":
+                    return "defect"
+            return "cooperate"
 
         # CASE 2: Pairwise mode fallback or general aggregate
         elif isinstance(last_interaction_context, dict) and 'opponent_coop_proportion' in last_interaction_context and \
-                isinstance(prev_interaction_context, dict) and 'opponent_coop_proportion' in prev_interaction_context:
-
+             isinstance(prev_interaction_context, dict) and 'opponent_coop_proportion' in prev_interaction_context:
+            
             last_coop_prop = last_interaction_context['opponent_coop_proportion']
             prev_coop_prop = prev_interaction_context['opponent_coop_proportion']
-            # Defect if aggregate cooperation was low (<0.5 implies majority defected) in both previous rounds
+            # Defect if aggregate cooperation was low (<0.5 implies more than half defected) in both previous rounds
             if last_coop_prop < 0.5 and prev_coop_prop < 0.5:
                 return "defect"
             return "cooperate"
-
+            
         # CASE 3: Standard neighborhood mode
         elif isinstance(last_interaction_context, dict) and last_interaction_context and \
-                isinstance(prev_interaction_context, dict) and prev_interaction_context:
-
-            # Original logic: Pick a random common neighbor's two past moves
+             isinstance(prev_interaction_context, dict) and prev_interaction_context:
+            
             common_neighbors = list(set(last_interaction_context.keys()) & set(prev_interaction_context.keys()))
             if not common_neighbors:
                 return "cooperate"
-
+            
+            # TF2T traditionally reacts to a *single* opponent it's tracking.
+            # In N-IPD, it's often simplified to react to a random common neighbor.
             random_neighbor_id = random.choice(common_neighbors)
             last_opponent_move = last_interaction_context.get(random_neighbor_id, "cooperate")
             prev_opponent_move = prev_interaction_context.get(random_neighbor_id, "cooperate")
@@ -222,7 +231,7 @@ class TitForTwoTatsStrategy(Strategy):
             if last_opponent_move == "defect" and prev_opponent_move == "defect":
                 return "defect"
             return "cooperate"
-
+            
         return "cooperate"
 
 
@@ -234,13 +243,14 @@ class PavlovStrategy(Strategy):
         if not agent.memory:
             return self.initial_move
 
-        last_round = agent.memory[-1]
-        last_move = last_round["my_move"]
-        last_reward = last_round["reward"]
+        last_round_info = agent.memory[-1]
+        last_move = last_round_info["my_move"]
+        last_reward = last_round_info["reward"]
 
         # Handle pairwise case where reward might be different scale
         # In pairwise mode, the reward might be averaged across multiple opponents
-        if "opponent_coop_proportion" in last_round.get("neighbor_moves", {}):
+        interaction_context = last_round_info.get("neighbor_moves", {})
+        if isinstance(interaction_context, dict) and "opponent_coop_proportion" in interaction_context:
             # Adjust threshold - if average reward is better than P, keep move
             # This should work with typical PD values (e.g., R=3, S=0, T=5, P=1)
             if last_reward > 1.5:  # Above midpoint between P(1) and R(3)
@@ -248,7 +258,7 @@ class PavlovStrategy(Strategy):
             else:
                 return "defect" if last_move == "cooperate" else "cooperate"  # Switch
 
-        # Standard win-stay, lose-shift
+        # Standard win-stay, lose-shift for neighborhood mode
         if last_reward >= 3:  # High reward threshold
             return last_move  # Keep the same move
         else:
@@ -280,7 +290,8 @@ class QLearningStrategy(Strategy):
             return "initial"
 
         last_round_info = agent.memory[-1]
-        interaction_context = last_round_info.get('neighbor_moves', {}) # Use 'neighbor_moves' as key
+        # Use a consistent key for the interaction context
+        interaction_context = last_round_info.get('neighbor_moves', {})
 
         if self.state_type == "basic":
             return 'standard'
@@ -289,11 +300,49 @@ class QLearningStrategy(Strategy):
         if isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
 
+            # PAIRWISE STATE LOGIC
             if self.state_type == "proportion":
-                # Use the exact proportion as state
-                return (coop_proportion,)
-
+                return (round(coop_proportion, 2),)  # Round for fewer states
             elif self.state_type == "proportion_discretized":
+                # Discretize cooperation proportion into bins
+                if coop_proportion <= 0.2: state_feature = 0.2
+                elif coop_proportion <= 0.4: state_feature = 0.4
+                elif coop_proportion <= 0.6: state_feature = 0.6
+                elif coop_proportion <= 0.8: state_feature = 0.8
+                else: state_feature = 1.0
+                return (state_feature,)
+            elif self.state_type == "memory_enhanced":
+                own_last_move = agent.memory[-1]['my_move']
+                # Default previous move to current if memory is short
+                own_prev_move = agent.memory[-2]['my_move'] if len(agent.memory) >= 2 else own_last_move
+                own_last_bin = 1 if own_last_move == "cooperate" else 0
+                own_prev_bin = 1 if own_prev_move == "cooperate" else 0
+                
+                opponent_state_bin = 0  # Low
+                if coop_proportion > 0.67: opponent_state_bin = 2  # High
+                elif coop_proportion > 0.33: opponent_state_bin = 1  # Med
+                return (own_last_bin, own_prev_bin, opponent_state_bin)
+            elif self.state_type == "count":  # For pairwise, this is a discretized proportion
+                num_bins = agent.memory.maxlen if agent.memory.maxlen else 10  # Or a fixed reasonable number like 5 or 10
+                discretized_count = int(round(coop_proportion * (num_bins-1)))  # Bins 0 to N-1
+                return (discretized_count,)
+            elif self.state_type == "threshold":
+                return (coop_proportion > 0.5,)
+            else:  # Fallback for unhandled pairwise state type
+                 return ('pairwise_agg', round(coop_proportion, 1))  # Simple tuple
+
+        # NEIGHBORHOOD STATE LOGIC
+        elif isinstance(interaction_context, dict) and interaction_context:  # Standard neighborhood dict
+            num_neighbors = len(interaction_context)
+            if num_neighbors == 0: return 'no_neighbors'  # Should be caught by empty interaction_context earlier
+            
+            num_cooperating_neighbors = sum(1 for move in interaction_context.values() if move == "cooperate")
+            coop_proportion = num_cooperating_neighbors / num_neighbors
+            
+            if self.state_type == "proportion":
+                return (round(coop_proportion, 2),)
+            elif self.state_type == "proportion_discretized":
+                # Discretize the proportion into bins (5 bins)
                 if coop_proportion <= 0.2: state_feature = 0.2
                 elif coop_proportion <= 0.4: state_feature = 0.4
                 elif coop_proportion <= 0.6: state_feature = 0.6
@@ -305,89 +354,19 @@ class QLearningStrategy(Strategy):
                 own_prev_move = agent.memory[-2]['my_move'] if len(agent.memory) >= 2 else own_last_move
                 own_last_bin = 1 if own_last_move == "cooperate" else 0
                 own_prev_bin = 1 if own_prev_move == "cooperate" else 0
-                if coop_proportion <= 0.33: opponent_state_bin = 0
-                elif coop_proportion <= 0.67: opponent_state_bin = 1
-                else: opponent_state_bin = 2
-                return (own_last_bin, own_prev_bin, opponent_state_bin)
 
+                neighbor_state_bin = 0  # Low
+                if coop_proportion > 0.67: neighbor_state_bin = 2  # High
+                elif coop_proportion > 0.33: neighbor_state_bin = 1  # Med
+                return (own_last_bin, own_prev_bin, neighbor_state_bin)
             elif self.state_type == "count":
-                # For pairwise mode, convert proportion to a discretized "count" representation
-                # This helps maintain compatibility with the standard mode
-                num_bins = 10  # Discretize into 10 bins
-                discretized_count = int(coop_proportion * num_bins)
-                return (discretized_count,)
-
-            elif self.state_type == "threshold":
-                # Binary feature indicating if majority cooperated
-                return (coop_proportion > 0.5,)
-
-            else:  # Fallback for unhandled pairwise state type
-                return ('pairwise_agg', round(coop_proportion, 1))
-
-        elif isinstance(interaction_context, dict):
-            num_neighbors = len(interaction_context)
-            if num_neighbors == 0:
-                return 'no_neighbors'
-
-            num_cooperating_neighbors = sum(1 for move in interaction_context.values() if move == "cooperate")
-            coop_proportion = num_cooperating_neighbors / num_neighbors
-
-            if self.state_type == "proportion":
-                # Use the exact proportion as state
-                return (coop_proportion,)
-
-            elif self.state_type == "memory_enhanced":
-                # Example: Own last 2 moves + discretized neighbor coop proportion
-                # Determine own moves (default to C if not enough history)
-                own_last_move = "cooperate"
-                own_prev_move = "cooperate"
-                if len(agent.memory) >= 1:
-                    own_last_move = agent.memory[-1]["my_move"]
-                if len(agent.memory) >= 2:
-                    own_prev_move = agent.memory[-2]["my_move"]
-
-                own_last_bin = 1 if own_last_move == "cooperate" else 0
-                own_prev_bin = 1 if own_prev_move == "cooperate" else 0
-
-                # Use discretized neighbor state (from previous state implementation)
-                if coop_proportion <= 0.33:
-                    neighbor_state = 0  # Low
-                elif coop_proportion <= 0.67:
-                    neighbor_state = 1  # Med
-                else:
-                    neighbor_state = 2  # High
-
-                # State includes own last 2 moves and neighbor summary
-                return (own_last_bin, own_prev_bin, neighbor_state)
-
-            elif self.state_type == "proportion_discretized":
-                # Discretize the proportion into bins (5 bins)
-                if coop_proportion <= 0.2:
-                    state_feature = 0.2
-                elif coop_proportion <= 0.4:
-                    state_feature = 0.4
-                elif coop_proportion <= 0.6:
-                    state_feature = 0.6
-                elif coop_proportion <= 0.8:
-                    state_feature = 0.8
-                else:
-                    state_feature = 1.0
-                return (state_feature,)
-
-            elif self.state_type == "count":
-                # Use absolute count of cooperating neighbors
                 return (num_cooperating_neighbors,)
-
             elif self.state_type == "threshold":
-                # Binary feature indicating if majority cooperated
                 return (coop_proportion > 0.5,)
-
-            else:
-                # Default fallback
-                return "standard"
-
-        # Fallback if interaction_context is not a dict (should not happen with proper memory update)
-        return "unknown_context"
+            else:  # Fallback for unhandled neighborhood state type
+                return 'standard_neighborhood'
+        
+        return 'unknown_context_fallback'  # Fallback if interaction_context is not recognized
 
 
 
@@ -440,30 +419,33 @@ class QLearningStrategy(Strategy):
             return "defect"
 
     def update(self, agent, action, reward, interaction_context_for_next_state):
-        # Use the state that was stored during choose_move
+        """Update Q-values based on the Q-learning formula.
+        
+        Args:
+            agent: The agent whose Q-values are being updated
+            action: The action that was taken
+            reward: The reward received
+            interaction_context_for_next_state: The interaction context from this round's outcomes
+        
+        Note: The 'next_state' is determined based on the *newest* entry in memory,
+        which reflects the outcome of 'action' taken in 'state_executed'.
+        """
         state_executed = agent.last_state_representation
         if state_executed is None:
-            # This should not happen after the first round, but just in case
             return
 
-        # Calculate the state for the next step (based on the current memory after this round)
-        next_state = self._get_current_state(agent)
-
+        # The 'next_state' is determined based on the *newest* entry in memory,
+        # which reflects the outcome of 'action' taken in 'state_executed'.
+        next_state = self._get_current_state(agent)  # This correctly uses the latest memory
         self._ensure_state_exists(agent, next_state)
 
-        # Ensure next state exists in Q-table, initialize if not
-        if next_state not in agent.q_values:
-            agent.q_values[next_state] = {"cooperate": 0.0, "defect": 0.0}
-
-        # Find max Q-value for the next state
         best_next_q = max(agent.q_values[next_state].values())
-
-        # Update Q-value for the chosen action using the Q-learning formula
         current_q = agent.q_values[state_executed][action]
+        
+        # Standard Q-update rule
         agent.q_values[state_executed][action] = (
-            1 - self.learning_rate
-        ) * current_q + self.learning_rate * (
-            reward + self.discount_factor * best_next_q
+            (1 - self.learning_rate) * current_q +
+            self.learning_rate * (reward + self.discount_factor * best_next_q)
         )
 
 

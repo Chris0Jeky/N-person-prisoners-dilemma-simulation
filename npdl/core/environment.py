@@ -286,28 +286,27 @@ class Environment:
 
     def _run_pairwise_round(self, rewiring_prob=0.0):
         """Run a single round using pairwise interactions between all agents.
-        Stores both aggregate and specific opponent move information in memory.
+        
+        In this mode:
+        - Each agent plays a separate 2-player game with every other agent
+        - Agents make a single move choice that applies to all their games
+        - Memory stores both specific opponent moves (for reactive strategies) 
+          and aggregate cooperation proportion (for RL strategies)
         """
         # Step 1: Each agent chooses one move for the round.
-        # Reactive strategies will use their memory which contains info from the *previous* round.
+        # This choice is based on their memory from the *previous* round.
         agent_moves_for_round = {}
         for agent in self.agents:
-            # Reactive strategies like TFT need info about opponents' last moves.
-            # In pairwise, their `choose_move` should be adapted to look at
-            # `last_round['neighbor_moves']['specific_opponent_moves']`.
-            # For RL agents, they use `_get_current_state` which in pairwise mode
-            # should use `last_round['neighbor_moves']['opponent_coop_proportion']`.
-            # The `neighbors` argument to `choose_move` is less relevant here but kept for API.
-            move = agent.choose_move([])  # Pass empty list, as context comes from memory
+            move = agent.choose_move([])  # Reactive strategies will parse their specific memory format
             agent_moves_for_round[agent.agent_id] = move
-
+        
         # Step 2: Simulate Pairwise Games
         pairwise_payoffs = {agent.agent_id: [] for agent in self.agents}
-        specific_opponent_moves_for_memory = {agent.agent_id: {} for agent in self.agents}  # What each agent observed
-
+        specific_opponent_moves_for_memory = {agent.agent_id: {} for agent in self.agents}
+        
         opponent_coop_counts = {agent.agent_id: 0 for agent in self.agents}
         opponent_total_counts = {agent.agent_id: 0 for agent in self.agents}
-
+        
         agent_ids_list = [a.agent_id for a in self.agents]
         for i in range(len(agent_ids_list)):
             for j in range(i + 1, len(agent_ids_list)):
@@ -315,78 +314,75 @@ class Environment:
                 agent_j_id = agent_ids_list[j]
                 move_i = agent_moves_for_round[agent_i_id]
                 move_j = agent_moves_for_round[agent_j_id]
-
+                
                 payoff_i, payoff_j = get_pairwise_payoffs(move_i, move_j, self.R, self.S, self.T, self.P)
-
+                
                 pairwise_payoffs[agent_i_id].append(payoff_i)
                 pairwise_payoffs[agent_j_id].append(payoff_j)
-
+                
+                # Store what move agent_i saw from agent_j, and vice-versa
                 specific_opponent_moves_for_memory[agent_i_id][agent_j_id] = move_j
                 specific_opponent_moves_for_memory[agent_j_id][agent_i_id] = move_i
-
+                
                 opponent_total_counts[agent_i_id] += 1
                 opponent_total_counts[agent_j_id] += 1
                 if move_j == "cooperate": opponent_coop_counts[agent_i_id] += 1
                 if move_i == "cooperate": opponent_coop_counts[agent_j_id] += 1
-
-        # Step 3: Aggregate Results & Update Agents
-        round_total_payoffs = {}  # Store total payoffs for this round
-        round_avg_payoffs_for_learning = {}  # Store avg payoffs for RL signal
+        
+        # Step 3: Aggregate Results & Update Agents' Memory and Score
+        round_total_payoffs = {} 
+        round_avg_payoffs_for_learning = {}
 
         for agent in self.agents:
             agent_id = agent.agent_id
             total_payoff_this_round = sum(pairwise_payoffs[agent_id])
             num_games_played = len(pairwise_payoffs[agent_id])
             avg_payoff_this_round = total_payoff_this_round / num_games_played if num_games_played > 0 else 0
-
+            
             round_total_payoffs[agent_id] = total_payoff_this_round
-            round_avg_payoffs_for_learning[agent_id] = avg_payoff_this_round
-
-            agent.score += total_payoff_this_round
-
+            round_avg_payoffs_for_learning[agent_id] = avg_payoff_this_round  # For RL agent reward signal
+            
+            agent.score += total_payoff_this_round  # Update score with total from all pairwise games
+            
             opp_total = opponent_total_counts[agent_id]
             opp_coop_prop = opponent_coop_counts[agent_id] / opp_total if opp_total > 0 else 0.5
-
+            
             # This is the crucial memory structure for pairwise
             interaction_context_for_memory = {
-                'opponent_coop_proportion': opp_coop_prop,
-                'specific_opponent_moves': specific_opponent_moves_for_memory[agent_id].copy()
+                'opponent_coop_proportion': opp_coop_prop,  # For RL agents
+                'specific_opponent_moves': specific_opponent_moves_for_memory[agent_id].copy()  # For reactive
             }
-
+            
             agent.update_memory(
                 my_move=agent_moves_for_round[agent_id],
-                neighbor_moves=interaction_context_for_memory,  # Use consistent key
+                neighbor_moves=interaction_context_for_memory,  # This dict is passed
                 reward=avg_payoff_this_round  # RL agents learn from average reward
             )
-
+        
         # Step 4: Q-Value Updates for RL Agents
+        # This step uses the memory *just updated* in Step 3.
+        # The strategy's `update` method will call `_get_current_state` which reads this new memory.
         for agent in self.agents:
-            if agent.strategy_type in ("q_learning", "q_learning_adaptive",
-                                       "lra_q", "hysteretic_q", "wolf_phc", "ucb1_q"):
-                # Q-learners use the aggregate opponent_coop_proportion for their next_state_actions context
-                # This is derived from the memory *just updated*, reflecting the current round's outcomes.
-                # The _get_current_state method in the QL strategy will parse this.
-                # For LRA-Q etc., they might directly use the 'opponent_coop_proportion' from interaction_context_for_memory.
-                # The `neighbor_moves` argument to `update_q_value` is what the strategy's `update` method receives.
-                # It should contain the information needed for specific algorithm logic (like LRA-Q's rate adjustment)
-                # AND for calculating the next state (via agent.memory).
-
-                # For QL update, the "next_state_actions" usually means the context of the *current* outcome
-                # that leads to the next state.
+            if agent.strategy_type in ("q_learning", "q_learning_adaptive", 
+                                      "lra_q", "hysteretic_q", "wolf_phc", "ucb1_q"):
+                
+                # The `next_state_actions` argument to update_q_value is the context
+                # of the *current* round's outcomes that the *strategy's update method* receives.
+                # QLearningStrategy.update itself calls _get_current_state for the next_state.
+                # For LRA-Q, it needs the current opponent_coop_proportion.
                 current_outcome_context = {
                     'opponent_coop_proportion': agent.memory[-1]['neighbor_moves']['opponent_coop_proportion']
                 }
 
                 agent.update_q_value(
                     action=agent_moves_for_round[agent_id],
-                    reward=round_avg_payoffs_for_learning[agent_id],  # Learn from average payoff
-                    next_state_actions=current_outcome_context  # Context of the *current* outcomes
-                    # that _get_current_state will use for next state
+                    reward=round_avg_payoffs_for_learning[agent_id],
+                    next_state_actions=current_outcome_context
                 )
-
+        
         if rewiring_prob > 0:
-            self.update_network(rewiring_prob=rewiring_prob)  # Network less relevant for pairwise logic
-
+            self.update_network(rewiring_prob=rewiring_prob)
+        
         return agent_moves_for_round, round_total_payoffs
 
     def run_simulation(

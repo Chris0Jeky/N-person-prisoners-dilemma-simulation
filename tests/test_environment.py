@@ -39,8 +39,8 @@ class TestEnvironmentBasics:
         (1, "fully_connected", {}, 0, True),
         (2, "fully_connected", {}, 1, True),
         # Fixed: For 4 nodes with k=4, k gets adjusted to min(4,3)=3. 
-        # Watts-Strogatz with n=4, k=3 starts with 6 edges but beta rewiring can change this
-        (4, "small_world", {"k": 4, "beta": 0.0}, 6, True),  # beta=0 means no rewiring
+        # Watts-Strogatz with n=4, k=3 creates a 4-cycle (4 edges), not a complete graph
+        (4, "small_world", {"k": 4, "beta": 0.0}, 4, True),  # beta=0 means no rewiring
         (4, "regular", {"k": 4}, None, False),  # k=N requires N even usually
         (5, "regular", {"k": 4}, 10, True),  # k=4, N=5 ok
     ])

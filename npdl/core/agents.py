@@ -106,49 +106,32 @@ class GenerousTitForTatStrategy(Strategy):
             return "cooperate"
 
         last_round = agent.memory[-1]
-        neighbor_moves = last_round["neighbor_moves"]
+        interaction_context = last_round.get('neighbor_moves', {})
 
-        # Handle pairwise interaction format with specific opponent moves
-        if (
-            isinstance(neighbor_moves, dict)
-            and "specific_opponent_moves" in neighbor_moves
-        ):
-            # In pairwise mode, use specific opponent history
-            specific_moves = neighbor_moves["specific_opponent_moves"]
+        # CASE 1: Pairwise mode with specific opponent moves
+        if isinstance(interaction_context, dict) and 'specific_opponent_moves' in interaction_context:
+            specific_moves = interaction_context['specific_opponent_moves']
             if specific_moves:
-                # Check if any opponent defected
-                any_defected = any(move == "defect" for move in specific_moves.values())
-                if any_defected:
-                    # Apply generosity - sometimes cooperate even when should defect
+                if any(move == "defect" for move in specific_moves.values()):
                     return "cooperate" if random.random() < self.generosity else "defect"
-                else:
-                    # All cooperated
-                    return "cooperate"
-            else:
-                # No opponents
                 return "cooperate"
+            return "cooperate"
 
-        # Fallback to proportion-based decision (for backward compatibility)
-        elif (
-            isinstance(neighbor_moves, dict)
-            and "opponent_coop_proportion" in neighbor_moves
-        ):
-            # Convert proportion to binary decision based on majority behavior
-            coop_proportion = neighbor_moves["opponent_coop_proportion"]
-            if coop_proportion >= 0.5:
-                return "cooperate"
-            else:
-                # Apply generosity - sometimes cooperate even when should defect
+        # CASE 2: Pairwise mode fallback or general aggregate
+        elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
+            coop_proportion = interaction_context['opponent_coop_proportion']
+            if coop_proportion < 0.99:  # If not all cooperated
                 return "cooperate" if random.random() < self.generosity else "defect"
+            return "cooperate"
 
-        # Standard neighborhood format
-        if neighbor_moves:
-            random_neighbor_id = random.choice(list(neighbor_moves.keys()))
-            move = neighbor_moves[random_neighbor_id]
-            # Occasionally forgive defection
+        # CASE 3: Standard neighborhood mode
+        elif isinstance(interaction_context, dict) and interaction_context:
+            random_neighbor_id = random.choice(list(interaction_context.keys()))
+            move = interaction_context[random_neighbor_id]
             if move == "defect" and random.random() < self.generosity:
                 return "cooperate"
             return move
+
         return "cooperate"
 
 

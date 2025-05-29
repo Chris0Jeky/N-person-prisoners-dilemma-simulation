@@ -165,6 +165,94 @@ class SuspiciousTitForTatStrategy(Strategy):
         return "defect"
 
 
+class TitForTwoTatsStrategy(Strategy):
+    def choose_move(self, agent, neighbors):
+        # Cooperate for the first two rounds or if insufficient memory
+        if len(agent.memory) < 2:
+            return "cooperate"
+
+        last_round = agent.memory[-1]
+        prev_round = agent.memory[-2]
+
+        # Handle pairwise interaction format with specific opponent moves
+        if (
+                isinstance(last_round["neighbor_moves"], dict)
+                and "specific_opponent_moves" in last_round["neighbor_moves"]
+                and isinstance(prev_round["neighbor_moves"], dict)
+                and "specific_opponent_moves" in prev_round["neighbor_moves"]
+        ):
+            # In pairwise mode, check specific opponent history
+            last_specific = last_round["neighbor_moves"]["specific_opponent_moves"]
+            prev_specific = prev_round["neighbor_moves"]["specific_opponent_moves"]
+
+            # For each opponent, check if they defected in both of the last two rounds
+            for opponent_id in last_specific:
+                if opponent_id in prev_specific:
+                    # This opponent was present in both rounds
+                    if (last_specific[opponent_id] == "defect" and
+                            prev_specific[opponent_id] == "defect"):
+                        # This opponent defected twice in a row - defect
+                        return "defect"
+
+            # No opponent defected twice in a row
+            return "cooperate"
+
+        # Fallback to proportion-based decision (for backward compatibility)
+        elif (
+                isinstance(last_round["neighbor_moves"], dict)
+                and "opponent_coop_proportion" in last_round["neighbor_moves"]
+                and isinstance(prev_round["neighbor_moves"], dict)
+                and "opponent_coop_proportion" in prev_round["neighbor_moves"]
+        ):
+            last_coop_prop = last_round["neighbor_moves"]["opponent_coop_proportion"]
+            prev_coop_prop = prev_round["neighbor_moves"]["opponent_coop_proportion"]
+
+            # For this strategy, defect only if cooperation was low (< 0.5) for two rounds in a row
+            if last_coop_prop < 0.5 and prev_coop_prop < 0.5:
+                return "defect"
+            else:
+                return "cooperate"
+
+        # Standard neighborhood-based logic
+        # Need a consistent way to get "an" opponent's move
+        # Using the same random neighbor logic as TitForTat for simplicity
+        last_neighbor_moves = last_round["neighbor_moves"]
+        prev_neighbor_moves = prev_round["neighbor_moves"]
+
+        # Handle cases where neighbors might not exist in both rounds
+        if not last_neighbor_moves or not prev_neighbor_moves:
+            return "cooperate"  # Default to cooperate if neighbors info are missing
+
+        # Try to find a neighbor present in both rounds
+        common_neighbors = list(
+            set(last_neighbor_moves.keys()) & set(prev_neighbor_moves.keys())
+        )
+
+        if not common_neighbors:
+            # If no common neighbors, pick randomly from last round's neighbors
+            if not last_neighbor_moves:
+                return "cooperate"  # Should not happen if reached here
+            random_neighbor_id = random.choice(list(last_neighbor_moves.keys()))
+            last_opponent_move = last_neighbor_moves.get(
+                random_neighbor_id, "cooperate"
+            )
+            prev_opponent_move = "cooperate"  # Default to cooperate if no memory
+        else:
+            random_neighbor_id = random.choice(common_neighbors)
+            last_opponent_move = last_neighbor_moves.get(
+                random_neighbor_id, "cooperate"
+            )
+            prev_opponent_move = prev_neighbor_moves.get(
+                random_neighbor_id, "cooperate"
+            )
+
+        # Defect only if the chosen opponent defected twice in a row
+        if last_opponent_move == "defect" and prev_opponent_move == "defect":
+            return "defect"
+        else:
+            return "cooperate"
+
+
 class PavlovStrategy(Strategy):
     def __init__(self, initial_move="cooperate"):
         self.initial_move = initial_move
@@ -530,94 +618,6 @@ class LRAQLearningStrategy(QLearningStrategy):
             self.learning_rate = max(self.base_learning_rate, self.learning_rate - 0.01)
         elif self.learning_rate < self.base_learning_rate:
             self.learning_rate = min(self.base_learning_rate, self.learning_rate + 0.01)
-
-
-class TitForTwoTatsStrategy(Strategy):
-    def choose_move(self, agent, neighbors):
-        # Cooperate for the first two rounds or if insufficient memory
-        if len(agent.memory) < 2:
-            return "cooperate"
-
-        last_round = agent.memory[-1]
-        prev_round = agent.memory[-2]
-
-        # Handle pairwise interaction format with specific opponent moves
-        if (
-            isinstance(last_round["neighbor_moves"], dict)
-            and "specific_opponent_moves" in last_round["neighbor_moves"]
-            and isinstance(prev_round["neighbor_moves"], dict)
-            and "specific_opponent_moves" in prev_round["neighbor_moves"]
-        ):
-            # In pairwise mode, check specific opponent history
-            last_specific = last_round["neighbor_moves"]["specific_opponent_moves"]
-            prev_specific = prev_round["neighbor_moves"]["specific_opponent_moves"]
-            
-            # For each opponent, check if they defected in both of the last two rounds
-            for opponent_id in last_specific:
-                if opponent_id in prev_specific:
-                    # This opponent was present in both rounds
-                    if (last_specific[opponent_id] == "defect" and 
-                        prev_specific[opponent_id] == "defect"):
-                        # This opponent defected twice in a row - defect
-                        return "defect"
-            
-            # No opponent defected twice in a row
-            return "cooperate"
-
-        # Fallback to proportion-based decision (for backward compatibility)
-        elif (
-            isinstance(last_round["neighbor_moves"], dict)
-            and "opponent_coop_proportion" in last_round["neighbor_moves"]
-            and isinstance(prev_round["neighbor_moves"], dict)
-            and "opponent_coop_proportion" in prev_round["neighbor_moves"]
-        ):
-            last_coop_prop = last_round["neighbor_moves"]["opponent_coop_proportion"]
-            prev_coop_prop = prev_round["neighbor_moves"]["opponent_coop_proportion"]
-
-            # For this strategy, defect only if cooperation was low (< 0.5) for two rounds in a row
-            if last_coop_prop < 0.5 and prev_coop_prop < 0.5:
-                return "defect"
-            else:
-                return "cooperate"
-
-        # Standard neighborhood-based logic
-        # Need a consistent way to get "an" opponent's move
-        # Using the same random neighbor logic as TitForTat for simplicity
-        last_neighbor_moves = last_round["neighbor_moves"]
-        prev_neighbor_moves = prev_round["neighbor_moves"]
-
-        # Handle cases where neighbors might not exist in both rounds
-        if not last_neighbor_moves or not prev_neighbor_moves:
-            return "cooperate"  # Default to cooperate if neighbors info are missing
-
-        # Try to find a neighbor present in both rounds
-        common_neighbors = list(
-            set(last_neighbor_moves.keys()) & set(prev_neighbor_moves.keys())
-        )
-
-        if not common_neighbors:
-            # If no common neighbors, pick randomly from last round's neighbors
-            if not last_neighbor_moves:
-                return "cooperate"  # Should not happen if reached here
-            random_neighbor_id = random.choice(list(last_neighbor_moves.keys()))
-            last_opponent_move = last_neighbor_moves.get(
-                random_neighbor_id, "cooperate"
-            )
-            prev_opponent_move = "cooperate"  # Default to cooperate if no memory
-        else:
-            random_neighbor_id = random.choice(common_neighbors)
-            last_opponent_move = last_neighbor_moves.get(
-                random_neighbor_id, "cooperate"
-            )
-            prev_opponent_move = prev_neighbor_moves.get(
-                random_neighbor_id, "cooperate"
-            )
-
-        # Defect only if the chosen opponent defected twice in a row
-        if last_opponent_move == "defect" and prev_opponent_move == "defect":
-            return "defect"
-        else:
-            return "cooperate"
 
 
 class HystereticQLearningStrategy(QLearningStrategy):

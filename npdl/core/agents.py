@@ -141,40 +141,28 @@ class SuspiciousTitForTatStrategy(Strategy):
             return "defect"  # Start with defection
 
         last_round = agent.memory[-1]
-        neighbor_moves = last_round["neighbor_moves"]
+        interaction_context = last_round.get('neighbor_moves', {})
 
-        # Handle pairwise interaction format with specific opponent moves
-        if (
-            isinstance(neighbor_moves, dict)
-            and "specific_opponent_moves" in neighbor_moves
-        ):
-            # In pairwise mode, use specific opponent history
-            specific_moves = neighbor_moves["specific_opponent_moves"]
+        # CASE 1: Pairwise mode with specific opponent moves
+        if isinstance(interaction_context, dict) and 'specific_opponent_moves' in interaction_context:
+            specific_moves = interaction_context['specific_opponent_moves']
             if specific_moves:
-                # Cooperate only if ALL opponents cooperated
-                for opponent_id, opponent_move in specific_moves.items():
-                    if opponent_move == "defect":
-                        return "defect"
-                # All opponents cooperated
+                if any(move == "defect" for move in specific_moves.values()):
+                    return "defect"
                 return "cooperate"
-            else:
-                # No opponents
-                return "defect"
+            return "defect"  # No specific opponents, maintain suspicion
 
-        # Fallback to proportion-based decision (for backward compatibility)
-        elif (
-            isinstance(neighbor_moves, dict)
-            and "opponent_coop_proportion" in neighbor_moves
-        ):
-            # Convert proportion to binary decision - need ALL to cooperate
-            coop_proportion = neighbor_moves["opponent_coop_proportion"]
+        # CASE 2: Pairwise mode fallback or general aggregate
+        elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
+            coop_proportion = interaction_context['opponent_coop_proportion']
             return "cooperate" if coop_proportion >= 0.99 else "defect"
 
-        # Standard neighborhood format
-        if neighbor_moves:
-            random_neighbor_id = random.choice(list(neighbor_moves.keys()))
-            return neighbor_moves[random_neighbor_id]
-        return "defect"  # Default to defect if no neighbors
+        # CASE 3: Standard neighborhood mode
+        elif isinstance(interaction_context, dict) and interaction_context:
+            random_neighbor_id = random.choice(list(interaction_context.keys()))
+            return interaction_context[random_neighbor_id]
+
+        return "defect"
 
 
 class PavlovStrategy(Strategy):

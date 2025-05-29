@@ -82,7 +82,7 @@ class TitForTatStrategy(Strategy):
         elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
             # For TFT, be strict: only cooperate if all (or almost all) opponents cooperated
-            return "cooperate" if coop_proportion >= 0.999 else "defect"  # Use a high threshold
+            return "cooperate" if coop_proportion >= 0.99 else "defect"  # Use a high threshold
 
         # CASE 3: Standard neighborhood mode
         elif isinstance(interaction_context, dict) and interaction_context:

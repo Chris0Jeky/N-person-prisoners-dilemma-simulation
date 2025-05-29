@@ -139,29 +139,29 @@ class SuspiciousTitForTatStrategy(Strategy):
     def choose_move(self, agent, neighbors):
         if not agent.memory:
             return "defect"  # Start with defection
-
-        last_round = agent.memory[-1]
-        interaction_context = last_round.get('neighbor_moves', {})
+        
+        last_round_info = agent.memory[-1]
+        interaction_context = last_round_info.get('neighbor_moves', {})
 
         # CASE 1: Pairwise mode with specific opponent moves
         if isinstance(interaction_context, dict) and 'specific_opponent_moves' in interaction_context:
             specific_moves = interaction_context['specific_opponent_moves']
-            if specific_moves:
-                if any(move == "defect" for move in specific_moves.values()):
-                    return "defect"
-                return "cooperate"
-            return "defect"  # No specific opponents, maintain suspicion
+            if not specific_moves: return "defect"  # No opponents, maintain suspicion
+            if any(move == "defect" for move in specific_moves.values()):
+                return "defect"
+            return "cooperate"
 
         # CASE 2: Pairwise mode fallback or general aggregate
         elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
-            return "cooperate" if coop_proportion >= 0.99 else "defect"
-
+            return "cooperate" if coop_proportion >= 0.999 else "defect"
+            
         # CASE 3: Standard neighborhood mode
         elif isinstance(interaction_context, dict) and interaction_context:
+            # Similar to TFT, but after the initial defection.
             random_neighbor_id = random.choice(list(interaction_context.keys()))
-            return interaction_context[random_neighbor_id]
-
+            return interaction_context.get(random_neighbor_id, "defect")
+        
         return "defect"
 
 

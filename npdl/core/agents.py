@@ -57,48 +57,44 @@ class AlwaysDefectStrategy(Strategy):
 
 
 class TitForTatStrategy(Strategy):
-    def choose_move(self, agent, neighbors):
+    def choose_move(self, agent, neighbors):  # neighbors arg kept for API consistency
+        """Choose the move for a TitForTat agent, handling both interaction modes.
+        This version prioritizes specific opponent moves for pairwise mode.
+        """
         if not agent.memory:
             return "cooperate"  # Cooperate on first move
 
-        # Get the last round information
         last_round = agent.memory[-1]
-        neighbor_moves = last_round["neighbor_moves"]
+        interaction_context = last_round.get('neighbor_moves',
+                                             {})  # Using 'neighbor_moves' as the key for interaction context
 
-        # Handle pairwise interaction format with specific opponent moves
-        if (
-            isinstance(neighbor_moves, dict)
-            and "specific_opponent_moves" in neighbor_moves
-        ):
-            # In pairwise mode, use specific opponent history
-            specific_moves = neighbor_moves["specific_opponent_moves"]
-            if specific_moves:
-                # True TFT: defect if ANY opponent defected
-                for opponent_id, opponent_move in specific_moves.items():
-                    if opponent_move == "defect":
-                        return "defect"
-                # All opponents cooperated
-                return "cooperate"
-            else:
-                # No opponents (shouldn't happen, but handle gracefully)
-                return "cooperate"
+        # CASE 1: Pairwise mode with specific opponent moves
+        if isinstance(interaction_context, dict) and 'specific_opponent_moves' in interaction_context:
+            specific_moves = interaction_context['specific_opponent_moves']
+            if specific_moves:  # Check if there were any opponents
+                # True TFT: defect if ANY specific opponent defected against this agent last round
+                if any(move == "defect" for move in specific_moves.values()):
+                    return "defect"
+                return "cooperate"  # All specific opponents cooperated
+            return "cooperate"  # No specific opponents, default to coop
 
-        # Fallback to proportion-based decision (for backward compatibility)
-        elif (
-            isinstance(neighbor_moves, dict)
-            and "opponent_coop_proportion" in neighbor_moves
-        ):
-            # Convert proportion to binary decision based on ANY defection
-            coop_proportion = neighbor_moves["opponent_coop_proportion"]
-            # Only cooperate if ALL opponents cooperated (proportion = 1.0)
-            # Small tolerance for floating point
+        # CASE 2: Pairwise mode fallback (old format) or general aggregate if no specific
+        elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
+            coop_proportion = interaction_context['opponent_coop_proportion']
+            # For TFT, be strict: only cooperate if all (or almost all) opponents cooperated
             return "cooperate" if coop_proportion >= 0.99 else "defect"
 
-        # Standard neighborhood format
-        if neighbor_moves:
-            random_neighbor_id = random.choice(list(neighbor_moves.keys()))
-            return neighbor_moves[random_neighbor_id]
-        return "cooperate"  # Default to cooperate if no neighbors
+        # CASE 3: Standard neighborhood mode
+        elif isinstance(interaction_context, dict) and interaction_context:  # Ensure it's a non-empty dict
+            # Original logic: pick a random neighbor's move
+            # This is a simplification for N-IPD TFT. A more robust N-IPD TFT might
+            # defect if *any* neighbor defected, or based on majority.
+            # Keeping original random neighbor logic for now for neighborhood mode.
+            random_neighbor_id = random.choice(list(interaction_context.keys()))
+            return interaction_context[random_neighbor_id]
+
+        # Default if no memory, or empty/unrecognized interaction_context
+        return "cooperate"
 
 
 class GenerousTitForTatStrategy(Strategy):

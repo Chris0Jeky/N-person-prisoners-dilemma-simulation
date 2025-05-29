@@ -41,6 +41,24 @@ class TestPairwiseTitForTatStrategies:
         # TFT should defect because opponent 2 defected
         assert agent.choose_move([]) == "defect"
 
+    def test_tft_defects_if_any_opponent_defected(self):
+        """Test that TFT defects if ANY opponent defected in pairwise mode."""
+        agent = Agent(agent_id=0, strategy="tit_for_tat")
+        
+        # Set up memory with specific opponent moves
+        neighbor_moves = {
+            "opponent_coop_proportion": 0.67,  # 2/3 cooperated
+            "specific_opponent_moves": {
+                1: "cooperate",
+                2: "defect",    # One defector
+                3: "cooperate"
+            }
+        }
+        agent.update_memory("cooperate", neighbor_moves, 2.0)
+        
+        # TFT should defect because opponent 2 defected
+        assert agent.choose_move([]) == "defect"
+
     def test_tft_cooperates_if_all_opponents_cooperated(self):
         """Test that TFT cooperates only if ALL opponents cooperated."""
         agent = Agent(agent_id=0, strategy="tit_for_tat")

@@ -57,80 +57,81 @@ class AlwaysDefectStrategy(Strategy):
 
 class TitForTatStrategy(Strategy):
     def choose_move(self, agent, neighbors):  # neighbors arg kept for API consistency
-        """Choose the move for a TitForTat agent, handling both interaction modes.
-        This version prioritizes specific opponent moves for pairwise mode.
+        """Choose the move for a TitForTat agent.
+        In pairwise mode, it defects if ANY specific opponent defected last round.
+        In neighborhood mode, it (currently) mimics a random neighbor.
+        Defaults to cooperate.
         """
         if not agent.memory:
-            return "cooperate"  # Cooperate on first move
+            return "cooperate"
 
-        last_round = agent.memory[-1]
-        interaction_context = last_round.get('neighbor_moves',
-                                             {})  # Using 'neighbor_moves' as the key for interaction context
+        last_round_info = agent.memory[-1]
+        interaction_context = last_round_info.get('neighbor_moves', {})
 
         # CASE 1: Pairwise mode with specific opponent moves
         if isinstance(interaction_context, dict) and 'specific_opponent_moves' in interaction_context:
             specific_moves = interaction_context['specific_opponent_moves']
-            if specific_moves:  # Check if there were any opponents
-                # True TFT: defect if ANY specific opponent defected against this agent last round
-                if any(move == "defect" for move in specific_moves.values()):
-                    return "defect"
-                return "cooperate"  # All specific opponents cooperated
-            return "cooperate"  # No specific opponents, default to coop
+            if not specific_moves:  # No opponents played against this agent
+                return "cooperate"
+            # True TFT: defect if ANY specific opponent defected
+            if any(move == "defect" for move in specific_moves.values()):
+                return "defect"
+            return "cooperate"  # All specific opponents cooperated
 
-        # CASE 2: Pairwise mode fallback (old format) or general aggregate if no specific
+        # CASE 2: Pairwise mode fallback (old format) or general aggregate (if specific_opponent_moves is missing)
         elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
             # For TFT, be strict: only cooperate if all (or almost all) opponents cooperated
-            return "cooperate" if coop_proportion >= 0.99 else "defect"
+            return "cooperate" if coop_proportion >= 0.999 else "defect"  # Use a high threshold
 
         # CASE 3: Standard neighborhood mode
-        elif isinstance(interaction_context, dict) and interaction_context:  # Ensure it's a non-empty dict
-            # Original logic: pick a random neighbor's move
-            # This is a simplification for N-IPD TFT. A more robust N-IPD TFT might
-            # defect if *any* neighbor defected, or based on majority.
-            # Keeping original random neighbor logic for now for neighborhood mode.
+        elif isinstance(interaction_context, dict) and interaction_context:
+            # Current N-IPD TFT mimics a random neighbor.
+            # Consider changing to: defect if *any* neighbor defected for stricter N-IPD TFT.
+            # if any(move == "defect" for move in interaction_context.values()):
+            #     return "defect"
+            # return "cooperate"
             random_neighbor_id = random.choice(list(interaction_context.keys()))
-            return interaction_context[random_neighbor_id]
-
-        # Default if no memory, or empty/unrecognized interaction_context
+            return interaction_context.get(random_neighbor_id, "cooperate")  # Default if key somehow missing
+        
         return "cooperate"
 
 
 class GenerousTitForTatStrategy(Strategy):
     def __init__(self, generosity=0.1):
         self.generosity = generosity
-
+        
     def choose_move(self, agent, neighbors):
         if not agent.memory:
             return "cooperate"
+        
+        last_round_info = agent.memory[-1]
+        interaction_context = last_round_info.get('neighbor_moves', {})
 
-        last_round = agent.memory[-1]
-        interaction_context = last_round.get('neighbor_moves', {})
-
+        any_defected_flag = False
         # CASE 1: Pairwise mode with specific opponent moves
         if isinstance(interaction_context, dict) and 'specific_opponent_moves' in interaction_context:
             specific_moves = interaction_context['specific_opponent_moves']
-            if specific_moves:
-                if any(move == "defect" for move in specific_moves.values()):
-                    return "cooperate" if random.random() < self.generosity else "defect"
-                return "cooperate"
-            return "cooperate"
-
+            if not specific_moves: return "cooperate"
+            if any(move == "defect" for move in specific_moves.values()):
+                any_defected_flag = True
+        
         # CASE 2: Pairwise mode fallback or general aggregate
         elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
-            if coop_proportion < 0.99:  # If not all cooperated
-                return "cooperate" if random.random() < self.generosity else "defect"
-            return "cooperate"
-
+            if coop_proportion < 0.999:  # If not all cooperated
+                any_defected_flag = True
+            
         # CASE 3: Standard neighborhood mode
         elif isinstance(interaction_context, dict) and interaction_context:
-            random_neighbor_id = random.choice(list(interaction_context.keys()))
-            move = interaction_context[random_neighbor_id]
-            if move == "defect" and random.random() < self.generosity:
-                return "cooperate"
-            return move
+            # GTFT traditionally reacts to a single opponent's move. Here, if any neighbor defects.
+            if any(move == "defect" for move in interaction_context.values()):
+                any_defected_flag = True
+        else:  # No context or empty context
+            return "cooperate"
 
+        if any_defected_flag:
+            return "cooperate" if random.random() < self.generosity else "defect"
         return "cooperate"
 
 

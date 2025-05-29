@@ -333,58 +333,67 @@ class QLearningStrategy(Strategy):
             num_cooperating_neighbors = sum(1 for move in interaction_context.values() if move == "cooperate")
             coop_proportion = num_cooperating_neighbors / num_neighbors
 
-        if self.state_type == "proportion":
-            # Use the exact proportion as state
-            return (coop_proportion,)
+            if self.state_type == "proportion":
+                # Use the exact proportion as state
+                return (coop_proportion,)
 
-        elif self.state_type == "memory_enhanced":
-            # Example: Own last 2 moves + discretized neighbor coop proportion
-            # Determine own moves (default to C if not enough history)
-            own_last_move = "cooperate"
-            own_prev_move = "cooperate"
-            if len(agent.memory) >= 1:
-                own_last_move = agent.memory[-1]["my_move"]
-            if len(agent.memory) >= 2:
-                own_prev_move = agent.memory[-2]["my_move"]
+            elif self.state_type == "memory_enhanced":
+                # Example: Own last 2 moves + discretized neighbor coop proportion
+                # Determine own moves (default to C if not enough history)
+                own_last_move = "cooperate"
+                own_prev_move = "cooperate"
+                if len(agent.memory) >= 1:
+                    own_last_move = agent.memory[-1]["my_move"]
+                if len(agent.memory) >= 2:
+                    own_prev_move = agent.memory[-2]["my_move"]
 
-            own_last_bin = 1 if own_last_move == "cooperate" else 0
-            own_prev_bin = 1 if own_prev_move == "cooperate" else 0
+                own_last_bin = 1 if own_last_move == "cooperate" else 0
+                own_prev_bin = 1 if own_prev_move == "cooperate" else 0
 
-            # Use discretized neighbor state (from previous state implementation)
-            if coop_proportion <= 0.33:
-                neighbor_state = 0  # Low
-            elif coop_proportion <= 0.67:
-                neighbor_state = 1  # Med
+                # Use discretized neighbor state (from previous state implementation)
+                if coop_proportion <= 0.33:
+                    neighbor_state = 0  # Low
+                elif coop_proportion <= 0.67:
+                    neighbor_state = 1  # Med
+                else:
+                    neighbor_state = 2  # High
+
+                # State includes own last 2 moves and neighbor summary
+                return (own_last_bin, own_prev_bin, neighbor_state)
+
+            elif self.state_type == "proportion_discretized":
+                # Discretize the proportion into bins (5 bins)
+                if coop_proportion <= 0.2:
+                    state_feature = 0.2
+                elif coop_proportion <= 0.4:
+                    state_feature = 0.4
+                elif coop_proportion <= 0.6:
+                    state_feature = 0.6
+                elif coop_proportion <= 0.8:
+                    state_feature = 0.8
+                else:
+                    state_feature = 1.0
+                return (state_feature,)
+
+            elif self.state_type == "count":
+                # Use absolute count of cooperating neighbors
+                return (num_cooperating_neighbors,)
+
+            elif self.state_type == "threshold":
+                # Binary feature indicating if majority cooperated
+                return (coop_proportion > 0.5,)
+
             else:
-                neighbor_state = 2  # High
+                # Default fallback
+                return "standard"
 
-            # State includes own last 2 moves and neighbor summary
-            return (own_last_bin, own_prev_bin, neighbor_state)
 
-        elif self.state_type == "proportion_discretized":
-            # Discretize the proportion into bins (5 bins)
-            if coop_proportion <= 0.2:
-                state_feature = 0.2
-            elif coop_proportion <= 0.4:
-                state_feature = 0.4
-            elif coop_proportion <= 0.6:
-                state_feature = 0.6
-            elif coop_proportion <= 0.8:
-                state_feature = 0.8
-            else:
-                state_feature = 1.0
-            return (state_feature,)
+        return "unknown_context"
 
-        elif self.state_type == "count":
-            # Use absolute count of cooperating neighbors
-            return (num_cooperating_neighbors,)
 
-        elif self.state_type == "threshold":
-            # Binary feature indicating if majority cooperated
-            return (coop_proportion > 0.5,)
 
-        # Default fallback
-        return "standard"
+
+
 
     def _initialize_q_values_for_state(self, agent: "Agent", state: Hashable) -> None:
         """Initialize Q-values for a new state based on the agent's initialization type.
@@ -435,7 +444,7 @@ class QLearningStrategy(Strategy):
         else:
             return "defect"
 
-    def update(self, agent, action, reward, neighbor_moves):
+    def update(self, agent, action, reward, interaction_context_for_next_state):
         # Use the state that was stored during choose_move
         state_executed = agent.last_state_representation
         if state_executed is None:

@@ -2,6 +2,8 @@
 Enhanced integration tests for the N-Person Prisoner's Dilemma simulation.
 Focuses on workflows, interactions, and scenario variations.
 """
+from random import random
+
 import pytest
 import os
 import json

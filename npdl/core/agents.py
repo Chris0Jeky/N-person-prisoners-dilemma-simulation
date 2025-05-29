@@ -170,52 +170,60 @@ class TitForTwoTatsStrategy(Strategy):
         if len(agent.memory) < 2:
             return "cooperate"
 
-        last_round = agent.memory[-1]
-        prev_round = agent.memory[-2]
-
-        last_interaction_context = last_round.get('neighbor_moves', {})
-        prev_interaction_context = prev_round.get('neighbor_moves', {})
+        last_round_info = agent.memory[-1]
+        prev_round_info = agent.memory[-2]
+        
+        last_interaction_context = last_round_info.get('neighbor_moves', {})
+        prev_interaction_context = prev_round_info.get('neighbor_moves', {})
 
         # CASE 1: Pairwise mode with specific opponent moves
         if isinstance(last_interaction_context, dict) and 'specific_opponent_moves' in last_interaction_context and \
-                isinstance(prev_interaction_context, dict) and 'specific_opponent_moves' in prev_interaction_context:
-
+           isinstance(prev_interaction_context, dict) and 'specific_opponent_moves' in prev_interaction_context:
+            
             last_specific = last_interaction_context['specific_opponent_moves']
             prev_specific = prev_interaction_context['specific_opponent_moves']
 
-            if last_specific and prev_specific:  # Ensure there are opponent records
-                # Check common opponents or all opponents from last round if list changes
-                # For simplicity, check if ANY opponent defected twice.
-                # A more complex TF2T would track each opponent's last two moves individually.
-                # This current logic for TF2T in pairwise will defect if any single opponent
-                # has defected against it in both of the previous two rounds.
-                for opp_id in last_specific:
-                    if opp_id in prev_specific:
-                        if last_specific[opp_id] == "defect" and prev_specific[opp_id] == "defect":
-                            return "defect"
-                return "cooperate"  # No such opponent found
-            return "cooperate"  # Not enough specific history
+            if not last_specific or not prev_specific: return "cooperate"
+
+            # Defect if ANY opponent defected against this agent in both of the last two rounds
+            # This requires checking common opponents if the set of opponents can change.
+            # Assuming for simplicity that the set of opponents is relatively stable or we react to any such pattern.
+            common_opponents = set(last_specific.keys()) & set(prev_specific.keys())
+            if not common_opponents:  # No common opponents from last two rounds with specific data
+                 # Fallback: if *overall average* cooperation was low twice, defect.
+                 # This is a weaker heuristic for TF2T in pairwise if opponent sets change rapidly.
+                 last_coop_prop = last_interaction_context.get('opponent_coop_proportion', 1.0)
+                 prev_coop_prop = prev_interaction_context.get('opponent_coop_proportion', 1.0)
+                 if last_coop_prop < 0.5 and prev_coop_prop < 0.5:  # Heuristic: majority defected twice
+                     return "defect"
+                 return "cooperate"
+
+            for opp_id in common_opponents:
+                if last_specific.get(opp_id) == "defect" and prev_specific.get(opp_id) == "defect":
+                    return "defect"
+            return "cooperate"
 
         # CASE 2: Pairwise mode fallback or general aggregate
         elif isinstance(last_interaction_context, dict) and 'opponent_coop_proportion' in last_interaction_context and \
-                isinstance(prev_interaction_context, dict) and 'opponent_coop_proportion' in prev_interaction_context:
-
+             isinstance(prev_interaction_context, dict) and 'opponent_coop_proportion' in prev_interaction_context:
+            
             last_coop_prop = last_interaction_context['opponent_coop_proportion']
             prev_coop_prop = prev_interaction_context['opponent_coop_proportion']
-            # Defect if aggregate cooperation was low (<0.5 implies majority defected) in both previous rounds
+            # Defect if aggregate cooperation was low (<0.5 implies more than half defected) in both previous rounds
             if last_coop_prop < 0.5 and prev_coop_prop < 0.5:
                 return "defect"
             return "cooperate"
-
+            
         # CASE 3: Standard neighborhood mode
         elif isinstance(last_interaction_context, dict) and last_interaction_context and \
-                isinstance(prev_interaction_context, dict) and prev_interaction_context:
-
-            # Original logic: Pick a random common neighbor's two past moves
+             isinstance(prev_interaction_context, dict) and prev_interaction_context:
+            
             common_neighbors = list(set(last_interaction_context.keys()) & set(prev_interaction_context.keys()))
             if not common_neighbors:
                 return "cooperate"
-
+            
+            # TF2T traditionally reacts to a *single* opponent it's tracking.
+            # In N-IPD, it's often simplified to react to a random common neighbor.
             random_neighbor_id = random.choice(common_neighbors)
             last_opponent_move = last_interaction_context.get(random_neighbor_id, "cooperate")
             prev_opponent_move = prev_interaction_context.get(random_neighbor_id, "cooperate")
@@ -223,7 +231,7 @@ class TitForTwoTatsStrategy(Strategy):
             if last_opponent_move == "defect" and prev_opponent_move == "defect":
                 return "defect"
             return "cooperate"
-
+            
         return "cooperate"
 
 

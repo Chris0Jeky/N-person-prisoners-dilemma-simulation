@@ -95,6 +95,43 @@ ROUND 1
   → Bob exploited Alice!
 ```
 
+## CSV Export for Analysis
+
+The simulation can export results in CSV format compatible with the main npdl analysis tools:
+
+### Basic Export
+
+```bash
+# Run batch simulations with CSV export
+python simple_models/run_csv_export.py
+
+# Run a single export example
+python simple_models/run_csv_export.py --single
+
+# Create summary statistics from existing results
+python simple_models/run_csv_export.py --summary
+```
+
+### Export Format
+
+Results are saved in the same format as the main framework:
+- `experiment_results_agents.csv` - Agent summary with final scores
+- `experiment_results_rounds.csv` - Round-by-round moves and payoffs
+- `experiment_results_network.json` - Network structure (fully connected)
+
+### Using with Main Analysis Tools
+
+The exported CSV files are compatible with the main npdl analysis tools:
+
+```python
+# After exporting from simple models
+from npdl.analysis.analysis import analyze_multiple_scenarios
+
+# Analyze simple model results
+scenario_names = ['TFT_vs_Defect_NoExploration', 'Mixed_Strategies_HighExploration']
+analyze_multiple_scenarios(scenario_names, 'simple_results', 'simple_analysis_results')
+```
+
 ## Insights
 
 - **Always Defect** typically dominates in short games without exploration

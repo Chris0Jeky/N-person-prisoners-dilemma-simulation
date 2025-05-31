@@ -71,6 +71,7 @@ class StaticAgent(BaseAgent):
         self.opponent_last_moves = {}
 
     def choose_action(self, context):
+        """Dispatch the configured static strategy for the given mode."""
         mode = context['mode']
         if mode == 'pairwise':
             opponent_id = context['opponent_id']

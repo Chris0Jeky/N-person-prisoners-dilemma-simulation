@@ -7,6 +7,10 @@ This directory contains simple, standalone implementations of the Iterated Priso
 - `simple_ipd.py` - Core simulation logic with Agent, Strategy, and Game classes
 - `run_simple_simulation.py` - Pre-configured example simulations
 - `interactive_simulation.py` - Interactive configuration tool
+- `csv_exporter.py` - Export results in npdl-compatible CSV format
+- `run_csv_export.py` - Run batch simulations with CSV export
+- `analyze_results.py` - Analyze and visualize CSV results
+- `requirements.txt` - Python dependencies for analysis
 
 ## Features
 

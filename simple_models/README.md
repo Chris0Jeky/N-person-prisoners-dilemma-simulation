@@ -31,6 +31,12 @@ This directory contains simple, standalone implementations of the Iterated Priso
 
 ## Usage
 
+### Install Requirements (for CSV export and analysis)
+
+```bash
+pip install -r simple_models/requirements.txt
+```
+
 ### Run Example Simulations
 
 ```bash
@@ -122,6 +128,22 @@ Results are saved in the same format as the main framework:
 - `experiment_results_agents.csv` - Agent summary with final scores
 - `experiment_results_rounds.csv` - Round-by-round moves and payoffs
 - `experiment_results_network.json` - Network structure (fully connected)
+
+### Run Analysis
+
+After running CSV export, analyze the results:
+
+```bash
+# Generate plots and statistics
+python simple_models/analyze_results.py
+```
+
+This creates several visualizations in the `simple_results` directory:
+- `average_scores_by_strategy.png` - Bar chart of average scores
+- `cooperation_rates_by_strategy.png` - Cooperation rates for each strategy
+- `scores_by_scenario.png` - Comparison across different scenarios
+- `exploration_effect.png` - Impact of exploration on cooperation
+- `cooperation_over_time_*.png` - Time series of cooperation rates
 
 ### Using with Main Analysis Tools
 

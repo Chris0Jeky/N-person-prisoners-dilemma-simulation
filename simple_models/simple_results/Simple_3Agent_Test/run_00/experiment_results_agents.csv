@@ -1,0 +1,4 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+Simple_3Agent_Test,0,0,tit_for_tat,215,,
+Simple_3Agent_Test,0,1,always_defect,321,,
+Simple_3Agent_Test,0,2,always_cooperate,159,,

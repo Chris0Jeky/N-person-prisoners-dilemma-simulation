@@ -105,7 +105,7 @@ class CSVExporter:
                     'run_number': run_number,
                     'round': round_num,
                     'agent_id': simulation.agents.index(agent),  # Use index as ID
-                    'move': round_moves[agent.name].value.lower(),  # 'C' -> 'cooperate'
+                    'move': 'cooperate' if round_moves[agent.name] == Action.COOPERATE else 'defect',
                     'payoff': round_payoffs[agent.name],
                     'strategy': agent.strategy.value.lower().replace(" ", "_").replace("-", "_")
                 })

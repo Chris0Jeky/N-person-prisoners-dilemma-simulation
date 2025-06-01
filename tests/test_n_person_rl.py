@@ -421,3 +421,19 @@ if __name__ == "__main__":
     print("✓ Integration tests passed")
     
     print("\nAll tests completed successfully!")
+
+
+class TestDailyT036UnevenSplitFeatures:
+    """Daily check: an uneven pairwise split reads seventy-five percent."""
+
+    def test_uneven_split_features(self):
+        mixin = NPersonStateMixin()
+        agent = type('MockAgent', (), {})()
+        agent.memory = deque(maxlen=10)
+        context = {
+            'opponent_coop_proportion': 0.75,
+            'specific_opponent_moves': {1: 'cooperate', 2: 'cooperate', 3: 'cooperate', 4: 'defect'}
+        }
+        features = mixin._extract_group_features(agent, context)
+        assert features['cooperation_rate'] == 0.75
+        assert features['mode'] == 'pairwise'

@@ -1,0 +1,4 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+Mixed_Strategies_LowExploration,4,0,always_cooperate,439,,
+Mixed_Strategies_LowExploration,4,1,always_defect,948,,
+Mixed_Strategies_LowExploration,4,2,tit_for_tat,622,,

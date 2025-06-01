@@ -1,0 +1,4 @@
+scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
+Baseline_AllCooperate,3,0,always_cooperate,600,,
+Baseline_AllCooperate,3,1,always_cooperate,600,,
+Baseline_AllCooperate,3,2,always_cooperate,600,,

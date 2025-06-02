@@ -1,15 +1,23 @@
 # Simple Iterated Prisoner's Dilemma Simulations
 
-This directory contains simple, standalone implementations of the Iterated Prisoner's Dilemma (IPD) with 3 agents.
+This directory contains simple, standalone implementations of the Iterated Prisoner's Dilemma (IPD) with 3 agents, supporting both pairwise and N-Person interactions.
 
 ## Files
 
-- `simple_ipd.py` - Core simulation logic with Agent, Strategy, and Game classes
-- `run_simple_simulation.py` - Pre-configured example simulations
-- `interactive_simulation.py` - Interactive configuration tool
-- `csv_exporter.py` - Export results in npdl-compatible CSV format
-- `run_csv_export.py` - Run batch simulations with CSV export
-- `analyze_results.py` - Analyze and visualize CSV results
+### Pairwise Version (Original)
+- `simple_ipd.py` - Core pairwise simulation logic with Agent, Strategy, and Game classes
+- `run_simple_simulation.py` - Pre-configured pairwise example simulations
+- `interactive_simulation.py` - Interactive configuration tool for pairwise games
+- `csv_exporter.py` - Export pairwise results in npdl-compatible CSV format
+- `run_csv_export.py` - Run batch pairwise simulations with CSV export
+
+### N-Person Version (New)
+- `simple_npd.py` - N-Person simulation where all agents interact simultaneously
+- `run_npd_simulation.py` - Pre-configured N-Person example simulations
+- `run_npd_csv_export.py` - Run batch N-Person simulations with CSV export
+
+### Analysis Tools
+- `analyze_results.py` - Analyze and visualize CSV results from both versions
 - `requirements.txt` - Python dependencies for analysis
 
 ## Features
@@ -164,3 +172,99 @@ analyze_multiple_scenarios(scenario_names, 'simple_results', 'simple_analysis_re
 - **Tit-for-Tat** performs well when paired with other cooperative strategies
 - **Exploration** can help cooperative strategies occasionally "test" defectors
 - Longer games tend to favor reciprocal strategies like Tit-for-Tat
+
+## N-Person Iterated Prisoner's Dilemma
+
+The N-Person version (`simple_npd.py`) implements a true multi-agent interaction where all agents play simultaneously.
+
+### Key Differences from Pairwise
+
+1. **Simultaneous Interaction**: All 3 agents interact in a single game each round
+2. **Payoff Calculation**: Uses linear payoff functions from `npdl.core.utils`:
+   - Cooperation: `Payoff_C(n) = S + (R-S) × (n/(N-1))`
+   - Defection: `Payoff_D(n) = P + (T-P) × (n/(N-1))`
+   - Where `n` = number of cooperating neighbors (excluding self)
+
+3. **Tit-for-Tat Strategy**: In N-Person, TFT cooperates if majority cooperated last round
+
+### Running N-Person Simulations
+
+#### Interactive Examples
+```bash
+python simple_models/run_npd_simulation.py
+```
+
+This runs 5 pre-configured N-Person examples:
+1. Classic strategies with no exploration
+2. Strategies with exploration
+3. All Tit-for-Tat with varying exploration
+4. Modified payoff structure (higher cooperation reward)
+5. Longer simulation to observe patterns
+
+#### Batch Export for Analysis
+```bash
+python simple_models/run_npd_csv_export.py
+```
+
+This runs multiple N-Person scenarios with 10 runs each and exports to CSV.
+
+### N-Person Usage Example
+
+```python
+from simple_models.simple_npd import NPDAgent, Strategy, NPrisonersDilemmaGame, NPersonSimulation
+
+# Create 3 agents
+alice = NPDAgent("Alice", Strategy.TIT_FOR_TAT, exploration_rate=0.1)
+bob = NPDAgent("Bob", Strategy.ALWAYS_COOPERATE, exploration_rate=0.0)
+charlie = NPDAgent("Charlie", Strategy.ALWAYS_DEFECT, exploration_rate=0.2)
+
+# Create N-Person game
+game = NPrisonersDilemmaGame(N=3, R=3.0, S=0.0, T=5.0, P=1.0)
+
+# Run simulation
+sim = NPersonSimulation([alice, bob, charlie], game)
+sim.run_simulation(num_rounds=10)
+```
+
+### N-Person Output Example
+
+The N-Person simulation provides extremely detailed output:
+
+```
+ROUND 1
+======
+--- DECISION PHASE ---
+  Alice (Tit-for-Tat):
+    Strategy suggests: C
+    Final decision: C
+
+  Bob (Always Cooperate):
+    Strategy suggests: C
+    EXPLORED to: D
+
+  Charlie (Always Defect):
+    Strategy suggests: D
+    Final decision: D
+
+--- PAYOFF CALCULATION ---
+  Total cooperators: 1/3
+  Total defectors: 2/3
+
+  Individual payoffs:
+    Alice: C → 0.00 points
+      (Cooperated with 0 cooperating neighbors)
+      Payoff = S + (R-S) × (n/(N-1)) = 0 + 3 × (0/2) = 0.00
+
+    Bob: D → 1.00 points
+      (Defected against 0 cooperating neighbors)
+      Payoff = P + (T-P) × (n/(N-1)) = 1 + 4 × (0/2) = 1.00
+```
+
+### Comparing Pairwise vs N-Person
+
+The framework allows direct comparison between pairwise and N-Person dynamics:
+
+- **Pairwise**: 3 agents play 3 separate 2-player games per round
+- **N-Person**: 3 agents play 1 shared game per round
+
+This can reveal how cooperation dynamics differ between dyadic and group interactions.

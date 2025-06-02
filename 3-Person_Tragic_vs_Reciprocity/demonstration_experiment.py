@@ -199,7 +199,7 @@ def create_demonstration():
     ax3.axis('off')
     
     plt.tight_layout()
-    plt.savefig('reciprocity_hill_research/results/demonstration_plot.png', dpi=150)
+    plt.savefig('3-Person_Tragic_vs_Reciprocity/results/demonstration_plot.png', dpi=150)
     plt.close()
     
     # Calculate and print statistics
@@ -273,12 +273,12 @@ def create_demonstration():
         }
     }
     
-    with open('reciprocity_hill_research/results/demonstration_results.json', 'w') as f:
+    with open('3-Person_Tragic_vs_Reciprocity/results/demonstration_results.json', 'w') as f:
         json.dump(results, f, indent=2)
     
     print("\n" + "="*60)
     print("Demonstration complete!")
-    print("Results saved to reciprocity_hill_research/results/")
+    print("Results saved to 3-Person_Tragic_vs_Reciprocity/results/")
     print("="*60)
 
 

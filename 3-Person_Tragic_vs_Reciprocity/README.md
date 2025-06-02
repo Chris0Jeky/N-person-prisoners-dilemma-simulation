@@ -42,7 +42,7 @@ When Tit-for-Tat (TFT) agents are in the minority facing Always Defect agents:
 
 ```bash
 # Run the focused demonstration
-python reciprocity_hill_research/demonstration_experiment.py
+python 3-Person_Tragic_vs_Reciprocity/demonstration_experiment.py
 ```
 
 This creates a clear visualization showing how cooperation evolves differently in the two modes.
@@ -51,7 +51,7 @@ This creates a clear visualization showing how cooperation evolves differently i
 
 ```bash
 # Run all experiments
-python reciprocity_hill_research/main_experiments.py
+python 3-Person_Tragic_vs_Reciprocity/main_experiments.py
 ```
 
 This runs comprehensive experiments with multiple scenarios and parameters.

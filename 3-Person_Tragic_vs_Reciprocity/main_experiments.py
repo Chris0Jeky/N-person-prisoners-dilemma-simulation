@@ -313,7 +313,7 @@ def visualize_results(results: Dict, title: str):
     ax2.grid(True, alpha=0.3)
     
     plt.tight_layout()
-    plt.savefig(f'reciprocity_hill_research/results/{title.lower().replace(" ", "_")}_comparison.png')
+    plt.savefig(f'3-Person_Tragic_vs_Reciprocity/results/{title.lower().replace(" ", "_")}_comparison.png')
     plt.close()
 
 
@@ -382,7 +382,7 @@ def main():
                       f"({'Reciprocity Hill' if np.mean(pw_tft_avg) > np.mean(np_tft_avg) else 'Tragic Valley'})")
     
     print("\n" + "="*80)
-    print("RESEARCH COMPLETE - Results saved to reciprocity_hill_research/results/")
+    print("RESEARCH COMPLETE - Results saved to 3-Person_Tragic_vs_Reciprocity/results/")
     print("="*80)
 
 

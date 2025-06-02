@@ -20,7 +20,7 @@ def run_quick_demo():
     print("Episodes: 5, Rounds per episode: 10")
     
     # Create results directory
-    os.makedirs('reciprocity_hill_research/results', exist_ok=True)
+    os.makedirs('3-Person_Tragic_vs_Reciprocity/results', exist_ok=True)
     
     # Run Pairwise simulation
     print("\n" + "-"*60)
@@ -134,10 +134,10 @@ def run_quick_demo():
         }
     }
     
-    with open('reciprocity_hill_research/results/quick_demo_results.json', 'w') as f:
+    with open('3-Person_Tragic_vs_Reciprocity/results/quick_demo_results.json', 'w') as f:
         json.dump(results, f, indent=2)
     
-    print("\nResults saved to reciprocity_hill_research/results/quick_demo_results.json")
+    print("\nResults saved to 3-Person_Tragic_vs_Reciprocity/results/quick_demo_results.json")
 
 
 if __name__ == "__main__":

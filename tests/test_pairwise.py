@@ -350,3 +350,24 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+class TestDailyT037PairwiseAllCooperate:
+    """Daily check: TFT joins cooperators for an all-cooperate round one."""
+
+    def test_pairwise_all_cooperate_first_round(self):
+        agents = [
+            Agent(agent_id=0, strategy="always_cooperate"),
+            Agent(agent_id=1, strategy="always_cooperate"),
+            Agent(agent_id=2, strategy="tit_for_tat"),
+            Agent(agent_id=3, strategy="tit_for_tat"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}

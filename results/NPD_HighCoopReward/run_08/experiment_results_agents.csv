@@ -1,4 +1,0 @@
-scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values,exploration_rate,cooperation_rate
-NPD_HighCoopReward,8,0,tit_for_tat,26.0,,,0.1,0.1
-NPD_HighCoopReward,8,1,tit_for_tat,23.75,,,0.1,0.15
-NPD_HighCoopReward,8,2,always_defect,28.25,,,0.1,0.05

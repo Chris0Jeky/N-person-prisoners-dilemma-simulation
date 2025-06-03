@@ -1,16 +1,18 @@
 """
-Analysis Script for 3-Person Tragic Valley vs Reciprocity Hill Results
-======================================================================
-This script loads the experimental data and creates comparative visualizations.
+Enhanced Analysis Script for 3-Person Tragic Valley vs Reciprocity Hill Results
+===============================================================================
+This script loads the experimental data and creates comparative visualizations
+that distinguish between TFT cooperation rates when playing against TFT vs AllD.
 """
 
 import json
 import os
 import numpy as np
 import matplotlib.pyplot as plt
-from typing import Dict, List, Tuple
+from typing import Dict, List, Tuple, Optional
 import glob
 from datetime import datetime
+from collections import defaultdict
 
 
 def load_results(results_dir: str) -> Dict:
@@ -23,9 +25,6 @@ def load_results(results_dir: str) -> Dict:
     for file_path in json_files:
         filename = os.path.basename(file_path)
         if filename != "all_results_combined.json":
-            # Extract scenario info from filename
-            parts = filename.replace("results_", "").replace(".json", "").split("_")
-            
             with open(file_path, 'r') as f:
                 data = json.load(f)
                 results[filename] = data
@@ -33,7 +32,7 @@ def load_results(results_dir: str) -> Dict:
     return results
 
 
-def calculate_moving_average(data: List[float], window: int = 10) -> List[float]:
+def calculate_moving_average(data: List[float], window: int = 5) -> List[float]:
     """Calculate moving average for smoothing."""
     if len(data) < window:
         return data
@@ -47,39 +46,93 @@ def calculate_moving_average(data: List[float], window: int = 10) -> List[float]
     return smoothed
 
 
-def extract_tft_cooperation_over_rounds(results: Dict) -> Tuple[List[float], List[float]]:
-    """Extract TFT agents' cooperation rates over rounds, averaged across episodes."""
+def extract_pairwise_cooperation_by_opponent(results: Dict) -> Dict[str, Dict[str, List[float]]]:
+    """
+    Extract TFT cooperation rates separated by opponent type for pairwise mode.
+    Returns: {round_num: {'TFT_vs_TFT': rate, 'TFT_vs_AllD': rate, 'TFT_overall': rate}}
+    """
+    round_data = results.get('round_data', [])
+    if not round_data:
+        return {}
     
-    # Get round data
+    rounds_per_episode = results['summary']['rounds_per_episode']
+    num_episodes = results['summary']['num_episodes']
+    
+    # Initialize storage for cooperation data by round
+    coop_by_round = defaultdict(lambda: {'TFT_vs_TFT': [], 'TFT_vs_AllD': [], 'TFT_overall': []})
+    
+    for data_point in round_data:
+        episode = data_point['episode']
+        round_num = data_point['round']
+        
+        # For pairwise mode, check if we have interactions data
+        if 'interactions' in data_point:
+            for interaction in data_point['interactions']:
+                agent1_name = interaction['agent1_name']
+                agent2_name = interaction['agent2_name']
+                action1 = interaction['agent1_action']
+                action2 = interaction['agent2_action']
+                
+                # Track TFT cooperation rates
+                if 'TFT' in agent1_name:
+                    coop = 1 if action1 == 'C' else 0
+                    coop_by_round[round_num]['TFT_overall'].append(coop)
+                    
+                    if 'TFT' in agent2_name:
+                        coop_by_round[round_num]['TFT_vs_TFT'].append(coop)
+                    elif 'AllD' in agent2_name:
+                        coop_by_round[round_num]['TFT_vs_AllD'].append(coop)
+                
+                if 'TFT' in agent2_name:
+                    coop = 1 if action2 == 'C' else 0
+                    coop_by_round[round_num]['TFT_overall'].append(coop)
+                    
+                    if 'TFT' in agent1_name:
+                        coop_by_round[round_num]['TFT_vs_TFT'].append(coop)
+                    elif 'AllD' in agent1_name:
+                        coop_by_round[round_num]['TFT_vs_AllD'].append(coop)
+        else:
+            # Fallback for data without detailed interactions
+            actions = data_point.get('actions', {})
+            for agent_name, action in actions.items():
+                if 'TFT' in agent_name:
+                    coop = 1 if action == 'C' else 0
+                    coop_by_round[round_num]['TFT_overall'].append(coop)
+    
+    # Calculate averages for each round
+    avg_by_round = {}
+    for round_num in range(rounds_per_episode):
+        avg_by_round[round_num] = {}
+        for category in ['TFT_vs_TFT', 'TFT_vs_AllD', 'TFT_overall']:
+            data = coop_by_round[round_num][category]
+            avg_by_round[round_num][category] = np.mean(data) if data else 0.0
+    
+    return avg_by_round
+
+
+def extract_tft_cooperation_over_rounds(results: Dict) -> Tuple[List[float], List[float]]:
+    """Extract overall TFT agents' cooperation rates over rounds, averaged across episodes."""
     round_data = results.get('round_data', [])
     if not round_data:
         return [], []
     
-    # Get number of rounds per episode
     rounds_per_episode = results['summary']['rounds_per_episode']
-    num_episodes = results['summary']['num_episodes']
-    
-    # Initialize arrays to store cooperation data
     tft_cooperation_by_round = [[] for _ in range(rounds_per_episode)]
     
-    # Process each round
     for data_point in round_data:
         episode = data_point['episode']
         round_num = data_point['round']
         actions = data_point['actions']
         
-        # Get TFT agents' actions
         tft_actions = []
         for agent_name, action in actions.items():
             if 'TFT' in agent_name:
                 tft_actions.append(1 if action == 'C' else 0)
         
         if tft_actions:
-            # Average cooperation rate among TFT agents for this round
             tft_coop_rate = np.mean(tft_actions)
             tft_cooperation_by_round[round_num].append(tft_coop_rate)
     
-    # Average across episodes for each round
     avg_tft_cooperation = []
     std_tft_cooperation = []
     
@@ -94,65 +147,85 @@ def extract_tft_cooperation_over_rounds(results: Dict) -> Tuple[List[float], Lis
     return avg_tft_cooperation, std_tft_cooperation
 
 
+def extract_tft_scores_by_opponent(results: Dict) -> Dict[str, Dict[str, List[float]]]:
+    """
+    Extract TFT scores separated by interaction type for pairwise mode.
+    This is more complex as we need to track cumulative scores from interactions.
+    """
+    # For now, return overall scores - this would require modifying the data collection
+    # to track scores per interaction type
+    return extract_tft_scores_over_rounds(results)
+
+
 def extract_tft_scores_over_rounds(results: Dict) -> Tuple[List[float], List[float]]:
     """Extract TFT agents' scores over rounds, averaged across episodes."""
-    
-    # Get episode data
-    episode_data = results.get('episode_data', [])
-    if not episode_data:
+    round_data = results.get('round_data', [])
+    if not round_data:
         return [], []
     
-    # Get number of rounds per episode
     rounds_per_episode = results['summary']['rounds_per_episode']
     
-    # Initialize arrays to store score data
-    tft_scores_by_round = [[] for _ in range(rounds_per_episode)]
+    # Track cumulative scores by episode and round
+    tft_scores_by_episode = defaultdict(lambda: defaultdict(float))
+    tft_agents_by_episode = defaultdict(set)
     
-    # Process each episode
-    for episode in episode_data:
-        scores = episode['scores']
+    for data_point in round_data:
+        episode = data_point['episode']
+        round_num = data_point['round']
         
-        # Get TFT agents' scores
-        tft_agent_names = [name for name in scores.keys() if 'TFT' in name]
-        
-        if tft_agent_names:
-            # For each round
-            for round_num in range(rounds_per_episode):
-                # Average score among TFT agents for this round
-                round_scores = []
-                for agent_name in tft_agent_names:
-                    if round_num < len(scores[agent_name]):
-                        round_scores.append(scores[agent_name][round_num])
+        # For pairwise mode with interactions
+        if 'interactions' in data_point:
+            for interaction in data_point['interactions']:
+                agent1_name = interaction['agent1_name']
+                agent2_name = interaction['agent2_name']
+                payoff1 = interaction['payoff1']
+                payoff2 = interaction['payoff2']
                 
-                if round_scores:
-                    tft_scores_by_round[round_num].append(np.mean(round_scores))
-    
-    # Average across episodes for each round
-    avg_tft_scores = []
-    std_tft_scores = []
-    
-    for round_scores in tft_scores_by_round:
-        if round_scores:
-            avg_tft_scores.append(np.mean(round_scores))
-            std_tft_scores.append(np.std(round_scores))
+                if 'TFT' in agent1_name:
+                    tft_scores_by_episode[episode][agent1_name] += payoff1
+                    tft_agents_by_episode[episode].add(agent1_name)
+                if 'TFT' in agent2_name:
+                    tft_scores_by_episode[episode][agent2_name] += payoff2
+                    tft_agents_by_episode[episode].add(agent2_name)
         else:
-            avg_tft_scores.append(0)
-            std_tft_scores.append(0)
+            # Fallback for N-person mode
+            payoffs = data_point.get('payoffs', {})
+            for agent_name, payoff in payoffs.items():
+                if 'TFT' in agent_name:
+                    tft_scores_by_episode[episode][agent_name] += payoff
+                    tft_agents_by_episode[episode].add(agent_name)
     
-    return avg_tft_scores, std_tft_scores
+    # Calculate average scores per round
+    avg_scores_by_round = []
+    std_scores_by_round = []
+    
+    for round_num in range(rounds_per_episode):
+        round_scores = []
+        for episode in tft_scores_by_episode:
+            if tft_agents_by_episode[episode]:
+                # Average score per TFT agent in this episode up to this round
+                total_score = sum(tft_scores_by_episode[episode].values())
+                avg_score = total_score / len(tft_agents_by_episode[episode]) / (round_num + 1)
+                round_scores.append(avg_score)
+        
+        if round_scores:
+            avg_scores_by_round.append(np.mean(round_scores))
+            std_scores_by_round.append(np.std(round_scores))
+        else:
+            avg_scores_by_round.append(0)
+            std_scores_by_round.append(0)
+    
+    return avg_scores_by_round, std_scores_by_round
 
 
-def create_comparison_plots(results_dir: str):
-    """Create comparison plots for all scenarios."""
-    
-    # Load all results
+def create_enhanced_comparison_plots(results_dir: str):
+    """Create enhanced comparison plots with separated TFT cooperation rates."""
     all_results = load_results(results_dir)
     
     if not all_results:
         print("No results found in directory!")
         return
     
-    # Define scenario groups
     scenarios = [
         {
             'name': '2TFT + 1AllD (No Exploration)',
@@ -176,184 +249,95 @@ def create_comparison_plots(results_dir: str):
         }
     ]
     
-    # Create figure with subplots
-    fig, axes = plt.subplots(2, 4, figsize=(20, 10))
-    fig.suptitle('3-Person Iterated Prisoner\'s Dilemma: Pairwise vs N-Person Dynamics', fontsize=16)
+    # Create figure with 2 rows x 4 columns for cooperation and scores
+    fig, axes = plt.subplots(2, 4, figsize=(24, 12))
+    fig.suptitle('3-Person IPD: Detailed Analysis of Pairwise vs N-Person Dynamics', fontsize=18)
     
     for idx, scenario in enumerate(scenarios):
         if scenario['pairwise'] not in all_results or scenario['nperson'] not in all_results:
             print(f"Missing data for scenario: {scenario['name']}")
             continue
         
-        # Get data
         pw_results = all_results[scenario['pairwise']]
         np_results = all_results[scenario['nperson']]
         
-        # Extract cooperation rates
-        pw_coop, pw_coop_std = extract_tft_cooperation_over_rounds(pw_results)
-        np_coop, np_coop_std = extract_tft_cooperation_over_rounds(np_results)
+        rounds_per_episode = pw_results['summary']['rounds_per_episode']
+        rounds = list(range(rounds_per_episode))
         
-        # Extract scores
-        pw_scores, pw_scores_std = extract_tft_scores_over_rounds(pw_results)
-        np_scores, np_scores_std = extract_tft_scores_over_rounds(np_results)
-        
-        # Plot cooperation rates
+        # --- Cooperation Rate Plot ---
         ax_coop = axes[0, idx]
-        rounds = list(range(len(pw_coop)))
         
-        # Smooth the data for clearer visualization
-        pw_coop_smooth = calculate_moving_average(pw_coop, window=5)
-        np_coop_smooth = calculate_moving_average(np_coop, window=5)
+        # For pairwise mode with AllD scenario, extract separated cooperation rates
+        if '2TFT' in scenario['name']:
+            pw_coop_by_opponent = extract_pairwise_cooperation_by_opponent(pw_results)
+            
+            # Extract the different cooperation rates
+            pw_tft_vs_tft = [pw_coop_by_opponent[r]['TFT_vs_TFT'] for r in rounds]
+            pw_tft_vs_alld = [pw_coop_by_opponent[r]['TFT_vs_AllD'] for r in rounds]
+            pw_tft_overall = [pw_coop_by_opponent[r]['TFT_overall'] for r in rounds]
+            
+            # Smooth the data
+            pw_tft_vs_tft_smooth = calculate_moving_average(pw_tft_vs_tft, window=3)
+            pw_tft_vs_alld_smooth = calculate_moving_average(pw_tft_vs_alld, window=3)
+            pw_tft_overall_smooth = calculate_moving_average(pw_tft_overall, window=3)
+            
+            # Plot pairwise lines
+            ax_coop.plot(rounds, pw_tft_vs_tft_smooth, 'b-', label='PW: TFT vs TFT', linewidth=2.5)
+            ax_coop.plot(rounds, pw_tft_vs_alld_smooth, 'b--', label='PW: TFT vs AllD', linewidth=2.5)
+            ax_coop.plot(rounds, pw_tft_overall_smooth, 'b:', label='PW: TFT Overall', linewidth=2, alpha=0.7)
+        else:
+            # For 3TFT scenario, just show overall
+            pw_coop, pw_coop_std = extract_tft_cooperation_over_rounds(pw_results)
+            pw_coop_smooth = calculate_moving_average(pw_coop, window=3)
+            ax_coop.plot(rounds, pw_coop_smooth, 'b-', label='Pairwise', linewidth=2.5)
         
-        ax_coop.plot(rounds, pw_coop_smooth, 'b-', label='Pairwise', linewidth=2)
-        ax_coop.plot(rounds, np_coop_smooth, 'r-', label='N-Person', linewidth=2)
+        # N-Person cooperation (always overall)
+        np_coop, np_coop_std = extract_tft_cooperation_over_rounds(np_results)
+        np_coop_smooth = calculate_moving_average(np_coop, window=3)
+        ax_coop.plot(rounds, np_coop_smooth, 'r-', label='N-Person', linewidth=2.5)
         
-        # Add confidence bands
-        ax_coop.fill_between(rounds, 
-                            np.array(pw_coop) - np.array(pw_coop_std),
-                            np.array(pw_coop) + np.array(pw_coop_std),
-                            alpha=0.2, color='blue')
-        ax_coop.fill_between(rounds, 
-                            np.array(np_coop) - np.array(np_coop_std),
-                            np.array(np_coop) + np.array(np_coop_std),
-                            alpha=0.2, color='red')
+        # Add episode boundaries (faint vertical lines)
+        for ep in range(1, pw_results['summary']['num_episodes']):
+            ax_coop.axvline(x=0, color='gray', alpha=0.2, linestyle='--')
         
-        ax_coop.set_title(f'{scenario["name"]}\nTFT Cooperation Rate')
-        ax_coop.set_xlabel('Round')
+        ax_coop.set_title(f'{scenario["name"]}\nTFT Cooperation Rate', fontsize=12)
+        ax_coop.set_xlabel('Round within Episode')
         ax_coop.set_ylabel('Cooperation Rate')
         ax_coop.set_ylim(-0.05, 1.05)
         ax_coop.grid(True, alpha=0.3)
-        ax_coop.legend()
+        ax_coop.legend(fontsize=9)
         
-        # Plot scores
+        # --- Score Plot ---
         ax_score = axes[1, idx]
         
-        # Smooth the scores
-        pw_scores_smooth = calculate_moving_average(pw_scores, window=5)
-        np_scores_smooth = calculate_moving_average(np_scores, window=5)
+        pw_scores, pw_scores_std = extract_tft_scores_over_rounds(pw_results)
+        np_scores, np_scores_std = extract_tft_scores_over_rounds(np_results)
         
-        ax_score.plot(rounds, pw_scores_smooth, 'b-', label='Pairwise', linewidth=2)
-        ax_score.plot(rounds, np_scores_smooth, 'r-', label='N-Person', linewidth=2)
+        pw_scores_smooth = calculate_moving_average(pw_scores, window=3)
+        np_scores_smooth = calculate_moving_average(np_scores, window=3)
         
-        # Add confidence bands
-        ax_score.fill_between(rounds, 
-                             np.array(pw_scores) - np.array(pw_scores_std),
-                             np.array(pw_scores) + np.array(pw_scores_std),
-                             alpha=0.2, color='blue')
-        ax_score.fill_between(rounds, 
-                             np.array(np_scores) - np.array(np_scores_std),
-                             np.array(np_scores) + np.array(np_scores_std),
-                             alpha=0.2, color='red')
+        ax_score.plot(rounds, pw_scores_smooth, 'b-', label='Pairwise', linewidth=2.5)
+        ax_score.plot(rounds, np_scores_smooth, 'r-', label='N-Person', linewidth=2.5)
         
-        ax_score.set_title('TFT Average Score per Round')
-        ax_score.set_xlabel('Round')
+        ax_score.set_title('TFT Average Score per Round', fontsize=12)
+        ax_score.set_xlabel('Round within Episode')
         ax_score.set_ylabel('Average Score')
         ax_score.grid(True, alpha=0.3)
         ax_score.legend()
     
     plt.tight_layout()
-    plt.savefig(os.path.join(results_dir, 'tft_cooperation_and_scores_comparison.png'), dpi=300, bbox_inches='tight')
+    plt.savefig(os.path.join(results_dir, 'enhanced_tft_analysis.png'), dpi=300, bbox_inches='tight')
     plt.close()
     
-    # Create summary comparison plot
-    create_summary_plot(all_results, scenarios, results_dir)
-    
-    print(f"Plots saved to {results_dir}")
+    print(f"Enhanced plots saved to {results_dir}")
 
 
-def create_summary_plot(all_results: Dict, scenarios: List[Dict], results_dir: str):
-    """Create a summary bar plot comparing final outcomes."""
-    
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(14, 6))
-    fig.suptitle('Summary: Pairwise vs N-Person Outcomes', fontsize=16)
-    
-    scenario_names = []
-    pw_final_coop = []
-    np_final_coop = []
-    pw_avg_scores = []
-    np_avg_scores = []
-    
-    for scenario in scenarios:
-        if scenario['pairwise'] not in all_results or scenario['nperson'] not in all_results:
-            continue
-        
-        scenario_names.append(scenario['name'].replace(' ', '\n'))
-        
-        # Get final cooperation rates
-        pw_summary = all_results[scenario['pairwise']]['summary']
-        np_summary = all_results[scenario['nperson']]['summary']
-        
-        # Calculate TFT-only cooperation rates
-        pw_tft_coops = [rate for name, rate in pw_summary['cooperation_rates'].items() if 'TFT' in name]
-        np_tft_coops = [rate for name, rate in np_summary['cooperation_rates'].items() if 'TFT' in name]
-        
-        pw_final_coop.append(np.mean(pw_tft_coops) if pw_tft_coops else 0)
-        np_final_coop.append(np.mean(np_tft_coops) if np_tft_coops else 0)
-        
-        # Get average scores
-        pw_tft_scores = [score for name, score in pw_summary['average_scores_per_round'].items() if 'TFT' in name]
-        np_tft_scores = [score for name, score in np_summary['average_scores_per_round'].items() if 'TFT' in name]
-        
-        pw_avg_scores.append(np.mean(pw_tft_scores) if pw_tft_scores else 0)
-        np_avg_scores.append(np.mean(np_tft_scores) if np_tft_scores else 0)
-    
-    # Plot cooperation rates
-    x = np.arange(len(scenario_names))
-    width = 0.35
-    
-    bars1 = ax1.bar(x - width/2, pw_final_coop, width, label='Pairwise', color='blue', alpha=0.8)
-    bars2 = ax1.bar(x + width/2, np_final_coop, width, label='N-Person', color='red', alpha=0.8)
-    
-    ax1.set_ylabel('Average TFT Cooperation Rate')
-    ax1.set_title('Final Cooperation Rates')
-    ax1.set_xticks(x)
-    ax1.set_xticklabels(scenario_names)
-    ax1.legend()
-    ax1.grid(True, alpha=0.3, axis='y')
-    
-    # Add value labels on bars
-    for bars in [bars1, bars2]:
-        for bar in bars:
-            height = bar.get_height()
-            ax1.annotate(f'{height:.2%}',
-                        xy=(bar.get_x() + bar.get_width() / 2, height),
-                        xytext=(0, 3),
-                        textcoords="offset points",
-                        ha='center', va='bottom')
-    
-    # Plot average scores
-    bars3 = ax2.bar(x - width/2, pw_avg_scores, width, label='Pairwise', color='blue', alpha=0.8)
-    bars4 = ax2.bar(x + width/2, np_avg_scores, width, label='N-Person', color='red', alpha=0.8)
-    
-    ax2.set_ylabel('Average Score per Round')
-    ax2.set_title('TFT Performance (Average Score)')
-    ax2.set_xticks(x)
-    ax2.set_xticklabels(scenario_names)
-    ax2.legend()
-    ax2.grid(True, alpha=0.3, axis='y')
-    
-    # Add value labels on bars
-    for bars in [bars3, bars4]:
-        for bar in bars:
-            height = bar.get_height()
-            ax2.annotate(f'{height:.2f}',
-                        xy=(bar.get_x() + bar.get_width() / 2, height),
-                        xytext=(0, 3),
-                        textcoords="offset points",
-                        ha='center', va='bottom')
-    
-    plt.tight_layout()
-    plt.savefig(os.path.join(results_dir, 'summary_comparison.png'), dpi=300, bbox_inches='tight')
-    plt.close()
-
-
-def analyze_reciprocity_vs_tragedy(results_dir: str):
-    """Analyze and print key findings about reciprocity hill vs tragic valley."""
-    
+def print_detailed_statistics(results_dir: str):
+    """Print detailed summary statistics for each simulation."""
     all_results = load_results(results_dir)
     
     print("\n" + "="*80)
-    print("RECIPROCITY HILL VS TRAGIC VALLEY ANALYSIS")
+    print("DETAILED STATISTICS: RECIPROCITY HILL VS TRAGIC VALLEY")
     print("="*80)
     
     scenarios = [
@@ -368,45 +352,256 @@ def analyze_reciprocity_vs_tragedy(results_dir: str):
             continue
         
         print(f"\n{scenario_name}:")
+        print("-" * len(scenario_name))
         
         pw_summary = all_results[pw_file]['summary']
         np_summary = all_results[np_file]['summary']
         
-        # TFT cooperation rates
+        # Overall TFT cooperation rates
         pw_tft_coops = [rate for name, rate in pw_summary['cooperation_rates'].items() if 'TFT' in name]
         np_tft_coops = [rate for name, rate in np_summary['cooperation_rates'].items() if 'TFT' in name]
         
         pw_tft_avg = np.mean(pw_tft_coops) if pw_tft_coops else 0
         np_tft_avg = np.mean(np_tft_coops) if np_tft_coops else 0
         
-        print(f"  TFT Cooperation Rates:")
-        print(f"    Pairwise: {pw_tft_avg:.2%}")
-        print(f"    N-Person: {np_tft_avg:.2%}")
-        print(f"    Difference: {pw_tft_avg - np_tft_avg:+.2%}")
+        print(f"\nOverall TFT Cooperation Rates:")
+        print(f"  Pairwise: {pw_tft_avg:.1%}")
+        print(f"  N-Person: {np_tft_avg:.1%}")
+        print(f"  Difference: {pw_tft_avg - np_tft_avg:+.1%}")
         
-        # Interpretation
-        if pw_tft_avg - np_tft_avg > 0.1:
-            print(f"    → RECIPROCITY HILL: Pairwise maintains cooperation better")
-        elif np_tft_avg - pw_tft_avg > 0.1:
-            print(f"    → Unexpected: N-Person performs better")
-        else:
-            print(f"    → Similar performance in both modes")
+        # For 2TFT+1AllD scenarios, calculate separated cooperation rates
+        if '2TFT' in scenario_name:
+            pw_results = all_results[pw_file]
+            pw_coop_by_opponent = extract_pairwise_cooperation_by_opponent(pw_results)
+            
+            # Calculate averages across all rounds
+            all_tft_vs_tft = []
+            all_tft_vs_alld = []
+            
+            for round_data in pw_coop_by_opponent.values():
+                all_tft_vs_tft.append(round_data['TFT_vs_TFT'])
+                all_tft_vs_alld.append(round_data['TFT_vs_AllD'])
+            
+            avg_tft_vs_tft = np.mean(all_tft_vs_tft) if all_tft_vs_tft else 0
+            avg_tft_vs_alld = np.mean(all_tft_vs_alld) if all_tft_vs_alld else 0
+            
+            print(f"\nPairwise Mode - TFT Cooperation by Opponent Type:")
+            print(f"  TFT vs TFT: {avg_tft_vs_tft:.1%}")
+            print(f"  TFT vs AllD: {avg_tft_vs_alld:.1%}")
+            print(f"  Difference: {avg_tft_vs_tft - avg_tft_vs_alld:+.1%}")
         
         # Average scores
         pw_tft_scores = [score for name, score in pw_summary['average_scores_per_round'].items() if 'TFT' in name]
         np_tft_scores = [score for name, score in np_summary['average_scores_per_round'].items() if 'TFT' in name]
+        pw_alld_scores = [score for name, score in pw_summary['average_scores_per_round'].items() if 'AllD' in name]
+        np_alld_scores = [score for name, score in np_summary['average_scores_per_round'].items() if 'AllD' in name]
         
-        pw_score_avg = np.mean(pw_tft_scores) if pw_tft_scores else 0
-        np_score_avg = np.mean(np_tft_scores) if np_tft_scores else 0
+        pw_tft_score_avg = np.mean(pw_tft_scores) if pw_tft_scores else 0
+        np_tft_score_avg = np.mean(np_tft_scores) if np_tft_scores else 0
+        pw_alld_score_avg = np.mean(pw_alld_scores) if pw_alld_scores else 0
+        np_alld_score_avg = np.mean(np_alld_scores) if np_alld_scores else 0
         
-        print(f"  TFT Average Scores:")
-        print(f"    Pairwise: {pw_score_avg:.2f}")
-        print(f"    N-Person: {np_score_avg:.2f}")
-        print(f"    Difference: {pw_score_avg - np_score_avg:+.2f}")
+        print(f"\nAverage Scores per Round:")
+        print(f"  TFT agents:")
+        print(f"    Pairwise: {pw_tft_score_avg:.2f}")
+        print(f"    N-Person: {np_tft_score_avg:.2f}")
+        print(f"    Difference: {pw_tft_score_avg - np_tft_score_avg:+.2f}")
         
-        # Check for tragic valley in N-Person with defector
-        if 'AllD' in scenario_name and np_tft_avg < 0.2:
-            print(f"    → TRAGIC VALLEY DETECTED: N-Person TFT agents collapsed to defection")
+        if pw_alld_scores:
+            print(f"  AllD agent:")
+            print(f"    Pairwise: {pw_alld_score_avg:.2f}")
+            print(f"    N-Person: {np_alld_score_avg:.2f}")
+            print(f"    Difference: {pw_alld_score_avg - np_alld_score_avg:+.2f}")
+        
+        # Final episode scores
+        pw_final_episode = pw_summary.get('final_episode_avg_score', {})
+        np_final_episode = np_summary.get('final_episode_avg_score', {})
+        
+        if pw_final_episode:
+            print(f"\nFinal Episode Average Scores:")
+            for agent_type in ['TFT', 'AllD']:
+                pw_agents = [score for name, score in pw_final_episode.items() if agent_type in name]
+                np_agents = [score for name, score in np_final_episode.items() if agent_type in name]
+                
+                if pw_agents:
+                    pw_avg = np.mean(pw_agents)
+                    np_avg = np.mean(np_agents) if np_agents else 0
+                    print(f"  {agent_type} agents:")
+                    print(f"    Pairwise: {pw_avg:.2f}")
+                    print(f"    N-Person: {np_avg:.2f}")
+        
+        # Interpretation
+        print(f"\nInterpretation:")
+        if pw_tft_avg - np_tft_avg > 0.15:
+            print(f"  → STRONG RECIPROCITY HILL: Pairwise enables much better cooperation")
+        elif pw_tft_avg - np_tft_avg > 0.05:
+            print(f"  → MODERATE RECIPROCITY HILL: Pairwise maintains cooperation better")
+        elif np_tft_avg - pw_tft_avg > 0.05:
+            print(f"  → UNEXPECTED: N-Person performs better")
+        else:
+            print(f"  → SIMILAR: Both modes yield comparable cooperation")
+        
+        if '2TFT' in scenario_name and avg_tft_vs_tft > 0.7 and avg_tft_vs_alld < 0.3:
+            print(f"  → DISCRIMINATORY SUCCESS: TFTs cooperate with each other but not with AllD")
+        
+        if np_tft_avg < 0.2:
+            print(f"  → TRAGIC VALLEY DETECTED: N-Person cooperation collapsed")
+
+
+def create_summary_statistics_plot(results_dir: str):
+    """Create a comprehensive summary plot showing key statistics."""
+    all_results = load_results(results_dir)
+    
+    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
+    fig.suptitle('Summary Statistics: Pairwise vs N-Person Dynamics', fontsize=16)
+    
+    scenarios = ['2TFT+1AllD\nNo Expl', '2TFT+1AllD\n10% Expl', '3TFT\nNo Expl', '3TFT\n10% Expl']
+    files = [
+        ('results_2TFT_1AllD_NoExpl_Pairwise.json', 'results_2TFT_1AllD_NoExpl_NPerson.json'),
+        ('results_2TFT_1AllD_10Expl_Pairwise.json', 'results_2TFT_1AllD_10Expl_NPerson.json'),
+        ('results_3TFT_NoExpl_Pairwise.json', 'results_3TFT_NoExpl_NPerson.json'),
+        ('results_3TFT_10Expl_Pairwise.json', 'results_3TFT_10Expl_NPerson.json')
+    ]
+    
+    # Data collection
+    pw_overall_coop = []
+    np_overall_coop = []
+    pw_tft_vs_tft = []
+    pw_tft_vs_alld = []
+    pw_tft_scores = []
+    np_tft_scores = []
+    pw_alld_scores = []
+    np_alld_scores = []
+    
+    for pw_file, np_file in files:
+        if pw_file in all_results and np_file in all_results:
+            # Overall cooperation
+            pw_summary = all_results[pw_file]['summary']
+            np_summary = all_results[np_file]['summary']
+            
+            pw_tft_coops = [rate for name, rate in pw_summary['cooperation_rates'].items() if 'TFT' in name]
+            np_tft_coops = [rate for name, rate in np_summary['cooperation_rates'].items() if 'TFT' in name]
+            
+            pw_overall_coop.append(np.mean(pw_tft_coops) if pw_tft_coops else 0)
+            np_overall_coop.append(np.mean(np_tft_coops) if np_tft_coops else 0)
+            
+            # Separated cooperation for 2TFT scenarios
+            if '2TFT' in pw_file:
+                pw_coop_by_opponent = extract_pairwise_cooperation_by_opponent(all_results[pw_file])
+                all_tft_tft = [d['TFT_vs_TFT'] for d in pw_coop_by_opponent.values()]
+                all_tft_alld = [d['TFT_vs_AllD'] for d in pw_coop_by_opponent.values()]
+                pw_tft_vs_tft.append(np.mean(all_tft_tft) if all_tft_tft else 0)
+                pw_tft_vs_alld.append(np.mean(all_tft_alld) if all_tft_alld else 0)
+            else:
+                pw_tft_vs_tft.append(np.nan)
+                pw_tft_vs_alld.append(np.nan)
+            
+            # Scores
+            pw_tft_sc = [score for name, score in pw_summary['average_scores_per_round'].items() if 'TFT' in name]
+            np_tft_sc = [score for name, score in np_summary['average_scores_per_round'].items() if 'TFT' in name]
+            pw_alld_sc = [score for name, score in pw_summary['average_scores_per_round'].items() if 'AllD' in name]
+            np_alld_sc = [score for name, score in np_summary['average_scores_per_round'].items() if 'AllD' in name]
+            
+            pw_tft_scores.append(np.mean(pw_tft_sc) if pw_tft_sc else 0)
+            np_tft_scores.append(np.mean(np_tft_sc) if np_tft_sc else 0)
+            pw_alld_scores.append(np.mean(pw_alld_sc) if pw_alld_sc else np.nan)
+            np_alld_scores.append(np.mean(np_alld_sc) if np_alld_sc else np.nan)
+    
+    x = np.arange(len(scenarios))
+    width = 0.35
+    
+    # Plot 1: Overall TFT Cooperation
+    bars1 = ax1.bar(x - width/2, pw_overall_coop, width, label='Pairwise', color='blue', alpha=0.8)
+    bars2 = ax1.bar(x + width/2, np_overall_coop, width, label='N-Person', color='red', alpha=0.8)
+    
+    ax1.set_ylabel('Cooperation Rate')
+    ax1.set_title('Overall TFT Cooperation Rates')
+    ax1.set_xticks(x)
+    ax1.set_xticklabels(scenarios)
+    ax1.legend()
+    ax1.set_ylim(0, 1.1)
+    ax1.grid(True, alpha=0.3, axis='y')
+    
+    # Add value labels
+    for bars in [bars1, bars2]:
+        for bar in bars:
+            height = bar.get_height()
+            ax1.annotate(f'{height:.0%}',
+                        xy=(bar.get_x() + bar.get_width() / 2, height),
+                        xytext=(0, 3), textcoords="offset points",
+                        ha='center', va='bottom', fontsize=9)
+    
+    # Plot 2: Pairwise TFT Cooperation by Opponent (only for 2TFT scenarios)
+    x_2tft = np.array([0, 1])  # Only first two scenarios
+    bars3 = ax2.bar(x_2tft - width/2, pw_tft_vs_tft[:2], width, label='TFT vs TFT', color='green', alpha=0.8)
+    bars4 = ax2.bar(x_2tft + width/2, pw_tft_vs_alld[:2], width, label='TFT vs AllD', color='orange', alpha=0.8)
+    
+    ax2.set_ylabel('Cooperation Rate')
+    ax2.set_title('Pairwise: TFT Cooperation by Opponent Type')
+    ax2.set_xticks(x_2tft)
+    ax2.set_xticklabels(['2TFT+1AllD\nNo Expl', '2TFT+1AllD\n10% Expl'])
+    ax2.legend()
+    ax2.set_ylim(0, 1.1)
+    ax2.grid(True, alpha=0.3, axis='y')
+    
+    # Add value labels
+    for bars in [bars3, bars4]:
+        for bar in bars:
+            height = bar.get_height()
+            ax2.annotate(f'{height:.0%}',
+                        xy=(bar.get_x() + bar.get_width() / 2, height),
+                        xytext=(0, 3), textcoords="offset points",
+                        ha='center', va='bottom', fontsize=9)
+    
+    # Plot 3: TFT Average Scores
+    bars5 = ax3.bar(x - width/2, pw_tft_scores, width, label='Pairwise', color='blue', alpha=0.8)
+    bars6 = ax3.bar(x + width/2, np_tft_scores, width, label='N-Person', color='red', alpha=0.8)
+    
+    ax3.set_ylabel('Average Score per Round')
+    ax3.set_title('TFT Performance (Average Score)')
+    ax3.set_xticks(x)
+    ax3.set_xticklabels(scenarios)
+    ax3.legend()
+    ax3.grid(True, alpha=0.3, axis='y')
+    
+    # Add value labels
+    for bars in [bars5, bars6]:
+        for bar in bars:
+            height = bar.get_height()
+            ax3.annotate(f'{height:.2f}',
+                        xy=(bar.get_x() + bar.get_width() / 2, height),
+                        xytext=(0, 3), textcoords="offset points",
+                        ha='center', va='bottom', fontsize=9)
+    
+    # Plot 4: AllD Scores (only for 2TFT scenarios)
+    valid_indices = [i for i, v in enumerate(pw_alld_scores) if not np.isnan(v)]
+    if valid_indices:
+        x_alld = np.array(valid_indices)
+        pw_alld_valid = [pw_alld_scores[i] for i in valid_indices]
+        np_alld_valid = [np_alld_scores[i] for i in valid_indices]
+        
+        bars7 = ax4.bar(x_alld - width/2, pw_alld_valid, width, label='Pairwise', color='blue', alpha=0.8)
+        bars8 = ax4.bar(x_alld + width/2, np_alld_valid, width, label='N-Person', color='red', alpha=0.8)
+        
+        ax4.set_ylabel('Average Score per Round')
+        ax4.set_title('AllD Performance (Average Score)')
+        ax4.set_xticks(x_alld)
+        ax4.set_xticklabels(['2TFT+1AllD\nNo Expl', '2TFT+1AllD\n10% Expl'])
+        ax4.legend()
+        ax4.grid(True, alpha=0.3, axis='y')
+        
+        # Add value labels
+        for bars in [bars7, bars8]:
+            for bar in bars:
+                height = bar.get_height()
+                ax4.annotate(f'{height:.2f}',
+                            xy=(bar.get_x() + bar.get_width() / 2, height),
+                            xytext=(0, 3), textcoords="offset points",
+                            ha='center', va='bottom', fontsize=9)
+    
+    plt.tight_layout()
+    plt.savefig(os.path.join(results_dir, 'summary_statistics.png'), dpi=300, bbox_inches='tight')
+    plt.close()
 
 
 def main():
@@ -429,13 +624,20 @@ def main():
     
     print(f"Analyzing results from: {results_dir}")
     
-    # Create plots
+    # Create enhanced plots
+    create_enhanced_comparison_plots(results_dir)
+    
+    # Create summary statistics plot
+    create_summary_statistics_plot(results_dir)
+    
+    # Print detailed statistics
+    print_detailed_statistics(results_dir)
+    
+    # Also create the original plots for comparison
+    from analyze_3_person_results import create_comparison_plots
     create_comparison_plots(results_dir)
     
-    # Analyze findings
-    analyze_reciprocity_vs_tragedy(results_dir)
-    
-    print(f"\nAnalysis complete! Plots saved to: {results_dir}")
+    print(f"\nAnalysis complete! All plots saved to: {results_dir}")
 
 
 if __name__ == "__main__":

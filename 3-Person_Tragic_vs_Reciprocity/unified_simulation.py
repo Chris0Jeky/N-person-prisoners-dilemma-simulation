@@ -99,7 +99,7 @@ class Agent:
         return base_action
     
     def _tft_action(self, mode: InteractionMode, opponent_id: Optional[int]) -> Action:
-        """Standard TFT: copy last move (pairwise) or follow majority (N-person)."""
+        """Standard TFT: copy last move (pairwise) or strict rule (N-person)."""
         if mode == InteractionMode.PAIRWISE:
             # Pairwise: copy opponent's last move
             if opponent_id is None:
@@ -110,7 +110,7 @@ class Agent:
                 return Action.COOPERATE
             return self.pairwise_opponent_history[opponent_id][-1]
         else:
-            # N-person: follow majority from last round
+            # N-person: STRICT RULE - defect if ANY other agent defected
             if len(self.group_history) == 0:
                 return Action.COOPERATE
             
@@ -119,8 +119,8 @@ class Agent:
             if not others_actions:
                 return Action.COOPERATE
                 
-            coop_count = sum(1 for action in others_actions if action == Action.COOPERATE)
-            if coop_count > len(others_actions) / 2:
+            # Cooperate only if ALL other agents cooperated
+            if all(action == Action.COOPERATE for action in others_actions):
                 return Action.COOPERATE
             else:
                 return Action.DEFECT

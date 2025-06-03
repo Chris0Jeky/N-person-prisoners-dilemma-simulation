@@ -98,6 +98,7 @@ class StaticAgent(BaseAgent):
             self.opponent_last_moves[context['opponent_id']] = context['opponent_move']
 
     def reset(self):
+        """Reset score counters and forget tracked opponent moves."""
         super().reset()
         self.opponent_last_moves.clear()
 

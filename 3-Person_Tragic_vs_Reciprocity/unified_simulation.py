@@ -279,14 +279,22 @@ class UnifiedSimulation:
         round_payoffs = defaultdict(float)
         interactions = []
         
-        # Generate all pairs
+        # Step 1: All agents decide their actions for all opponents simultaneously
+        planned_actions = {}
+        for agent in self.agents:
+            # Get list of all other agents' IDs
+            opponent_ids = [other.id for other in self.agents if other.id != agent.id]
+            # Agent decides actions for all opponents
+            planned_actions[agent.id] = agent.choose_actions_for_current_round_pairwise(opponent_ids)
+        
+        # Step 2: Execute all pairwise games using the pre-determined actions
         for i in range(len(self.agents)):
             for j in range(i + 1, len(self.agents)):
                 agent1, agent2 = self.agents[i], self.agents[j]
                 
-                # Agents decide
-                action1 = agent1.decide_action(self.mode, opponent_id=agent2.id)
-                action2 = agent2.decide_action(self.mode, opponent_id=agent1.id)
+                # Get the pre-determined actions
+                action1 = planned_actions[agent1.id][agent2.id]
+                action2 = planned_actions[agent2.id][agent1.id]
                 
                 # Calculate payoffs
                 if action1 == Action.COOPERATE and action2 == Action.COOPERATE:
@@ -319,12 +327,16 @@ class UnifiedSimulation:
                     print(f"\n{agent1.name} vs {agent2.name}: {action1.value} vs {action2.value}")
                     print(f"Payoffs: {agent1.name}={payoff1}, {agent2.name}={payoff2}")
         
-        # Store round data
+        # Store round data - include pre-determined actions for debugging
         round_result = {
             'round': round_num,
             'mode': 'pairwise',
             'interactions': interactions,
-            'total_payoffs': {agent.name: round_payoffs[agent.id] for agent in self.agents}
+            'total_payoffs': {agent.name: round_payoffs[agent.id] for agent in self.agents},
+            'pre_round_actions': {agent.name: {
+                self.agents[opp_id].name: action.value 
+                for opp_id, action in planned_actions[agent.id].items()
+            } for agent in self.agents}
         }
         
         return round_result

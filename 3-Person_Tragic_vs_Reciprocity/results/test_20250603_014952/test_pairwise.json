@@ -1,0 +1,50 @@
+{
+  "mode": "pairwise",
+  "episodes": 2,
+  "rounds_per_episode": 5,
+  "episode_data": [
+    {
+      "mode": "pairwise",
+      "agent_scores": {
+        "TFT1": 19.0,
+        "TFT2": 19.0,
+        "AllD": 18.0
+      },
+      "cooperation_rates": {
+        "TFT1": 0.6,
+        "TFT2": 0.6,
+        "AllD": 0.0
+      }
+    },
+    {
+      "mode": "pairwise",
+      "agent_scores": {
+        "TFT1": 19.0,
+        "TFT2": 19.0,
+        "AllD": 18.0
+      },
+      "cooperation_rates": {
+        "TFT1": 0.6,
+        "TFT2": 0.6,
+        "AllD": 0.0
+      }
+    }
+  ],
+  "final_scores": {
+    "TFT1": 38.0,
+    "TFT2": 38.0,
+    "AllD": 36.0
+  },
+  "cooperation_evolution": [
+    {
+      "TFT1": 0.6,
+      "TFT2": 0.6,
+      "AllD": 0.0
+    },
+    {
+      "TFT1": 0.6,
+      "TFT2": 0.6,
+      "AllD": 0.0
+    }
+  ]
+}

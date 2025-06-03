@@ -200,7 +200,7 @@ def run_chris_huyck_experiments():
     
     # Results directory
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    results_dir = f"3-Person_Tragic_vs_Reciprocity/results/chris_huyck_{timestamp}"
+    results_dir = f"results/chris_huyck_{timestamp}"
     os.makedirs(results_dir, exist_ok=True)
     
     all_results = {}

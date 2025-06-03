@@ -417,7 +417,7 @@ def main():
         results_dir = sys.argv[1]
     else:
         # Find the most recent results directory
-        results_dirs = glob.glob("3-Person_Tragic_vs_Reciprocity/results/chris_huyck_*")
+        results_dirs = glob.glob("results/chris_huyck_*")
         if not results_dirs:
             print("No results directories found!")
             print("Please run chris_huyck_experiments.py first.")

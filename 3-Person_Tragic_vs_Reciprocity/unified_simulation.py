@@ -98,6 +98,22 @@ class Agent:
             return Action.DEFECT if base_action == Action.COOPERATE else Action.COOPERATE
         return base_action
     
+    def choose_actions_for_current_round_pairwise(self, all_opponent_ids: List[int]) -> Dict[int, Action]:
+        """Decide actions for all opponents in pairwise mode simultaneously."""
+        actions = {}
+        
+        for opponent_id in all_opponent_ids:
+            # For non-adaptive strategies, use the same action for all
+            if self.strategy in [Strategy.ALWAYS_COOPERATE, Strategy.ALWAYS_DEFECT]:
+                action = self.decide_action(InteractionMode.PAIRWISE, opponent_id)
+            else:
+                # For adaptive strategies, decide based on specific opponent history
+                action = self.decide_action(InteractionMode.PAIRWISE, opponent_id)
+            
+            actions[opponent_id] = action
+        
+        return actions
+    
     def _tft_action(self, mode: InteractionMode, opponent_id: Optional[int]) -> Action:
         """Standard TFT: copy last move (pairwise) or strict rule (N-person)."""
         if mode == InteractionMode.PAIRWISE:

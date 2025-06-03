@@ -434,8 +434,18 @@ def create_agents(config: Dict) -> List[Agent]:
 
 def save_results(results: Dict, filename: str):
     """Save simulation results to JSON file."""
-    os.makedirs('3-Person_Tragic_vs_Reciprocity/results', exist_ok=True)
-    filepath = f'3-Person_Tragic_vs_Reciprocity/results/{filename}'
+    # Ensure directory exists
+    if '/' in filename:
+        # If filename contains a path, use it directly
+        directory = os.path.dirname(filename)
+        if directory:
+            os.makedirs(directory, exist_ok=True)
+        filepath = filename
+    else:
+        # Otherwise, save to results directory
+        os.makedirs('results', exist_ok=True)
+        filepath = f'results/{filename}'
+    
     with open(filepath, 'w') as f:
         json.dump(results, f, indent=2)
     print(f"\nResults saved to: {filepath}")

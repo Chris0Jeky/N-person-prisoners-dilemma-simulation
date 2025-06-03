@@ -1,41 +1,37 @@
 import json
 import os
 
-# Check if results directory exists
-results_dir = "3-Person_Tragic_vs_Reciprocity/results/chris_huyck_updated_20250603_040854"
-if not os.path.exists(results_dir):
-    # Try alternative paths
-    alt_dirs = [
-        "results/chris_huyck_updated_20250603_040854",
-        "3-Person_Tragic_vs_Reciprocity/results",
-        "results"
-    ]
-    for alt_dir in alt_dirs:
-        if os.path.exists(alt_dir):
-            results_dir = alt_dir
-            break
+# Use a specific file - find the most recent results directory
+import glob
 
-print(f"Looking in directory: {results_dir}")
+# Find the most recent results
+result_dirs = glob.glob("3-Person_Tragic_vs_Reciprocity/results/chris_huyck_*")
+if not result_dirs:
+    print("No results directories found!")
+    exit(1)
 
-# Find a JSON file to examine
-json_files = []
-for root, dirs, files in os.walk(results_dir):
-    for file in files:
-        if file.endswith('.json') and 'pairwise' in file.lower():
-            json_files.append(os.path.join(root, file))
-            
+# Sort by timestamp and get the latest
+latest_dir = sorted(result_dirs)[-1]
+print(f"Using results from: {latest_dir}")
+
+# Look for pairwise results file
+json_files = glob.glob(f"{latest_dir}/*_Pairwise.json")
 if not json_files:
-    print("No pairwise JSON files found")
-    exit()
+    print("No pairwise JSON files found!")
+    # Try all JSON files
+    json_files = glob.glob(f"{latest_dir}/*.json")
+    if not json_files:
+        print("No JSON files found!")
+        exit(1)
 
 json_file = json_files[0]
-print(f"Examining: {json_file}")
+print(f"Examining file: {json_file}\n")
 
 with open(json_file, 'r') as f:
     data = json.load(f)
 
 # Print top-level keys
-print("\nTop-level keys:")
+print("Top-level keys:")
 for key in data.keys():
     print(f"  - {key}")
 
@@ -79,3 +75,9 @@ if 'pairwise_analysis' in data:
     print("\npairwise_analysis already exists:")
     for key in data['pairwise_analysis'].keys():
         print(f"  - {key}")
+
+# Check agent IDs
+if 'config' in data and 'agents' in data['config']:
+    print("\nAgent configurations:")
+    for agent in data['config']['agents']:
+        print(f"  - {agent['name']} (ID: {agent['id']}, Strategy: {agent['strategy']}")

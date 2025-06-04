@@ -125,6 +125,7 @@ class SimpleQLearningAgent(QLearningAgentBase):
             return 'very_high'
 
     def choose_action(self, context):
+        """Choose an action from Q-values for the current context."""
         state = self._get_state(context)
         action = self._get_action_from_q(state)
         context_key = context['opponent_id'] if context['mode'] == 'pairwise' else 'n_person'

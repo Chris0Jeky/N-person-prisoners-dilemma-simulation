@@ -12,12 +12,8 @@
     citecolor=green,
     urlcolor=magenta
 }
+\usepackage{appendix} % For appendix section
 
-% For bibliography - llncs often has its own preferences.
-% ieeetr is a good numbered style.
-% If you want author-year and use natbib features like \citep, \citet, you'd uncomment:
-%\usepackage[round,authoryear]{natbib} % Example for author-year with natbib
-%\usepackage[numbers,sort&compress]{natbib} % Example for numbered with natbib
 
 \begin{document}
 
@@ -42,10 +38,10 @@ The N-Person Iterated Prisoner's Dilemma (N-IPD) poses a significant challenge t
 \section{Introduction}
 \label{sec:introduction}
 
-The Prisoner's Dilemma (PD) serves as a foundational paradigm in game theory, starkly illustrating the conflict between individual rational self-interest and mutually beneficial collective action \cite{Axelrod}. % Ensure 'Axelrod' key in prisoners.bib points to the 1984 book or a general IPD paper. Add a separate key for Axelrod & Hamilton 1981 if needed for that specific citation.
-In its simplest form, two individuals, unable to communicate, must independently choose whether to cooperate or defect. While mutual cooperation yields a good outcome for both, each player has an individual incentive to defect, leading to a suboptimal outcome if both choose to do so. The Iterated Prisoner's Dilemma (IPD), where the game is played repeatedly, opens the door for cooperation to emerge through strategies based on reciprocity, as famously demonstrated by Axelrod's tournaments where Tit-for-Tat proved remarkably successful \cite{Axelrod}. % This could be Axelrod1980a or Axelrod1980b if you add those keys/entries.
+The Prisoner's Dilemma (PD) serves as a foundational paradigm in game theory, starkly illustrating the conflict between individual rational self-interest and mutually beneficial collective action \cite{Axelrod}. 
+In its simplest form, two individuals, unable to communicate, must independently choose whether to cooperate or defect. While mutual cooperation yields a good outcome for both, each player has an individual incentive to defect, leading to a suboptimal outcome if both choose to do so. The Iterated Prisoner's Dilemma (IPD), where the game is played repeatedly, opens the door for cooperation to emerge through strategies based on reciprocity, as famously demonstrated by Axelrod's tournaments where Tit-for-Tat proved remarkably successful \cite{Axelrod}. 
 
-However, many real-world social and economic dilemmas—ranging from managing common-pool resources to international climate agreements and team collaborations—involve more than two interacting parties. The N-Person Iterated Prisoner's Dilemma (N-IPD) generalizes the IPD to scenarios with $n$ participants \cite{Hamburger1973, Hardin1971}. % Add these to prisoners.bib
+However, many real-world social and economic dilemmas—ranging from managing common-pool resources to international climate agreements and team collaborations—involve more than two interacting parties. The N-Person Iterated Prisoner's Dilemma (N-IPD) generalizes the IPD to scenarios with $n$ participants \cite{Hamburger1973, Hardin1971}. 
 This extension introduces significant complexities:
 \begin{itemize}
     \item \textbf{Diffused Responsibility and Payoffs:} The impact of a single agent's cooperative or defective action is spread across the group, diluting the direct consequences felt by any one individual.
@@ -53,7 +49,7 @@ This extension introduces significant complexities:
     \item \textbf{Increased Temptation to Free-Ride:} With many participants, an individual might be more tempted to defect, hoping to benefit from others' cooperation without contributing.
 \end{itemize}
 
-These complexities often lead rational, self-interested agents in N-IPD scenarios towards a "Tragedy Valley" of widespread defection, a concept echoing Hardin's "Tragedy of the Commons" \cite{Hardin1968}. % Add Hardin1968 to prisoners.bib
+These complexities often lead rational, self-interested agents in N-IPD scenarios towards a "Tragedy Valley" of widespread defection, a concept echoing Hardin's "Tragedy of the Commons" \cite{Hardin1968}. 
 Our computational explorations using agent-based models (ABMs) with standard reinforcement learning (RL) agents consistently confirm this pessimistic outcome in certain N-IPD structures. This paper investigates the cognitive and structural conditions that allow learning agents to escape this valley and, in more favorable settings, ascend a "Reciprocity Hill" where cooperation can flourish.
 
 We present \texttt{npdl}, an agent-based simulation framework, to explore these dynamics. Our central argument is that the emergence of cooperation in the N-IPD is not solely dependent on sophisticated learning algorithms but is critically shaped by (a) the agents' ability to perceive \textbf{context} from their social environment, (b) the inherent \textbf{adaptability} of their learning mechanisms, and (c) the fundamental **interaction structure** of the dilemma itself.
@@ -69,15 +65,15 @@ The key takeaways from our investigation are:
     \item \textbf{Adaptive MARL Can Navigate the Valley (Learning Mechanism - T3):} Even within the difficult neighbourhood model, advanced Multi-Agent Reinforcement Learning (MARL) algorithms—particularly those incorporating optimism (like Hysteretic-Q) or adaptive learning rates (like Wolf-PHC)—can enable agents to learn resilient cooperative strategies and achieve high, sustained cooperation. Standard RL often fails where these succeed.
 \end{enumerate}
 
-This paper will first provide a brief background on the N-IPD and relevant learning approaches (Section \ref{sec:litreview}). We then describe the \texttt{npdl} simulation framework and its distinct interaction models (Section \ref{sec:framework}), followed by our experimental methodology (Section \ref{sec:methodology}). Results supporting our key takeaways are presented in Section \ref{sec:results}. Finally, we discuss the broader implications of these findings for understanding and fostering cooperation in multi-agent systems (Section \ref{sec:discussion}) and conclude with future research directions (Section \ref{sec:conclusion}).
+This paper will first provide a brief background on the N-IPD and relevant learning approaches (Section \ref{sec:background}). We then describe the \texttt{npdl} simulation framework, our specific experimental configurations, and the metrics used (Section \ref{sec:framework_and_methodology}). The core findings contrasting interaction structures and adaptive strategies are presented in Section \ref{sec:results_discussion_valley_hill}. Finally, we discuss the broader implications (Section \ref{sec:general_discussion}) and conclude with future research directions (Section \ref{sec:conclusion}).
 
 \section{Background and Related Work}
-\label{sec:litreview}
+\label{sec:background} % Renamed for clarity, was sec:litreview
 
-This section briefly reviews key concepts from game theory, focusing on the N-Person Prisoner's Dilemma (N-IPD), and introduces the Agent-Based Modelling (ABM) and Multi-Agent Reinforcement Learning (MARL) approaches employed in our study. 
+This section briefly reviews key concepts from game theory, focusing on the N-Person Prisoner's Dilemma (N-IPD), and introduces the Agent-Based Modelling (ABM) and Multi-Agent Reinforcement Learning (MARL) approaches relevant to our study. 
 
 \subsection{The N-Person Prisoner's Dilemma (N-IPD)}
-The N-IPD extends the classic two-person dilemma to $N \ge 2$ players, presenting a more complex challenge for cooperation \cite{Hamburger1973, Hardin1971}. % Ensure Hamburger1973 and Hardin1971 are in prisoners.bib with these keys.
+The N-IPD extends the classic two-person dilemma to $N \ge 2$ players, presenting a more complex challenge for cooperation \cite{Hamburger1973, Hardin1971}. 
 Let $n_c$ be the number of players in a group who choose to cooperate (C), and $N-n_c$ be the number who choose to defect (D). The payoff to an individual cooperator is $P_C(n_c)$ and to an individual defector is $P_D(n_c-1)$ (when considering a defector, they are not part of the $n_c$ cooperators in their own payoff calculation from that group). The dilemma is typically characterized by two conditions:
 \begin{itemize}
     \item \textbf{Dominance of Defection:} For any individual, defecting yields a higher personal payoff than cooperating, regardless of how many others cooperate. Formally, if an agent considers switching from cooperate to defect, its payoff increases: $P_D(n_c) > P_C(n_c+1)$ where $n_c$ is the number of *other* cooperators (if the agent defects) versus $n_c+1$ (if the agent cooperates).
@@ -86,89 +82,128 @@ Let $n_c$ be the number of players in a group who choose to cooperate (C), and $
 This inherent conflict between individual rationality (defect) and collective benefit (cooperate) often leads to the "Tragedy of the Commons" \cite{Hardin1968}, where shared resources are depleted. Our concept of the "Tragedy Valley" directly reflects this gravitational pull towards mutual defection observed in N-IPD simulations.
 
 \subsection{Agent-Based Modelling (ABM) for Social Dilemmas}
-Agent-Based Modelling (ABM) offers a powerful computational methodology for studying complex social systems from the bottom up \cite{Gilbert2007, Macal2010}. % Add Gilbert2007 and Macal2010 to prisoners.bib
+Agent-Based Modelling (ABM) offers a powerful computational methodology for studying complex social systems from the bottom up \cite{Gilbert2007, Macal2010}. 
 By simulating the actions and interactions of autonomous, heterogeneous agents according to predefined rules within a specified environment, ABM allows researchers to observe emergent macroscopic phenomena, such as the rise or fall of cooperation. It is particularly well-suited for exploring the N-IPD due to its ability to model local interactions, diverse agent strategies (including learning), and the non-linear dynamics that often characterize social dilemmas. Axelrod's pioneering tournaments using ABM for the 2-player IPD provided early insights into the conditions favoring cooperative strategies \cite{Axelrod}.
 
 \subsection{Reinforcement Learning in Multi-Agent Systems (MARL)}
-Reinforcement Learning (RL) is a class of machine learning where agents learn to make optimal sequences of decisions by interacting with an environment and receiving feedback in the form of rewards or punishments \cite{SuttonBarto2018}. % Add SuttonBarto2018 to prisoners.bib
-Standard Q-learning is a foundational RL algorithm that learns the value of taking a particular action in a given state. However, when applied to multi-agent systems (MARL), where multiple agents are learning simultaneously, standard RL algorithms face significant challenges, primarily due to the non-stationarity of the environment: each agent's policy changes as it learns, thereby changing the environment from the perspective of other agents \cite{Busoniu2008}. % Add Busoniu2008 to prisoners.bib
-This can destabilize learning and prevent convergence to cooperative equilibria. To address these issues within the N-IPD context, our work explores more advanced MARL techniques:
-\begin{itemize}
-    \item \textbf{Hysteretic Q-learning:} This algorithm employs asymmetric learning rates, specifically using a higher learning rate for positive updates (when an action leads to a better-than-expected outcome) and a lower one for negative updates. This "optimism" can help sustain cooperation by making agents less reactive to occasional defections and quicker to reinforce mutually beneficial actions \cite{Matignon2007Hysteretic}. % Add Matignon2007Hysteretic to prisoners.bib
-    \item \textbf{Win-or-Learn-Fast Policy Hill-Climbing (WoLF-PHC):} WoLF-PHC dynamically adjusts an agent's learning rate based on its performance relative to an average policy. If an agent is "winning" (performing better than average), it learns more cautiously (lower learning rate); if "losing," it learns more rapidly (higher learning rate). This adaptability helps agents converge in non-stationary settings \cite{Bowling2002WoLF}. % Add Bowling2002WoLF to prisoners.bib
-\end{itemize}
-These algorithms represent attempts to endow agents with more sophisticated learning capabilities to navigate the complexities of multi-agent interactions.
+Reinforcement Learning (RL) is a class of machine learning where agents learn to make optimal sequences of decisions by interacting with an environment and receiving feedback in the form of rewards or punishments \cite{SuttonBarto2018}. 
+Standard Q-learning is a foundational RL algorithm that learns the value of taking a particular action in a given state. However, when applied to multi-agent systems (MARL), where multiple agents are learning simultaneously, standard RL algorithms face significant challenges, primarily due to the non-stationarity of the environment: each agent's policy changes as it learns, thereby changing the environment from the perspective of other agents \cite{Busoniu2008}. 
+This can destabilize learning and prevent convergence to cooperative equilibria. To address these issues within the N-IPD context, prior work has explored more advanced MARL techniques like Hysteretic Q-learning \cite{Matignon2007Hysteretic} and WoLF-PHC \cite{Bowling2002WoLF}, which aim to endow agents with more sophisticated learning capabilities. Our study focuses on simpler reactive strategies and their adaptations to highlight structural effects.
 
-\section{The \texttt{npdl} Simulation Framework and Interaction Models}
-\label{sec:framework}
-We developed \texttt{npdl}, a Python-based ABM platform. Key components include agent architecture and distinct interaction models.
 
-\subsection{Agent Architecture}
-Agents use learning strategies. Standard Q-learning agents perceive states based on their local neighbourhood. The \texttt{proportion_discretized} state representation, quantifying neighbour cooperation, is a critical contextual input. Advanced agents use Hysteretic-Q or Wolf-PHC.
+\section{Simulation Framework, Experimental Setup, and Metrics}
+\label{sec:framework_and_methodology} % Replaces your old Chapter 3
 
-\subsection{Interaction Models: Neighbourhood vs. Pairwise}
-\texttt{npdl} simulates two N-IPD interaction structures:
-\begin{enumerate}
-    \item \textbf{Neighbourhood Model:} Agents interact with local network neighbours. Payoffs are from N-player functions based on neighbourhood cooperation. This represents diffuse public good scenarios and often leads to the "Tragedy Valley."
-    %%% IMAGE GOES HERE: Conceptual Diagram of the Neighbourhood N-IPD Model. (Figure \ref{fig:neighbourhood_model_diagram})
+The Iterated Prisoner's Dilemma (IPD) serves as a critical model for understanding cooperation. While Axelrod's work highlighted the success of strategies like Tit-for-Tat (TFT) in two-player encounters, extending this to multi-agent scenarios (N-Person IPD or N-IPD) reveals a more complex strategic landscape. This section details our agent-based modeling framework, the specific experimental configurations used to explore this landscape, and the metrics for evaluating outcomes. Our central aim is to contrast how interaction structure influences cooperative dynamics, leading to what we term the "Reciprocity Hill" in pairwise settings and the "Tragedy Valley" in N-Person group settings.
 
-    \item \textbf{Pairwise Model:} Each agent plays a 2-player IPD against every other agent. Total payoff sums these dyadic interactions. This emphasizes direct reciprocity, allowing strategies like Tit-for-Tat (TFT) to function effectively. This structure facilitates climbing the "Reciprocity Hill."
-    %%% IMAGE GOES HERE: Conceptual Diagram of the Pairwise N-IPD Model. (Figure \ref{fig:pairwise_model_diagram})
-\end{enumerate}
-The pairwise model required careful agent memory handling for reactive strategies (per-opponent history) and RL agents (aggregate signals).
+\subsection{Core Interaction Models}
+We implemented two distinct interaction models to simulate different N-IPD environments:
 
-\section{Methodology and Experiments}
-\label{sec:methodology}
-Simulations typically involved $N=30$ agents, 500 rounds, Small-World networks, and standard PD payoffs ($R=3, S=0, T=5, P=1$).
-We evaluated: \item Baseline Q-learning agents with minimal (\texttt{basic}) and contextual (\texttt{proportion_discretized}) state representations., optimized Hysteretic-Q and Wolf-PHC (often against TFT agents), global cooperation bonuses, and both Neighbourhood and Pairwise interaction models. Performance was measured by average cooperation rate.
+1.  **Pairwise Interaction Model:** In this setup, agents engage in a series of independent 2-player IPD games. For a population of $N$ agents, each agent plays $N-1$ iterated games, one against every other agent. An agent's total score is the sum of payoffs from all its dyadic interactions. This model emphasizes direct, one-to-one accountability, where the actions of one agent in a pair directly affect the other, and responses can be specifically targeted.
 
-\section{Results}
-\label{sec:results}
-This section presents key experimental results.
+2.  **N-Person (Neighbourhood) Model:** Here, all $N$ agents make a single choice (cooperate or defect) simultaneously as part of one collective group. An individual agent's payoff is determined by its own choice and the total number of *other* agents in the group who chose to cooperate. This structure represents scenarios with diffuse payoffs, where individual actions contribute to a shared outcome, and direct one-to-one reciprocity is obscured. The payoff for an agent who cooperates is calculated as $S + (R - S) \times (n_{oc} / (N - 1))$, and for a defector as $P + (T - P) \times (n_{oc} / (N - 1))$, where $n_{oc}$ is the number of other cooperators. We use the standard PD payoffs: Reward (R)=3, Sucker (S)=0, Temptation (T)=5, and Punishment (P)=1.
 
-\subsection{The Tragedy Valley and the Importance of Context}
-Standard Q-learning agents with a `basic` state (no neighbour information) rapidly converged to near-zero cooperation (the "Tragedy Valley").
-%%% IMAGE GOES HERE: Baseline Performance: Q-learning with `basic` state. (Figure \ref{fig:baseline_basic_state})
-Providing \texttt{proportion_discretized} state (fraction of cooperating neighbours) improved performance to unstable ~50\% cooperation. Context is critical but not solely sufficient.
-%%% IMAGE GOES HERE: Impact of Minimal Context: Q-learning with `proportion_discretized` state. (Figure \ref{fig:baseline_prop_discr_state})
+\subsection{Agent Strategies and Adaptations}
+The primary agents in our study employ variations of the Tit-for-Tat principle, alongside a baseline defector:
 
-\subsection{Adaptive MARL Achieves High Cooperation in Neighbourhood N-IPD}
-Optimized Hysteretic-Q and Wolf-PHC agents achieved high, sustained cooperation (over 85-90\%) in the N-IPD neighbourhood model, even against TFT agents. Hysteretic-Q's optimism and Wolf-PHC's adaptive learning rates were effective.
-%%% IMAGE GOES HERE: Optimized Hysteretic-Q Performance. (Figure \ref{fig:hysq_performance})
-%%% IMAGE GOES HERE: Optimized Wolf-PHC Performance. (Figure \ref{fig:wolfphc_performance})
+1.  **Tit-for-Tat (TFT) - Pairwise Model:** Agents start by cooperating. In subsequent rounds of a specific pairwise game, an agent mirrors the last move made by *that particular opponent* in *that game*.
+2.  **Probabilistic Tit-for-Tat (pTFT) - N-Person Model:** As a conceptual counterpart to TFT for group interactions. Agents start by cooperating. Thereafter, an agent's probability of cooperating in the next round equals the proportion of *all agents* (including itself) who cooperated in the immediate past round.
+3.  **pTFT-Threshold - N-Person Model:** An enhancement to pTFT. Agents cooperate if the previous round's overall group cooperation rate was 50\% or higher. If below 50\%, they revert to the standard pTFT rule (cooperating probabilistically based on the exact sub-50\% rate).
+4.  **Always Defect (AllD) - Both Models:** These agents unconditionally choose to defect in every interaction.
 
-\subsection{Impact of Interaction Structure: Pairwise Model and the Reciprocity Hill}
-The pairwise interaction model, with explicit direct reciprocity, fundamentally alters the strategic landscape. Initial observations and theory suggest this structure makes the "Reciprocity Hill" more accessible, as feedback for cooperation/defection is immediate and unambiguous. RL agents benefit from clearer underlying reward signals.
-%%% (Future work: comparative graphs for pairwise vs neighbourhood)
+\subsection{Experimental Parameters and Variations}
+Our experiments systematically varied several factors:
 
-\section{Discussion}
-\label{sec:discussion}
-Our experimental results shed light on the critical factors influencing the emergence and stability of cooperation in the N-Person Iterated Prisoner's Dilemma, painting a narrative of challenges and pathways towards collective benefit. The concepts of the "Tragedy Valley" and the "Reciprocity Hill" serve as useful metaphors for the different dynamic landscapes agents encounter.
+1.  **Agent Compositions:** We tested populations of 3 and 5 agents, with mixes such as:
+    *   Purely TFT-type agents (e.g., 3 TFTs).
+    *   Mixed populations (e.g., 2 TFTs and 1 AllD; 2 TFTs and 3 AllDs).
+2.  **Exploration Rate (Error):** Agents had a 0\% or 10\% chance of making a move contrary to their intended strategy. This introduces stochasticity and tests the robustness of strategies.
+3.  **Episodic Resets (Pairwise Model Only):** For some pairwise experiments, interactions were divided into 10 "episodes" of 10 rounds each (totaling 100 rounds per pair). At the end of each episode, TFT agents would "forget" their opponent's last move, effectively starting the next episode with a clean slate (i.e., cooperating). Non-episodic pairwise runs consisted of a single 100-round interaction per pair.
+4.  **Rounds:** Pairwise interactions involved 100 total rounds per pair. N-Person simulations ran for 200 rounds.
 
-\textbf{T1: Interaction Structure as the Primary Determinant – The Valley and The Hill.}
-Perhaps our most fundamental insight is the profound impact of the interaction structure itself.
-The standard N-IPD \textit{neighbourhood model}, where an agent makes a single choice and its payoff is determined by the collective actions within its local group, inherently presents a difficult path to cooperation. The benefits of an individual's cooperation are diffused, while the costs are borne individually. Direct, targeted reciprocity is obscured, making it hard for simple reciprocal strategies like Tit-for-Tat to gain a foothold or for learners to accurately assign credit for good outcomes. This environment readily leads agents into the "Tragedy Valley" of mutual defection. Even if agents possess some learning capabilities, the path out of this valley is steep and fraught with the risk of being exploited.
+\subsection{Key Metrics for Evaluation}
+To assess outcomes, we focused on:
 
-In stark contrast, the \textit{pairwise model} of N-IPD fundamentally alters this landscape. Here, each agent effectively engages in $N-1$ distinct 2-player IPD games with every other participant. This structure brings clarity and directness to reciprocity. A defection from agent B towards agent A directly impacts A's payoff from that specific interaction, and A can retaliate or forgive B in their subsequent dyadic game without "punishing" other innocent bystanders. This clear cause-and-effect makes it much easier for cooperative norms, supported by reciprocal strategies, to emerge and stabilize. The "Reciprocity Hill" becomes a more accessible and sustainable state because individual incentives are better aligned with mutual cooperation through direct, accountable interactions. Our framework's ability to model both structures allowed us to highlight this critical difference.
+1.  **Agent Score:** The cumulative payoff an agent received throughout all its interactions. This reflects individual success.
+2.  **Cooperation Rate:** For an individual agent, this is the percentage of times it chose to cooperate out of its total moves. This indicates an agent's behavioral tendency.
+3.  **Overall Cooperation Rate:**
+    *   For Pairwise: The average cooperation rate across all moves made by all agents in all their dyadic games.
+    *   For N-Person: The average per-round cooperation rate of the entire group over the simulation. This reflects the collective group behavior.
 
-\textbf{T2: Contextual Awareness – A Perceptual Foothold Against the Valley's Slope.}
-For agents operating within the challenging neighbourhood model, the ability to perceive their immediate social context is a crucial first defense against an immediate slide into the Tragedy Valley. Our results (Section \ref{sec:results}A) clearly showed that Q-learning agents with no information about their neighbours' actions (`basic` state) invariably defected. However, simply providing them with a discretized proportion of cooperating neighbours (`proportion_discretized` state) allowed for a significantly higher, albeit unstable, level of cooperation. This suggests that even rudimentary social awareness—knowing generally "what others are doing"—is a prerequisite for breaking cycles of pure defection. It provides a perceptual foothold, allowing agents to at least react to, rather than ignore, the collective behaviour of their peers, though it is not sufficient on its own to ensure high cooperation.
+By analyzing these metrics across the varied experimental conditions, we aim to elucidate how interaction structure, agent strategies, and environmental factors combine to shape the emergence and stability of cooperation, leading to the contrasting dynamics of the Reciprocity Hill and the Tragedy Valley.
 
-\textbf{T3: Adaptive MARL – The Cognitive Tools to Climb in Difficult Terrain.}
-While context is necessary, more sophisticated cognitive tools in the form of adaptive learning are often required to navigate the N-IPD neighbourhood model successfully and sustain high levels of cooperation. Standard reinforcement learning, represented by basic Q-learning, struggles with the non-stationarity of the multi-agent environment. In contrast, adaptive MARL algorithms like Hysteretic-Q and Wolf-PHC demonstrated the capacity to achieve and maintain robust cooperation (Section \ref{sec:results}B).
-Hysteretic-Q, with its optimistic approach of learning more readily from positive experiences (mutual cooperation) than from negative ones (being defected upon), fosters resilience. It allows agents to "forgive" occasional defections and maintain cooperative overtures, preventing spirals of retaliation that can trap agents in the Tragedy Valley.
-Wolf-PHC, by dynamically adjusting its learning rates based on whether it is "winning" or "losing," shows adaptability to the changing strategies of other agents. This careful modulation of learning helps it find and stabilize cooperative equilibria that elude simpler learners.
-These algorithms, therefore, represent mechanisms by which agents can, through more nuanced learning, not only avoid the worst of the Tragedy Valley but actively "climb" towards more cooperative states even in the challenging diffuse-payoff structure of the neighbourhood N-IPD. Their success underscores that the type of learning matters significantly; it's not just about learning, but *how* agents learn in a social context.
 
-The consistent failure of standard exploration strategies like UCB1 (detailed in the original report but not explicitly shown with a figure here) further emphasizes the difficulties posed by non-stationarity in MARL within the N-IPD. Additionally, while external factors like global incentives can dramatically shift the landscape towards cooperation (as also shown in our broader study), the focus of these core takeaways is on the inherent learnability and structural properties of the dilemma itself and the cognitive capabilities of the agents.
-Our findings collectively suggest that understanding and promoting cooperation in complex multi-agent systems requires attention not only to individual learning capacities but also, critically, to the very structure of their interactions. Limitations of this study include the abstraction of agent cognition and the focus on specific network structures and payoff parameters. Future work will expand the range of scenarios and delve deeper into the comparative dynamics of the neighbourhood versus pairwise models, further exploring the pathways from the Tragedy Valley to the Reciprocity Hill.
+\section{The Dichotomy of Reciprocity: Navigating the Tragedy Valley and Ascending the Reciprocity Hill}
+\label{sec:results_discussion_valley_hill} % This is your new chapter 3, now framed as results/discussion
+
+The Iterated Prisoner's Dilemma (IPD) has long served as a crucible for understanding cooperation. Axelrod's seminal work demonstrated the remarkable success of simple reciprocal strategies like Tit-for-Tat (TFT) in fostering mutual benefit in two-player encounters. However, the transition from dyadic interactions to scenarios involving multiple agents—the N-Person IPD (N-IPD)—unveils a dramatically altered strategic landscape. This section delves into a fundamental dichotomy observed in our simulations: the "Reciprocity Hill," where direct, pairwise interactions allow simple reciprocity to flourish, and the "Tragedy Valley," a perilous domain where the same reciprocal logic, when applied in standard N-Person neighbourhood models, often leads to a swift collapse of cooperation.
+
+We will explore how the very structure of interaction dictates the fate of cooperative strategies. Using our agent-based modeling framework (detailed in Section \ref{sec:framework_and_methodology}), we demonstrate how TFT, a champion of cooperation in pairwise settings, struggles when its principles are translated to the N-Person context without significant adaptation. We then investigate the impact of environmental noise (exploration/error) and strategic modifications—such as episodic memory resets in pairwise games and a threshold-based decision rule in N-Person games—on navigating these distinct landscapes.
+
+\subsection{The Reciprocity Hill: Pairwise Interactions and the Power of Direct Accountability}
+In the classic pairwise IPD, the path to cooperation, or the "Reciprocity Hill," is paved with clarity and direct accountability. When two agents interact repeatedly, several factors contribute to cooperative success. An agent's action (cooperate or defect) directly impacts the other, and the payoff received is an immediate consequence of this dyadic choice, establishing a clear cause and effect. Strategies like TFT can precisely mirror an opponent's previous move; cooperation is rewarded with cooperation, and defection is met with defection, all targeted at the specific individual involved, which prevents "punishing" innocent bystanders. Furthermore, TFT's willingness to cooperate after an opponent's defection (if the opponent returns to cooperation) allows for recovery from isolated defections or misunderstandings, facilitating forgiveness and re-engagement.
+
+Our simulations starkly confirm this. In scenarios with 0\% exploration, groups of three TFT agents in the pairwise model consistently achieved perfect cooperation (1.00 overall cooperation rate), with all agents maximizing their potential scores (e.g., 600 points). Even when introducing a single Always Defect (AllD) agent among two TFTs, the TFT agents maintained perfect cooperation with each other while quickly learning to defect against the AllD after its initial defection. The TFTs still achieved high scores (e.g., 399 points), demonstrating their robustness in isolating defectors while preserving mutual benefit with cooperators. This ability to selectively engage allows TFT to thrive on the Reciprocity Hill.
+
+\subsection{The Tragedy Valley: N-Person Interactions and the Perils of Diffused Reciprocity}
+The N-Person IPD, particularly in a "neighbourhood" or "group payoff" model where an agent's single choice affects and is affected by the collective, presents a starkly different challenge. Here, simple reciprocity often leads agents into a "Tragedy Valley" of mutual defection. The key difficulties include diffused responsibility and payoffs, where the impact of an individual's action is spread across the group, making it hard to assign credit or blame. Reciprocity becomes obscured: who should a TFT-like agent retaliate against if the group outcome is poor? If it defects, it punishes cooperators and defectors alike. A direct, one-to-one mirroring is impossible. Finally, there is an increased temptation to free-ride, as an individual might defect hoping to benefit from others' cooperation without their own defection having an obvious negative consequence on any single player.
+
+Our simulations employed a Probabilistic Tit-for-Tat (pTFT) for the N-Person model, which cooperates based on the previous round's overall cooperation ratio in the group.
+With 0\% exploration, in a group of three pTFT agents, cooperation was initially perfect, leading to optimal scores (600 points), mirroring the pairwise outcome without disruptors.
+However, introducing a single AllD agent drastically changed the dynamic. With two pTFTs and one AllD, the initial cooperation ratio (ignoring exploration) would be 2/3. In subsequent rounds, pTFTs would cooperate with a ~67\% chance. If one pTFT agent defected (due to this probability or the AllD's continued defection), the overall cooperation ratio would drop further. Our simulations showed a rapid descent into the Tragedy Valley: the overall cooperation rate plummeted to approximately 0.01, with AllD achieving the highest score (e.g., around 206-210 points) by exploiting the initial cooperative overtures and subsequent confusion. The pTFT agents, unable to target the defector or coordinate effectively, ended up with significantly lower scores (around 200-203 points). With an even higher proportion of defectors (2 pTFTs, 3 AllDs), the collapse of cooperation was even more pronounced and immediate, with overall cooperation near 0\%. This demonstrates that the direct translation of TFT's reciprocal logic via pTFT is insufficient to escape the Tragedy Valley in the N-Person model when faced with persistent defectors; the very structure diffuses the information needed for simple reciprocity to gain a foothold.
+
+\subsection{Navigating the Landscapes: The Role of Noise, Memory, and Strategic Adaptation}
+The introduction of environmental noise (exploration/error) and specific strategic adaptations further highlights the differences between these two landscapes and reveals pathways to either fortify cooperation or attempt escape from defection traps.
+
+\subsubsection{The Impact of Exploration (Error)}
+An exploration rate (e.g., 10\%) introduces a chance for agents to make a move contrary to their strategy. This "noise" has distinct consequences.
+On the Reciprocity Hill (Pairwise), among pure TFT groups, exploration significantly degrades cooperation (e.g., from 1.00 to ~0.40-0.54 overall cooperation), as errors can initiate prolonged cycles of mutual defection. When AllD agents are present, exploration can sometimes benefit them or harm them, while TFTs also suffer from their own errors.
+In the Tragedy Valley (N-Person), among pure pTFT groups, exploration also reduces cooperation (e.g., from 1.00 to ~0.48 overall). An erroneous defection lowers the group cooperation ratio, making subsequent cooperation by other pTFTs less likely. With AllD agents, exploration makes the already dire situation for pTFTs slightly more chaotic. AllD's own errors might momentarily boost the cooperation ratio, giving pTFTs a brief, often futile, chance to cooperate more, but overall cooperation remains very low (around 0.24-0.29 with 2 pTFTs/1 AllD).
+
+\subsubsection{Mending Fences on the Hill: Episodic Resets in Pairwise TFT}
+To counteract the negative impact of error-induced defection spirals in pairwise interactions, we introduced an "episodic" mode where TFT agents reset their memory of an opponent's last move after a set number of rounds (e.g., 10 episodes of 10 rounds).
+With 0\% exploration, this led to AllD scoring higher (e.g., 280 vs 208) because TFTs repeatedly "forgave" and cooperated at the start of each new episode. TFTs also cooperated slightly more overall when interacting with AllD alongside another TFT (0.55 vs 0.51 agent cooperation rate).
+With 10\% exploration, in pure TFT groups, episodic resets were highly beneficial. Overall cooperation jumped from approximately 0.40-0.54 (non-episodic) to 0.66-0.69 (episodic). By "forgetting" past grievances, agents could more easily break out of retaliation cycles. With AllD agents, episodic resets still helped TFTs maintain higher cooperation levels compared to non-episodic noisy runs, but AllD still benefited significantly. Episodic memory resets act as a mechanism to increase the "forgiveness" aspect of the Reciprocity Hill, making it more resilient to noise among cooperators, but also more vulnerable to exploitation by defectors.
+
+\subsubsection{Seeking an Escape from the Valley: The pTFT-Threshold Variant in N-Person}
+Recognizing pTFT's vulnerability, we introduced the pTFT-Threshold variant: cooperate deterministically if the previous round's overall cooperation rate is >= 50\%, and probabilistically (scaled) if below 50\%.
+With 0\% exploration, this strategy yielded a striking result with 2 pTFT-Threshold agents and 1 AllD: the TFTs maintained perfect mutual cooperation (1.00 individual rate). The initial 2/3 cooperation ratio kept them above the 0.5 threshold, creating a stable cooperative equilibrium among them. AllD, defecting consistently, received the Temptation payoff and scored very high (1000 points), while TFTs scored 300 points each. This demonstrates a successful, albeit costly for TFTs against AllD, escape from the Tragedy Valley for the cooperative subgroup. With more AllDs (2 TFTs, 3 AllDs), the initial cooperation (2/5 = 0.4) was below the threshold, and cooperation quickly eroded (around 0.03 overall), similar to standard pTFT.
+With 10% exploration, in pure pTFT-Threshold groups, cooperation was remarkably high (around 0.86-0.87 overall), demonstrating strong resilience to noise. With 2 pTFT-Threshold agents and 1 AllD, overall cooperation was significantly higher (around 0.54) than with standard pTFT (around 0.24-0.29). AllD still scored highest. With 2 TFTs and 3 AllDs, pTFT-Threshold still performed better than pTFT (around 0.25 vs 0.12-0.15 overall cooperation), but the high number of defectors made sustained group cooperation difficult. The pTFT-Threshold offers a more robust heuristic for N-Person scenarios, allowing conditional cooperators to better coordinate and resist the downward pull of defections or moderate noise, effectively building small "foothills of reciprocity" within the broader Tragedy Valley.
+
+\subsubsection{The Unwavering Weight of Defection: Impact of Agent Compositions}
+Across all models and variations, increasing the proportion of AllD agents consistently made cooperation more challenging and less rewarding for TFT-type agents. In Pairwise interactions, while TFTs could still maintain cooperation with each other, their overall scores and cooperation rates diminished due to more interactions with AllDs. In N-Person settings, a higher density of AllDs quickly overwhelmed both pTFT and pTFT-Threshold strategies, dragging the group deep into the Tragedy Valley, as the threshold for pTFT-Threshold becomes harder to reach and sustain.
+
+\subsection{Synthesis: Interaction Structure as the Primary Determinant}
+Our comprehensive experiments illuminate a critical insight: the structure of interaction is a primary determinant of whether simple reciprocal strategies lead to a "Reciprocity Hill" of sustained cooperation or a "Tragedy Valley" of mutual defection. Pairwise interactions, with their direct accountability, naturally support TFT-like reciprocity. Standard N-Person neighbourhood models, with their diffused responsibility and obscured feedback, inherently undermine it. Strategic adaptations can modulate these landscapes but are often secondary to the fundamental influence of the interaction structure itself.
+
+
+\section{General Discussion}
+\label{sec:general_discussion} % This section can be expanded with your MARL agent comparisons and broader implications from your original draft.
+Our experimental results, focusing on reactive strategies and their adaptations, shed light on the critical factors influencing cooperation in the N-Person Iterated Prisoner's Dilemma. The "Tragedy Valley" and "Reciprocity Hill" metaphors effectively capture the divergent outcomes based on interaction structure.
+
+The consistent failure of simple reciprocal logic (pTFT) in the N-Person neighbourhood model when defectors are present, contrasted with its success in pairwise settings, underscores the profound impact of structural properties like accountability and clarity of feedback. While advanced MARL algorithms like Hysteretic-Q and Wolf-PHC (as explored in related work \cite{TcaciHuyck2023Hysteretic, TcaciHuyck2023WoLFPHC}) can achieve high cooperation even in difficult N-IPD neighbourhood models through more sophisticated learning, our findings with simpler strategies highlight the baseline challenges. The pTFT-Threshold variant demonstrates that even relatively simple cognitive enhancements, allowing agents to react to a critical mass of cooperation, can significantly improve outcomes in N-Person settings.
+
+The effectiveness of episodic memory resets in mitigating error-induced defection spirals in pairwise TFT interactions further points to the importance of mechanisms that allow for "re-setting" relationships, especially in noisy environments.
+
+These findings collectively suggest that understanding and promoting cooperation in complex multi-agent systems requires a multifaceted approach. Attention must be paid not only to individual agent learning capacities and cognitive heuristics but also, critically, to the design of the interaction structures themselves. Facilitating clearer feedback loops and more direct accountability, where possible, may be key to helping agents ascend Reciprocity Hills rather than descend into Tragedy Valleys.
+
+Limitations of this study include the abstraction of agent cognition (using rule-based strategies rather than full RL for the core comparisons here) and the focus on specific payoff parameters. Future work will continue to explore the comparative dynamics of neighbourhood versus pairwise models with a wider range of learning agents and environmental complexities.
 
 \section{Conclusion}
 \label{sec:conclusion}
-This paper demonstrated that while N-IPD in neighbourhood models leads to a "Tragedy Valley" for simple learners, cooperation can emerge with **contextual awareness** and **adaptive MARL algorithms** (Hysteretic-Q, Wolf-PHC). The **interaction structure** is critical: pairwise models, facilitating a "Reciprocity Hill," make cooperation more accessible. The \texttt{npdl} framework enables these explorations. Future work will further investigate these dynamics to understand and promote cooperation in complex multi-agent systems.
+This paper demonstrated that while N-IPD in neighbourhood models often leads to a "Tragedy Valley" for simple reciprocal strategies, the interaction structure is critical. Pairwise models, facilitating a "Reciprocity Hill," make cooperation more accessible for strategies like Tit-for-Tat. Adaptations such as episodic memory resets in pairwise games and threshold-based decision rules in N-Person games can significantly modulate cooperative outcomes, especially in the presence of noise. Our \texttt{npdl} framework enables these systematic explorations, highlighting that both agent cognition and, crucially, the structure of their interactions, are key to understanding and promoting cooperation in complex multi-agent systems. Future work will further investigate these dynamics with more diverse learning algorithms and scenarios.
 
 
 % --- Bibliography ---
-\bibliographystyle{ieeetr} % This is from your skeleton
+\bibliographystyle{ieeetr} % Using a standard IEEE transaction style (numbered)
 \bibliography{prisoners}   % Your .bib file is named prisoners.bib
+
+% --- Appendix (Optional - if you want to keep your original Chapter 3/Results) ---
+\begin{subappendices} % Using subappendices from appendix package
+\label{app:original_results}
+
+
+\end{subappendices}
+
+
 \end{document}

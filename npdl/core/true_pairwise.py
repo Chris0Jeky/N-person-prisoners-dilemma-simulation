@@ -13,11 +13,45 @@ Key differences from the aggregate pairwise mode:
 
 from typing import Dict, List, Tuple, Optional, Any
 from collections import defaultdict
-import numpy as np
 from abc import ABC, abstractmethod
 import logging
+import random
 
-from .utils import PAYOFF_MATRIX
+try:
+    import numpy as np
+except ImportError:
+    # Fallback for systems without numpy
+    class np:
+        @staticmethod
+        def random():
+            return random.random()
+        
+        class random:
+            @staticmethod
+            def random():
+                return random.random()
+            
+            @staticmethod
+            def choice(seq):
+                return random.choice(seq)
+            
+            @staticmethod
+            def seed(s):
+                random.seed(s)
+
+# Define get_pairwise_payoffs locally to avoid numpy dependency in utils
+def get_pairwise_payoffs(move1: str, move2: str, R=3, S=0, T=5, P=1) -> Tuple[float, float]:
+    """Returns payoffs for player 1 and player 2 in a 2-player PD."""
+    if move1 == "cooperate" and move2 == "cooperate":
+        return R, R
+    elif move1 == "cooperate" and move2 == "defect":
+        return S, T
+    elif move1 == "defect" and move2 == "cooperate":
+        return T, S
+    elif move1 == "defect" and move2 == "defect":
+        return P, P
+    else:
+        raise ValueError(f"Invalid moves: {move1}, {move2}")
 
 logger = logging.getLogger(__name__)
 
@@ -436,7 +470,7 @@ class TruePairwiseEnvironment:
         actual_action2 = self.add_noise(action2)
         
         # Calculate payoffs
-        payoff1, payoff2 = PAYOFF_MATRIX[(actual_action1, actual_action2)]
+        payoff1, payoff2 = get_pairwise_payoffs(actual_action1, actual_action2)
         
         # Update memories
         agent1.update_memory(agent2_id, actual_action1, actual_action2, payoff1)

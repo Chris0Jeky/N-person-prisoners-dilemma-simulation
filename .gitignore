@@ -41,3 +41,4 @@ CLAUDE_CODE_GIT_SETUP.md
 setup_claude_git.sh
 claude_code_prompts.txt
 /.claude
+CLAUDE_CODE_COMPLETE_SETUP.md

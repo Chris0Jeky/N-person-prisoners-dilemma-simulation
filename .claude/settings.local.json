@@ -1,12 +1,20 @@
 {
-  "permissions": {
-    "allow": [
-      "Bash(grep:*)",
+  "tools": {
+    "allowed": [
+      "Bash(npm:*)",
       "Bash(python:*)",
-      "Bash(pip install:*)",
-      "Bash(pip3 install:*)",
-      "Bash(rg:*)"
-    ],
-    "deny": []
+      "Bash(pytest:*)",
+      "Bash(pip:*)"
+    ]
+  },
+  "environment": {
+    "CLAUDE_COMMIT_FREQUENCY": "after_major_changes",
+    "CLAUDE_COMMIT_STYLE": "descriptive"
+  },
+  "custom_instructions": {
+    "commit_behavior": "Use ./claude_code_commit.sh after each logical change",
+    "code_style": "Follow PEP 8 for Python, use type hints",
+    "documentation": "Update docstrings when changing functions",
+    "testing": "Add tests for new functionality"
   }
 }

@@ -526,13 +526,22 @@ def run_simulation(
             # Run simulation for this run
             start_run_time = time.time()
             try:
-                round_results = env.run_simulation(
-                    scenario["num_rounds"],
-                    logging_interval=scenario.get("logging_interval", 10),
-                    use_global_bonus=scenario.get("use_global_bonus", False),
-                    rewiring_interval=scenario.get("rewiring_interval", 0),
-                    rewiring_prob=scenario.get("rewiring_prob", 0.0),
-                )
+                # Check if we're using the true pairwise adapter
+                from npdl.core.true_pairwise_adapter import TruePairwiseSimulationAdapter
+                if isinstance(env, TruePairwiseSimulationAdapter):
+                    # Run true pairwise simulation
+                    simulation_results = env.run()
+                    # Convert results to expected format
+                    round_results = env.get_results_for_analysis()['rounds']
+                else:
+                    # Standard environment simulation
+                    round_results = env.run_simulation(
+                        scenario["num_rounds"],
+                        logging_interval=scenario.get("logging_interval", 10),
+                        use_global_bonus=scenario.get("use_global_bonus", False),
+                        rewiring_interval=scenario.get("rewiring_interval", 0),
+                        rewiring_prob=scenario.get("rewiring_prob", 0.0),
+                    )
             except Exception as e:
                 logger.error(
                     f"Error running simulation for {scenario_name} run {run_number}: {e}"
@@ -542,10 +551,13 @@ def run_simulation(
             run_execution_time = time.time() - start_run_time
 
             # Log summary for this specific run
+            from npdl.core.true_pairwise_adapter import TruePairwiseSimulationAdapter
+            agents_list = env.agents if isinstance(env, TruePairwiseSimulationAdapter) else env.agents
+            
             log_experiment_summary(
                 scenario,
                 run_number,
-                env.agents,
+                agents_list,
                 round_results,
                 theoretical_scores,
                 logger,
@@ -556,7 +568,7 @@ def run_simulation(
                 save_results(
                     scenario_name,
                     run_number,
-                    env.agents,
+                    agents_list,
                     round_results,
                     results_dir=results_dir,
                     logger=logger,

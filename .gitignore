@@ -33,3 +33,4 @@ fix_network_visualization.py
 /.claude/
 auto_commit.sh
 claude_code_commit.sh
+CLAUDE_CODE_GIT_SETUP.md

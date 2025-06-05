@@ -142,6 +142,7 @@ class SimpleQLearningAgent(QLearningAgentBase):
             self._update_q_value(last_ctx['state'], last_ctx['action'], context['reward'], next_state)
 
     def reset(self):
+        """Reset score counters and forget stored round contexts."""
         super().reset()
         self.last_contexts.clear()
 

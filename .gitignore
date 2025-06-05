@@ -30,3 +30,4 @@ fix_network_visualization.py
 
 # Backup files
 *.bak
+/.claude/

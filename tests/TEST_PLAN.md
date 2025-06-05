@@ -22,61 +22,89 @@ The current test suite includes the following categories:
 - `test_agents.py`: Tests for Agent class and various strategies
 - `test_environment.py`: Tests for Environment class and network structures
 - `test_utils.py`: Tests for utility functions and payoff calculations
+- `test_logging_utils.py`: Tests for logging setup, statistics, and report generation ✓ NEW
+- `test_advanced_strategies.py`: Dedicated tests for LRA-Q, UCB1, Wolf-PHC, and Hysteretic Q-learning ✓ NEW
+
+### User Interface Tests
+- `test_cli.py`: Tests for command-line interface, argument parsing, and command execution ✓ NEW
+- `test_interactive_game.py`: Tests for interactive game mode, player input, and game flow ✓ NEW
 
 ### Integration Tests
 - `test_integration.py`: Tests for end-to-end simulation workflows
+- `test_pairwise_integration.py`: Integration tests for pairwise interaction mode
 
 ### Visualization Tests
 - `test_visualization.py`: Tests for data processing and visualization components
+
+### Mode-Specific Tests
+- `test_pairwise.py`: Tests for pairwise interaction mode (updated to remove workarounds) ✓ FIXED
+- `test_pairwise_strategies.py`: Tests for strategies in pairwise mode
+- `test_neighborhood_vs_pairwise.py`: Comparative tests between interaction modes
+- `test_true_pairwise.py`: Tests for true pairwise implementation with individual decisions
+
+### Other Tests
+- `test_core_basic.py`: Basic functionality tests
+- `test_environment_fixed.py`: Tests for environment fixes
+- `test_refactored_paths.py`: Tests for path refactoring
 
 ## Test Coverage Map
 
 | Module | Components | Coverage Status | Priority Areas |
 |--------|------------|----------------|----------------|
-| `npdl.core.agents` | Agent class, Strategy classes | Good | Advanced strategies (LRA-Q, UCB1) |
+| `npdl.core.agents` | Agent class, Strategy classes | Excellent ✓ | All strategies now tested |
 | `npdl.core.environment` | Environment class, Network creation | Good | Network rewiring, Dynamic environments |
 | `npdl.core.utils` | Payoff functions, Matrix creation | Good | Custom payoff functions |
-| `npdl.core.logging_utils` | Logging setup, Statistics | Missing | Log formatting, Report generation |
+| `npdl.core.logging_utils` | Logging setup, Statistics | Good ✓ | Fully tested |
+| `npdl.core.true_pairwise` | Individual decision-making | Good | Recently added with tests |
 | `npdl.visualization` | Data loading, Processing, Visualization | Partial | Dashboard components, Interactive elements |
-| `npdl.interactive` | Game class, Interactive mode | Missing | UI feedback, Player experience |
-| `npdl.cli` | Command-line interface | Missing | Command parsing, Error handling |
+| `npdl.interactive` | Game class, Interactive mode | Good ✓ | Fully tested |
+| `npdl.cli` | Command-line interface | Good ✓ | Fully tested |
 
 ## Planned Test Development
 
-### High Priority
+### Completed (Previously High Priority) ✓
+1. **Command-line Interface** - COMPLETED
+   - ✓ Parameter parsing
+   - ✓ Error handling
+   - ✓ Output formatting
+   - ✓ Command execution
+
+2. **Interactive Mode** - COMPLETED
+   - ✓ Game initialization
+   - ✓ Player moves and feedback
+   - ✓ AI opponent behavior
+   - ✓ Score calculation
+
+3. **Logging and Reporting** - COMPLETED
+   - ✓ Log formatting
+   - ✓ Report generation
+   - ✓ Statistics calculation
+   - ✓ ASCII chart generation
+
+4. **Advanced Strategy Tests** - COMPLETED
+   - ✓ Learning Rate Adjusting Q-Learning
+   - ✓ Wolf-PHC
+   - ✓ UCB1
+   - ✓ Hysteretic Q-Learning
+   - ✓ Strategic behavior in specific scenarios
+
+### Current High Priority
 1. **Dashboard and Visualization**
    - Dashboard component rendering tests
    - Network visualization accuracy
    - Data processing edge cases
    - Response to malformed data
 
-2. **Interactive Mode**
-   - Game initialization
-   - Player moves and feedback
-   - AI opponent behavior
-   - Score calculation
-
-3. **Command-line Interface**
-   - Parameter parsing
-   - Error handling
-   - Output formatting
-
 ### Medium Priority
-1. **Advanced Strategy Tests**
-   - Learning Rate Adjusting Q-Learning
-   - Wolf-PHC
-   - UCB1
-   - Strategic behavior in specific scenarios
-
-2. **Enhanced Network Tests**
+1. **Enhanced Network Tests**
    - Dynamic network adaptation
    - Network metrics calculation
    - Impact of network structure on cooperation
 
-3. **Logging and Reporting**
-   - Log formatting
-   - Report generation
-   - Statistics calculation
+2. **Performance Tests**
+   - Simulation scaling
+   - Memory usage profiling
+   - Large-scale agent interactions
 
 ### Low Priority
 1. **Performance Tests**
@@ -88,6 +116,42 @@ The current test suite includes the following categories:
    - Parameter validation
    - Configuration file parsing
    - Default values
+
+## Recent Test Additions (2024)
+
+### New Test Files Created
+1. **test_cli.py** - Comprehensive CLI testing including:
+   - Command parsing and argument validation
+   - Subcommand execution (simulate, visualize, interactive)
+   - Error handling and fallback mechanisms
+   - Dependency checking
+
+2. **test_interactive_game.py** - Full interactive mode testing:
+   - Game initialization with various parameters
+   - Player input handling and validation
+   - AI opponent behavior
+   - Score calculation and game flow
+   - UI display functions
+
+3. **test_logging_utils.py** - Complete logging system tests:
+   - Logging setup and configuration
+   - Network statistics logging
+   - Round statistics with Q-learning metrics
+   - Experiment summary generation
+   - ASCII chart generation
+
+4. **test_advanced_strategies.py** - Dedicated advanced strategy tests:
+   - LRA-Q learning rate adjustment
+   - UCB1 exploration bonus calculation
+   - Wolf-PHC policy improvement
+   - Hysteretic Q-learning asymmetric updates
+   - Strategy comparison tests
+
+### Test Fixes
+- **test_pairwise.py** - Removed manual workarounds for TFT behavior
+  - Updated to work with current TFT implementation
+  - Tests now properly verify cooperation proportion thresholds
+  - Added tests for specific_opponent_moves format
 
 ## Test Implementation Guidelines
 

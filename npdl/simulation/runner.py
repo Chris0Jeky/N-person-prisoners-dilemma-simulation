@@ -192,13 +192,37 @@ def setup_experiment(
         theoretical_scores["half_half"] = 0
 
     # Create environment
-    env = Environment(
-        agents,
-        payoff_matrix,
-        network_type=scenario["network_type"],
-        network_params=scenario.get("network_params", {}),
-        logger=logger,
-    )
+    interaction_mode = scenario.get("interaction_mode", "neighborhood")
+    pairwise_mode = scenario.get("pairwise_mode", "aggregate")  # aggregate or individual
+    
+    # Check if we should use true pairwise implementation
+    if interaction_mode == "pairwise" and pairwise_mode == "individual":
+        # Use the true pairwise implementation
+        from npdl.core.true_pairwise_adapter import TruePairwiseSimulationAdapter
+        
+        # Create config for true pairwise
+        true_pairwise_config = {
+            'agents': scenario.get('agent_strategies', []),
+            'rounds': scenario.get('rounds', 100),
+            'episodes': scenario.get('episodes', 1),
+            'noise_level': scenario.get('noise_level', 0.0),
+            'reset_between_episodes': scenario.get('reset_between_episodes', True)
+        }
+        
+        # Create and return adapter
+        adapter = TruePairwiseSimulationAdapter(true_pairwise_config)
+        adapter.setup()
+        return adapter, theoretical_scores
+    else:
+        # Use standard environment
+        env = Environment(
+            agents,
+            payoff_matrix,
+            network_type=scenario["network_type"],
+            network_params=scenario.get("network_params", {}),
+            logger=logger,
+            interaction_mode=interaction_mode,
+        )
 
     return env, theoretical_scores
 

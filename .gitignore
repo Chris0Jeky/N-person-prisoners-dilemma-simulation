@@ -35,3 +35,4 @@ auto_commit.sh
 claude_code_commit.sh
 CLAUDE_CODE_GIT_SETUP.md
 setup_claude_git.sh
+claude_code_prompts.txt

@@ -31,3 +31,4 @@ fix_network_visualization.py
 # Backup files
 *.bak
 /.claude/
+auto_commit.sh

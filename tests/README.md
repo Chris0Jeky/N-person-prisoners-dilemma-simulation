@@ -50,11 +50,30 @@ pytest --cov=npdl
 
 The test suite is organized by component:
 
+### Core Components
 - `test_agents.py`: Tests for the Agent class and various strategy implementations
 - `test_environment.py`: Tests for the Environment class, network creation, and simulation
 - `test_utils.py`: Tests for utility functions, payoff calculations, and helper functions
+- `test_logging_utils.py`: Tests for logging setup, statistics, and report generation
+- `test_advanced_strategies.py`: Dedicated tests for LRA-Q, UCB1, Wolf-PHC, and Hysteretic Q-learning
+
+### User Interfaces
+- `test_cli.py`: Tests for command-line interface, argument parsing, and command execution
+- `test_interactive_game.py`: Tests for interactive game mode, player input, and game flow
+
+### Integration and Modes
 - `test_integration.py`: Tests for end-to-end simulation workflows
+- `test_pairwise.py`: Tests for pairwise interaction mode
+- `test_pairwise_integration.py`: Integration tests for pairwise mode
+- `test_pairwise_strategies.py`: Tests for strategies in pairwise mode
+- `test_neighborhood_vs_pairwise.py`: Comparative tests between interaction modes
+- `test_true_pairwise.py`: Tests for true pairwise implementation with individual decisions
+
+### Other Tests
 - `test_visualization.py`: Tests for data processing and visualization components
+- `test_core_basic.py`: Basic functionality tests
+- `test_environment_fixed.py`: Tests for environment fixes
+- `test_refactored_paths.py`: Tests for path refactoring
 
 ## Test Fixtures
 
@@ -91,10 +110,14 @@ If you're experiencing issues with the network visualization in the dashboard:
 
 When adding new features to the NPDL framework, please add corresponding tests:
 
-1. For new agent strategies, add tests to `test_agents.py`
+1. For new agent strategies, add tests to `test_agents.py` or `test_advanced_strategies.py`
 2. For new environment features, add tests to `test_environment.py`
 3. For new utility functions, add tests to `test_utils.py`
 4. For new visualization components, add tests to `test_visualization.py`
 5. For workflow changes, update `test_integration.py`
+6. For CLI changes, update `test_cli.py`
+7. For interactive mode changes, update `test_interactive_game.py`
+8. For logging features, update `test_logging_utils.py`
+9. For pairwise mode changes, update relevant pairwise test files
 
 See the comprehensive test plan in `TEST_PLAN.md` for more information on future test development.

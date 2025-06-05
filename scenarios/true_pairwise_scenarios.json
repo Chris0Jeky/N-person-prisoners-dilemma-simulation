@@ -1,0 +1,190 @@
+{
+  "scenarios": [
+    {
+      "name": "Aggregate_vs_Individual_Pairwise_Comparison",
+      "description": "Compare aggregate pairwise (one move for all) vs individual pairwise (different moves per opponent)",
+      "scenarios": [
+        {
+          "name": "Mixed_Opponents_Aggregate",
+          "description": "TFT faces mix of cooperators and defectors with aggregate pairwise",
+          "agent_strategies": [
+            {"type": "tit_for_tat", "count": 10},
+            {"type": "always_cooperate", "count": 5},
+            {"type": "always_defect", "count": 5}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "aggregate",
+          "num_rounds": 100,
+          "runs": 5
+        },
+        {
+          "name": "Mixed_Opponents_Individual",
+          "description": "TFT faces mix of cooperators and defectors with individual pairwise",
+          "agent_strategies": [
+            {"type": "true_pairwise_tft", "count": 10},
+            {"type": "always_cooperate", "count": 5},
+            {"type": "always_defect", "count": 5}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "individual",
+          "num_rounds": 100,
+          "runs": 5
+        }
+      ]
+    },
+    {
+      "name": "True_Pairwise_Strategy_Showcase",
+      "description": "Demonstrate unique behaviors possible with individual pairwise decisions",
+      "scenarios": [
+        {
+          "name": "Adaptive_Strategy_Performance",
+          "description": "Adaptive agents that identify and exploit different opponent types",
+          "agent_strategies": [
+            {"type": "true_pairwise_adaptive", "count": 5, "assessment_period": 10},
+            {"type": "true_pairwise_tft", "count": 5},
+            {"type": "always_cooperate", "count": 3},
+            {"type": "always_defect", "count": 3},
+            {"type": "random", "count": 4}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "individual",
+          "num_rounds": 200,
+          "runs": 5
+        },
+        {
+          "name": "QL_Individual_Learning",
+          "description": "Q-learning agents with separate Q-tables per opponent",
+          "agent_strategies": [
+            {"type": "true_pairwise_q_learning", "count": 10, 
+             "learning_rate": 0.1, "epsilon": 0.1, "state_representation": "memory_enhanced"},
+            {"type": "true_pairwise_tft", "count": 5},
+            {"type": "true_pairwise_pavlov", "count": 5}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "individual",
+          "num_rounds": 500,
+          "runs": 3
+        }
+      ]
+    },
+    {
+      "name": "Reciprocity_Analysis",
+      "description": "Analyze how different strategies develop reciprocal relationships",
+      "scenarios": [
+        {
+          "name": "TFT_Variants_Reciprocity",
+          "description": "Different TFT variants with individual opponent tracking",
+          "agent_strategies": [
+            {"type": "true_pairwise_tft", "count": 5, "nice": true},
+            {"type": "true_pairwise_tft", "count": 5, "nice": false},
+            {"type": "true_pairwise_gtft", "count": 5, "generosity": 0.1},
+            {"type": "true_pairwise_gtft", "count": 5, "generosity": 0.3}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "individual",
+          "num_rounds": 100,
+          "runs": 5
+        },
+        {
+          "name": "Episodic_Memory_Reset",
+          "description": "Test episodic interactions with memory resets",
+          "agent_strategies": [
+            {"type": "true_pairwise_tft", "count": 10},
+            {"type": "true_pairwise_pavlov", "count": 10}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "individual",
+          "num_rounds": 100,
+          "episodes": 5,
+          "reset_between_episodes": true,
+          "runs": 3
+        }
+      ]
+    },
+    {
+      "name": "Noise_Robustness",
+      "description": "Test robustness to implementation errors",
+      "scenarios": [
+        {
+          "name": "Individual_Pairwise_With_Noise",
+          "description": "How individual tracking handles noisy interactions",
+          "agent_strategies": [
+            {"type": "true_pairwise_tft", "count": 8},
+            {"type": "true_pairwise_gtft", "count": 6, "generosity": 0.2},
+            {"type": "true_pairwise_adaptive", "count": 6}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "individual",
+          "noise_level": 0.05,
+          "num_rounds": 200,
+          "runs": 5
+        }
+      ]
+    },
+    {
+      "name": "State_Representation_Comparison",
+      "description": "Compare different state representations for Q-learning",
+      "scenarios": [
+        {
+          "name": "QL_Basic_State",
+          "description": "Q-learning with basic state representation",
+          "agent_strategies": [
+            {"type": "true_pairwise_q_learning", "count": 20, 
+             "state_representation": "basic", "epsilon": 0.1}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "individual",
+          "num_rounds": 300,
+          "runs": 3
+        },
+        {
+          "name": "QL_Proportion_State",
+          "description": "Q-learning with cooperation proportion state",
+          "agent_strategies": [
+            {"type": "true_pairwise_q_learning", "count": 20, 
+             "state_representation": "proportion", "epsilon": 0.1}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "individual",
+          "num_rounds": 300,
+          "runs": 3
+        },
+        {
+          "name": "QL_Memory_Enhanced_State",
+          "description": "Q-learning with memory-enhanced state",
+          "agent_strategies": [
+            {"type": "true_pairwise_q_learning", "count": 20, 
+             "state_representation": "memory_enhanced", "epsilon": 0.1}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "individual",
+          "num_rounds": 300,
+          "runs": 3
+        },
+        {
+          "name": "QL_Reciprocity_State",
+          "description": "Q-learning with reciprocity-based state",
+          "agent_strategies": [
+            {"type": "true_pairwise_q_learning", "count": 20, 
+             "state_representation": "reciprocity", "epsilon": 0.1}
+          ],
+          "network_type": "fully_connected",
+          "interaction_mode": "pairwise",
+          "pairwise_mode": "individual",
+          "num_rounds": 300,
+          "runs": 3
+        }
+      ]
+    }
+  ]
+}

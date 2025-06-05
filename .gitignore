@@ -30,9 +30,14 @@ fix_network_visualization.py
 
 # Backup files
 *.bak
-/.claude/
+
+# Claude Code local settings (keep project settings)
+.claude/settings.local.json
+
+# Git automation scripts (optional - remove these lines if you want to commit them)
 auto_commit.sh
 claude_code_commit.sh
 CLAUDE_CODE_GIT_SETUP.md
 setup_claude_git.sh
 claude_code_prompts.txt
+/.claude

@@ -32,3 +32,4 @@ fix_network_visualization.py
 *.bak
 /.claude/
 auto_commit.sh
+claude_code_commit.sh

@@ -6,10 +6,27 @@ and the existing agent/environment infrastructure.
 """
 
 from typing import Dict, List, Any, Optional
-import numpy as np
+import random
 
-from .agents import Agent, TitForTat, GenerousTitForTat, Pavlov, QLearningAgent, \
-    LeniencyRewardAdjustedQLearning, HystereticQLearning, WolfPHC, UCB1Agent
+try:
+    import numpy as np
+except ImportError:
+    # Minimal numpy compatibility
+    class np:
+        @staticmethod
+        def random():
+            class Random:
+                @staticmethod
+                def choice(seq):
+                    return random.choice(seq)
+                @staticmethod
+                def randint(low, high=None):
+                    if high is None:
+                        return random.randint(0, low-1)
+                    return random.randint(low, high-1)
+            return Random
+
+from .agents import Agent
 from .true_pairwise import (
     TruePairwiseAgent, TruePairwiseTFT, TruePairwiseGTFT, TruePairwisePavlov,
     TruePairwiseQLearning, TruePairwiseAdaptive, TruePairwiseEnvironment
@@ -129,7 +146,7 @@ def create_true_pairwise_agent(agent_config: Dict[str, Any]) -> TruePairwiseAgen
     """Factory function to create true pairwise agents from configuration."""
     
     agent_type = agent_config.get('type', 'tit_for_tat')
-    agent_id = agent_config.get('id', f'agent_{np.random.randint(10000)}')
+    agent_id = agent_config.get('id', f'agent_{random.randint(0, 9999)}')
     
     # Direct true pairwise implementations
     if agent_type == 'true_pairwise_tft':
@@ -161,11 +178,16 @@ def create_true_pairwise_agent(agent_config: Dict[str, Any]) -> TruePairwiseAgen
     else:
         # Create wrapper for existing agent types
         base_config = agent_config.copy()
-        base_config['type'] = agent_type
+        base_config.pop('type', None)  # Remove 'type' as it's not an Agent parameter
+        base_config.pop('id', None)    # Remove 'id' as we pass it separately
         
-        # Import create_agent function
-        from .agents import create_agent as create_base_agent
-        base_agent = create_base_agent(base_config)
+        # Create base agent using Agent class
+        from .agents import Agent
+        base_agent = Agent(
+            agent_id=agent_id,
+            strategy=agent_type,
+            **base_config
+        )
         
         return TruePairwiseAgentAdapter(base_agent, memory_length=10)
 

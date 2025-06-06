@@ -29,7 +29,8 @@
       "Bash(./check_permissions_issue.sh:*)",
       "Bash(git config:*)",
       "Bash(./init_claude_session.sh:*)",
-      "Bash(grep:*)"
+      "Bash(grep:*)",
+      "Bash(mkdir:*)"
     ]
   },
   "tools": {

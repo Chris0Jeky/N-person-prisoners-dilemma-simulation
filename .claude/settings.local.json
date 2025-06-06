@@ -9,7 +9,8 @@
       "Bash(sudo apt-get:*)",
       "Bash(./test_mcp_with_xvfb.sh:*)",
       "Bash(export DISPLAY=:99)",
-      "Bash(echo:*)"
+      "Bash(echo:*)",
+      "mcp__browser-tools__takeScreenshot"
     ]
   },
   "tools": {

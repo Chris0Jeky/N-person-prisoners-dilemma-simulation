@@ -182,6 +182,7 @@ class EnhancedQLearningAgent(SimpleQLearningAgent):
             self.memory.append(context['my_move'])
 
     def reset(self):
+        """Reset memory and decay exploration for a new run."""
         super().reset()
         self.memory.clear()
         # Apply epsilon decay at the end of a run.

@@ -6,6 +6,7 @@ results/
 analysis_results/
 3-Person_Tragic_vs_Reciprocity/failed_attempt/results/
 simple_models/simple_results/
+archive/
 
 # Python caches & env
 .venv/

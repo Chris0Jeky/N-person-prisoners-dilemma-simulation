@@ -21,7 +21,8 @@
       "mcp__puppeteer__puppeteer_evaluate",
       "Bash(python:*)",
       "Bash(./claude_code_commit.sh status)",
-      "Bash(ls:*)"
+      "Bash(ls:*)",
+      "Bash(find:*)"
     ]
   },
   "tools": {

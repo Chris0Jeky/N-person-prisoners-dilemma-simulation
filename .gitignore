@@ -47,3 +47,4 @@ git_commit.sh
 fix_line_endings.sh
 FIX_GIT_MESS.md
 init_claude_session.sh
+QUICK_FIX.txt

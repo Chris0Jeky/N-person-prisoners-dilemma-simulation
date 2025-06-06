@@ -23,7 +23,8 @@
       "Bash(./claude_code_commit.sh status)",
       "Bash(ls:*)",
       "Bash(find:*)",
-      "Bash(./claude_code_commit.sh:*)"
+      "Bash(./claude_code_commit.sh:*)",
+      "Bash(git add:*)"
     ]
   },
   "tools": {

@@ -6,7 +6,8 @@
       "Bash(apt list:*)",
       "Bash(chmod:*)",
       "Bash(./test_display.sh:*)",
-      "Bash(sudo apt-get:*)"
+      "Bash(sudo apt-get:*)",
+      "Bash(./test_mcp_with_xvfb.sh:*)"
     ]
   },
   "tools": {

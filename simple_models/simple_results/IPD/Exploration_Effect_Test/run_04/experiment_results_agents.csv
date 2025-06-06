@@ -1,4 +1,0 @@
-scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
-Exploration_Effect_Test,4,0,tit_for_tat,479,,
-Exploration_Effect_Test,4,1,tit_for_tat,477,,
-Exploration_Effect_Test,4,2,tit_for_tat,426,,

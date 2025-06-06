@@ -1,4 +1,0 @@
-scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
-TFT_vs_Defect_WithExploration,3,0,tit_for_tat,357,,
-TFT_vs_Defect_WithExploration,3,1,tit_for_tat,369,,
-TFT_vs_Defect_WithExploration,3,2,always_defect,366,,

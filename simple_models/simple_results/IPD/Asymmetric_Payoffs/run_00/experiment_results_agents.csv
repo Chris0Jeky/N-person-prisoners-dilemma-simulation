@@ -1,4 +1,0 @@
-scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
-Asymmetric_Payoffs,0,0,tit_for_tat,481,,
-Asymmetric_Payoffs,0,1,always_cooperate,285,,
-Asymmetric_Payoffs,0,2,always_defect,756,,

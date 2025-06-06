@@ -1,4 +1,0 @@
-scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values,exploration_rate,cooperation_rate
-NPD_AllTFT_NoExploration,2,0,tit_for_tat,60.0,,,0.0,1.0
-NPD_AllTFT_NoExploration,2,1,tit_for_tat,60.0,,,0.0,1.0
-NPD_AllTFT_NoExploration,2,2,tit_for_tat,60.0,,,0.0,1.0

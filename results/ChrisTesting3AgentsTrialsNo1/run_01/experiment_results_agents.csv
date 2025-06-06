@@ -1,4 +1,0 @@
-scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
-ChrisTesting3AgentsTrialsNo1,1,0,tit_for_tat,1500.0,,
-ChrisTesting3AgentsTrialsNo1,1,1,tit_for_tat,1500.0,,
-ChrisTesting3AgentsTrialsNo1,1,2,tit_for_tat,1500.0,,

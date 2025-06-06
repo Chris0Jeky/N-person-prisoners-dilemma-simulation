@@ -1,4 +1,0 @@
-scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
-TFT_Dominant,3,0,tit_for_tat,1044,,
-TFT_Dominant,3,1,tit_for_tat,974,,
-TFT_Dominant,3,2,tit_for_tat,911,,

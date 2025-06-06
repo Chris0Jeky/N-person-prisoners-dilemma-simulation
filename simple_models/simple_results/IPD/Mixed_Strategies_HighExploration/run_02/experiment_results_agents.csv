@@ -1,4 +1,0 @@
-scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values
-Mixed_Strategies_HighExploration,2,0,always_cooperate,530,,
-Mixed_Strategies_HighExploration,2,1,always_defect,846,,
-Mixed_Strategies_HighExploration,2,2,tit_for_tat,677,,

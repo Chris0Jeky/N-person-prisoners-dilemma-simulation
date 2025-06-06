@@ -1,4 +1,0 @@
-scenario_name,run_number,agent_id,strategy,final_score,final_q_values_avg,full_q_values,exploration_rate,cooperation_rate
-NPD_Classic_WithExploration,6,0,always_cooperate,22.5,,,0.1,0.8
-NPD_Classic_WithExploration,6,1,always_defect,57.0,,,0.1,0.25
-NPD_Classic_WithExploration,6,2,tit_for_tat,50.5,,,0.1,0.35

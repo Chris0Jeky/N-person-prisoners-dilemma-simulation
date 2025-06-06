@@ -56,11 +56,25 @@ class AlwaysDefectStrategy(Strategy):
 
 
 class TitForTatStrategy(Strategy):
+    def __init__(self, cooperation_threshold: float = 0.5):
+        """Initialize TitForTat strategy.
+        
+        Args:
+            cooperation_threshold: Minimum proportion of neighbors that must cooperate
+                                 for this agent to cooperate (default: 0.5)
+        """
+        self.cooperation_threshold = cooperation_threshold
+    
     def choose_move(self, agent, neighbors):  # neighbors arg kept for API consistency
         """Choose the move for a TitForTat agent.
-        In pairwise mode, it defects if ANY specific opponent defected last round.
-        In neighborhood mode, it (currently) mimics a random neighbor.
-        Defaults to cooperate.
+        
+        In pairwise mode with specific moves: defects if ANY specific opponent defected.
+        In pairwise mode with aggregate: cooperates based on cooperation proportion.
+        In neighborhood mode: cooperates based on proportion of neighbors who cooperated.
+        
+        The key improvement is that in neighborhood mode, TFT now considers the
+        cooperation proportion of ALL connected neighbors, not just a random one.
+        This makes it properly respond to the ecosystem's cooperation level.
         """
         if not agent.memory:
             return "cooperate"
@@ -78,21 +92,68 @@ class TitForTatStrategy(Strategy):
                 return "defect"
             return "cooperate"  # All specific opponents cooperated
 
-        # CASE 2: Pairwise mode fallback (old format) or general aggregate (if specific_opponent_moves is missing)
+        # CASE 2: Pairwise mode fallback or general aggregate
         elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
             coop_proportion = interaction_context['opponent_coop_proportion']
-            # For TFT, be strict: only cooperate if all (or almost all) opponents cooperated
-            return "cooperate" if coop_proportion >= 0.99 else "defect"  # Use a high threshold
+            # Use the threshold for decision
+            return "cooperate" if coop_proportion >= self.cooperation_threshold else "defect"
 
+        # CASE 3: Standard neighborhood mode - IMPROVED!
+        elif isinstance(interaction_context, dict) and interaction_context:
+            # Calculate cooperation proportion among connected neighbors
+            neighbor_moves = list(interaction_context.values())
+            if not neighbor_moves:
+                return "cooperate"
+            
+            cooperation_count = sum(1 for move in neighbor_moves if move == "cooperate")
+            cooperation_proportion = cooperation_count / len(neighbor_moves)
+            
+            # Cooperate if the proportion of cooperating neighbors meets the threshold
+            return "cooperate" if cooperation_proportion >= self.cooperation_threshold else "defect"
+        
+        return "cooperate"
+
+
+class ProportionalTitForTatStrategy(Strategy):
+    def __init__(self):
+        """Proportional TFT: cooperates with probability equal to cooperation proportion."""
+        pass
+    
+    def choose_move(self, agent, neighbors):
+        """Choose move based on proportion of neighbors who cooperated.
+        
+        This matches the pTFT behavior from the 3-person experiment:
+        - First round: cooperate
+        - Subsequent rounds: cooperate with probability = cooperation proportion
+        """
+        if not agent.memory:
+            return "cooperate"
+        
+        last_round_info = agent.memory[-1]
+        interaction_context = last_round_info.get('neighbor_moves', {})
+        
+        # CASE 1: Pairwise mode with specific opponent moves
+        if isinstance(interaction_context, dict) and 'specific_opponent_moves' in interaction_context:
+            specific_moves = interaction_context['specific_opponent_moves']
+            if not specific_moves:
+                return "cooperate"
+            cooperation_count = sum(1 for move in specific_moves.values() if move == "cooperate")
+            cooperation_proportion = cooperation_count / len(specific_moves)
+            return "cooperate" if random.random() < cooperation_proportion else "defect"
+        
+        # CASE 2: Pairwise mode with aggregate proportion
+        elif isinstance(interaction_context, dict) and 'opponent_coop_proportion' in interaction_context:
+            coop_proportion = interaction_context['opponent_coop_proportion']
+            return "cooperate" if random.random() < coop_proportion else "defect"
+        
         # CASE 3: Standard neighborhood mode
         elif isinstance(interaction_context, dict) and interaction_context:
-            # Current N-IPD TFT mimics a random neighbor.
-            # Consider changing to: defect if *any* neighbor defected for stricter N-IPD TFT.
-            # if any(move == "defect" for move in interaction_context.values()):
-            #     return "defect"
-            # return "cooperate"
-            random_neighbor_id = random.choice(list(interaction_context.keys()))
-            return interaction_context.get(random_neighbor_id, "cooperate")  # Default if key somehow missing
+            neighbor_moves = list(interaction_context.values())
+            if not neighbor_moves:
+                return "cooperate"
+            cooperation_count = sum(1 for move in neighbor_moves if move == "cooperate")
+            cooperation_proportion = cooperation_count / len(neighbor_moves)
+            return "cooperate" if random.random() < cooperation_proportion else "defect"
         
         return "cooperate"
 

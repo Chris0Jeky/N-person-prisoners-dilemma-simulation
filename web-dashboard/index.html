@@ -178,26 +178,11 @@
         <div class="page" id="analysis-page">
             <div class="page-header">
                 <h1>Analysis Tools</h1>
+                <p class="subtitle">Advanced analytics and experiment comparison</p>
             </div>
             
-            <div class="analysis-grid">
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Parameter Sensitivity</h2>
-                    </div>
-                    <div class="card-body">
-                        <div id="parameterHeatmap"></div>
-                    </div>
-                </div>
-                
-                <div class="card">
-                    <div class="card-header">
-                        <h2>Strategy Interactions</h2>
-                    </div>
-                    <div class="card-body">
-                        <canvas id="interactionMatrix"></canvas>
-                    </div>
-                </div>
+            <div id="analysisContainer" class="analysis-container">
+                <!-- Analysis content will be loaded dynamically -->
             </div>
         </div>
 
@@ -216,22 +201,13 @@
         <div class="page" id="network-page">
             <div class="page-header">
                 <h1>Network Visualization</h1>
-                <div class="network-controls">
-                    <select id="networkType" class="select">
-                        <option value="fully_connected">Fully Connected</option>
-                        <option value="small_world">Small World</option>
-                        <option value="scale_free">Scale Free</option>
-                    </select>
-                    <button class="btn btn-secondary" onclick="dashboard.resetNetwork()">
-                        <i data-lucide="refresh-cw"></i>
-                        Reset
-                    </button>
-                </div>
+                <p class="subtitle">Interactive agent network topology</p>
+                <div id="networkTypeSelector" class="network-controls"></div>
             </div>
             
             <div class="card full-height">
                 <div class="card-body">
-                    <div id="networkVisualization"></div>
+                    <div id="networkVisualization" style="height: 600px; position: relative;"></div>
                 </div>
             </div>
         </div>
@@ -283,6 +259,7 @@
     <script src="js/visualizations.js"></script>
     <script src="js/data-loader.js"></script>
     <script src="js/strategies.js"></script>
+    <script src="js/analysis-tools.js"></script>
     <script src="js/network-vis.js"></script>
     
     <!-- Initialize Dashboard -->

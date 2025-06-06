@@ -30,7 +30,11 @@
       "Bash(git config:*)",
       "Bash(./init_claude_session.sh:*)",
       "Bash(grep:*)",
-      "Bash(mkdir:*)"
+      "Bash(mkdir:*)",
+      "Bash(mv:*)",
+      "Bash(diff:*)",
+      "Bash(./git_commit.sh status)",
+      "Bash(./git_commit.sh)"
     ]
   },
   "tools": {

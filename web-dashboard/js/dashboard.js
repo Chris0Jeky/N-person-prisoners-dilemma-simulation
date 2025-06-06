@@ -577,16 +577,158 @@ class Dashboard {
     }
 
     initNetworkVisualization() {
-        // This will be implemented in network-vis.js
-        if (window.NetworkVisualization) {
-            new NetworkVisualization('networkVisualization', this.currentExperiment);
+        const container = document.getElementById('networkVisualization');
+        if (!container) return;
+        
+        if (this.currentExperiment || this.experiments.length > 0) {
+            const viz = new Visualizations();
+            const experiment = this.currentExperiment || this.experiments[0];
+            viz.createNetworkVisualization('networkVisualization', experiment);
+            
+            // Add network type selector
+            const networkSelector = document.getElementById('networkTypeSelector');
+            if (networkSelector) {
+                networkSelector.innerHTML = `
+                    <label>Network Type: 
+                        <select id="networkType" class="network-select">
+                            <option value="fully_connected">Fully Connected</option>
+                            <option value="small_world">Small World</option>
+                            <option value="scale_free">Scale-Free</option>
+                        </select>
+                    </label>
+                    <button class="btn btn-secondary" onclick="dashboard.regenerateNetwork()">
+                        <i data-lucide="refresh-cw"></i> Regenerate
+                    </button>
+                `;
+                
+                document.getElementById('networkType').value = experiment.config.network_type || 'fully_connected';
+                lucide.createIcons();
+            }
+        } else {
+            container.innerHTML = '<p class="placeholder">Load experiments to view network visualization</p>';
         }
     }
 
+    regenerateNetwork() {
+        const networkType = document.getElementById('networkType').value;
+        const experiment = this.currentExperiment || this.experiments[0];
+        
+        // Update experiment network type temporarily for visualization
+        const modifiedExp = {
+            ...experiment,
+            config: {
+                ...experiment.config,
+                network_type: networkType
+            }
+        };
+        
+        const viz = new Visualizations();
+        viz.createNetworkVisualization('networkVisualization', modifiedExp);
+    }
+
     initAnalysisTools() {
-        // Initialize parameter heatmap and interaction matrix
-        if (window.AnalysisTools) {
-            new AnalysisTools(this.experiments);
+        const container = document.getElementById('analysisContainer');
+        if (!container) return;
+
+        if (this.experiments.length > 0) {
+            // Create tabs for different analysis views
+            container.innerHTML = `
+                <div class="analysis-tabs">
+                    <button class="tab-btn active" onclick="dashboard.showAnalysisTab('comparison')">
+                        <i data-lucide="git-compare"></i> Comparison
+                    </button>
+                    <button class="tab-btn" onclick="dashboard.showAnalysisTab('sensitivity')">
+                        <i data-lucide="sliders"></i> Sensitivity
+                    </button>
+                    <button class="tab-btn" onclick="dashboard.showAnalysisTab('statistics')">
+                        <i data-lucide="bar-chart-3"></i> Statistics
+                    </button>
+                    <button class="tab-btn" onclick="dashboard.showAnalysisTab('visualizations')">
+                        <i data-lucide="eye"></i> Advanced Viz
+                    </button>
+                </div>
+                
+                <div id="analysisContent" class="analysis-content">
+                    <!-- Content will be loaded here -->
+                </div>
+            `;
+            
+            lucide.createIcons();
+            this.showAnalysisTab('comparison');
+        } else {
+            container.innerHTML = `
+                <div class="empty-state">
+                    <i data-lucide="bar-chart"></i>
+                    <h3>No data to analyze</h3>
+                    <p>Load experiments to access analysis tools</p>
+                </div>
+            `;
+            lucide.createIcons();
+        }
+    }
+
+    showAnalysisTab(tab) {
+        // Update active tab
+        document.querySelectorAll('.tab-btn').forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.textContent.toLowerCase().includes(tab.substring(0, 4))) {
+                btn.classList.add('active');
+            }
+        });
+
+        const content = document.getElementById('analysisContent');
+        const analysisTools = new AnalysisTools();
+        const visualizations = new Visualizations();
+
+        switch(tab) {
+            case 'comparison':
+                content.innerHTML = '<div id="comparison-interface"></div>';
+                analysisTools.createComparisonInterface('comparison-interface', this.experiments);
+                break;
+                
+            case 'sensitivity':
+                content.innerHTML = '<div id="sensitivity-analysis"></div>';
+                analysisTools.createParameterSensitivityAnalysis('sensitivity-analysis', this.experiments);
+                break;
+                
+            case 'statistics':
+                content.innerHTML = '<div id="statistical-dashboard"></div>';
+                analysisTools.createStatisticalDashboard('statistical-dashboard', this.experiments);
+                break;
+                
+            case 'visualizations':
+                content.innerHTML = `
+                    <div class="viz-grid">
+                        <div class="viz-card">
+                            <h3>Strategy Heatmap</h3>
+                            <div id="strategy-heatmap" style="height: 400px;"></div>
+                        </div>
+                        <div class="viz-card">
+                            <h3>3D Parameter Space</h3>
+                            <div id="param-3d" style="height: 400px;"></div>
+                        </div>
+                        <div class="viz-card">
+                            <h3>Strategy Radar</h3>
+                            <canvas id="radar-chart" width="400" height="400"></canvas>
+                        </div>
+                        <div class="viz-card">
+                            <h3>Animated Evolution</h3>
+                            <div id="animated-series" style="height: 400px;"></div>
+                        </div>
+                    </div>
+                `;
+                
+                // Create visualizations
+                setTimeout(() => {
+                    visualizations.createStrategyHeatmap('strategy-heatmap', this.experiments);
+                    visualizations.create3DParameterPlot('param-3d', this.experiments);
+                    visualizations.createStrategyRadarChart('radar-chart', this.experiments);
+                    if (this.currentExperiment || this.experiments[0]) {
+                        visualizations.createAnimatedTimeSeries('animated-series', 
+                            this.currentExperiment || this.experiments[0]);
+                    }
+                }, 100);
+                break;
         }
     }
 

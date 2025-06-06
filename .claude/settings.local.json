@@ -24,7 +24,9 @@
       "Bash(ls:*)",
       "Bash(find:*)",
       "Bash(./claude_code_commit.sh:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(./diagnose_git_issue.sh)",
+      "Bash(./check_permissions_issue.sh:*)"
     ]
   },
   "tools": {

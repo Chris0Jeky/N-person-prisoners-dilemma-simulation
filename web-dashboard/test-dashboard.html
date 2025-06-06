@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-card {
+            background: white;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 20px;
+        }
+        h1 { color: #333; }
+        .status { padding: 10px; border-radius: 4px; margin: 10px 0; }
+        .success { background: #d4edda; color: #155724; }
+        .error { background: #f8d7da; color: #721c24; }
+        .info { background: #d1ecf1; color: #0c5460; }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+        button:hover { background: #2563eb; }
+        .test-results { margin-top: 20px; }
+        pre { background: #f8f9fa; padding: 10px; border-radius: 4px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>N-Person Prisoner's Dilemma Dashboard Test</h1>
+    
+    <div class="test-card">
+        <h2>Quick Start</h2>
+        <p>Click the button below to open the dashboard:</p>
+        <button onclick="window.open('index.html', '_blank')">Open Dashboard</button>
+    </div>
+    
+    <div class="test-card">
+        <h2>Test Data Generator</h2>
+        <p>Generate sample experiment data to test the dashboard:</p>
+        <button onclick="generateTestData()">Generate Test Data</button>
+        <button onclick="downloadTestData()" id="downloadBtn" style="display:none; margin-left: 10px;">Download JSON</button>
+        <div id="testDataResult" class="test-results"></div>
+    </div>
+    
+    <div class="test-card">
+        <h2>Dashboard Features</h2>
+        <ul>
+            <li>📊 <strong>Overview Page</strong>: View statistics and cooperation evolution charts</li>
+            <li>🧪 <strong>Experiments Page</strong>: Manage loaded experiments</li>
+            <li>📈 <strong>Analysis Tools</strong>: Compare experiments, sensitivity analysis, statistics</li>
+            <li>👥 <strong>Strategies Page</strong>: Explore different agent strategies</li>
+            <li>🌐 <strong>Network Visualization</strong>: Interactive network topology viewer</li>
+        </ul>
+    </div>
+    
+    <div class="test-card">
+        <h2>Loading Data</h2>
+        <ol>
+            <li>Click the upload button (↑) in the top navigation</li>
+            <li>Select JSON or CSV files with experiment results</li>
+            <li>Or click "Load Example Data" on the Experiments page</li>
+            <li>Or use the test data generated above</li>
+        </ol>
+    </div>
+
+    <script>
+        let testData = null;
+        
+        function generateTestData() {
+            const strategies = ['tit_for_tat', 'always_cooperate', 'always_defect', 'q_learning', 'pavlov'];
+            const networks = ['fully_connected', 'small_world', 'scale_free'];
+            
+            // Generate a realistic experiment
+            const numRounds = 100;
+            const results = [];
+            let cooperationRate = 0.3 + Math.random() * 0.2;
+            
+            for (let i = 0; i < numRounds; i++) {
+                // Simulate cooperation evolution with some noise
+                cooperationRate += (Math.random() - 0.5) * 0.05;
+                cooperationRate = Math.max(0, Math.min(1, cooperationRate));
+                
+                results.push({
+                    round: i,
+                    cooperation_rate: cooperationRate,
+                    avg_score: 2 + cooperationRate * 2 + (Math.random() - 0.5) * 0.5,
+                    total_cooperations: Math.floor(cooperationRate * 30 * 29 / 2),
+                    total_defections: Math.floor((1 - cooperationRate) * 30 * 29 / 2)
+                });
+            }
+            
+            testData = {
+                experiment_id: `test_${Date.now()}`,
+                scenario_name: "Test Experiment " + new Date().toLocaleString(),
+                timestamp: new Date().toISOString(),
+                config: {
+                    num_agents: 30,
+                    num_rounds: numRounds,
+                    network_type: networks[Math.floor(Math.random() * networks.length)],
+                    interaction_mode: "neighborhood",
+                    agent_strategies: {
+                        [strategies[0]]: 10,
+                        [strategies[1]]: 10,
+                        [strategies[2]]: 10
+                    },
+                    payoff_matrix: {
+                        cc: 3,
+                        cd: 0,
+                        dc: 5,
+                        dd: 1
+                    }
+                },
+                results: results,
+                summary: {
+                    final_cooperation_rate: results[results.length - 1].cooperation_rate,
+                    avg_cooperation_rate: results.reduce((sum, r) => sum + r.cooperation_rate, 0) / results.length,
+                    convergence_round: Math.floor(numRounds * 0.7),
+                    strategy_performance: {
+                        [strategies[0]]: Math.random() * 0.3 + 0.6,
+                        [strategies[1]]: Math.random() * 0.3 + 0.5,
+                        [strategies[2]]: Math.random() * 0.3 + 0.2
+                    }
+                }
+            };
+            
+            // Display result
+            const resultDiv = document.getElementById('testDataResult');
+            resultDiv.innerHTML = `
+                <div class="status success">Test data generated successfully!</div>
+                <p><strong>Experiment:</strong> ${testData.scenario_name}</p>
+                <p><strong>Network:</strong> ${testData.config.network_type}</p>
+                <p><strong>Final Cooperation:</strong> ${(testData.summary.final_cooperation_rate * 100).toFixed(1)}%</p>
+                <details>
+                    <summary>View JSON (first 20 rounds)</summary>
+                    <pre>${JSON.stringify({
+                        ...testData,
+                        results: testData.results.slice(0, 20)
+                    }, null, 2)}</pre>
+                </details>
+            `;
+            
+            document.getElementById('downloadBtn').style.display = 'inline-block';
+        }
+        
+        function downloadTestData() {
+            if (!testData) return;
+            
+            const blob = new Blob([JSON.stringify(testData, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `test_experiment_${Date.now()}.json`;
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+        
+        // Auto-generate test data on load
+        window.onload = () => {
+            console.log('Dashboard test page loaded');
+        };
+    </script>
+</body>
+</html>

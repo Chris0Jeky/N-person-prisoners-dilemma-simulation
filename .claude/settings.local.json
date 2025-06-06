@@ -15,7 +15,8 @@
       "Bash(chromium-browser:*)",
       "Bash(dpkg:*)",
       "Bash(ls:*)",
-      "mcp__puppeteer__puppeteer_screenshot"
+      "mcp__puppeteer__puppeteer_screenshot",
+      "mcp__puppeteer__puppeteer_fill"
     ]
   },
   "tools": {

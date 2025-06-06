@@ -22,7 +22,8 @@
       "Bash(python:*)",
       "Bash(./claude_code_commit.sh status)",
       "Bash(ls:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(./claude_code_commit.sh:*)"
     ]
   },
   "tools": {

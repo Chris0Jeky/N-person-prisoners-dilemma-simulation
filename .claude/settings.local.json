@@ -35,7 +35,8 @@
       "Bash(diff:*)",
       "Bash(./git_commit.sh status)",
       "Bash(./git_commit.sh)",
-      "Bash(rm:*)"
+      "Bash(rm:*)",
+      "Bash(git commit:*)"
     ]
   },
   "tools": {

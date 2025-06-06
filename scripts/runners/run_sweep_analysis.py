@@ -12,7 +12,7 @@ import os
 import argparse
 import time
 from run_scenario_generator import run_scenario_generation
-from analysis.sweep_visualizer import create_scenario_comparison_report
+from npdl.analysis.sweep_visualizer import create_scenario_comparison_report
 
 
 def run_sweep_and_analysis(num_generate=30, 

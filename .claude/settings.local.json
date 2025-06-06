@@ -39,7 +39,8 @@
       "Bash(git commit:*)",
       "Bash(true)",
       "Bash(pip3 list:*)",
-      "mcp__browser-tools__wipeLogs"
+      "mcp__browser-tools__wipeLogs",
+      "Bash(tree:*)"
     ]
   },
   "tools": {

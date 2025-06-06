@@ -1,4 +1,10 @@
 {
+  "permissions": {
+    "allow": [
+      "mcp__puppeteer__puppeteer_navigate",
+      "mcp__fetch__fetch"
+    ]
+  },
   "tools": {
     "allowed": [
       "Bash(npm:*)",

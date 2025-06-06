@@ -11,7 +11,9 @@
       "Bash(export DISPLAY=:99)",
       "Bash(echo:*)",
       "mcp__browser-tools__takeScreenshot",
-      "Bash(DISPLAY=:99 node test_chromium_direct.js)"
+      "Bash(DISPLAY=:99 node test_chromium_direct.js)",
+      "Bash(chromium-browser:*)",
+      "Bash(dpkg:*)"
     ]
   },
   "tools": {

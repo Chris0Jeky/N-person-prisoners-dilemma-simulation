@@ -26,7 +26,8 @@
       "Bash(./claude_code_commit.sh:*)",
       "Bash(git add:*)",
       "Bash(./diagnose_git_issue.sh)",
-      "Bash(./check_permissions_issue.sh:*)"
+      "Bash(./check_permissions_issue.sh:*)",
+      "Bash(git config:*)"
     ]
   },
   "tools": {

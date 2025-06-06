@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>N-Person Prisoner's Dilemma Dashboard</title>
+    
+    <!-- Modern CSS Reset & Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/font/lucide.min.css">
+    
+    <!-- Chart.js for visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-zoom@2.0.1/dist/chartjs-plugin-zoom.min.js"></script>
+    
+    <!-- D3.js for network visualizations -->
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+    
+    <!-- Plotly for 3D visualizations -->
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="nav-container">
+            <div class="nav-brand">
+                <i data-lucide="git-branch-plus"></i>
+                <span>NPD Dashboard</span>
+            </div>
+            <div class="nav-menu">
+                <button class="nav-item active" data-page="overview">
+                    <i data-lucide="home"></i>
+                    <span>Overview</span>
+                </button>
+                <button class="nav-item" data-page="experiments">
+                    <i data-lucide="flask"></i>
+                    <span>Experiments</span>
+                </button>
+                <button class="nav-item" data-page="analysis">
+                    <i data-lucide="bar-chart-3"></i>
+                    <span>Analysis</span>
+                </button>
+                <button class="nav-item" data-page="strategies">
+                    <i data-lucide="users"></i>
+                    <span>Strategies</span>
+                </button>
+                <button class="nav-item" data-page="network">
+                    <i data-lucide="network"></i>
+                    <span>Network</span>
+                </button>
+            </div>
+            <div class="nav-actions">
+                <button class="icon-btn" id="uploadBtn" title="Upload Data">
+                    <i data-lucide="upload"></i>
+                </button>
+                <button class="icon-btn" id="themeBtn" title="Toggle Theme">
+                    <i data-lucide="moon"></i>
+                </button>
+                <button class="icon-btn" id="settingsBtn" title="Settings">
+                    <i data-lucide="settings"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Overview Page -->
+        <div class="page active" id="overview-page">
+            <div class="page-header">
+                <h1>N-Person Prisoner's Dilemma</h1>
+                <p class="subtitle">Interactive Dashboard for Game Theory Simulations</p>
+            </div>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-lucide="users"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Total Agents</h3>
+                        <p class="stat-value" id="totalAgents">-</p>
+                        <p class="stat-change">across all experiments</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-lucide="trending-up"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Avg Cooperation</h3>
+                        <p class="stat-value" id="avgCooperation">-</p>
+                        <p class="stat-change">final round average</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-lucide="flask"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Experiments</h3>
+                        <p class="stat-value" id="totalExperiments">0</p>
+                        <p class="stat-change">loaded scenarios</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-icon">
+                        <i data-lucide="zap"></i>
+                    </div>
+                    <div class="stat-content">
+                        <h3>Best Strategy</h3>
+                        <p class="stat-value" id="bestStrategy">-</p>
+                        <p class="stat-change">highest avg score</p>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="content-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Cooperation Evolution</h2>
+                        <div class="card-actions">
+                            <button class="icon-btn-sm" onclick="dashboard.resetZoom('cooperationChart')">
+                                <i data-lucide="maximize-2"></i>
+                            </button>
+                        </div>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="cooperationChart"></canvas>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Strategy Performance</h2>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="strategyChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Experiments Page -->
+        <div class="page" id="experiments-page">
+            <div class="page-header">
+                <h1>Experiments</h1>
+                <button class="btn btn-primary" id="loadExampleBtn">
+                    <i data-lucide="download"></i>
+                    Load Example Data
+                </button>
+            </div>
+            
+            <div class="experiments-list" id="experimentsList">
+                <div class="empty-state">
+                    <i data-lucide="inbox"></i>
+                    <h3>No experiments loaded</h3>
+                    <p>Upload experiment results or load example data to get started</p>
+                    <button class="btn btn-secondary" onclick="document.getElementById('uploadBtn').click()">
+                        <i data-lucide="upload"></i>
+                        Upload Results
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analysis Page -->
+        <div class="page" id="analysis-page">
+            <div class="page-header">
+                <h1>Analysis Tools</h1>
+            </div>
+            
+            <div class="analysis-grid">
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Parameter Sensitivity</h2>
+                    </div>
+                    <div class="card-body">
+                        <div id="parameterHeatmap"></div>
+                    </div>
+                </div>
+                
+                <div class="card">
+                    <div class="card-header">
+                        <h2>Strategy Interactions</h2>
+                    </div>
+                    <div class="card-body">
+                        <canvas id="interactionMatrix"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Strategies Page -->
+        <div class="page" id="strategies-page">
+            <div class="page-header">
+                <h1>Strategy Explorer</h1>
+            </div>
+            
+            <div class="strategies-grid" id="strategiesGrid">
+                <!-- Strategy cards will be dynamically inserted here -->
+            </div>
+        </div>
+
+        <!-- Network Page -->
+        <div class="page" id="network-page">
+            <div class="page-header">
+                <h1>Network Visualization</h1>
+                <div class="network-controls">
+                    <select id="networkType" class="select">
+                        <option value="fully_connected">Fully Connected</option>
+                        <option value="small_world">Small World</option>
+                        <option value="scale_free">Scale Free</option>
+                    </select>
+                    <button class="btn btn-secondary" onclick="dashboard.resetNetwork()">
+                        <i data-lucide="refresh-cw"></i>
+                        Reset
+                    </button>
+                </div>
+            </div>
+            
+            <div class="card full-height">
+                <div class="card-body">
+                    <div id="networkVisualization"></div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- File Upload Input (Hidden) -->
+    <input type="file" id="fileInput" accept=".json,.csv" multiple style="display: none;">
+
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2>Settings</h2>
+                <button class="icon-btn" onclick="dashboard.closeSettings()">
+                    <i data-lucide="x"></i>
+                </button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-group">
+                    <h3>Visualization</h3>
+                    <label class="toggle">
+                        <input type="checkbox" id="animationsToggle" checked>
+                        <span>Enable animations</span>
+                    </label>
+                    <label class="toggle">
+                        <input type="checkbox" id="3dToggle">
+                        <span>3D visualizations</span>
+                    </label>
+                </div>
+                
+                <div class="settings-group">
+                    <h3>Data</h3>
+                    <button class="btn btn-secondary" onclick="dashboard.clearCache()">
+                        <i data-lucide="trash-2"></i>
+                        Clear cached data
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Initialize Lucide icons -->
+    <script>
+        lucide.createIcons();
+    </script>
+    
+    <!-- Main JavaScript -->
+    <script src="js/dashboard.js"></script>
+    <script src="js/visualizations.js"></script>
+    <script src="js/data-loader.js"></script>
+    <script src="js/strategies.js"></script>
+    <script src="js/network-vis.js"></script>
+    
+    <!-- Initialize Dashboard -->
+    <script>
+        const dashboard = new Dashboard();
+        dashboard.init();
+    </script>
+</body>
+</html>

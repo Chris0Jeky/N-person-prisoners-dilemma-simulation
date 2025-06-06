@@ -16,7 +16,8 @@
       "Bash(dpkg:*)",
       "Bash(ls:*)",
       "mcp__puppeteer__puppeteer_screenshot",
-      "mcp__puppeteer__puppeteer_fill"
+      "mcp__puppeteer__puppeteer_fill",
+      "mcp__puppeteer__puppeteer_click"
     ]
   },
   "tools": {

@@ -18,6 +18,11 @@ In this mode, each agent plays a separate 2-player Prisoner's Dilemma game with 
 - An agent's total score is the sum of all its pairwise interactions
 - Learning agents use the proportion of cooperating opponents as input
 
+### Strategy Behavior in Aggregate Pairwise
+- **Tit for Tat**: Uses cooperation proportion threshold (default 50%)
+- **Proportional TFT**: Cooperates with probability = opponent cooperation proportion
+- **Learning strategies**: Use aggregate cooperation statistics
+
 ## True Pairwise Mode (Individual Decisions)
 
 The true pairwise implementation allows agents to make separate decisions for each opponent, enabling more sophisticated strategies.
@@ -27,6 +32,11 @@ The true pairwise implementation allows agents to make separate decisions for ea
 - Agents maintain **opponent-specific memories and learning states**
 - Reactive strategies (TFT, GTFT, etc.) work correctly with individual opponent tracking
 - Learning agents maintain separate Q-tables for each opponent relationship
+
+### Strategy Behavior in True Pairwise
+- **Tit for Tat**: Defects if ANY specific opponent defected
+- **Proportional TFT**: Uses opponent-specific cooperation proportions
+- **Learning strategies**: Maintain separate states for each opponent
 
 ## Using Pairwise Modes
 

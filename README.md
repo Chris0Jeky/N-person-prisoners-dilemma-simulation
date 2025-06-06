@@ -16,6 +16,17 @@ Key features:
 - Scenario generation and analysis tools for discovering interesting parameter combinations
 - Comprehensive test suite for code validation
 
+## What's New
+
+### Improved Tit-for-Tat Implementation (v2.0)
+The TFT strategy has been redesigned to be ecosystem-aware:
+- **Network-aware**: TFT now considers the cooperation proportion among connected neighbors
+- **Configurable threshold**: Set the minimum cooperation proportion required (default: 50%)
+- **Proportional variant**: New ProportionalTitForTat strategy for probabilistic responses
+- **Consistent behavior**: Works properly in both neighborhood and pairwise modes
+
+See `scripts/demos/demonstrate_tft_ecosystem.py` for a demonstration of the new behavior.
+
 ## Requirements
 
 The package requires Python 3.7+ and several dependencies. Install them using:
@@ -334,7 +345,10 @@ The package includes multiple agent strategies:
 ### Classical Strategies
 - **Always Cooperate**: Always chooses to cooperate
 - **Always Defect**: Always chooses to defect
-- **Tit for Tat**: Mimics the opponent's previous move
+- **Tit for Tat**: Cooperates based on the proportion of neighbors who cooperated (ecosystem-aware)
+  - Threshold-based: Cooperates if cooperation proportion ≥ threshold (default 0.5)
+  - Network-aware: Only considers connected neighbors in the calculation
+- **Proportional Tit for Tat**: Cooperates with probability equal to neighborhood cooperation proportion
 - **Generous Tit for Tat**: Like Tit for Tat, but occasionally forgives defection
 - **Suspicious Tit for Tat**: Starts with defection, then follows Tit for Tat
 - **Tit for Two Tats**: Only defects after the opponent defects twice in a row
@@ -349,11 +363,20 @@ The package includes multiple agent strategies:
 - **Win or Learn Fast Policy Hill-Climbing (WOLF-PHC)**: Adjusts learning rates based on performance
 - **Upper Confidence Bound (UCB1) Q-Learning**: Uses UCB1 algorithm for exploration
 
-## Strategy Behavior in Pairwise Mode
+## Strategy Behavior in Different Modes
 
-In pairwise mode, strategies behave slightly differently:
+### Neighborhood Mode
+In neighborhood mode, strategies consider only their connected neighbors:
+- **Tit for Tat**: Cooperates if the proportion of cooperating neighbors meets its threshold
+- **Proportional TFT**: Cooperates with probability = proportion of cooperating neighbors
+- **Learning strategies**: Use neighborhood cooperation proportion as state representation
 
-- **Tit for Tat variants**: Base their decisions on the majority behavior of opponents in the previous round
+### Pairwise Mode
+In pairwise mode, strategies consider all opponents:
+- **Tit for Tat**: 
+  - With specific opponent tracking: Defects if ANY opponent defected
+  - With aggregate tracking: Uses overall cooperation proportion with threshold
+- **Proportional TFT**: Cooperates with probability = overall cooperation proportion
 - **Pavlov**: Responds based on the average reward received
 - **Reinforcement Learning**: Uses the proportion of cooperating opponents as state representation
 - **LRA-Q**: Adjusts learning rate based on aggregate opponent cooperation

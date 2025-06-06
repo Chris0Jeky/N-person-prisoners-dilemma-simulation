@@ -5,7 +5,8 @@
       "mcp__fetch__fetch",
       "Bash(apt list:*)",
       "Bash(chmod:*)",
-      "Bash(./test_display.sh:*)"
+      "Bash(./test_display.sh:*)",
+      "Bash(sudo apt-get:*)"
     ]
   },
   "tools": {

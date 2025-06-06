@@ -3,7 +3,8 @@
     "allow": [
       "mcp__puppeteer__puppeteer_navigate",
       "mcp__fetch__fetch",
-      "Bash(apt list:*)"
+      "Bash(apt list:*)",
+      "Bash(chmod:*)"
     ]
   },
   "tools": {

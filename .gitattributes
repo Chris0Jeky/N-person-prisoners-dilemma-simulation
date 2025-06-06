@@ -1,0 +1,40 @@
+# Auto detect text files and perform LF normalization
+* text=auto
+
+# Force LF for these files (Unix line endings)
+*.py text eol=lf
+*.sh text eol=lf
+*.md text eol=lf
+*.json text eol=lf
+*.yaml text eol=lf
+*.yml text eol=lf
+*.txt text eol=lf
+*.cfg text eol=lf
+*.ini text eol=lf
+requirements.txt text eol=lf
+
+# Force CRLF for Windows-specific files
+*.bat text eol=crlf
+*.cmd text eol=crlf
+*.ps1 text eol=crlf
+
+# Denote all files that are truly binary and should not be modified
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.gif binary
+*.ico binary
+*.pdf binary
+*.pyc binary
+*.pyo binary
+*.db binary
+*.pkl binary
+*.pickle binary
+*.npy binary
+*.npz binary
+
+# CSV files - treat as text with auto line endings
+*.csv text
+
+# Jupyter notebooks
+*.ipynb text eol=lf

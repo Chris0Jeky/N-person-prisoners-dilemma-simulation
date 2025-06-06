@@ -938,6 +938,7 @@ class Agent:
         alpha_lose=0.2,
         alpha_avg=0.01,
         exploration_constant=2.0,
+        cooperation_threshold=0.5,
     ):
         self.agent_id = agent_id
         self.strategy_type = strategy
@@ -948,7 +949,9 @@ class Agent:
 
         # Create strategy parameters dictionary
         strategy_params = {}
-        if strategy == "generous_tit_for_tat":
+        if strategy == "tit_for_tat":
+            strategy_params["cooperation_threshold"] = cooperation_threshold
+        elif strategy == "generous_tit_for_tat":
             strategy_params["generosity"] = generosity
         elif strategy == "pavlov":
             strategy_params["initial_move"] = initial_move

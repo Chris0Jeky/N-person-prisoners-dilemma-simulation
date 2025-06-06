@@ -31,20 +31,11 @@ fix_network_visualization.py
 # Backup files
 *.bak
 
-# Claude Code local settings (keep project settings)
+# Claude Code local settings (personal overrides)
 .claude/settings.local.json
 
-# Git automation scripts (optional - remove these lines if you want to commit them)
-auto_commit.sh
-claude_code_commit.sh
-CLAUDE_CODE_GIT_SETUP.md
-setup_claude_git.sh
-claude_code_prompts.txt
-/.claude
-CLAUDE_CODE_COMPLETE_SETUP.md
+# Node modules
 /node_modules
-git_commit.sh
-fix_line_endings.sh
-FIX_GIT_MESS.md
-init_claude_session.sh
-QUICK_FIX.txt
+
+# Temporary fix documentation (can be removed after line endings are fixed)
+# QUICK_FIX.txt

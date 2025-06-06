@@ -43,3 +43,5 @@ claude_code_prompts.txt
 /.claude
 CLAUDE_CODE_COMPLETE_SETUP.md
 /node_modules
+git_commit.sh
+fix_line_endings.sh

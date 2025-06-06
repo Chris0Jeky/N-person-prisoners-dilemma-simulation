@@ -28,7 +28,8 @@
       "Bash(./diagnose_git_issue.sh)",
       "Bash(./check_permissions_issue.sh:*)",
       "Bash(git config:*)",
-      "Bash(./init_claude_session.sh:*)"
+      "Bash(./init_claude_session.sh:*)",
+      "Bash(grep:*)"
     ]
   },
   "tools": {

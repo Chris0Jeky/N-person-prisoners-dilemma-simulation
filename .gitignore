@@ -2,6 +2,9 @@
 logs/
 htmlcov/
 backups/
+results/
+analysis_results/
+3-Person_Tragic_vs_Reciprocity/failed_attempt/results/
 
 # Python caches & env
 .venv/

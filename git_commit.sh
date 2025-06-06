@@ -84,6 +84,19 @@ main() {
         exit 1
     fi
     
+    # Check for line endings issue
+    REAL_CHANGES=$(git diff --name-only 2>/dev/null | wc -l || echo '0')
+    ALL_CHANGES=$(git status --porcelain 2>/dev/null | wc -l || echo '0')
+    
+    if [ "$ALL_CHANGES" -gt 100 ] && [ "$REAL_CHANGES" -eq 0 ]; then
+        echo -e "${RED}Error: Detected phantom changes (likely line endings issue)${NC}"
+        echo "Files show as modified but have no real changes."
+        echo ""
+        echo "Quick fix: git add . && git reset --hard HEAD"
+        echo "Or run: ./fix_git_config.sh"
+        exit 1
+    fi
+    
     # Get modified files (excluding results directory by default)
     mapfile -t modified_files < <(git ls-files -m | grep -v "^results/")
     mapfile -t untracked_files < <(git ls-files -o --exclude-standard | grep -v "^results/")

@@ -21,17 +21,24 @@ chmod +x git_commit.sh fix_line_endings.sh 2>/dev/null
 echo "📊 Current Git Status:"
 echo "   Branch: $(git branch --show-current 2>/dev/null || echo 'Not in git repo')"
 
-# Count changed files
-CHANGED_COUNT=$(git status --porcelain 2>/dev/null | wc -l || echo '0')
-echo "   Changed files: $CHANGED_COUNT"
+# Count changed files (excluding line ending only changes)
+REAL_CHANGES=$(git diff --name-only 2>/dev/null | wc -l || echo '0')
+STAGED_CHANGES=$(git diff --cached --name-only 2>/dev/null | wc -l || echo '0')
+ALL_CHANGES=$(git status --porcelain 2>/dev/null | wc -l || echo '0')
+echo "   Changed files: $ALL_CHANGES (Real: $REAL_CHANGES, Staged: $STAGED_CHANGES)"
 
 # Special warning for line endings issue
-if [ "$CHANGED_COUNT" -gt 1000 ]; then
+if [ "$ALL_CHANGES" -gt 100 ] && [ "$REAL_CHANGES" -eq 0 ]; then
+    echo ""
+    echo "⚠️  WARNING: Phantom changes detected (likely line endings)!"
+    echo "   Quick fix: git add . && git reset --hard HEAD"
+    echo "   Or run: ./fix_git_config.sh"
+    echo ""
+elif [ "$ALL_CHANGES" -gt 1000 ]; then
     echo ""
     echo "⚠️  WARNING: Over 1000 files changed!"
     echo "   This is likely a line endings issue."
-    echo "   Run: git reset --hard HEAD"
-    echo "   Then: git config core.autocrlf true"
+    echo "   Run: git add . && git reset --hard HEAD"
     echo "   See FIX_GIT_MESS.md for details"
 fi
 

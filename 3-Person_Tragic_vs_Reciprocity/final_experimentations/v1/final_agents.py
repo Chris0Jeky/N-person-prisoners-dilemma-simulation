@@ -174,6 +174,7 @@ class EnhancedQLearningAgent(SimpleQLearningAgent):
         return f"MyHist_{my_hist_str}_Ratio_{ratio_str}"
 
     def record_outcome(self, context):
+        """Update Q-values and remember the move for neighborhood states."""
         # Let parent handle Q-update logic.
         super().record_outcome(context)
         # Add own move to memory for next state calculation.

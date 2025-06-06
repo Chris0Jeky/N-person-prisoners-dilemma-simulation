@@ -7,7 +7,9 @@
       "Bash(chmod:*)",
       "Bash(./test_display.sh:*)",
       "Bash(sudo apt-get:*)",
-      "Bash(./test_mcp_with_xvfb.sh:*)"
+      "Bash(./test_mcp_with_xvfb.sh:*)",
+      "Bash(export DISPLAY=:99)",
+      "Bash(echo:*)"
     ]
   },
   "tools": {

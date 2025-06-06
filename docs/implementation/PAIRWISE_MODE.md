@@ -1,20 +1,34 @@
-# Pairwise Interaction Mode
+# Pairwise Interaction Modes
 
 ## Overview
 
-The pairwise interaction mode is an alternative way of simulating agent interactions in the N-Person Prisoner's Dilemma (NPDL) framework. Unlike the default neighborhood-based mode where agents only interact with their network neighbors, in pairwise mode each agent plays a separate 2-player Prisoner's Dilemma game with every other agent in the system.
+The NPDL framework supports two distinct pairwise interaction modes:
 
-This approach models a fully mixed population where each individual can interact with any other individual, regardless of network structure. The network structure is still maintained for visualization purposes, but doesn't influence the interaction pattern.
+1. **Aggregate Pairwise Mode** - Original implementation where agents make one decision per round
+2. **True Pairwise Mode** - Enhanced implementation where agents make individual decisions for each opponent
 
-## Key Features
+## Aggregate Pairwise Mode (Default)
 
+In this mode, each agent plays a separate 2-player Prisoner's Dilemma game with every other agent, but makes a single decision that applies to all opponents.
+
+### Key Features
 - Each agent chooses one move (cooperate/defect) for the entire round
 - The agent plays that move against every other agent in the system
 - Each pair plays a standard 2-player Prisoner's Dilemma game with payoffs (R, S, T, P)
 - An agent's total score is the sum of all its pairwise interactions
-- Learning agents use the proportion of cooperating opponents as input to their learning process
+- Learning agents use the proportion of cooperating opponents as input
 
-## Using Pairwise Mode
+## True Pairwise Mode (Individual Decisions)
+
+The true pairwise implementation allows agents to make separate decisions for each opponent, enabling more sophisticated strategies.
+
+### Key Features
+- Agents make **separate decisions for each opponent**
+- Agents maintain **opponent-specific memories and learning states**
+- Reactive strategies (TFT, GTFT, etc.) work correctly with individual opponent tracking
+- Learning agents maintain separate Q-tables for each opponent relationship
+
+## Using Pairwise Modes
 
 ### In Scenario JSON Files
 

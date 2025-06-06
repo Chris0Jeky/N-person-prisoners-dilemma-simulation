@@ -13,7 +13,8 @@
       "mcp__browser-tools__takeScreenshot",
       "Bash(DISPLAY=:99 node test_chromium_direct.js)",
       "Bash(chromium-browser:*)",
-      "Bash(dpkg:*)"
+      "Bash(dpkg:*)",
+      "Bash(ls:*)"
     ]
   },
   "tools": {

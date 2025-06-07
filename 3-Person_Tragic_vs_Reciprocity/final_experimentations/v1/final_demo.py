@@ -92,6 +92,7 @@ def create_performance_heatmap(all_results, save_path):
 
         # Helper to get average metric for QL agents
         def get_avg_metric(data, metric):
+            """Average a metric over the QL agents in the results."""
             ql_ids = [k for k in data if "QL" in k]
             if not ql_ids: return 0
 

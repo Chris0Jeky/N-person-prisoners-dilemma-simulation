@@ -255,3 +255,18 @@ class TestTFTEcosystemBehavior:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+class TestDailyT038TftRetaliatesLoneDefector:
+    """Daily check: TFT retaliates against a lone defector in round two."""
+
+    def test_tft_retaliates_lone_defector(self):
+        agents = [
+            Agent(agent_id=0, strategy="tit_for_tat"),
+            Agent(agent_id=1, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        first_moves, _ = env.run_round()
+        assert first_moves[0] == "cooperate"
+        second_moves, _ = env.run_round()
+        assert second_moves[0] == "defect"

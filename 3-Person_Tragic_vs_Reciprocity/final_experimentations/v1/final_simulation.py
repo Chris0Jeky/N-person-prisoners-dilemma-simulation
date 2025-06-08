@@ -10,6 +10,7 @@ T, R, P, S = 5, 3, 1, 0
 
 
 def nperson_payoff(my_move, num_other_cooperators, total_agents):
+    """N-person payoff interpolating between S/P and R/T by cooperator share."""
     if total_agents <= 1: return R if my_move == COOPERATE else P
     if my_move == COOPERATE:
         return S + (R - S) * (num_other_cooperators / (total_agents - 1))

@@ -146,7 +146,7 @@ async function processCSV(data) {
             for (const line of chunk) {
                 if (!line.trim()) continue;
                 
-                const values = loader.parseCSVLine(line);
+                const values = processor.parseCSVLine(line);
                 const row = {};
                 
                 headers.forEach((header, index) => {

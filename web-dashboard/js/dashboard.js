@@ -852,6 +852,11 @@ class Dashboard {
         }
     }
 
+    filterExperiments(searchTerm) {
+        this.currentSearchTerm = searchTerm.toLowerCase();
+        this.renderExperimentsList();
+    }
+
     renderExperimentsList() {
         const container = document.getElementById('experimentsList');
         

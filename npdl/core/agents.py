@@ -5,6 +5,18 @@ from collections import deque
 
 from typing import List, Dict, Tuple, Any, Optional, Union, Hashable
 
+# Import N-person strategies if available
+try:
+    from .n_person_rl import (
+        NPersonQLearning,
+        NPersonHystereticQ,
+        NPersonWolfPHC,
+        create_n_person_strategy
+    )
+    N_PERSON_RL_AVAILABLE = True
+except ImportError:
+    N_PERSON_RL_AVAILABLE = False
+
 
 class Strategy:
     """Base Strategy class that all specific strategies inherit from."""

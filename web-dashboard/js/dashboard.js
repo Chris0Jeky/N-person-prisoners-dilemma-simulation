@@ -243,14 +243,42 @@ class Dashboard {
     }
 
     async loadExampleData() {
+        // Check if example data already exists
+        const existingExample = this.experiments.find(exp => exp.name && exp.name.startsWith('Example'));
+        if (existingExample) {
+            this.showNotification('Example data already loaded', 'info');
+            return;
+        }
+        
         try {
-            // Load example data from the project
-            const response = await fetch('../analysis_results/comparative_analysis.csv');
-            if (!response.ok) throw new Error('Failed to load example data');
+            // Try to load real scenario files
+            const scenarioFiles = ['scenarios.json', 'enhanced_scenarios.json', 'pairwise_scenarios.json'];
+            let loaded = false;
             
-            // For now, create synthetic example data
-            const exampleData = this.generateExampleData();
-            exampleData.forEach(exp => this.addExperiment(exp));
+            for (const file of scenarioFiles) {
+                try {
+                    const response = await fetch(`../scenarios/${file}`);
+                    if (response.ok) {
+                        const scenarios = await response.json();
+                        if (scenarios && scenarios.length > 0) {
+                            // Use first scenario as example
+                            const scenario = scenarios[0];
+                            const exampleData = this.generateExampleFromScenario(scenario);
+                            this.addExperiment(exampleData);
+                            loaded = true;
+                            break;
+                        }
+                    }
+                } catch (e) {
+                    // Continue to next file
+                }
+            }
+            
+            if (!loaded) {
+                // Generate synthetic data as fallback
+                const exampleData = this.generateExampleData();
+                exampleData.forEach(exp => this.addExperiment(exp));
+            }
             
             this.updateStats();
             this.refreshVisualizations();
@@ -262,7 +290,34 @@ class Dashboard {
             exampleData.forEach(exp => this.addExperiment(exp));
             this.updateStats();
             this.refreshVisualizations();
+            this.showNotification('Example data loaded', 'success');
         }
+    }
+
+    generateExampleFromScenario(scenario) {
+        // Convert scenario definition to experiment data
+        const numRounds = scenario.num_rounds || 100;
+        const results = [];
+        let cooperationRate = 0.3;
+        
+        for (let i = 0; i < numRounds; i++) {
+            // Simulate cooperation evolution
+            cooperationRate += (Math.random() - 0.45) * 0.1;
+            cooperationRate = Math.max(0, Math.min(1, cooperationRate));
+            
+            results.push({
+                round: i,
+                cooperation_rate: cooperationRate,
+                avg_score: 2 + cooperationRate * 2 + (Math.random() - 0.5) * 0.5
+            });
+        }
+        
+        return {
+            ...scenario,
+            results: results,
+            id: 'example_' + Date.now(),
+            timestamp: new Date().toISOString()
+        };
     }
 
     generateExampleData() {
@@ -501,13 +556,20 @@ class Dashboard {
             `;
         } else {
             container.innerHTML = this.experiments.map(exp => `
-                <div class="experiment-item" onclick="dashboard.selectExperiment('${exp.id}')">
-                    <h3>${exp.name}</h3>
-                    <div style="display: flex; gap: 2rem; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
-                        <span><i data-lucide="users" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_agents || '-'} agents</span>
-                        <span><i data-lucide="refresh-cw" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_rounds || '-'} rounds</span>
-                        <span><i data-lucide="network" style="width: 16px; height: 16px; display: inline;"></i> ${exp.metrics.networkType}</span>
-                        <span><i data-lucide="trending-up" style="width: 16px; height: 16px; display: inline;"></i> ${(exp.metrics.avgCooperation * 100).toFixed(1)}% cooperation</span>
+                <div class="experiment-item">
+                    <div onclick="dashboard.selectExperiment('${exp.id}')" style="flex: 1; cursor: pointer;">
+                        <h3>${exp.name}</h3>
+                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                            <span><i data-lucide="users" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_agents || '-'} agents</span>
+                            <span><i data-lucide="refresh-cw" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_rounds || '-'} rounds</span>
+                            <span><i data-lucide="network" style="width: 16px; height: 16px; display: inline;"></i> ${exp.metrics.networkType}</span>
+                            <span><i data-lucide="trending-up" style="width: 16px; height: 16px; display: inline;"></i> ${(exp.metrics.avgCooperation * 100).toFixed(1)}% cooperation</span>
+                        </div>
+                    </div>
+                    <div class="experiment-actions">
+                        <button class="icon-btn-sm" onclick="dashboard.deleteExperiment('${exp.id}')" title="Delete experiment">
+                            <i data-lucide="trash-2"></i>
+                        </button>
                     </div>
                 </div>
             `).join('');
@@ -519,6 +581,20 @@ class Dashboard {
     selectExperiment(id) {
         this.currentExperiment = this.experiments.find(exp => exp.id == id);
         this.navigateTo('analysis');
+    }
+
+    deleteExperiment(id) {
+        if (confirm('Delete this experiment?')) {
+            this.experiments = this.experiments.filter(exp => exp.id != id);
+            if (this.currentExperiment && this.currentExperiment.id == id) {
+                this.currentExperiment = null;
+            }
+            this.saveCachedData();
+            this.updateStats();
+            this.refreshVisualizations();
+            this.renderExperimentsList();
+            this.showNotification('Experiment deleted', 'info');
+        }
     }
 
     renderStrategies() {

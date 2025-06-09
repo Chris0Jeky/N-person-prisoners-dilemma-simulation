@@ -180,10 +180,10 @@ async function processCSV(data) {
         });
         
         // Normalize the complete dataset
-        return loader.normalizeCSVData(results);
+        return processor.normalizeCSVData(results);
     } else {
         // Small file, process normally
-        return loader.parseCSV(content);
+        return processor.parseCSV(content);
     }
 }
 

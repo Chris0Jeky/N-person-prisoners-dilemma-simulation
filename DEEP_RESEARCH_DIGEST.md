@@ -33,14 +33,9 @@ The literature establishes a fundamental truth that perfectly aligns with our "C
 
 ## Core Mechanisms & Theoretical Framework
 
-### 1. The Fundamental Problem: Group Size Kills Reciprocity
+### Why Group Cooperation Fails: Three Fatal Mechanisms
 
-**Boyd & Richerson (1988)** mathematically proved that conditions for reciprocal cooperation become "extremely restrictive as group size increases." This foundational result explains why:
-- Simple reciprocity works in pairs but fails in crowds
-- Defector impact is diluted among many cooperators
-- Cooperation requires exponentially larger benefits as N grows
-
-### 2. Three Mechanisms of Failure in Groups
+The literature identifies three core mechanisms that doom group-based reciprocity:
 
 **Diffusion of Responsibility**
 - "Someone else will cooperate/punish" mentality

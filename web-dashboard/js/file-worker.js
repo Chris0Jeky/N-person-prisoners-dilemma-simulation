@@ -120,7 +120,7 @@ async function processJSON(data) {
 // Process CSV with streaming for large files
 async function processCSV(data) {
     const { content, fileSize } = data;
-    const loader = new DataLoader();
+    const processor = new DataProcessor();
     
     // For large CSV files, process in chunks
     if (fileSize > 5 * 1024 * 1024) { // 5MB

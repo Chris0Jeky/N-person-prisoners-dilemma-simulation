@@ -257,7 +257,16 @@
 
     <!-- Initialize Lucide icons -->
     <script>
-        lucide.createIcons();
+        // Wait for lucide to be loaded
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        } else {
+            window.addEventListener('load', () => {
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+            });
+        }
     </script>
     
     <!-- Main JavaScript -->

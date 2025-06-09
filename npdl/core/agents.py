@@ -5,6 +5,9 @@ from collections import deque
 
 from typing import List, Dict, Tuple, Any, Optional, Union, Hashable
 
+# N-person strategies will be imported lazily to avoid circular imports
+N_PERSON_RL_AVAILABLE = True  # We know it's available
+
 
 class Strategy:
     """Base Strategy class that all specific strategies inherit from."""
@@ -908,6 +911,28 @@ def create_strategy(strategy_type, **kwargs):
         "wolf_phc": WolfPHCStrategy,
         "ucb1_q": UCB1QLearningStrategy,
     }
+    
+    # Check if it's an N-person strategy
+    if strategy_type.startswith("n_person_") and N_PERSON_RL_AVAILABLE:
+        try:
+            # Lazy import to avoid circular dependency
+            from .n_person_rl import (
+                NPersonQLearning,
+                NPersonHystereticQ,
+                NPersonWolfPHC
+            )
+            
+            n_person_strategies = {
+                "n_person_q_learning": NPersonQLearning,
+                "n_person_hysteretic_q": NPersonHystereticQ,
+                "n_person_wolf_phc": NPersonWolfPHC,
+            }
+            
+            if strategy_type in n_person_strategies:
+                strategy_class = n_person_strategies[strategy_type]
+                return strategy_class(**kwargs)
+        except ImportError:
+            pass  # Fall through to error
 
     if strategy_type not in strategies:
         raise ValueError(f"Unknown strategy type: {strategy_type}")
@@ -939,6 +964,7 @@ class Agent:
         alpha_avg=0.01,
         exploration_constant=2.0,
         cooperation_threshold=0.5,
+        N=None,  # Number of agents for N-person strategies
     ):
         self.agent_id = agent_id
         self.strategy_type = strategy
@@ -1025,6 +1051,26 @@ class Agent:
                     "state_type": state_type,
                 }
             )
+        # N-person strategies
+        elif strategy.startswith("n_person_"):
+            base_params = {
+                "learning_rate": learning_rate,
+                "discount_factor": discount_factor,
+                "epsilon": epsilon,
+                "state_type": state_type,
+                "N": N,  # Pass N parameter
+            }
+            
+            if strategy == "n_person_hysteretic_q":
+                base_params["beta"] = beta
+            elif strategy == "n_person_wolf_phc":
+                base_params.update({
+                    "alpha_win": alpha_win,
+                    "alpha_lose": alpha_lose,
+                    "alpha_avg": alpha_avg,
+                })
+            
+            strategy_params.update(base_params)
 
         # Create the strategy object
         self.strategy = create_strategy(strategy, **strategy_params)

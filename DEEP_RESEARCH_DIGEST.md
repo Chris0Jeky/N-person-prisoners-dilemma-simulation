@@ -96,29 +96,36 @@ The literature identifies three core mechanisms that doom group-based reciprocit
    - **Tit-for-Two-Tats**: Tolerate single defection, punish only repeated defection
    - **Critical for**: Real-world implementation where errors occur
 
-## Our Implementation vs Literature
+### Current NPDL Implementation Analysis
 
-### Strong Alignments
+**What We Have (16 Strategies Total):**
+- Basic: Random, Always Cooperate/Defect, Random Probability
+- TFT Family: Standard TFT, Proportional TFT, Generous TFT (✓ forgiveness), Suspicious TFT, Tit-for-Two-Tats (✓ forgiveness)
+- Other: Pavlov (Win-Stay-Lose-Shift)
+- Q-Learning: 6 variants including Hysteretic, LRA, Wolf-PHC, UCB1
 
-1. **Core Thesis Validated**: Literature confirms pairwise > group for cooperation
-2. **Tragedy Valley Concept**: Maps to established "tragedy of commons" dynamics
-3. **Reciprocity Hill**: Aligns with Nowak's network reciprocity principles
-4. **Threshold Strategies**: Our pTFT-Threshold (50%) connects to quorum literature
+**Strong Alignments with Literature:**
+1. ✅ **Core thesis validated**: Our results confirm pairwise superiority
+2. ✅ **"Tragedy Valley" = Tragedy of Commons**: Perfect conceptual mapping
+3. ✅ **"Collaborative Hill" = Network Reciprocity**: Aligns with Nowak's principles
+4. ✅ **Threshold mechanism**: TFT with 0.5 threshold matches quorum concepts
+5. ✅ **Forgiveness implemented**: Generous TFT and Tit-for-Two-Tats
 
-### Novel Contributions We've Made
+**Our Novel Contributions:**
+1. **Unified comparison framework**: Direct pairwise vs neighborhood in same system
+2. **Extensive Q-learning integration**: 6 sophisticated learning variants
+3. **Evolutionary scenario discovery**: GA finding high-cooperation parameters
+4. **Comprehensive parameter sweeps**: Mapping 90%+ cooperation zones
+5. **Web dashboard visualization**: Interactive exploration tools
 
-1. **Direct Structural Comparison**: Side-by-side pairwise vs neighborhood in same framework
-2. **Ecosystem-Aware TFT**: Novel adaptation considering neighborhood cooperation
-3. **Comprehensive Implementation**: 12+ strategies in unified testing environment
-4. **Parameter Space Exploration**: Systematic sweeps revealing 90%+ cooperation zones
-5. **Evolutionary Discovery**: Using GA to find "interesting" parameter combinations
+**Critical Gaps Identified:**
+1. ❌ **All-or-None (AoN)**: The proven dominant strategy is missing
+2. ❌ **Contrite TFT**: Important noise-tolerant variant not implemented
+3. ❌ **Adaptive thresholds**: Only fixed 50%, no dynamic adjustment
+4. ❌ **Network topology variations**: Limited to fully connected graphs
+5. ❌ **Memory > 1**: Most strategies only use last round
 
-### Gaps in Our Current Implementation
-
-1. **All-or-None Strategy**: Not implemented despite its proven dominance
-2. **Contrite TFT**: Missing this noise-tolerant variant
-3. **Variable Thresholds**: Only fixed 50% threshold, not adaptive
-4. **Incomplete Networks**: Focus on fully connected, less on sparse topologies
+## Strategic Innovations & Gaps
 
 ## Improvement Proposals Based on Research
 

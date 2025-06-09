@@ -1046,6 +1046,26 @@ class Agent:
                     "state_type": state_type,
                 }
             )
+        # N-person strategies
+        elif strategy.startswith("n_person_"):
+            base_params = {
+                "learning_rate": learning_rate,
+                "discount_factor": discount_factor,
+                "epsilon": epsilon,
+                "state_type": state_type,
+                "N": N,  # Pass N parameter
+            }
+            
+            if strategy == "n_person_hysteretic_q":
+                base_params["beta"] = beta
+            elif strategy == "n_person_wolf_phc":
+                base_params.update({
+                    "alpha_win": alpha_win,
+                    "alpha_lose": alpha_lose,
+                    "alpha_avg": alpha_avg,
+                })
+            
+            strategy_params.update(base_params)
 
         # Create the strategy object
         self.strategy = create_strategy(strategy, **strategy_params)

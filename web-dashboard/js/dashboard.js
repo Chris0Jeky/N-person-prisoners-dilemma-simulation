@@ -873,8 +873,37 @@ class Dashboard {
                 </div>
             `;
         } else {
+            // Filter experiments if search term exists
+            let filteredExperiments = this.experiments;
+            if (this.currentSearchTerm) {
+                filteredExperiments = this.experiments.filter(exp => {
+                    const searchIn = [
+                        exp.name,
+                        exp.group,
+                        ...(exp.tags || []),
+                        exp.config.network_type,
+                        ...Object.keys(exp.config.agent_strategies || {})
+                    ].join(' ').toLowerCase();
+                    return searchIn.includes(this.currentSearchTerm);
+                });
+            }
+            
+            if (filteredExperiments.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i data-lucide="search"></i>
+                        <h3>No experiments found</h3>
+                        <p>Try a different search term</p>
+                    </div>
+                `;
+                if (typeof lucide !== 'undefined') {
+                    lucide.createIcons();
+                }
+                return;
+            }
+            
             // Group experiments
-            const grouped = this.groupExperiments(this.experiments);
+            const grouped = this.groupExperiments(filteredExperiments);
             
             container.innerHTML = Object.entries(grouped).map(([group, experiments]) => `
                 <div class="experiment-group">
@@ -1261,10 +1290,15 @@ class Dashboard {
             info: '#3b82f6'
         };
         
-        notification.innerHTML = `
-            <i data-lucide="${icons[type] || icons.info}" style="width: 20px; height: 20px; color: ${colors[type] || colors.info}"></i>
-            <span>${message}</span>
-        `;
+        // Only use icons if lucide is available
+        if (typeof lucide !== 'undefined') {
+            notification.innerHTML = `
+                <i data-lucide="${icons[type] || icons.info}" style="width: 20px; height: 20px; color: ${colors[type] || colors.info}"></i>
+                <span>${message}</span>
+            `;
+        } else {
+            notification.innerHTML = `<span>${message}</span>`;
+        }
         
         notification.style.cssText = `
             position: fixed;

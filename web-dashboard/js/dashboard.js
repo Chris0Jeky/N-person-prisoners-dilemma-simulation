@@ -319,7 +319,10 @@ class Dashboard {
             timestamp: data.timestamp || new Date().toISOString(),
             config: data.config || data,
             results: data.results || data,
-            metrics: this.calculateMetrics(data)
+            metrics: this.calculateMetrics(data),
+            tags: data.tags || this.generateTags(data),
+            group: data.group || this.assignGroup(data),
+            isExample: data.isExample || false
         };
         
         this.experiments.push(experiment);

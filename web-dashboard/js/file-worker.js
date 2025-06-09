@@ -113,7 +113,7 @@ async function processJSON(data) {
         return normalized;
     } else {
         // Small file, process normally
-        return loader.parseJSON(content);
+        return processor.parseJSON(content);
     }
 }
 

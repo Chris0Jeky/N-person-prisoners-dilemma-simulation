@@ -606,6 +606,9 @@ class Dashboard {
                         </div>
                     </div>
                     <div class="experiment-actions">
+                        <button class="icon-btn-sm" onclick="dashboard.exportExperiment('${exp.id}')" title="Export experiment">
+                            <i data-lucide="download"></i>
+                        </button>
                         <button class="icon-btn-sm" onclick="dashboard.deleteExperiment('${exp.id}')" title="Delete experiment">
                             <i data-lucide="trash-2"></i>
                         </button>
@@ -634,6 +637,47 @@ class Dashboard {
             this.renderExperimentsList();
             this.showNotification('Experiment deleted', 'info');
         }
+    }
+
+    exportExperiment(id) {
+        const experiment = this.experiments.find(exp => exp.id == id);
+        if (!experiment) return;
+        
+        const dataStr = JSON.stringify(experiment, null, 2);
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `${experiment.name.replace(/[^a-z0-9]/gi, '_')}_${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+        this.showNotification('Experiment exported', 'success');
+    }
+    
+    exportAllExperiments() {
+        if (this.experiments.length === 0) {
+            this.showNotification('No experiments to export', 'info');
+            return;
+        }
+        
+        const dataStr = JSON.stringify({
+            experiments: this.experiments,
+            exportDate: new Date().toISOString(),
+            version: '1.0'
+        }, null, 2);
+        
+        const dataBlob = new Blob([dataStr], { type: 'application/json' });
+        const url = URL.createObjectURL(dataBlob);
+        
+        const link = document.createElement('a');
+        link.href = url;
+        link.download = `npd_experiments_${new Date().toISOString().split('T')[0]}.json`;
+        link.click();
+        
+        URL.revokeObjectURL(url);
+        this.showNotification(`Exported ${this.experiments.length} experiments`, 'success');
     }
 
     renderStrategies() {

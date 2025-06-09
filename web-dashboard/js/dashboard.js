@@ -25,10 +25,36 @@ class Dashboard {
         // Initialize visualizations
         this.initCharts();
         
+        // Initialize Lucide icons when ready
+        this.initializeLucideIcons();
+        
         // Load example data if first visit
         if (this.experiments.length === 0 && !localStorage.getItem('visited')) {
             localStorage.setItem('visited', 'true');
             // this.loadExampleData();
+        }
+    }
+    
+    // Safe wrapper for creating lucide icons
+    safeCreateIcons() {
+        // Use global safe create icons function if available
+        if (typeof window.safeCreateIcons === 'function') {
+            window.safeCreateIcons();
+        } else if (typeof lucide !== 'undefined') {
+            try {
+                lucide.createIcons();
+            } catch (e) {
+                console.warn('Error creating lucide icons:', e);
+            }
+        }
+    }
+
+    initializeLucideIcons() {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        } else {
+            // Try again after a short delay
+            setTimeout(() => this.initializeLucideIcons(), 100);
         }
     }
 
@@ -123,7 +149,8 @@ class Dashboard {
         // Update icon
         const icon = document.querySelector('#themeBtn i');
         icon.setAttribute('data-lucide', this.theme === 'light' ? 'moon' : 'sun');
-        lucide.createIcons();
+        // Safely create icons
+        this.safeCreateIcons();
     }
 
     applyTheme() {
@@ -154,28 +181,195 @@ class Dashboard {
     }
 
     async handleFileUpload(files) {
+        // Check if any files are large
+        const largeFiles = Array.from(files).filter(f => f.size > 1024 * 1024); // 1MB
+        const useWorker = largeFiles.length > 0;
+        
+        if (useWorker && typeof Worker !== 'undefined') {
+            // Use Web Worker for large files
+            this.processFilesWithWorker(files);
+        } else {
+            // Process small files directly
+            this.processFilesDirectly(files);
+        }
+    }
+
+    async processFilesDirectly(files) {
+        const dataLoader = new DataLoader();
+        
         for (const file of files) {
             try {
-                const text = await file.text();
-                const data = JSON.parse(text);
+                this.showNotification(`Loading ${file.name}...`, 'info');
+                const experiments = await dataLoader.loadFromFile(file);
                 
-                // Process based on file type
-                if (data.scenario_name || data.experiment_name) {
-                    this.addExperiment(data);
-                } else if (Array.isArray(data)) {
-                    // Handle array of experiments
-                    data.forEach(exp => this.addExperiment(exp));
+                if (Array.isArray(experiments)) {
+                    experiments.forEach(exp => this.addExperiment(exp));
+                } else {
+                    this.addExperiment(experiments);
                 }
                 
-                this.showNotification('Data loaded successfully', 'success');
+                this.showNotification(`Successfully loaded ${file.name}`, 'success');
             } catch (error) {
-                console.error('Error loading file:', error);
-                this.showNotification('Error loading file: ' + error.message, 'error');
+                this.handleError(error, `loading file ${file.name}`);
             }
         }
         
         this.updateStats();
         this.refreshVisualizations();
+    }
+
+    async processFilesWithWorker(files) {
+        // Create loading modal
+        const loadingModal = this.createLoadingModal();
+        document.body.appendChild(loadingModal);
+        
+        const worker = new Worker('js/file-worker.js');
+        let filesProcessed = 0;
+        
+        // Track which files we're processing
+        const fileStatus = new Map();
+        Array.from(files).forEach((file, index) => {
+            fileStatus.set(index, { name: file.name, processed: false });
+        });
+
+        // Handle worker messages
+        worker.onmessage = (event) => {
+            const { type, result, error, progress, message, id } = event.data;
+            
+            if (type === 'progress') {
+                // Update progress bar
+                const progressBar = loadingModal.querySelector('.progress-bar');
+                const progressText = loadingModal.querySelector('.progress-text');
+                if (progressBar) progressBar.style.width = `${progress}%`;
+                if (progressText) progressText.textContent = message;
+            } else if (type === 'success') {
+                // Process result
+                if (Array.isArray(result)) {
+                    result.forEach(exp => this.addExperiment(exp));
+                } else {
+                    this.addExperiment(result);
+                }
+                
+                // Mark file as processed
+                if (fileStatus.has(id)) {
+                    fileStatus.get(id).processed = true;
+                }
+                
+                filesProcessed++;
+                if (filesProcessed >= files.length) {
+                    // All files processed
+                    worker.terminate();
+                    if (document.body.contains(loadingModal)) {
+                        document.body.removeChild(loadingModal);
+                    }
+                    this.updateStats();
+                    this.refreshVisualizations();
+                    this.showNotification(`Loaded ${filesProcessed} file(s) successfully`, 'success');
+                }
+            } else if (type === 'error') {
+                // Handle error
+                console.error('Worker error:', error);
+                const fileName = fileStatus.has(id) ? fileStatus.get(id).name : 'Unknown file';
+                this.showNotification(`Error processing ${fileName}: ${error}`, 'error');
+                
+                // Mark file as processed (even with error)
+                if (fileStatus.has(id)) {
+                    fileStatus.get(id).processed = true;
+                }
+                
+                filesProcessed++;
+                
+                if (filesProcessed >= files.length) {
+                    worker.terminate();
+                    if (document.body.contains(loadingModal)) {
+                        document.body.removeChild(loadingModal);
+                    }
+                    this.updateStats();
+                    this.refreshVisualizations();
+                }
+            }
+        };
+
+        // Handle worker errors
+        worker.onerror = (error) => {
+            console.error('Worker crashed:', error);
+            worker.terminate();
+            if (document.body.contains(loadingModal)) {
+                document.body.removeChild(loadingModal);
+            }
+            this.showNotification('File processing failed. Please try again.', 'error');
+        };
+        
+        // Process each file
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const content = await file.text();
+            
+            worker.postMessage({
+                id: i,
+                type: 'parseFile',
+                data: {
+                    content: content,
+                    filename: file.name,
+                    fileSize: file.size
+                }
+            });
+        }
+    }
+
+    createLoadingModal() {
+        const modal = document.createElement('div');
+        modal.className = 'loading-modal';
+        modal.innerHTML = `
+            <div class="loading-content">
+                <h3>Processing Large File</h3>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <p class="progress-text">Starting...</p>
+            </div>
+        `;
+        
+        // Add styles
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        `;
+        
+        const content = modal.querySelector('.loading-content');
+        content.style.cssText = `
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            min-width: 300px;
+            text-align: center;
+        `;
+        
+        const progressContainer = modal.querySelector('.progress-container');
+        progressContainer.style.cssText = `
+            background: var(--bg-secondary);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        `;
+        
+        const progressBar = modal.querySelector('.progress-bar');
+        progressBar.style.cssText = `
+            background: var(--accent);
+            height: 100%;
+            transition: width 0.3s ease;
+        `;
+        
+        return modal;
     }
 
     addExperiment(data) {
@@ -186,7 +380,10 @@ class Dashboard {
             timestamp: data.timestamp || new Date().toISOString(),
             config: data.config || data,
             results: data.results || data,
-            metrics: this.calculateMetrics(data)
+            metrics: this.calculateMetrics(data),
+            tags: data.tags || this.generateTags(data),
+            group: data.group || this.assignGroup(data),
+            isExample: data.isExample || false
         };
         
         this.experiments.push(experiment);
@@ -217,19 +414,121 @@ class Dashboard {
         return metrics;
     }
 
+    generateTags(data) {
+        const tags = [];
+        
+        // Add network type tag
+        if (data.config?.network_type || data.network_type) {
+            tags.push(`network:${data.config?.network_type || data.network_type}`);
+        }
+        
+        // Add strategy tags
+        const strategies = data.config?.agent_strategies || data.agent_strategies || {};
+        Object.keys(strategies).forEach(strategy => {
+            tags.push(`strategy:${strategy}`);
+        });
+        
+        // Add size tag
+        const numAgents = data.config?.num_agents || data.num_agents || 0;
+        if (numAgents <= 20) tags.push('size:small');
+        else if (numAgents <= 50) tags.push('size:medium');
+        else tags.push('size:large');
+        
+        // Add duration tag
+        const numRounds = data.config?.num_rounds || data.num_rounds || 0;
+        if (numRounds <= 100) tags.push('duration:short');
+        else if (numRounds <= 500) tags.push('duration:medium');
+        else tags.push('duration:long');
+        
+        return tags;
+    }
+
+    assignGroup(data) {
+        // Auto-assign group based on experiment characteristics
+        const strategies = Object.keys(data.config?.agent_strategies || data.agent_strategies || {});
+        
+        if (strategies.some(s => s.includes('learning') || s.includes('q_'))) {
+            return 'Learning Agents';
+        } else if (strategies.includes('always_defect') && !strategies.includes('always_cooperate')) {
+            return 'Defection Studies';
+        } else if (strategies.includes('tit_for_tat') || strategies.includes('generous_tit_for_tat')) {
+            return 'Reciprocity Studies';
+        } else if (strategies.length === 1) {
+            return 'Homogeneous';
+        } else {
+            return 'Mixed Strategies';
+        }
+    }
+
     loadCachedData() {
         const cached = localStorage.getItem('experiments');
         if (cached) {
             try {
-                this.experiments = JSON.parse(cached);
+                const cachedData = JSON.parse(cached);
+                // Restore experiments with empty results (we only cached summaries)
+                this.experiments = cachedData.map(exp => ({
+                    ...exp,
+                    results: exp.results || [], // Results are loaded on-demand
+                    config: exp.config || {},
+                    metrics: exp.metrics || {},
+                    tags: exp.tags || [],
+                    group: exp.group || 'Uncategorized'
+                }));
             } catch (e) {
                 console.error('Error loading cached data:', e);
+                localStorage.removeItem('experiments');
             }
         }
     }
 
     saveCachedData() {
-        localStorage.setItem('experiments', JSON.stringify(this.experiments));
+        try {
+            // Only cache essential data to avoid quota issues
+            const dataToCache = this.experiments.map(exp => ({
+                id: exp.id,
+                name: exp.name,
+                timestamp: exp.timestamp,
+                config: {
+                    num_agents: exp.config.num_agents,
+                    num_rounds: exp.config.num_rounds,
+                    network_type: exp.config.network_type,
+                    agent_strategies: exp.config.agent_strategies
+                },
+                metrics: exp.metrics,
+                tags: exp.tags,
+                group: exp.group,
+                isExample: exp.isExample,
+                // Store only summary of results, not full data
+                resultsSummary: {
+                    length: exp.results ? exp.results.length : 0,
+                    firstRound: exp.results && exp.results[0],
+                    lastRound: exp.results && exp.results[exp.results.length - 1]
+                }
+            }));
+            
+            const dataStr = JSON.stringify(dataToCache);
+            
+            // Check size before storing (localStorage typically has 5-10MB limit)
+            if (dataStr.length > 4 * 1024 * 1024) { // 4MB limit
+                console.warn('Data too large for localStorage, keeping only recent experiments');
+                // Keep only the 10 most recent experiments
+                const recentData = dataToCache
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .slice(0, 10);
+                localStorage.setItem('experiments', JSON.stringify(recentData));
+            } else {
+                localStorage.setItem('experiments', dataStr);
+            }
+        } catch (e) {
+            if (e.name === 'QuotaExceededError') {
+                console.error('localStorage quota exceeded, clearing old data');
+                // Clear and try again with just current experiment
+                localStorage.removeItem('experiments');
+                this.showNotification('Storage limit reached. Cleared old cached data.', 'warning');
+            } else {
+                console.error('Error saving to localStorage:', e);
+            }
+        }
     }
 
     clearCache() {
@@ -242,105 +541,60 @@ class Dashboard {
         }
     }
 
+    clearAllExperiments() {
+        if (confirm('This will remove ALL experiments. This action cannot be undone. Continue?')) {
+            this.experiments = [];
+            localStorage.removeItem('experiments');
+            this.updateStats();
+            this.refreshVisualizations();
+            this.renderExperimentsList();
+            this.showNotification('All experiments cleared', 'info');
+        }
+    }
+
+    clearExampleExperiments() {
+        const exampleCount = this.experiments.filter(exp => exp.isExample).length;
+        if (exampleCount === 0) {
+            this.showNotification('No example experiments to clear', 'info');
+            return;
+        }
+        
+        if (confirm(`This will remove ${exampleCount} example experiment(s). Continue?`)) {
+            this.experiments = this.experiments.filter(exp => !exp.isExample);
+            this.saveCachedData();
+            this.updateStats();
+            this.refreshVisualizations();
+            this.renderExperimentsList();
+            this.showNotification(`${exampleCount} example experiment(s) cleared`, 'success');
+        }
+    }
+
     async loadExampleData() {
         // Check if example data already exists
-        const existingExample = this.experiments.find(exp => exp.name && exp.name.startsWith('Example'));
+        const existingExample = this.experiments.find(exp => exp.isExample);
         if (existingExample) {
             this.showNotification('Example data already loaded', 'info');
             return;
         }
         
         try {
-            // Try to load real scenario files
-            const scenarioFiles = ['scenarios.json', 'enhanced_scenarios.json', 'pairwise_scenarios.json'];
-            let loaded = false;
+            const dataLoader = new DataLoader();
+            const exampleData = await dataLoader.loadExampleData();
             
-            for (const file of scenarioFiles) {
-                try {
-                    const response = await fetch(`../scenarios/${file}`);
-                    if (response.ok) {
-                        const scenarios = await response.json();
-                        if (scenarios && scenarios.length > 0) {
-                            // Use first scenario as example
-                            const scenario = scenarios[0];
-                            const exampleData = this.generateExampleFromScenario(scenario);
-                            this.addExperiment(exampleData);
-                            loaded = true;
-                            break;
-                        }
-                    }
-                } catch (e) {
-                    // Continue to next file
-                }
-            }
-            
-            if (!loaded) {
-                // Generate synthetic data as fallback
-                const exampleData = this.generateExampleData();
+            if (exampleData && exampleData.length > 0) {
                 exampleData.forEach(exp => this.addExperiment(exp));
+                this.updateStats();
+                this.refreshVisualizations();
+                this.showNotification(`Loaded ${exampleData.length} example scenarios`, 'success');
+            } else {
+                this.showNotification('No example data available', 'warning');
             }
-            
-            this.updateStats();
-            this.refreshVisualizations();
-            this.showNotification('Example data loaded', 'success');
         } catch (error) {
             console.error('Error loading example data:', error);
-            // Generate synthetic data as fallback
-            const exampleData = this.generateExampleData();
-            exampleData.forEach(exp => this.addExperiment(exp));
-            this.updateStats();
-            this.refreshVisualizations();
-            this.showNotification('Example data loaded', 'success');
+            this.showNotification('Failed to load example data', 'error');
         }
     }
 
-    generateExampleFromScenario(scenario) {
-        // Convert scenario definition to experiment data
-        const numRounds = scenario.num_rounds || 100;
-        const results = [];
-        let cooperationRate = 0.3;
-        
-        for (let i = 0; i < numRounds; i++) {
-            // Simulate cooperation evolution
-            cooperationRate += (Math.random() - 0.45) * 0.1;
-            cooperationRate = Math.max(0, Math.min(1, cooperationRate));
-            
-            results.push({
-                round: i,
-                cooperation_rate: cooperationRate,
-                avg_score: 2 + cooperationRate * 2 + (Math.random() - 0.5) * 0.5
-            });
-        }
-        
-        return {
-            ...scenario,
-            results: results,
-            id: 'example_' + Date.now(),
-            timestamp: new Date().toISOString()
-        };
-    }
-
-    generateExampleData() {
-        const strategies = ['tit_for_tat', 'always_cooperate', 'always_defect', 'q_learning', 'pavlov'];
-        const networks = ['fully_connected', 'small_world', 'scale_free'];
-        
-        return networks.map((network, i) => ({
-            scenario_name: `Example ${network.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`,
-            network_type: network,
-            num_agents: 30,
-            num_rounds: 100,
-            agent_strategies: {
-                [strategies[i]]: 10,
-                [strategies[(i + 1) % strategies.length]]: 10,
-                [strategies[(i + 2) % strategies.length]]: 10
-            },
-            results: Array.from({length: 100}, (_, round) => ({
-                round: round,
-                cooperation_rate: 0.3 + (0.4 * round / 100) + (Math.random() * 0.2 - 0.1),
-                avg_score: 2.5 + (Math.random() * 0.5)
-            }))
-        }));
-    }
 
     updateStats() {
         // Calculate aggregate statistics
@@ -408,6 +662,18 @@ class Dashboard {
                                 font: {
                                     size: 12
                                 }
+                            },
+                            onClick: (e, legendItem, legend) => {
+                                // Toggle dataset visibility
+                                const index = legendItem.datasetIndex;
+                                const ci = legend.chart;
+                                const meta = ci.getDatasetMeta(index);
+                                
+                                // Toggle visibility
+                                meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
+                                
+                                // Update chart
+                                ci.update();
                             }
                         },
                         tooltip: {
@@ -504,9 +770,17 @@ class Dashboard {
     refreshVisualizations() {
         if (this.experiments.length === 0) return;
 
+        // Show loading state on charts
+        const chartContainers = ['cooperationChart', 'strategyChart'];
+        chartContainers.forEach(id => {
+            const container = document.getElementById(id);
+            if (container) {
+                container.parentElement.classList.add('loading');
+            }
+        });
+
         // Update cooperation evolution chart
         if (this.charts.cooperation) {
-            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
             const datasets = this.experiments.slice(0, 5).map((exp, i) => {
                 const trend = exp.metrics.cooperationTrend || [];
                 // Downsample data if too many points
@@ -514,11 +788,16 @@ class Dashboard {
                     trend.filter((_, idx) => idx % Math.ceil(trend.length / 100) === 0) : 
                     trend;
                 
+                // Get primary strategy for color
+                const strategies = Object.keys(exp.config.agent_strategies || {});
+                const primaryStrategy = strategies[0] || `exp_${i}`;
+                const color = getStrategyColor(primaryStrategy);
+                
                 return {
                     label: exp.name,
                     data: data,
-                    borderColor: colors[i % colors.length],
-                    backgroundColor: colors[i % colors.length] + '20',
+                    borderColor: color,
+                    backgroundColor: getStrategyColorWithOpacity(primaryStrategy, 0.2),
                     borderWidth: 2,
                     pointRadius: 0,
                     pointHoverRadius: 4,
@@ -539,6 +818,16 @@ class Dashboard {
 
         // Update strategy performance
         this.updateStrategyChart();
+        
+        // Remove loading states
+        setTimeout(() => {
+            chartContainers.forEach(id => {
+                const container = document.getElementById(id);
+                if (container) {
+                    container.parentElement.classList.remove('loading');
+                }
+            });
+        }, 300);
     }
 
     updateStrategyChart() {
@@ -568,14 +857,16 @@ class Dashboard {
                 datasets: [{
                     label: 'Average Cooperation Rate',
                     data: data,
-                    backgroundColor: labels.map((_, i) => 
-                        getComputedStyle(document.documentElement)
-                            .getPropertyValue(`--chart-${(i % 8) + 1}`).trim()
-                    )
+                    backgroundColor: labels.map(strategy => getStrategyColor(strategy))
                 }]
             };
             this.charts.strategy.update();
         }
+    }
+
+    filterExperiments(searchTerm) {
+        this.currentSearchTerm = searchTerm.toLowerCase();
+        this.renderExperimentsList();
     }
 
     renderExperimentsList() {
@@ -593,31 +884,103 @@ class Dashboard {
                     </button>
                 </div>
             `;
+            // Safely create icons after DOM update
+            setTimeout(() => this.safeCreateIcons(), 0);
         } else {
-            container.innerHTML = this.experiments.map(exp => `
-                <div class="experiment-item">
-                    <div onclick="dashboard.selectExperiment('${exp.id}')" style="flex: 1; cursor: pointer;">
-                        <h3>${exp.name}</h3>
-                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
-                            <span><i data-lucide="users" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_agents || '-'} agents</span>
-                            <span><i data-lucide="refresh-cw" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_rounds || '-'} rounds</span>
-                            <span><i data-lucide="network" style="width: 16px; height: 16px; display: inline;"></i> ${exp.metrics.networkType}</span>
-                            <span><i data-lucide="trending-up" style="width: 16px; height: 16px; display: inline;"></i> ${(exp.metrics.avgCooperation * 100).toFixed(1)}% cooperation</span>
+            // Filter experiments if search term exists
+            let filteredExperiments = this.experiments;
+            if (this.currentSearchTerm) {
+                filteredExperiments = this.experiments.filter(exp => {
+                    const searchIn = [
+                        exp.name,
+                        exp.group,
+                        ...(exp.tags || []),
+                        exp.config.network_type,
+                        ...Object.keys(exp.config.agent_strategies || {})
+                    ].join(' ').toLowerCase();
+                    return searchIn.includes(this.currentSearchTerm);
+                });
+            }
+            
+            if (filteredExperiments.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <i data-lucide="search"></i>
+                        <h3>No experiments found</h3>
+                        <p>Try a different search term</p>
+                    </div>
+                `;
+                // Safely create icons after DOM update
+                setTimeout(() => this.safeCreateIcons(), 0);
+                return;
+            }
+            
+            // Group experiments
+            const grouped = this.groupExperiments(filteredExperiments);
+            
+            container.innerHTML = Object.entries(grouped).map(([group, experiments]) => `
+                <div class="experiment-group">
+                    <h3 class="group-header">
+                        <i data-lucide="folder" style="width: 16px; height: 16px;"></i>
+                        ${group} (${experiments.length})
+                    </h3>
+                    ${experiments.map(exp => `
+                        <div class="experiment-item">
+                            <div onclick="dashboard.selectExperiment('${exp.id}')" style="flex: 1; cursor: pointer;">
+                                <h3>${exp.name}</h3>
+                                <div style="display: flex; gap: 2rem; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                                    <span><i data-lucide="users" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_agents || '-'} agents</span>
+                                    <span><i data-lucide="refresh-cw" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_rounds || '-'} rounds</span>
+                                    <span><i data-lucide="network" style="width: 16px; height: 16px; display: inline;"></i> ${exp.metrics.networkType}</span>
+                                    <span><i data-lucide="trending-up" style="width: 16px; height: 16px; display: inline;"></i> ${(exp.metrics.avgCooperation * 100).toFixed(1)}% cooperation</span>
+                                </div>
+                                ${exp.tags && exp.tags.length > 0 ? `
+                                    <div class="experiment-tags" style="margin-top: 0.5rem;">
+                                        ${exp.tags.slice(0, 5).map(tag => `
+                                            <span class="tag">${tag}</span>
+                                        `).join('')}
+                                        ${exp.tags.length > 5 ? `<span class="tag">+${exp.tags.length - 5} more</span>` : ''}
+                                    </div>
+                                ` : ''}
+                            </div>
+                            <div class="experiment-actions">
+                                <button class="icon-btn-sm" onclick="dashboard.exportExperiment('${exp.id}')" title="Export experiment">
+                                    <i data-lucide="download"></i>
+                                </button>
+                                <button class="icon-btn-sm" onclick="dashboard.deleteExperiment('${exp.id}')" title="Delete experiment">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="experiment-actions">
-                        <button class="icon-btn-sm" onclick="dashboard.exportExperiment('${exp.id}')" title="Export experiment">
-                            <i data-lucide="download"></i>
-                        </button>
-                        <button class="icon-btn-sm" onclick="dashboard.deleteExperiment('${exp.id}')" title="Delete experiment">
-                            <i data-lucide="trash-2"></i>
-                        </button>
-                    </div>
+                    `).join('')}
                 </div>
             `).join('');
+            
+            // Safely create icons after DOM update
+            setTimeout(() => this.safeCreateIcons(), 0);
         }
+    }
+
+    groupExperiments(experiments) {
+        const groups = {};
         
-        lucide.createIcons();
+        experiments.forEach(exp => {
+            const group = exp.group || 'Uncategorized';
+            if (!groups[group]) {
+                groups[group] = [];
+            }
+            groups[group].push(exp);
+        });
+        
+        // Sort groups and experiments within groups
+        const sortedGroups = {};
+        Object.keys(groups).sort().forEach(key => {
+            sortedGroups[key] = groups[key].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+        });
+        
+        return sortedGroups;
     }
 
     selectExperiment(id) {
@@ -761,7 +1124,8 @@ class Dashboard {
                 `;
                 
                 document.getElementById('networkType').value = experiment.config.network_type || 'fully_connected';
-                lucide.createIcons();
+                // Safely create icons after DOM update
+                setTimeout(() => this.safeCreateIcons(), 0);
             }
         } else {
             container.innerHTML = '<p class="placeholder">Load experiments to view network visualization</p>';
@@ -812,7 +1176,8 @@ class Dashboard {
                 </div>
             `;
             
-            lucide.createIcons();
+            // Safely create icons after DOM update
+            setTimeout(() => this.safeCreateIcons(), 0);
             this.showAnalysisTab('comparison');
         } else {
             container.innerHTML = `
@@ -822,7 +1187,8 @@ class Dashboard {
                     <p>Load experiments to access analysis tools</p>
                 </div>
             `;
-            lucide.createIcons();
+            // Safely create icons after DOM update
+            setTimeout(() => this.safeCreateIcons(), 0);
         }
     }
 
@@ -910,29 +1276,90 @@ class Dashboard {
     }
 
     showNotification(message, type = 'info') {
-        // Simple notification implementation
+        // Enhanced notification implementation
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        notification.textContent = message;
+        
+        // Add icon based on type
+        const icons = {
+            success: 'check-circle',
+            error: 'alert-circle',
+            warning: 'alert-triangle',
+            info: 'info'
+        };
+        
+        const colors = {
+            success: '#10b981',
+            error: '#ef4444',
+            warning: '#f59e0b',
+            info: '#3b82f6'
+        };
+        
+        // Only use icons if lucide is available
+        if (typeof lucide !== 'undefined') {
+            notification.innerHTML = `
+                <i data-lucide="${icons[type] || icons.info}" style="width: 20px; height: 20px; color: ${colors[type] || colors.info}"></i>
+                <span>${message}</span>
+            `;
+        } else {
+            notification.innerHTML = `<span>${message}</span>`;
+        }
+        
         notification.style.cssText = `
             position: fixed;
             bottom: 20px;
             right: 20px;
             padding: 1rem 1.5rem;
             background: var(--bg-primary);
-            border: 1px solid var(--border);
+            border: 1px solid ${colors[type] || colors.info}30;
             border-radius: var(--radius-md);
             box-shadow: 0 4px 12px var(--shadow);
             z-index: 1000;
             animation: slideInRight 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            max-width: 400px;
         `;
         
         document.body.appendChild(notification);
+        // Safely create icons after DOM update
+        setTimeout(() => this.safeCreateIcons(), 0);
+        
+        // Auto-dismiss based on type
+        const duration = type === 'error' ? 5000 : 3000;
         
         setTimeout(() => {
             notification.style.animation = 'slideOutRight 0.3s ease';
             setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        }, duration);
+    }
+
+    handleError(error, context = '') {
+        console.error(`Error ${context}:`, error);
+        
+        // User-friendly error messages
+        let message = 'An unexpected error occurred';
+        
+        if (error.message) {
+            if (error.message.includes('JSON')) {
+                message = 'Invalid file format. Please check the file structure.';
+            } else if (error.message.includes('network')) {
+                message = 'Network error. Please check your connection.';
+            } else if (error.message.includes('memory')) {
+                message = 'File too large. Try using a smaller file.';
+            } else {
+                message = error.message;
+            }
+        }
+        
+        this.showNotification(message, 'error');
+        
+        // Log detailed error for debugging
+        if (context) {
+            console.error(`Context: ${context}`);
+        }
+        console.error('Stack trace:', error.stack);
     }
 }
 

@@ -37,28 +37,78 @@ class DataLoader {
     }
 
     parseCSV(text) {
-        const lines = text.trim().split('\n');
+        const lines = text.trim().split('\n').filter(line => line.trim());
         if (lines.length < 2) {
             throw new Error('CSV file is empty or has no data');
         }
 
-        const headers = lines[0].split(',').map(h => h.trim());
+        // Handle different delimiters
+        const firstLine = lines[0];
+        const delimiter = firstLine.includes('\t') ? '\t' : ',';
+        
+        const headers = firstLine.split(delimiter).map(h => h.trim().replace(/^["']|["']$/g, ''));
         const data = [];
 
         for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',').map(v => v.trim());
+            const line = lines[i].trim();
+            if (!line) continue; // Skip empty lines
+            
+            // Simple CSV parsing that handles quoted values
+            const values = this.parseCSVLine(line, delimiter);
             const row = {};
             
             headers.forEach((header, index) => {
-                const value = values[index];
-                // Try to parse numbers
-                row[header] = isNaN(value) ? value : parseFloat(value);
+                if (index < values.length) {
+                    const value = values[index];
+                    // Try to parse numbers
+                    if (value === '' || value === null || value === undefined) {
+                        row[header] = null;
+                    } else if (!isNaN(value) && value !== '') {
+                        row[header] = parseFloat(value);
+                    } else {
+                        row[header] = value;
+                    }
+                }
             });
             
             data.push(row);
         }
 
         return this.normalizeCSVData(data);
+    }
+
+    // Parse a single CSV line handling quoted values
+    parseCSVLine(line, delimiter = ',') {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            const nextChar = line[i + 1];
+            
+            if (char === '"' || char === "'") {
+                if (inQuotes && nextChar === char) {
+                    // Escaped quote
+                    current += char;
+                    i++; // Skip next char
+                } else {
+                    // Toggle quote state
+                    inQuotes = !inQuotes;
+                }
+            } else if (char === delimiter && !inQuotes) {
+                // End of field
+                result.push(current.trim());
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        // Don't forget the last field
+        result.push(current.trim());
+        
+        return result;
     }
 
     normalizeData(data) {
@@ -104,6 +154,11 @@ class DataLoader {
     }
 
     normalizeCSVData(rows) {
+        // Check if this is agent-level data (has agent_id column)
+        if (rows.length > 0 && rows[0].hasOwnProperty('agent_id')) {
+            return this.processAgentLevelData(rows);
+        }
+        
         // Group by experiment/scenario if possible
         const experiments = {};
         
@@ -133,6 +188,91 @@ class DataLoader {
         
         return Object.values(experiments);
     }
+    
+    // Process agent-level data (like from experiment_results_rounds.csv)
+    processAgentLevelData(rows) {
+        // Group by scenario/experiment
+        const experiments = {};
+        
+        rows.forEach(row => {
+            const expId = row.scenario_name || row.experiment_id || 'default';
+            const round = parseInt(row.round) || 0;
+            
+            if (!experiments[expId]) {
+                experiments[expId] = {
+                    id: expId + '_' + Date.now(),
+                    name: expId,
+                    config: {
+                        num_agents: 0,
+                        num_rounds: 0,
+                        network_type: 'unknown',
+                        agent_strategies: {}
+                    },
+                    roundData: {},
+                    agentSet: new Set(),
+                    strategySet: {}
+                };
+            }
+            
+            // Track agents and strategies
+            experiments[expId].agentSet.add(row.agent_id);
+            if (row.strategy) {
+                experiments[expId].strategySet[row.strategy] = (experiments[expId].strategySet[row.strategy] || 0) + 1;
+            }
+            
+            // Initialize round data if needed
+            if (!experiments[expId].roundData[round]) {
+                experiments[expId].roundData[round] = {
+                    round: round,
+                    cooperators: 0,
+                    defectors: 0,
+                    totalPayoff: 0,
+                    agentCount: 0
+                };
+            }
+            
+            // Aggregate round data
+            const roundData = experiments[expId].roundData[round];
+            if (row.move === 'cooperate') {
+                roundData.cooperators++;
+            } else if (row.move === 'defect') {
+                roundData.defectors++;
+            }
+            roundData.totalPayoff += parseFloat(row.payoff) || 0;
+            roundData.agentCount++;
+        });
+        
+        // Convert to experiment format
+        return Object.entries(experiments).map(([expId, expData]) => {
+            const rounds = Object.values(expData.roundData).sort((a, b) => a.round - b.round);
+            const numAgents = expData.agentSet.size;
+            
+            // Count unique strategies
+            const strategies = {};
+            Object.entries(expData.strategySet).forEach(([strategy, count]) => {
+                // Normalize strategy counts to get number of agents per strategy
+                strategies[strategy] = Math.round(count / rounds.length);
+            });
+            
+            return {
+                id: expData.id,
+                name: expData.name,
+                config: {
+                    num_agents: numAgents,
+                    num_rounds: rounds.length,
+                    network_type: 'unknown',
+                    agent_strategies: strategies
+                },
+                results: rounds.map(round => ({
+                    round: round.round,
+                    cooperation_rate: round.cooperators / (round.cooperators + round.defectors),
+                    avg_score: round.totalPayoff / round.agentCount,
+                    num_cooperators: round.cooperators,
+                    num_defectors: round.defectors
+                }))
+            };
+        });
+    }
 
     async loadFromURL(url) {
         try {
@@ -157,8 +297,118 @@ class DataLoader {
         }
     }
 
+    // Load scenario files from the project
+    async loadScenarioFiles() {
+        const scenarioFiles = [
+            '../scenarios/scenarios.json',
+            '../scenarios/enhanced_scenarios.json',
+            '../scenarios/pairwise_scenarios.json',
+            '../scenarios/true_pairwise_scenarios.json'
+        ];
+
+        for (const file of scenarioFiles) {
+            try {
+                const response = await fetch(file);
+                if (response.ok) {
+                    const scenarios = await response.json();
+                    return this.processScenarios(scenarios);
+                }
+            } catch (error) {
+                console.warn(`Failed to load scenario file ${file}:`, error);
+            }
+        }
+
+        // Fallback to synthetic data
+        return this.generateSyntheticData();
+    }
+
+    // Process scenario definitions into experiment data
+    processScenarios(scenarios) {
+        if (!Array.isArray(scenarios)) {
+            scenarios = [scenarios];
+        }
+
+        return scenarios.slice(0, 3).map(scenario => ({
+            id: `scenario_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            name: scenario.scenario_name || 'Unnamed Scenario',
+            timestamp: new Date().toISOString(),
+            config: {
+                num_agents: scenario.num_agents || 30,
+                num_rounds: scenario.num_rounds || 100,
+                network_type: scenario.network_type || 'fully_connected',
+                network_params: scenario.network_params || {},
+                interaction_mode: scenario.interaction_mode || 'neighborhood',
+                agent_strategies: scenario.agent_strategies || {},
+                learning_rate: scenario.learning_rate || 0.1,
+                discount_factor: scenario.discount_factor || 0.9,
+                epsilon: scenario.epsilon || 0.1
+            },
+            results: this.simulateScenarioResults(scenario),
+            isExample: true
+        }));
+    }
+
+    // Simulate results for a scenario
+    simulateScenarioResults(scenario) {
+        const numRounds = scenario.num_rounds || 100;
+        const results = [];
+        let cooperationRate = 0.5;
+        
+        // Different evolution patterns based on strategies
+        const hasLearning = Object.keys(scenario.agent_strategies || {}).some(s => 
+            s.includes('q_learning') || s.includes('lra_q') || s.includes('hysteretic_q')
+        );
+        const hasCooperative = Object.keys(scenario.agent_strategies || {}).some(s => 
+            s.includes('cooperate') || s.includes('tit_for_tat') || s.includes('generous')
+        );
+        const hasDefectors = Object.keys(scenario.agent_strategies || {}).some(s => 
+            s.includes('defect')
+        );
+
+        for (let round = 0; round < numRounds; round++) {
+            // Simulate cooperation evolution based on strategy mix
+            if (hasLearning) {
+                // Learning agents: gradual improvement with exploration noise
+                cooperationRate += (0.7 - cooperationRate) * 0.01;
+                cooperationRate += (Math.random() - 0.5) * 0.05;
+            } else if (hasCooperative && !hasDefectors) {
+                // Cooperative environment: high and stable
+                cooperationRate += (0.9 - cooperationRate) * 0.05;
+                cooperationRate += (Math.random() - 0.5) * 0.02;
+            } else if (hasDefectors && !hasCooperative) {
+                // Defection dominant: low and declining
+                cooperationRate += (0.1 - cooperationRate) * 0.05;
+                cooperationRate += (Math.random() - 0.5) * 0.02;
+            } else {
+                // Mixed: oscillating around 0.5
+                cooperationRate = 0.5 + 0.2 * Math.sin(round / 20);
+                cooperationRate += (Math.random() - 0.5) * 0.1;
+            }
+
+            // Clamp between 0 and 1
+            cooperationRate = Math.max(0, Math.min(1, cooperationRate));
+
+            results.push({
+                round: round,
+                cooperation_rate: cooperationRate,
+                avg_score: 1 + cooperationRate * 3 + (Math.random() - 0.5) * 0.5,
+                num_cooperators: Math.round(cooperationRate * (scenario.num_agents || 30)),
+                num_defectors: Math.round((1 - cooperationRate) * (scenario.num_agents || 30))
+            });
+        }
+
+        return results;
+    }
+
     // Load example data from the project
     async loadExampleData() {
+        // First try to load real scenario files
+        const scenarioData = await this.loadScenarioFiles();
+        if (scenarioData && scenarioData.length > 0) {
+            return scenarioData;
+        }
+
+        // Then try to load result files
         const exampleURLs = [
             '../results/Baseline_QL_BasicState/run_00/experiment_results_rounds.csv',
             '../analysis_results/comparative_analysis.csv',
@@ -231,4 +481,6 @@ class DataLoader {
 }
 
 // Export for use
-window.DataLoader = DataLoader;
+if (typeof window !== 'undefined') {
+    window.DataLoader = DataLoader;
+}

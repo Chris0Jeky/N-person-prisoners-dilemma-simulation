@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Dashboard Fixes</title>
+    
+    <!-- Icons -->
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
+    
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+    <div style="padding: 2rem;">
+        <h1>Dashboard Fix Test</h1>
+        
+        <div id="test-status" style="margin: 2rem 0;">
+            <h2>Initialization Status:</h2>
+            <ul id="status-list">
+                <li>Page loaded</li>
+            </ul>
+        </div>
+        
+        <div id="test-icons" style="margin: 2rem 0;">
+            <h2>Icon Test:</h2>
+            <p>These icons should appear if lucide is working:</p>
+            <div style="display: flex; gap: 1rem; font-size: 2rem;">
+                <i data-lucide="home"></i>
+                <i data-lucide="upload"></i>
+                <i data-lucide="settings"></i>
+                <i data-lucide="trash-2"></i>
+                <i data-lucide="x-circle"></i>
+            </div>
+        </div>
+        
+        <div id="test-csv" style="margin: 2rem 0;">
+            <h2>CSV Processing Test:</h2>
+            <button onclick="testCSVProcessing()" style="padding: 0.5rem 1rem;">Test CSV Processing</button>
+            <pre id="csv-result" style="background: #f0f0f0; padding: 1rem; margin-top: 1rem; max-height: 400px; overflow: auto;"></pre>
+        </div>
+    </div>
+    
+    <script>
+        const statusList = document.getElementById('status-list');
+        
+        function addStatus(message) {
+            const li = document.createElement('li');
+            li.textContent = message;
+            statusList.appendChild(li);
+        }
+        
+        // Check lucide
+        window.addEventListener('load', () => {
+            addStatus('Window loaded');
+            
+            if (typeof lucide !== 'undefined') {
+                addStatus('Lucide is available');
+                try {
+                    lucide.createIcons();
+                    addStatus('Lucide icons created successfully');
+                } catch (e) {
+                    addStatus('Error creating icons: ' + e.message);
+                }
+            } else {
+                addStatus('Lucide is NOT available');
+            }
+        });
+        
+        // Test CSV processing
+        async function testCSVProcessing() {
+            addStatus('Testing CSV processing...');
+            
+            // Sample CSV data similar to the user's file
+            const csvData = `scenario_name,run_number,round,agent_id,move,payoff,strategy
+SmallWorld_GTFT_vs_QL,1,0,0,cooperate,0.12244897959183673,q_learning
+SmallWorld_GTFT_vs_QL,1,0,1,cooperate,0.24489795918367346,q_learning
+SmallWorld_GTFT_vs_QL,1,0,2,defect,1.3265306122448979,q_learning
+SmallWorld_GTFT_vs_QL,1,0,3,cooperate,0.18367346938775508,generous_tit_for_tat
+SmallWorld_GTFT_vs_QL,1,0,4,cooperate,0.24489795918367346,generous_tit_for_tat
+SmallWorld_GTFT_vs_QL,1,1,0,defect,1.12244897959183673,q_learning
+SmallWorld_GTFT_vs_QL,1,1,1,cooperate,0.34489795918367346,q_learning
+SmallWorld_GTFT_vs_QL,1,1,2,cooperate,0.3265306122448979,q_learning
+SmallWorld_GTFT_vs_QL,1,1,3,defect,1.18367346938775508,generous_tit_for_tat
+SmallWorld_GTFT_vs_QL,1,1,4,cooperate,0.44489795918367346,generous_tit_for_tat`;
+            
+            try {
+                // Load data processor
+                const script = document.createElement('script');
+                script.src = 'js/data-processor.js';
+                document.head.appendChild(script);
+                
+                await new Promise(resolve => {
+                    script.onload = resolve;
+                });
+                
+                addStatus('DataProcessor loaded');
+                
+                // Process CSV
+                const processor = new DataProcessor();
+                const result = processor.parseCSV(csvData);
+                
+                addStatus('CSV processed successfully');
+                document.getElementById('csv-result').textContent = JSON.stringify(result, null, 2);
+                
+            } catch (error) {
+                addStatus('Error processing CSV: ' + error.message);
+                document.getElementById('csv-result').textContent = 'Error: ' + error.message;
+            }
+        }
+    </script>
+</body>
+</html>

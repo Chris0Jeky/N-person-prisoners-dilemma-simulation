@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/font/lucide.min.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
     <!-- Chart.js for visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -155,7 +155,15 @@
         <div class="page" id="experiments-page">
             <div class="page-header">
                 <h1>Experiments</h1>
-                <div style="display: flex; gap: 10px;">
+                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
+                    <button class="btn btn-secondary" onclick="dashboard.clearAllExperiments()" title="Clear all experiments">
+                        <i data-lucide="trash-2"></i>
+                        Clear All
+                    </button>
+                    <button class="btn btn-secondary" onclick="dashboard.clearExampleExperiments()" title="Clear example experiments">
+                        <i data-lucide="x-circle"></i>
+                        Clear Examples
+                    </button>
                     <button class="btn btn-secondary" onclick="dashboard.exportAllExperiments()" title="Export all experiments">
                         <i data-lucide="archive"></i>
                         Export All
@@ -165,6 +173,14 @@
                         Load Example Data
                     </button>
                 </div>
+            </div>
+            
+            <div class="experiments-filter" style="margin: 1rem 0;">
+                <input type="text" id="experimentSearch" placeholder="Search experiments..." 
+                       style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); 
+                              border-radius: var(--radius-md); background: var(--bg-primary); 
+                              color: var(--text-primary);"
+                       onkeyup="dashboard.filterExperiments(this.value)">
             </div>
             
             <div class="experiments-list" id="experimentsList">
@@ -255,11 +271,6 @@
         </div>
     </div>
 
-    <!-- Initialize Lucide icons -->
-    <script>
-        lucide.createIcons();
-    </script>
-    
     <!-- Main JavaScript -->
     <script src="js/dashboard.js"></script>
     <script src="js/visualizations.js"></script>
@@ -268,10 +279,7 @@
     <script src="js/analysis-tools.js"></script>
     <script src="js/network-vis.js"></script>
     
-    <!-- Initialize Dashboard -->
-    <script>
-        const dashboard = new Dashboard();
-        dashboard.init();
-    </script>
+    <!-- Initialize Dashboard with proper dependency checking -->
+    <script src="js/init.js"></script>
 </body>
 </html>

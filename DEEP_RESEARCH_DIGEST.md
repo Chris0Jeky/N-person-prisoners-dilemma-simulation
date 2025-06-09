@@ -56,23 +56,26 @@ The literature identifies three core mechanisms that doom group-based reciprocit
 
 ### Why Pairwise Structures Enable Cooperation
 
-**Direct Reciprocity** (Axelrod 1984)
-- Clear bilateral feedback: "you defected on me, I defect on you"
-- One-to-one accountability enables stable retaliation
-- TFT succeeds by being: nice, retaliatory, forgiving, clear
+1. **Direct Reciprocity Mechanisms**
+   - Clear bilateral feedback loops: action → consequence → reaction
+   - One-to-one accountability prevents defector anonymity
+   - TFT dominates by being: Nice (starts cooperating), Retaliatory (punishes defection), Forgiving (returns to cooperation), Clear (simple rules)
+   - Success rate: Axelrod's tournaments showed consistent wins
 
-**Network Reciprocity** (Nowak 2006)
-- "Clusters of cooperators outcompete defectors"
-- Cooperators form mutually reinforcing communities
-- Defectors get isolated on periphery with lower payoffs
-- Mathematical condition: b/c > k (benefit/cost > average degree)
+2. **Network Reciprocity Effects** (Nowak 2006)
+   - "Clusters of cooperators outcompete defectors" - core principle
+   - Cooperators form self-reinforcing communities with mutual benefits
+   - Defectors isolated on periphery earn lower payoffs
+   - Mathematical condition for stability: **b/c > k** (benefit/cost ratio must exceed average network degree)
+   - Spatial structure creates natural selection pressure against defection
 
-**Empirical Evidence** (Grujić et al. 2012)
-- 2-player games: >80% cooperation achieved
-- 3+ player games: cooperation falters immediately
-- "For cooperation to emerge and thrive, three is a crowd"
+3. **Empirical Validation** (Grujić et al. 2012)
+   - 2-player games: Achieved >80% cooperation rates
+   - 3-player games: Cooperation immediately drops below 50%
+   - Key quote: **"For cooperation to emerge and thrive, three is a crowd"**
+   - Human subjects show qualitatively different behavior in dyadic vs group settings
 
-### 4. Advanced Strategy Designs for N-Person Games
+### Revolutionary Strategy Discoveries for N-Person Games
 
 **Threshold/Quorum Strategies**
 - Cooperate only if M out of N cooperated previously

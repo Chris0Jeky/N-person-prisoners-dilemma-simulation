@@ -244,103 +244,30 @@ class Dashboard {
 
     async loadExampleData() {
         // Check if example data already exists
-        const existingExample = this.experiments.find(exp => exp.name && exp.name.startsWith('Example'));
+        const existingExample = this.experiments.find(exp => exp.isExample);
         if (existingExample) {
             this.showNotification('Example data already loaded', 'info');
             return;
         }
         
         try {
-            // Try to load real scenario files
-            const scenarioFiles = ['scenarios.json', 'enhanced_scenarios.json', 'pairwise_scenarios.json'];
-            let loaded = false;
+            const dataLoader = new DataLoader();
+            const exampleData = await dataLoader.loadExampleData();
             
-            for (const file of scenarioFiles) {
-                try {
-                    const response = await fetch(`../scenarios/${file}`);
-                    if (response.ok) {
-                        const scenarios = await response.json();
-                        if (scenarios && scenarios.length > 0) {
-                            // Use first scenario as example
-                            const scenario = scenarios[0];
-                            const exampleData = this.generateExampleFromScenario(scenario);
-                            this.addExperiment(exampleData);
-                            loaded = true;
-                            break;
-                        }
-                    }
-                } catch (e) {
-                    // Continue to next file
-                }
-            }
-            
-            if (!loaded) {
-                // Generate synthetic data as fallback
-                const exampleData = this.generateExampleData();
+            if (exampleData && exampleData.length > 0) {
                 exampleData.forEach(exp => this.addExperiment(exp));
+                this.updateStats();
+                this.refreshVisualizations();
+                this.showNotification(`Loaded ${exampleData.length} example scenarios`, 'success');
+            } else {
+                this.showNotification('No example data available', 'warning');
             }
-            
-            this.updateStats();
-            this.refreshVisualizations();
-            this.showNotification('Example data loaded', 'success');
         } catch (error) {
             console.error('Error loading example data:', error);
-            // Generate synthetic data as fallback
-            const exampleData = this.generateExampleData();
-            exampleData.forEach(exp => this.addExperiment(exp));
-            this.updateStats();
-            this.refreshVisualizations();
-            this.showNotification('Example data loaded', 'success');
+            this.showNotification('Failed to load example data', 'error');
         }
     }
 
-    generateExampleFromScenario(scenario) {
-        // Convert scenario definition to experiment data
-        const numRounds = scenario.num_rounds || 100;
-        const results = [];
-        let cooperationRate = 0.3;
-        
-        for (let i = 0; i < numRounds; i++) {
-            // Simulate cooperation evolution
-            cooperationRate += (Math.random() - 0.45) * 0.1;
-            cooperationRate = Math.max(0, Math.min(1, cooperationRate));
-            
-            results.push({
-                round: i,
-                cooperation_rate: cooperationRate,
-                avg_score: 2 + cooperationRate * 2 + (Math.random() - 0.5) * 0.5
-            });
-        }
-        
-        return {
-            ...scenario,
-            results: results,
-            id: 'example_' + Date.now(),
-            timestamp: new Date().toISOString()
-        };
-    }
-
-    generateExampleData() {
-        const strategies = ['tit_for_tat', 'always_cooperate', 'always_defect', 'q_learning', 'pavlov'];
-        const networks = ['fully_connected', 'small_world', 'scale_free'];
-        
-        return networks.map((network, i) => ({
-            scenario_name: `Example ${network.replace('_', ' ').replace(/\b\w/g, l => l.toUpperCase())}`,
-            network_type: network,
-            num_agents: 30,
-            num_rounds: 100,
-            agent_strategies: {
-                [strategies[i]]: 10,
-                [strategies[(i + 1) % strategies.length]]: 10,
-                [strategies[(i + 2) % strategies.length]]: 10
-            },
-            results: Array.from({length: 100}, (_, round) => ({
-                round: round,
-                cooperation_rate: 0.3 + (0.4 * round / 100) + (Math.random() * 0.2 - 0.1),
-                avg_score: 2.5 + (Math.random() * 0.5)
-            }))
-        }));
-    }
 
     updateStats() {
         // Calculate aggregate statistics

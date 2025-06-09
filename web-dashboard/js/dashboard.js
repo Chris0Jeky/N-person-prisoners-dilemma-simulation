@@ -353,6 +353,52 @@ class Dashboard {
         return metrics;
     }
 
+    generateTags(data) {
+        const tags = [];
+        
+        // Add network type tag
+        if (data.config?.network_type || data.network_type) {
+            tags.push(`network:${data.config?.network_type || data.network_type}`);
+        }
+        
+        // Add strategy tags
+        const strategies = data.config?.agent_strategies || data.agent_strategies || {};
+        Object.keys(strategies).forEach(strategy => {
+            tags.push(`strategy:${strategy}`);
+        });
+        
+        // Add size tag
+        const numAgents = data.config?.num_agents || data.num_agents || 0;
+        if (numAgents <= 20) tags.push('size:small');
+        else if (numAgents <= 50) tags.push('size:medium');
+        else tags.push('size:large');
+        
+        // Add duration tag
+        const numRounds = data.config?.num_rounds || data.num_rounds || 0;
+        if (numRounds <= 100) tags.push('duration:short');
+        else if (numRounds <= 500) tags.push('duration:medium');
+        else tags.push('duration:long');
+        
+        return tags;
+    }
+
+    assignGroup(data) {
+        // Auto-assign group based on experiment characteristics
+        const strategies = Object.keys(data.config?.agent_strategies || data.agent_strategies || {});
+        
+        if (strategies.some(s => s.includes('learning') || s.includes('q_'))) {
+            return 'Learning Agents';
+        } else if (strategies.includes('always_defect') && !strategies.includes('always_cooperate')) {
+            return 'Defection Studies';
+        } else if (strategies.includes('tit_for_tat') || strategies.includes('generous_tit_for_tat')) {
+            return 'Reciprocity Studies';
+        } else if (strategies.length === 1) {
+            return 'Homogeneous';
+        } else {
+            return 'Mixed Strategies';
+        }
+    }
+
     loadCachedData() {
         const cached = localStorage.getItem('experiments');
         if (cached) {

@@ -341,12 +341,35 @@ class NetworkEnvironment(Environment):
 
 ### Priority 3: Advanced Analysis & Validation
 
-#### 6. Memory-Length Analysis
-- Extend beyond memory-1 strategies
-- Test Tit-for-Two-Tats, longer history tracking
-- Compare memory requirements vs performance
+#### 6. Comprehensive Noise Tolerance Testing
+```python
+def noise_tolerance_experiments():
+    """Test strategy robustness under various noise levels"""
+    
+    noise_levels = [0.0, 0.05, 0.10, 0.20]
+    strategies_to_test = [
+        "TitForTat", "GenerousTitForTat", "ContriteTFT",
+        "AllOrNone", "AdaptiveThreshold", "TitForTwoTats"
+    ]
+    
+    scenarios = []
+    for noise in noise_levels:
+        scenario = {
+            "name": f"NoiseTest_{int(noise*100)}pct",
+            "num_agents": 20,
+            "num_rounds": 500,
+            "noise_level": noise,  # Probability of action flip
+            "interaction_mode": "both",  # Test both modes
+            "agents": {strategy: 20//len(strategies_to_test) 
+                      for strategy in strategies_to_test},
+            "metrics": ["cooperation_by_strategy", "strategy_resilience"]
+        }
+        scenarios.append(scenario)
+    
+    return scenarios
+```
 
-### 7. Noise Tolerance Suite
+#### 7. Hybrid Interaction Models
 - Systematic comparison of forgiveness mechanisms
 - Vary noise levels: 0%, 5%, 10%, 20%
 - Identify which strategies are most robust

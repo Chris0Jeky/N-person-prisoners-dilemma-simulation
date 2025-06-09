@@ -125,22 +125,41 @@ The literature identifies three core mechanisms that doom group-based reciprocit
 4. ❌ **Network topology variations**: Limited to fully connected graphs
 5. ❌ **Memory > 1**: Most strategies only use last round
 
-## Strategic Innovations & Gaps
+## Concrete Improvement Proposals
 
-## Improvement Proposals Based on Research
+### Priority 1: Implement Missing Dominant Strategies
 
-### 1. Implement All-or-None (AoN) Strategy
+#### 1. All-or-None (AoN) Strategy - HIGHEST PRIORITY
 ```python
-class AllOrNoneAgent(Agent):
-    """Cooperate only if everyone cooperated last round"""
-    def choose_action(self, game_state):
-        if first_round:
+class AllOrNoneStrategy(Strategy):
+    """
+    Pinheiro et al. (2014)'s dominant strategy for N-person games.
+    Cooperates only if EVERYONE cooperated in the last round.
+    Generalizes Win-Stay-Lose-Shift to N players.
+    """
+    def __init__(self):
+        super().__init__("AllOrNone")
+        self.first_round = True
+    
+    def choose_action(self, history, neighborhood_history=None):
+        if self.first_round:
+            self.first_round = False
             return 'C'  # Start optimistically
-        last_cooperation_rate = game_state.get_last_round_cooperation()
-        return 'C' if last_cooperation_rate == 1.0 else 'D'
+        
+        # In pairwise mode: check if all partners cooperated
+        if neighborhood_history is None:
+            for partner_history in history.values():
+                if partner_history and partner_history[-1] != 'C':
+                    return 'D'
+            return 'C'
+        
+        # In neighborhood mode: check if everyone cooperated
+        last_round = neighborhood_history[-1]
+        cooperation_rate = last_round.count('C') / len(last_round)
+        return 'C' if cooperation_rate == 1.0 else 'D'
 ```
 
-### 2. Add Contrite Tit-for-Tat
+#### 2. Contrite Tit-for-Tat - Noise Tolerance
 ```python
 class ContriteTFT(Agent):
     """TFT that apologizes for mistaken retaliation"""

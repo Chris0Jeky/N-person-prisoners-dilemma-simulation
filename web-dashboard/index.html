@@ -11,7 +11,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
     
     <!-- Icons -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/lucide@latest/font/lucide.min.css">
+    <script src="https://unpkg.com/lucide@latest/dist/umd/lucide.js"></script>
     
     <!-- Chart.js for visualizations -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
@@ -271,20 +271,6 @@
         </div>
     </div>
 
-    <!-- Initialize Lucide icons -->
-    <script>
-        // Wait for lucide to be loaded
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        } else {
-            window.addEventListener('load', () => {
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
-            });
-        }
-    </script>
-    
     <!-- Main JavaScript -->
     <script src="js/dashboard.js"></script>
     <script src="js/visualizations.js"></script>
@@ -293,10 +279,39 @@
     <script src="js/analysis-tools.js"></script>
     <script src="js/network-vis.js"></script>
     
-    <!-- Initialize Dashboard -->
+    <!-- Initialize Dashboard and Lucide -->
     <script>
-        const dashboard = new Dashboard();
-        dashboard.init();
+        // Initialize lucide icons first
+        function initializeLucide() {
+            if (typeof lucide !== 'undefined') {
+                console.log('Initializing lucide icons...');
+                lucide.createIcons();
+                return true;
+            }
+            return false;
+        }
+        
+        // Try to initialize immediately
+        if (!initializeLucide()) {
+            // If not ready, wait for window load
+            window.addEventListener('load', () => {
+                initializeLucide();
+            });
+        }
+        
+        // Initialize dashboard after DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                const dashboard = new Dashboard();
+                window.dashboard = dashboard; // Make globally accessible
+                dashboard.init();
+            });
+        } else {
+            // DOM already loaded
+            const dashboard = new Dashboard();
+            window.dashboard = dashboard;
+            dashboard.init();
+        }
     </script>
 </body>
 </html>

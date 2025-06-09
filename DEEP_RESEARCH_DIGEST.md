@@ -208,30 +208,140 @@ class ContriteTitForTatStrategy(Strategy):
 
 #### 3. Adaptive Threshold Strategy
 ```python
-class AdaptiveThresholdAgent(Agent):
-    """Dynamically adjust cooperation threshold based on success"""
-    def __init__(self):
-        self.threshold = 0.5
-        self.adaptation_rate = 0.01
+class AdaptiveThresholdStrategy(Strategy):
+    """
+    Dynamically adjusts cooperation threshold based on performance.
+    Finds optimal quorum size for each environment.
+    """
+    def __init__(self, initial_threshold=0.5, adaptation_rate=0.02):
+        super().__init__("AdaptiveThreshold")
+        self.threshold = initial_threshold
+        self.adaptation_rate = adaptation_rate
+        self.recent_payoffs = []
+        self.window_size = 10
         
-    def update_threshold(self, payoff):
-        if payoff > average_payoff:
-            self.threshold *= (1 - self.adaptation_rate)  # Lower threshold
+    def choose_action(self, history, neighborhood_history=None):
+        if not history and not neighborhood_history:
+            return 'C'
+        
+        # Calculate cooperation rate
+        if neighborhood_history is None:
+            # Pairwise: average across all partners
+            total_coop = sum(1 for h in history.values() 
+                           if h and h[-1] == 'C')
+            total_partners = sum(1 for h in history.values() if h)
+            coop_rate = total_coop / max(1, total_partners)
         else:
-            self.threshold *= (1 + self.adaptation_rate)  # Raise threshold
+            # Neighborhood: check last round
+            last_round = neighborhood_history[-1]
+            coop_rate = last_round.count('C') / len(last_round)
+        
+        return 'C' if coop_rate >= self.threshold else 'D'
+    
+    def update(self, my_payoff, avg_payoff):
+        """Adapt threshold based on relative performance"""
+        self.recent_payoffs.append(my_payoff)
+        if len(self.recent_payoffs) > self.window_size:
+            self.recent_payoffs.pop(0)
+        
+        # Adjust threshold
+        if my_payoff > avg_payoff:
+            # Doing well, can be more generous (lower threshold)
+            self.threshold *= (1 - self.adaptation_rate)
+        else:
+            # Doing poorly, be more selective (raise threshold)
+            self.threshold *= (1 + self.adaptation_rate)
+        
+        # Keep threshold in reasonable bounds
+        self.threshold = max(0.1, min(0.9, self.threshold))
 ```
 
-### 4. Critical Mass Experiments
-- Design scenarios testing "committed minority" effects
-- Vary proportion of unconditional cooperators
-- Map phase transitions in cooperation emergence
+### Priority 2: Structural & Experimental Enhancements
 
-### 5. Network Topology Extensions
-- Implement Nowak's b/c > k condition testing
-- Add regular lattices, random networks with variable density
-- Test cooperation on different degree distributions
+#### 4. Critical Mass Experiment Design
+```python
+def critical_mass_experiment():
+    """Test committed minority effects on cooperation emergence"""
+    scenarios = []
+    
+    for committed_fraction in [0.0, 0.1, 0.2, 0.3, 0.4, 0.5]:
+        for group_size in [5, 10, 20, 50]:
+            n_committed = int(group_size * committed_fraction)
+            n_adaptive = group_size - n_committed
+            
+            scenario = {
+                "name": f"CriticalMass_N{group_size}_C{committed_fraction}",
+                "num_agents": group_size,
+                "num_rounds": 200,
+                "interaction_mode": "neighborhood",
+                "agents": {
+                    "AlwaysCooperate": n_committed,  # Committed minority
+                    "TitForTat": n_adaptive // 2,
+                    "AdaptiveThreshold": n_adaptive // 2
+                },
+                "analysis_tags": ["critical_mass", f"committed_{committed_fraction}"]
+            }
+            scenarios.append(scenario)
+    
+    return scenarios
+```
 
-### 6. Memory-Length Analysis
+#### 5. Network Topology Implementation
+```python
+class NetworkEnvironment(Environment):
+    """Support various network topologies beyond fully connected"""
+    
+    def __init__(self, topology="complete", **kwargs):
+        super().__init__(**kwargs)
+        self.topology = topology
+        self.adjacency = self._build_network()
+    
+    def _build_network(self):
+        n = self.num_agents
+        
+        if self.topology == "complete":
+            # Fully connected (current default)
+            return [[1 if i != j else 0 for j in range(n)] for i in range(n)]
+            
+        elif self.topology == "lattice":
+            # 2D grid with nearest neighbors
+            size = int(np.sqrt(n))
+            adj = [[0] * n for _ in range(n)]
+            for i in range(size):
+                for j in range(size):
+                    idx = i * size + j
+                    # Connect to 4 neighbors (von Neumann)
+                    for di, dj in [(0,1), (0,-1), (1,0), (-1,0)]:
+                        ni, nj = (i+di)%size, (j+dj)%size
+                        nidx = ni * size + nj
+                        adj[idx][nidx] = 1
+            return adj
+            
+        elif self.topology == "random":
+            # Erdős–Rényi random graph
+            p = kwargs.get('connection_prob', 0.3)
+            adj = [[0] * n for _ in range(n)]
+            for i in range(n):
+                for j in range(i+1, n):
+                    if random.random() < p:
+                        adj[i][j] = adj[j][i] = 1
+            return adj
+            
+        elif self.topology == "scale_free":
+            # Barabási–Albert preferential attachment
+            m = kwargs.get('m', 3)  # edges per new node
+            # Implementation of BA algorithm...
+            pass
+    
+    def test_nowak_condition(self):
+        """Test if b/c > k (average degree) for cooperation"""
+        avg_degree = sum(sum(row) for row in self.adjacency) / self.num_agents
+        return self.benefit_cost_ratio > avg_degree
+```
+
+### Priority 3: Advanced Analysis & Validation
+
+#### 6. Memory-Length Analysis
 - Extend beyond memory-1 strategies
 - Test Tit-for-Two-Tats, longer history tracking
 - Compare memory requirements vs performance

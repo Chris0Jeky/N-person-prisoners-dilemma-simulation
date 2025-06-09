@@ -77,23 +77,26 @@ The literature identifies three core mechanisms that doom group-based reciprocit
 
 ### Revolutionary Strategy Discoveries for N-Person Games
 
-**Threshold/Quorum Strategies**
-- Cooperate only if M out of N cooperated previously
-- Prevents being "sucker" in defecting groups
-- Creates conditional commitment dynamics
+1. **All-or-None (AoN)** - The Dominant Strategy (Pinheiro et al. 2014)
+   - **Rule**: Cooperate if and only if EVERYONE cooperated last round
+   - **Logic**: Any defection triggers group-wide punishment
+   - **Performance**: Evolutionarily dominant across group sizes
+   - **Key insight**: Generalizes Win-Stay-Lose-Shift from 2-player to N-player
+   - **Why it works**: Creates extreme peer pressure - one defector ruins it for everyone
 
-**All-or-None (AoN)** (Pinheiro et al. 2014)
-- Cooperate only if EVERYONE cooperated last round
-- Any defection → punish entire group next round
-- Remarkably simple yet evolutionarily dominant
-- Generalizes Win-Stay-Lose-Shift to N players
+2. **Adaptive Threshold Strategies**
+   - **Basic form**: Cooperate if at least M/N cooperated previously
+   - **Advanced**: Dynamically adjust M based on success
+   - **Protection**: Prevents exploitation in mostly-defecting groups
+   - **Flexibility**: Can find optimal cooperation level for each environment
 
-**Forgiveness Mechanisms**
-- Generous TFT: probabilistically forgive defections
-- Contrite TFT: "apologize" for mistaken retaliation
-- Prevents endless retaliatory cycles in noisy environments
+3. **Forgiveness & Noise Tolerance**
+   - **Generous TFT**: Cooperate with probability p even after defection
+   - **Contrite TFT**: Track whether own defection was retaliation; "apologize" if partner actually cooperated
+   - **Tit-for-Two-Tats**: Tolerate single defection, punish only repeated defection
+   - **Critical for**: Real-world implementation where errors occur
 
-## How Our Work Aligns and Extends
+## Our Implementation vs Literature
 
 ### Strong Alignments
 

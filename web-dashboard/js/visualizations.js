@@ -289,13 +289,26 @@ class Visualizations {
 
         // Generate network data based on network type
         const networkData = this.generateNetworkData(experiment);
+        const numNodes = networkData.nodes.length;
 
-        // Create force simulation
+        // Optimize for large networks
+        const isLargeNetwork = numNodes > 100;
+        const nodeRadius = isLargeNetwork ? 8 : 15;
+        const linkDistance = isLargeNetwork ? 30 : 50;
+        const chargeStrength = isLargeNetwork ? -50 : -100;
+
+        // Create force simulation with optimized parameters
         const simulation = d3.forceSimulation(networkData.nodes)
-            .force("link", d3.forceLink(networkData.links).id(d => d.id).distance(50))
-            .force("charge", d3.forceManyBody().strength(-100))
+            .force("link", d3.forceLink(networkData.links).id(d => d.id).distance(linkDistance))
+            .force("charge", d3.forceManyBody().strength(chargeStrength))
             .force("center", d3.forceCenter(width / 2, height / 2))
-            .force("collision", d3.forceCollide().radius(20));
+            .force("collision", d3.forceCollide().radius(nodeRadius + 2));
+
+        // Reduce simulation iterations for large networks
+        if (isLargeNetwork) {
+            simulation.alphaDecay(0.05); // Faster cooling
+            simulation.velocityDecay(0.8); // More damping
+        }
 
         // Add zoom behavior
         const g = svg.append("g");

@@ -199,6 +199,12 @@ class Dashboard {
         const worker = new Worker('js/file-worker.js');
         let filesProcessed = 0;
         
+        // Track which files we're processing
+        const fileStatus = new Map();
+        Array.from(files).forEach((file, index) => {
+            fileStatus.set(index, { name: file.name, processed: false });
+        });
+
         // Handle worker messages
         worker.onmessage = (event) => {
             const { type, result, error, progress, message, id } = event.data;
@@ -217,11 +223,18 @@ class Dashboard {
                     this.addExperiment(result);
                 }
                 
+                // Mark file as processed
+                if (fileStatus.has(id)) {
+                    fileStatus.get(id).processed = true;
+                }
+                
                 filesProcessed++;
                 if (filesProcessed >= files.length) {
                     // All files processed
                     worker.terminate();
-                    document.body.removeChild(loadingModal);
+                    if (document.body.contains(loadingModal)) {
+                        document.body.removeChild(loadingModal);
+                    }
                     this.updateStats();
                     this.refreshVisualizations();
                     this.showNotification(`Loaded ${filesProcessed} file(s) successfully`, 'success');
@@ -229,14 +242,35 @@ class Dashboard {
             } else if (type === 'error') {
                 // Handle error
                 console.error('Worker error:', error);
-                this.showNotification(`Error processing file: ${error}`, 'error');
+                const fileName = fileStatus.has(id) ? fileStatus.get(id).name : 'Unknown file';
+                this.showNotification(`Error processing ${fileName}: ${error}`, 'error');
+                
+                // Mark file as processed (even with error)
+                if (fileStatus.has(id)) {
+                    fileStatus.get(id).processed = true;
+                }
+                
                 filesProcessed++;
                 
                 if (filesProcessed >= files.length) {
                     worker.terminate();
-                    document.body.removeChild(loadingModal);
+                    if (document.body.contains(loadingModal)) {
+                        document.body.removeChild(loadingModal);
+                    }
+                    this.updateStats();
+                    this.refreshVisualizations();
                 }
             }
+        };
+
+        // Handle worker errors
+        worker.onerror = (error) => {
+            console.error('Worker crashed:', error);
+            worker.terminate();
+            if (document.body.contains(loadingModal)) {
+                document.body.removeChild(loadingModal);
+            }
+            this.showNotification('File processing failed. Please try again.', 'error');
         };
         
         // Process each file

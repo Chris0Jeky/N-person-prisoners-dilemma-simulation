@@ -374,9 +374,11 @@ class Visualizations {
                 .attr("cx", d => d.x)
                 .attr("cy", d => d.y);
 
-            nodeIcons
-                .attr("x", d => d.x)
-                .attr("y", d => d.y);
+            if (nodeIcons) {
+                nodeIcons
+                    .attr("x", d => d.x)
+                    .attr("y", d => d.y);
+            }
         });
 
         // Drag functions

@@ -25,10 +25,22 @@ class Dashboard {
         // Initialize visualizations
         this.initCharts();
         
+        // Initialize Lucide icons when ready
+        this.initializeLucideIcons();
+        
         // Load example data if first visit
         if (this.experiments.length === 0 && !localStorage.getItem('visited')) {
             localStorage.setItem('visited', 'true');
             // this.loadExampleData();
+        }
+    }
+
+    initializeLucideIcons() {
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        } else {
+            // Try again after a short delay
+            setTimeout(() => this.initializeLucideIcons(), 100);
         }
     }
 
@@ -514,6 +526,34 @@ class Dashboard {
             this.updateStats();
             this.refreshVisualizations();
             this.showNotification('Cache cleared', 'info');
+        }
+    }
+
+    clearAllExperiments() {
+        if (confirm('This will remove ALL experiments. This action cannot be undone. Continue?')) {
+            this.experiments = [];
+            localStorage.removeItem('experiments');
+            this.updateStats();
+            this.refreshVisualizations();
+            this.renderExperimentsList();
+            this.showNotification('All experiments cleared', 'info');
+        }
+    }
+
+    clearExampleExperiments() {
+        const exampleCount = this.experiments.filter(exp => exp.isExample).length;
+        if (exampleCount === 0) {
+            this.showNotification('No example experiments to clear', 'info');
+            return;
+        }
+        
+        if (confirm(`This will remove ${exampleCount} example experiment(s). Continue?`)) {
+            this.experiments = this.experiments.filter(exp => !exp.isExample);
+            this.saveCachedData();
+            this.updateStats();
+            this.refreshVisualizations();
+            this.renderExperimentsList();
+            this.showNotification(`${exampleCount} example experiment(s) cleared`, 'success');
         }
     }
 

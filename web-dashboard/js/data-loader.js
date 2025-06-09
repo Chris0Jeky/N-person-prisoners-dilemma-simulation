@@ -391,4 +391,6 @@ class DataLoader {
 }
 
 // Export for use
-window.DataLoader = DataLoader;
+if (typeof window !== 'undefined') {
+    window.DataLoader = DataLoader;
+}

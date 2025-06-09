@@ -579,7 +579,6 @@ class Dashboard {
 
         // Update cooperation evolution chart
         if (this.charts.cooperation) {
-            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
             const datasets = this.experiments.slice(0, 5).map((exp, i) => {
                 const trend = exp.metrics.cooperationTrend || [];
                 // Downsample data if too many points
@@ -587,11 +586,16 @@ class Dashboard {
                     trend.filter((_, idx) => idx % Math.ceil(trend.length / 100) === 0) : 
                     trend;
                 
+                // Get primary strategy for color
+                const strategies = Object.keys(exp.config.agent_strategies || {});
+                const primaryStrategy = strategies[0] || `exp_${i}`;
+                const color = getStrategyColor(primaryStrategy);
+                
                 return {
                     label: exp.name,
                     data: data,
-                    borderColor: colors[i % colors.length],
-                    backgroundColor: colors[i % colors.length] + '20',
+                    borderColor: color,
+                    backgroundColor: getStrategyColorWithOpacity(primaryStrategy, 0.2),
                     borderWidth: 2,
                     pointRadius: 0,
                     pointHoverRadius: 4,
@@ -641,10 +645,7 @@ class Dashboard {
                 datasets: [{
                     label: 'Average Cooperation Rate',
                     data: data,
-                    backgroundColor: labels.map((_, i) => 
-                        getComputedStyle(document.documentElement)
-                            .getPropertyValue(`--chart-${(i % 8) + 1}`).trim()
-                    )
+                    backgroundColor: labels.map(strategy => getStrategyColor(strategy))
                 }]
             };
             this.charts.strategy.update();

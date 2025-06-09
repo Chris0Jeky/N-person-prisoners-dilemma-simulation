@@ -959,6 +959,7 @@ class Agent:
         alpha_avg=0.01,
         exploration_constant=2.0,
         cooperation_threshold=0.5,
+        N=None,  # Number of agents for N-person strategies
     ):
         self.agent_id = agent_id
         self.strategy_type = strategy

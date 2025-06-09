@@ -37,22 +37,24 @@ The literature establishes a fundamental truth that perfectly aligns with our "C
 
 The literature identifies three core mechanisms that doom group-based reciprocity:
 
-**Diffusion of Responsibility**
-- "Someone else will cooperate/punish" mentality
-- Classic bystander effect applied to game theory
-- Everyone hopes others will act → nobody acts
+1. **Diffusion of Responsibility**
+   - "Someone else will cooperate/punish" mentality creates bystander effect
+   - Responsibility perceived as spread across group → nobody acts
+   - Mathematical result: cooperation probability decreases with 1/N
 
-**Obscured Feedback**
-- Hard to identify *whom* to reciprocate towards
-- Group outcomes are "noisy" - individual contributions unclear
-- Mutual monitoring becomes impossible at scale
+2. **Obscured Feedback & Accountability**
+   - Cannot identify *whom* to reciprocate towards in group settings
+   - Individual contributions get lost in aggregate outcomes
+   - No clear target for retaliation → defectors escape consequences
+   - As one study noted: "hard to identify towards whom one should reciprocate"
 
-**Critical Mass Dynamics**
-- Cooperation exhibits tipping points
-- Below threshold → complete collapse
-- Achieving critical mass is extremely difficult
+3. **Critical Mass Collapse**
+   - Groups exhibit catastrophic tipping points
+   - Below critical threshold → rapid unraveling to universal defection
+   - Achieving initial critical mass becomes exponentially harder with size
+   - Even committed minorities struggle to tip large groups
 
-### 3. Why Pairwise Structures Work
+### Why Pairwise Structures Enable Cooperation
 
 **Direct Reciprocity** (Axelrod 1984)
 - Clear bilateral feedback: "you defected on me, I defect on you"

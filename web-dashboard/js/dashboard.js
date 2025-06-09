@@ -183,8 +183,7 @@ class Dashboard {
                 
                 this.showNotification(`Successfully loaded ${file.name}`, 'success');
             } catch (error) {
-                console.error('Error loading file:', error);
-                this.showNotification(`Error loading ${file.name}: ${error.message}`, 'error');
+                this.handleError(error, `loading file ${file.name}`);
             }
         }
         
@@ -576,6 +575,15 @@ class Dashboard {
 
     refreshVisualizations() {
         if (this.experiments.length === 0) return;
+
+        // Show loading state on charts
+        const chartContainers = ['cooperationChart', 'strategyChart'];
+        chartContainers.forEach(id => {
+            const container = document.getElementById(id);
+            if (container) {
+                container.parentElement.classList.add('loading');
+            }
+        });
 
         // Update cooperation evolution chart
         if (this.charts.cooperation) {
@@ -984,29 +992,84 @@ class Dashboard {
     }
 
     showNotification(message, type = 'info') {
-        // Simple notification implementation
+        // Enhanced notification implementation
         const notification = document.createElement('div');
         notification.className = `notification ${type}`;
-        notification.textContent = message;
+        
+        // Add icon based on type
+        const icons = {
+            success: 'check-circle',
+            error: 'alert-circle',
+            warning: 'alert-triangle',
+            info: 'info'
+        };
+        
+        const colors = {
+            success: '#10b981',
+            error: '#ef4444',
+            warning: '#f59e0b',
+            info: '#3b82f6'
+        };
+        
+        notification.innerHTML = `
+            <i data-lucide="${icons[type] || icons.info}" style="width: 20px; height: 20px; color: ${colors[type] || colors.info}"></i>
+            <span>${message}</span>
+        `;
+        
         notification.style.cssText = `
             position: fixed;
             bottom: 20px;
             right: 20px;
             padding: 1rem 1.5rem;
             background: var(--bg-primary);
-            border: 1px solid var(--border);
+            border: 1px solid ${colors[type] || colors.info}30;
             border-radius: var(--radius-md);
             box-shadow: 0 4px 12px var(--shadow);
             z-index: 1000;
             animation: slideInRight 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            max-width: 400px;
         `;
         
         document.body.appendChild(notification);
+        lucide.createIcons();
+        
+        // Auto-dismiss based on type
+        const duration = type === 'error' ? 5000 : 3000;
         
         setTimeout(() => {
             notification.style.animation = 'slideOutRight 0.3s ease';
             setTimeout(() => notification.remove(), 300);
-        }, 3000);
+        }, duration);
+    }
+
+    handleError(error, context = '') {
+        console.error(`Error ${context}:`, error);
+        
+        // User-friendly error messages
+        let message = 'An unexpected error occurred';
+        
+        if (error.message) {
+            if (error.message.includes('JSON')) {
+                message = 'Invalid file format. Please check the file structure.';
+            } else if (error.message.includes('network')) {
+                message = 'Network error. Please check your connection.';
+            } else if (error.message.includes('memory')) {
+                message = 'File too large. Try using a smaller file.';
+            } else {
+                message = error.message;
+            }
+        }
+        
+        this.showNotification(message, 'error');
+        
+        // Log detailed error for debugging
+        if (context) {
+            console.error(`Context: ${context}`);
+        }
+        console.error('Stack trace:', error.stack);
     }
 }
 

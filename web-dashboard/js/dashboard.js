@@ -123,7 +123,10 @@ class Dashboard {
         // Update icon
         const icon = document.querySelector('#themeBtn i');
         icon.setAttribute('data-lucide', this.theme === 'light' ? 'moon' : 'sun');
-        lucide.createIcons();
+        // Safely create icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     }
 
     applyTheme() {
@@ -867,7 +870,10 @@ class Dashboard {
             `).join('');
         }
         
-        lucide.createIcons();
+        // Safely create icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
     }
 
     groupExperiments(experiments) {
@@ -1033,7 +1039,10 @@ class Dashboard {
                 `;
                 
                 document.getElementById('networkType').value = experiment.config.network_type || 'fully_connected';
-                lucide.createIcons();
+                // Safely create icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
             }
         } else {
             container.innerHTML = '<p class="placeholder">Load experiments to view network visualization</p>';
@@ -1084,7 +1093,10 @@ class Dashboard {
                 </div>
             `;
             
+            // Safely create icons
+        if (typeof lucide !== 'undefined') {
             lucide.createIcons();
+        }
             this.showAnalysisTab('comparison');
         } else {
             container.innerHTML = `
@@ -1094,7 +1106,10 @@ class Dashboard {
                     <p>Load experiments to access analysis tools</p>
                 </div>
             `;
+            // Safely create icons
+        if (typeof lucide !== 'undefined') {
             lucide.createIcons();
+        }
         }
     }
 
@@ -1224,7 +1239,10 @@ class Dashboard {
         `;
         
         document.body.appendChild(notification);
-        lucide.createIcons();
+        // Safely create icons
+        if (typeof lucide !== 'undefined') {
+            lucide.createIcons();
+        }
         
         // Auto-dismiss based on type
         const duration = type === 'error' ? 5000 : 3000;

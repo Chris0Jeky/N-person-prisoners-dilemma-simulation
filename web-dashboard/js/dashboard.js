@@ -754,12 +754,14 @@ class Dashboard {
                                     <span><i data-lucide="network" style="width: 16px; height: 16px; display: inline;"></i> ${exp.metrics.networkType}</span>
                                     <span><i data-lucide="trending-up" style="width: 16px; height: 16px; display: inline;"></i> ${(exp.metrics.avgCooperation * 100).toFixed(1)}% cooperation</span>
                                 </div>
-                                <div class="experiment-tags" style="margin-top: 0.5rem;">
-                                    ${exp.tags.slice(0, 5).map(tag => `
-                                        <span class="tag">${tag}</span>
-                                    `).join('')}
-                                    ${exp.tags.length > 5 ? `<span class="tag">+${exp.tags.length - 5} more</span>` : ''}
-                                </div>
+                                ${exp.tags && exp.tags.length > 0 ? `
+                                    <div class="experiment-tags" style="margin-top: 0.5rem;">
+                                        ${exp.tags.slice(0, 5).map(tag => `
+                                            <span class="tag">${tag}</span>
+                                        `).join('')}
+                                        ${exp.tags.length > 5 ? `<span class="tag">+${exp.tags.length - 5} more</span>` : ''}
+                                    </div>
+                                ` : ''}
                             </div>
                             <div class="experiment-actions">
                                 <button class="icon-btn-sm" onclick="dashboard.exportExperiment('${exp.id}')" title="Export experiment">

@@ -34,6 +34,17 @@ class Dashboard {
             // this.loadExampleData();
         }
     }
+    
+    // Safe wrapper for creating lucide icons
+    safeCreateIcons() {
+        if (typeof lucide !== 'undefined') {
+            try {
+                lucide.createIcons();
+            } catch (e) {
+                console.warn('Error creating lucide icons:', e);
+            }
+        }
+    }
 
     initializeLucideIcons() {
         if (typeof lucide !== 'undefined') {
@@ -136,9 +147,7 @@ class Dashboard {
         const icon = document.querySelector('#themeBtn i');
         icon.setAttribute('data-lucide', this.theme === 'light' ? 'moon' : 'sun');
         // Safely create icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
+        this.safeCreateIcons();
     }
 
     applyTheme() {
@@ -872,6 +881,8 @@ class Dashboard {
                     </button>
                 </div>
             `;
+            // Safely create icons after DOM update
+            setTimeout(() => this.safeCreateIcons(), 0);
         } else {
             // Filter experiments if search term exists
             let filteredExperiments = this.experiments;
@@ -896,9 +907,8 @@ class Dashboard {
                         <p>Try a different search term</p>
                     </div>
                 `;
-                if (typeof lucide !== 'undefined') {
-                    lucide.createIcons();
-                }
+                // Safely create icons after DOM update
+                setTimeout(() => this.safeCreateIcons(), 0);
                 return;
             }
             
@@ -942,11 +952,9 @@ class Dashboard {
                     `).join('')}
                 </div>
             `).join('');
-        }
-        
-        // Safely create icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
+            
+            // Safely create icons after DOM update
+            setTimeout(() => this.safeCreateIcons(), 0);
         }
     }
 
@@ -1113,10 +1121,8 @@ class Dashboard {
                 `;
                 
                 document.getElementById('networkType').value = experiment.config.network_type || 'fully_connected';
-                // Safely create icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
+                // Safely create icons after DOM update
+                setTimeout(() => this.safeCreateIcons(), 0);
             }
         } else {
             container.innerHTML = '<p class="placeholder">Load experiments to view network visualization</p>';
@@ -1167,10 +1173,8 @@ class Dashboard {
                 </div>
             `;
             
-            // Safely create icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
+            // Safely create icons after DOM update
+            setTimeout(() => this.safeCreateIcons(), 0);
             this.showAnalysisTab('comparison');
         } else {
             container.innerHTML = `
@@ -1180,10 +1184,8 @@ class Dashboard {
                     <p>Load experiments to access analysis tools</p>
                 </div>
             `;
-            // Safely create icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
+            // Safely create icons after DOM update
+            setTimeout(() => this.safeCreateIcons(), 0);
         }
     }
 
@@ -1318,10 +1320,8 @@ class Dashboard {
         `;
         
         document.body.appendChild(notification);
-        // Safely create icons
-        if (typeof lucide !== 'undefined') {
-            lucide.createIcons();
-        }
+        // Safely create icons after DOM update
+        setTimeout(() => this.safeCreateIcons(), 0);
         
         // Auto-dismiss based on type
         const duration = type === 'error' ? 5000 : 3000;

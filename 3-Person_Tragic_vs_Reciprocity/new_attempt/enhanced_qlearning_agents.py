@@ -106,8 +106,16 @@ class EnhancedQLearningAgent:
             else:
                 base_state = 'very_high'
         elif self.state_type == "fine":
-            # Finer discretization
+            # Finer discretization (0.1 increments)
             base_state = f"coop_{int(others_coop_ratio * 10) / 10:.1f}"
+        elif self.state_type == "coarse":
+            # Coarser discretization
+            if others_coop_ratio <= 0.33:
+                base_state = 'low'
+            elif others_coop_ratio <= 0.67:
+                base_state = 'medium'
+            else:
+                base_state = 'high'
         else:
             base_state = 'default'
         

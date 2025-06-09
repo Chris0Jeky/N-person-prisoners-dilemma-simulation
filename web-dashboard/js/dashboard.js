@@ -450,7 +450,13 @@ class Dashboard {
                                 text: 'Cooperation Rate'
                             },
                             min: 0,
-                            max: 1
+                            max: 1,
+                            ticks: {
+                                callback: function(value) {
+                                    return (value * 100).toFixed(0) + '%';
+                                },
+                                stepSize: 0.2
+                            }
                         }
                     }
                 }
@@ -500,21 +506,35 @@ class Dashboard {
 
         // Update cooperation evolution chart
         if (this.charts.cooperation) {
-            const datasets = this.experiments.slice(0, 5).map((exp, i) => ({
-                label: exp.name,
-                data: exp.metrics.cooperationTrend || [],
-                borderColor: getComputedStyle(document.documentElement)
-                    .getPropertyValue(`--chart-${i + 1}`).trim(),
-                tension: 0.1,
-                fill: false
-            }));
+            const colors = ['#3b82f6', '#10b981', '#f59e0b', '#ef4444', '#8b5cf6'];
+            const datasets = this.experiments.slice(0, 5).map((exp, i) => {
+                const trend = exp.metrics.cooperationTrend || [];
+                // Downsample data if too many points
+                const data = trend.length > 100 ? 
+                    trend.filter((_, idx) => idx % Math.ceil(trend.length / 100) === 0) : 
+                    trend;
+                
+                return {
+                    label: exp.name,
+                    data: data,
+                    borderColor: colors[i % colors.length],
+                    backgroundColor: colors[i % colors.length] + '20',
+                    borderWidth: 2,
+                    pointRadius: 0,
+                    pointHoverRadius: 4,
+                    tension: 0.3,
+                    fill: false
+                };
+            });
 
             const maxLength = Math.max(...datasets.map(d => d.data.length));
             this.charts.cooperation.data = {
-                labels: Array.from({length: maxLength}, (_, i) => i + 1),
+                labels: Array.from({length: maxLength}, (_, i) => 
+                    i % 10 === 0 ? (i * (100 / maxLength)).toFixed(0) : ''
+                ),
                 datasets: datasets
             };
-            this.charts.cooperation.update();
+            this.charts.cooperation.update('none');
         }
 
         // Update strategy performance

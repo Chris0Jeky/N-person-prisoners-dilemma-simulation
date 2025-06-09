@@ -1,35 +1,21 @@
 #!/usr/bin/env python3
 """
-Run the enhanced experiment runner with comprehensive logging and advanced visualizations.
-This script runs all experiments and generates sophisticated comparative analyses.
+Run the enhanced Q-learning experiments to test exploitation improvements.
 """
 
-import enhanced_experiment_runner
+from enhanced_experiment_runner import main
 
 if __name__ == "__main__":
     print("=" * 80)
-    print("ENHANCED N-PERSON ITERATED PRISONER'S DILEMMA EXPERIMENTS")
-    print("With Comprehensive Logging and Advanced Visualizations")
+    print("ENHANCED Q-LEARNING EXPLOITATION EXPERIMENTS")
+    print("Testing four improvements to Q-learning exploitation")
     print("=" * 80)
     print()
     
-    # Run all experiments with detailed logging
-    enhanced_experiment_runner.run_all_experiments_and_log()
+    # Run the enhanced Q-learning experiments
+    results = main()
     
-    # Generate all visualizations
-    if enhanced_experiment_runner.ALL_EXPERIMENT_RESULTS:
-        print("\n" + "=" * 80)
-        print("GENERATING ADVANCED VISUALIZATIONS")
-        print("=" * 80)
-        enhanced_experiment_runner.visualize_all_results(enhanced_experiment_runner.ALL_EXPERIMENT_RESULTS)
-        
-        print("\n" + "=" * 80)
-        print("VISUALIZATION FILES CREATED:")
-        print("- evolution_of_cooperation_comparison.png")
-        print("- tft_performance_analysis.png") 
-        print("- cooperation_dynamics_heatmap.png")
-        print("- strategy_emergence_patterns.png")
-        print("- summary_statistics_table.png")
-        print("=" * 80)
-    else:
-        print("\nNo experiment results to visualize. Something went wrong!")
+    print("\n" + "=" * 80)
+    print("EXPERIMENTS COMPLETE!")
+    print("Check the generated JSON file for detailed results.")
+    print("=" * 80)

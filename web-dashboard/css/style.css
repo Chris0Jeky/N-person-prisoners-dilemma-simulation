@@ -1152,4 +1152,321 @@ canvas {
 .mb-1 { margin-bottom: var(--space-sm); }
 .mb-2 { margin-bottom: var(--space-md); }
 .mb-3 { margin-bottom: var(--space-lg); }
+
+/* Enhanced Mobile Responsive Design */
+@media (max-width: 768px) {
+    /* Navigation Mobile */
+    .navbar {
+        padding: 0.5rem;
+        position: sticky;
+        top: 0;
+        z-index: 100;
+    }
+    
+    .nav-container {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .nav-brand span {
+        display: none;
+    }
+    
+    .nav-menu {
+        order: 3;
+        width: 100%;
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        padding: 0.5rem 0;
+    }
+    
+    .nav-menu::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .nav-item {
+        padding: 0.5rem 0.75rem;
+        min-width: auto;
+        flex-shrink: 0;
+    }
+    
+    .nav-item span {
+        display: none;
+    }
+    
+    .nav-item i {
+        font-size: 20px;
+    }
+    
+    /* Main Content Mobile */
+    .main-content {
+        padding: 1rem;
+        padding-top: 4rem; /* Account for sticky nav */
+    }
+    
+    .page-header {
+        margin-bottom: 1rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.75rem;
+    }
+    
+    /* Stats Grid Mobile */
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .stat-card {
+        flex-direction: row;
+        align-items: center;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .stat-icon {
+        width: 40px;
+        height: 40px;
+        font-size: 20px;
+    }
+    
+    .stat-value {
+        font-size: 1.25rem;
+    }
+    
+    /* Content Grid Mobile */
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    /* Cards Mobile */
+    .card {
+        margin-bottom: 1rem;
+    }
+    
+    .card-header {
+        padding: 0.75rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .card-header h2 {
+        font-size: 1rem;
+    }
+    
+    .card-body {
+        padding: 1rem;
+    }
+    
+    .card-body canvas {
+        max-height: 250px !important;
+    }
+    
+    /* Experiments Mobile */
+    .experiment-item {
+        flex-direction: column;
+        gap: 0.5rem;
+        padding: 1rem;
+    }
+    
+    .experiment-item h3 {
+        font-size: 1rem;
+    }
+    
+    .experiment-item > div:first-child {
+        width: 100%;
+    }
+    
+    .experiment-actions {
+        width: 100%;
+        justify-content: flex-start;
+        padding-top: 0.5rem;
+        border-top: 1px solid var(--border);
+    }
+    
+    /* Strategies Grid Mobile */
+    .strategies-grid {
+        grid-template-columns: 1fr;
+        gap: 0.75rem;
+    }
+    
+    .strategy-card {
+        padding: 1rem;
+    }
+    
+    /* Network Visualization Mobile */
+    #networkVisualization {
+        height: 350px !important;
+    }
+    
+    .network-controls {
+        flex-direction: column;
+        gap: 0.5rem;
+    }
+    
+    .network-select {
+        width: 100%;
+    }
+    
+    /* Analysis Tools Mobile */
+    .analysis-tabs {
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        margin: 0 -1rem;
+        padding: 0 1rem;
+    }
+    
+    .analysis-tabs::-webkit-scrollbar {
+        display: none;
+    }
+    
+    .tab-btn {
+        flex-shrink: 0;
+        white-space: nowrap;
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .tab-btn i {
+        display: none;
+    }
+    
+    /* Modals Mobile */
+    .modal-content {
+        margin: 1rem;
+        max-width: calc(100vw - 2rem);
+        max-height: calc(100vh - 2rem);
+        overflow-y: auto;
+    }
+    
+    .modal-header h2 {
+        font-size: 1.25rem;
+    }
+    
+    /* Buttons Mobile */
+    .btn {
+        padding: 0.5rem 1rem;
+        font-size: 0.875rem;
+    }
+    
+    .icon-btn {
+        padding: 0.5rem;
+    }
+    
+    /* Forms Mobile */
+    input[type="file"],
+    select,
+    input[type="text"],
+    input[type="number"] {
+        font-size: 16px; /* Prevent zoom on iOS */
+    }
+    
+    /* Notifications Mobile */
+    .notification {
+        left: 1rem;
+        right: 1rem;
+        bottom: 1rem;
+        max-width: none;
+        font-size: 0.875rem;
+    }
+    
+    /* Tables Mobile */
+    .metrics-table {
+        font-size: 0.875rem;
+    }
+    
+    .metrics-table th,
+    .metrics-table td {
+        padding: 0.5rem 0.25rem;
+    }
+    
+    /* Empty States Mobile */
+    .empty-state {
+        padding: 2rem 1rem;
+    }
+    
+    .empty-state h3 {
+        font-size: 1.25rem;
+    }
+    
+    .empty-state p {
+        font-size: 0.875rem;
+    }
+}
+
+@media (max-width: 480px) {
+    /* Very Small Screens */
+    .nav-actions {
+        gap: 0.25rem;
+    }
+    
+    .page-header h1 {
+        font-size: 1.5rem;
+    }
+    
+    .subtitle {
+        font-size: 0.75rem;
+        margin-top: 0.25rem;
+    }
+    
+    .stat-card {
+        padding: 0.75rem;
+    }
+    
+    .stat-content h3 {
+        font-size: 0.75rem;
+    }
+    
+    .stat-value {
+        font-size: 1.125rem;
+    }
+    
+    .stat-change {
+        display: none;
+    }
+    
+    /* Hide non-essential elements */
+    .card-actions {
+        display: none;
+    }
+    
+    /* Simplify experiment list */
+    .experiment-item > div:first-child > div {
+        font-size: 0.75rem;
+    }
+    
+    .experiment-item span i {
+        display: none;
+    }
+}
+
+/* Touch-friendly adjustments */
+@media (hover: none) and (pointer: coarse) {
+    .nav-item,
+    .btn,
+    .icon-btn,
+    .tab-btn {
+        min-height: 44px; /* iOS touch target size */
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .experiment-actions button {
+        min-width: 44px;
+        min-height: 44px;
+    }
+    
+    /* Increase spacing for touch */
+    .nav-menu {
+        gap: 0.5rem;
+    }
+    
+    .experiment-actions {
+        gap: 0.75rem;
+    }
+}
 EOF < /dev/null

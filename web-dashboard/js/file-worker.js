@@ -4,7 +4,7 @@
  */
 
 // Import data processing functions
-self.importScripts('data-loader.js');
+self.importScripts('data-processor.js');
 
 // Message handler
 self.addEventListener('message', async (event) => {
@@ -82,7 +82,7 @@ async function processFile(data) {
 // Process JSON with chunking for large files
 async function processJSON(data) {
     const { content, fileSize } = data;
-    const loader = new DataLoader();
+    const processor = new DataProcessor();
     
     // For very large files, parse in chunks
     if (fileSize > 10 * 1024 * 1024) { // 10MB

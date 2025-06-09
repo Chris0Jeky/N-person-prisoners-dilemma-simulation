@@ -624,6 +624,16 @@ class Dashboard {
 
         // Update strategy performance
         this.updateStrategyChart();
+        
+        // Remove loading states
+        setTimeout(() => {
+            chartContainers.forEach(id => {
+                const container = document.getElementById(id);
+                if (container) {
+                    container.parentElement.classList.remove('loading');
+                }
+            });
+        }, 300);
     }
 
     updateStrategyChart() {

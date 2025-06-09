@@ -4,7 +4,34 @@
 
 This comprehensive digest synthesizes key findings from a deep literature review on N-Person Iterated Prisoner's Dilemma, comparing pairwise versus group interaction structures. The research strongly validates our NPDL framework's core thesis while revealing significant opportunities for enhancement based on proven strategies and theoretical insights from game theory literature.
 
-## Key Concepts from Literature
+## Table of Contents
+
+1. [Foundational Research Findings](#foundational-research-findings)
+2. [Core Mechanisms & Theoretical Framework](#core-mechanisms--theoretical-framework)
+3. [Our Implementation vs Literature](#our-implementation-vs-literature)
+4. [Strategic Innovations & Gaps](#strategic-innovations--gaps)
+5. [Concrete Improvement Proposals](#concrete-improvement-proposals)
+6. [Future Research Directions](#future-research-directions)
+
+## Foundational Research Findings
+
+### The Core Dichotomy: Pairwise Success vs Group Failure
+
+The literature establishes a fundamental truth that perfectly aligns with our "Collaborative Hill" vs "Tragedy Valley" metaphor:
+
+- **Pairwise interactions** enable stable cooperation through direct reciprocity (Axelrod 1984)
+- **Group interactions** suffer from free-riding and coordination failures (Boyd & Richerson 1988)
+- **Empirical validation**: Grujić et al. (2012) found >80% cooperation in 2-player games drops precipitously with just 3 players
+
+### Key Research Milestones
+
+1. **Hardin (1968)**: Introduced "Tragedy of the Commons" - the foundational metaphor for group cooperation failure
+2. **Axelrod (1984)**: Demonstrated Tit-for-Tat's dominance in pairwise iterated games
+3. **Boyd & Richerson (1988)**: Mathematically proved reciprocity becomes "extremely restrictive" as N increases
+4. **Nowak (2006)**: Synthesized five cooperation mechanisms, including network reciprocity
+5. **Pinheiro et al. (2014)**: Discovered All-or-None as dominant strategy for N-person games
+
+## Core Mechanisms & Theoretical Framework
 
 ### 1. The Fundamental Problem: Group Size Kills Reciprocity
 

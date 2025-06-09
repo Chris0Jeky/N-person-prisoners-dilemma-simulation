@@ -37,7 +37,10 @@ class Dashboard {
     
     // Safe wrapper for creating lucide icons
     safeCreateIcons() {
-        if (typeof lucide !== 'undefined') {
+        // Use global safe create icons function if available
+        if (typeof window.safeCreateIcons === 'function') {
+            window.safeCreateIcons();
+        } else if (typeof lucide !== 'undefined') {
             try {
                 lucide.createIcons();
             } catch (e) {

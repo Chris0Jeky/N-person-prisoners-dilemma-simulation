@@ -102,7 +102,7 @@ async function processJSON(data) {
         });
         
         // Normalize data
-        const normalized = loader.normalizeData(parsed);
+        const normalized = processor.normalizeData(parsed);
         
         self.postMessage({
             type: 'progress',

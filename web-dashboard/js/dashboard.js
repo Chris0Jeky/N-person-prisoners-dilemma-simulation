@@ -403,15 +403,71 @@ class Dashboard {
         const cached = localStorage.getItem('experiments');
         if (cached) {
             try {
-                this.experiments = JSON.parse(cached);
+                const cachedData = JSON.parse(cached);
+                // Restore experiments with empty results (we only cached summaries)
+                this.experiments = cachedData.map(exp => ({
+                    ...exp,
+                    results: exp.results || [], // Results are loaded on-demand
+                    config: exp.config || {},
+                    metrics: exp.metrics || {},
+                    tags: exp.tags || [],
+                    group: exp.group || 'Uncategorized'
+                }));
             } catch (e) {
                 console.error('Error loading cached data:', e);
+                localStorage.removeItem('experiments');
             }
         }
     }
 
     saveCachedData() {
-        localStorage.setItem('experiments', JSON.stringify(this.experiments));
+        try {
+            // Only cache essential data to avoid quota issues
+            const dataToCache = this.experiments.map(exp => ({
+                id: exp.id,
+                name: exp.name,
+                timestamp: exp.timestamp,
+                config: {
+                    num_agents: exp.config.num_agents,
+                    num_rounds: exp.config.num_rounds,
+                    network_type: exp.config.network_type,
+                    agent_strategies: exp.config.agent_strategies
+                },
+                metrics: exp.metrics,
+                tags: exp.tags,
+                group: exp.group,
+                isExample: exp.isExample,
+                // Store only summary of results, not full data
+                resultsSummary: {
+                    length: exp.results ? exp.results.length : 0,
+                    firstRound: exp.results && exp.results[0],
+                    lastRound: exp.results && exp.results[exp.results.length - 1]
+                }
+            }));
+            
+            const dataStr = JSON.stringify(dataToCache);
+            
+            // Check size before storing (localStorage typically has 5-10MB limit)
+            if (dataStr.length > 4 * 1024 * 1024) { // 4MB limit
+                console.warn('Data too large for localStorage, keeping only recent experiments');
+                // Keep only the 10 most recent experiments
+                const recentData = dataToCache
+                    .sort((a, b) => new Date(b.timestamp) - new Date(a.timestamp))
+                    .slice(0, 10);
+                localStorage.setItem('experiments', JSON.stringify(recentData));
+            } else {
+                localStorage.setItem('experiments', dataStr);
+            }
+        } catch (e) {
+            if (e.name === 'QuotaExceededError') {
+                console.error('localStorage quota exceeded, clearing old data');
+                // Clear and try again with just current experiment
+                localStorage.removeItem('experiments');
+                this.showNotification('Storage limit reached. Cleared old cached data.', 'warning');
+            } else {
+                console.error('Error saving to localStorage:', e);
+            }
+        }
     }
 
     clearCache() {

@@ -279,39 +279,7 @@
     <script src="js/analysis-tools.js"></script>
     <script src="js/network-vis.js"></script>
     
-    <!-- Initialize Dashboard and Lucide -->
-    <script>
-        // Initialize lucide icons first
-        function initializeLucide() {
-            if (typeof lucide !== 'undefined') {
-                console.log('Initializing lucide icons...');
-                lucide.createIcons();
-                return true;
-            }
-            return false;
-        }
-        
-        // Try to initialize immediately
-        if (!initializeLucide()) {
-            // If not ready, wait for window load
-            window.addEventListener('load', () => {
-                initializeLucide();
-            });
-        }
-        
-        // Initialize dashboard after DOM is ready
-        if (document.readyState === 'loading') {
-            document.addEventListener('DOMContentLoaded', () => {
-                const dashboard = new Dashboard();
-                window.dashboard = dashboard; // Make globally accessible
-                dashboard.init();
-            });
-        } else {
-            // DOM already loaded
-            const dashboard = new Dashboard();
-            window.dashboard = dashboard;
-            dashboard.init();
-        }
-    </script>
+    <!-- Initialize Dashboard with proper dependency checking -->
+    <script src="js/init.js"></script>
 </body>
 </html>

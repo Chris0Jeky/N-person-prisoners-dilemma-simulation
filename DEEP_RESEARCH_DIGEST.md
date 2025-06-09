@@ -369,17 +369,70 @@ def noise_tolerance_experiments():
     return scenarios
 ```
 
-#### 7. Hybrid Interaction Models
-- Systematic comparison of forgiveness mechanisms
-- Vary noise levels: 0%, 5%, 10%, 20%
-- Identify which strategies are most robust
+#### 7. Hybrid Pairwise-Group Interaction Model
+```python
+class HybridEnvironment(Environment):
+    """
+    Interpolate between pure pairwise and pure group interactions.
+    Models real-world scenarios like local communities with global effects.
+    """
+    
+    def __init__(self, local_weight=0.7, global_weight=0.3, **kwargs):
+        super().__init__(**kwargs)
+        self.local_weight = local_weight  # Weight for pairwise interactions
+        self.global_weight = global_weight  # Weight for group interactions
+        
+    def calculate_payoffs(self, actions):
+        # Local (pairwise) component
+        local_payoffs = self._calculate_pairwise_payoffs(actions)
+        
+        # Global (group) component
+        global_payoffs = self._calculate_group_payoffs(actions)
+        
+        # Weighted combination
+        total_payoffs = {}
+        for agent_id in actions:
+            total_payoffs[agent_id] = (
+                self.local_weight * local_payoffs[agent_id] +
+                self.global_weight * global_payoffs[agent_id]
+            )
+        
+        return total_payoffs
+```
 
-### 8. Hybrid Interaction Models
-- Interpolate between pure pairwise and pure group
-- Example: Local groups with inter-group representatives
-- Test intermediate structures suggested by literature
+## Future Research Directions
 
-### 9. Analytical Validation
+### Phase 1: Immediate Implementation Priorities (1-2 weeks)
+1. **Implement All-or-None Strategy** - Proven dominant in literature
+2. **Add Contrite TFT** - Critical for noise tolerance
+3. **Create Adaptive Threshold Strategy** - Dynamic quorum finding
+4. **Run Critical Mass Experiments** - Test committed minority effects
+
+### Phase 2: Structural Extensions (2-4 weeks)
+1. **Network Topology Variations** - Lattice, random, scale-free networks
+2. **Test Nowak's b/c > k Condition** - Validate theoretical predictions
+3. **Hybrid Interaction Models** - Mix pairwise and group dynamics
+4. **Sparse Network Analysis** - How connectivity affects cooperation
+
+### Phase 3: Robustness & Validation (1-2 months)
+1. **Comprehensive Noise Testing** - 0-20% error rates
+2. **Memory Length Optimization** - Compare memory-1, memory-2, memory-n
+3. **Strategy Evolution Tournaments** - Which strategies dominate?
+4. **Parameter Stability Analysis** - When do strategies fail?
+
+### Phase 4: Theoretical Contributions (2-3 months)
+1. **Derive Analytical Conditions** - Mathematical proofs for our findings
+2. **Connect to Evolutionary Stability** - ESS analysis of strategies
+3. **Publish Mathematical Framework** - Formalize pairwise vs group dynamics
+4. **Create Predictive Models** - When will cooperation emerge?
+
+### Phase 5: Real-World Applications (3-6 months)
+1. **Climate Cooperation** - Model international agreements
+2. **Social Media Dynamics** - Information spread and cooperation
+3. **Economic Networks** - Trade relationships and trust
+4. **Policy Recommendations** - Design principles for cooperation
+
+## Key Insights Summary
 - Derive theoretical conditions for our findings
 - Compare simulation results with mathematical predictions
 - Publish b/c ratios for cooperation stability

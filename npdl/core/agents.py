@@ -5,17 +5,8 @@ from collections import deque
 
 from typing import List, Dict, Tuple, Any, Optional, Union, Hashable
 
-# Import N-person strategies if available
-try:
-    from .n_person_rl import (
-        NPersonQLearning,
-        NPersonHystereticQ,
-        NPersonWolfPHC,
-        create_n_person_strategy
-    )
-    N_PERSON_RL_AVAILABLE = True
-except ImportError:
-    N_PERSON_RL_AVAILABLE = False
+# N-person strategies will be imported lazily to avoid circular imports
+N_PERSON_RL_AVAILABLE = True  # We know it's available
 
 
 class Strategy:
@@ -921,13 +912,27 @@ def create_strategy(strategy_type, **kwargs):
         "ucb1_q": UCB1QLearningStrategy,
     }
     
-    # Add N-person strategies if available
-    if N_PERSON_RL_AVAILABLE:
-        strategies.update({
-            "n_person_q_learning": NPersonQLearning,
-            "n_person_hysteretic_q": NPersonHystereticQ,
-            "n_person_wolf_phc": NPersonWolfPHC,
-        })
+    # Check if it's an N-person strategy
+    if strategy_type.startswith("n_person_") and N_PERSON_RL_AVAILABLE:
+        try:
+            # Lazy import to avoid circular dependency
+            from .n_person_rl import (
+                NPersonQLearning,
+                NPersonHystereticQ,
+                NPersonWolfPHC
+            )
+            
+            n_person_strategies = {
+                "n_person_q_learning": NPersonQLearning,
+                "n_person_hysteretic_q": NPersonHystereticQ,
+                "n_person_wolf_phc": NPersonWolfPHC,
+            }
+            
+            if strategy_type in n_person_strategies:
+                strategy_class = n_person_strategies[strategy_type]
+                return strategy_class(**kwargs)
+        except ImportError:
+            pass  # Fall through to error
 
     if strategy_type not in strategies:
         raise ValueError(f"Unknown strategy type: {strategy_type}")

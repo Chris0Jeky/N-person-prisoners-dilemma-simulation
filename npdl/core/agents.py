@@ -920,6 +920,14 @@ def create_strategy(strategy_type, **kwargs):
         "wolf_phc": WolfPHCStrategy,
         "ucb1_q": UCB1QLearningStrategy,
     }
+    
+    # Add N-person strategies if available
+    if N_PERSON_RL_AVAILABLE:
+        strategies.update({
+            "n_person_q_learning": NPersonQLearning,
+            "n_person_hysteretic_q": NPersonHystereticQ,
+            "n_person_wolf_phc": NPersonWolfPHC,
+        })
 
     if strategy_type not in strategies:
         raise ValueError(f"Unknown strategy type: {strategy_type}")

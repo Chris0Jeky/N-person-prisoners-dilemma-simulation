@@ -220,6 +220,30 @@ h4 { font-size: 1.25rem; }
     transition: all var(--transition-fast);
 }
 
+.icon-btn-sm {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.icon-btn-sm:hover {
+    background-color: var(--bg-tertiary);
+    color: var(--text-primary);
+}
+
+.icon-btn-sm i {
+    width: 16px;
+    height: 16px;
+}
+
 .icon-btn {
     width: 40px;
     height: 40px;
@@ -372,13 +396,21 @@ canvas {
     border: 1px solid var(--border);
     border-radius: var(--radius-lg);
     padding: var(--space-lg);
-    cursor: pointer;
     transition: all var(--transition-base);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
 }
 
 .experiment-item:hover {
     border-color: var(--accent-blue);
     transform: translateX(4px);
+}
+
+.experiment-actions {
+    display: flex;
+    gap: var(--space-sm);
+    margin-left: var(--space-lg);
 }
 
 /* Empty State */

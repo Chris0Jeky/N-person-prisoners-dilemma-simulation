@@ -37,28 +37,78 @@ class DataLoader {
     }
 
     parseCSV(text) {
-        const lines = text.trim().split('\n');
+        const lines = text.trim().split('\n').filter(line => line.trim());
         if (lines.length < 2) {
             throw new Error('CSV file is empty or has no data');
         }
 
-        const headers = lines[0].split(',').map(h => h.trim());
+        // Handle different delimiters
+        const firstLine = lines[0];
+        const delimiter = firstLine.includes('\t') ? '\t' : ',';
+        
+        const headers = firstLine.split(delimiter).map(h => h.trim().replace(/^["']|["']$/g, ''));
         const data = [];
 
         for (let i = 1; i < lines.length; i++) {
-            const values = lines[i].split(',').map(v => v.trim());
+            const line = lines[i].trim();
+            if (!line) continue; // Skip empty lines
+            
+            // Simple CSV parsing that handles quoted values
+            const values = this.parseCSVLine(line, delimiter);
             const row = {};
             
             headers.forEach((header, index) => {
-                const value = values[index];
-                // Try to parse numbers
-                row[header] = isNaN(value) ? value : parseFloat(value);
+                if (index < values.length) {
+                    const value = values[index];
+                    // Try to parse numbers
+                    if (value === '' || value === null || value === undefined) {
+                        row[header] = null;
+                    } else if (!isNaN(value) && value !== '') {
+                        row[header] = parseFloat(value);
+                    } else {
+                        row[header] = value;
+                    }
+                }
             });
             
             data.push(row);
         }
 
         return this.normalizeCSVData(data);
+    }
+
+    // Parse a single CSV line handling quoted values
+    parseCSVLine(line, delimiter = ',') {
+        const result = [];
+        let current = '';
+        let inQuotes = false;
+        
+        for (let i = 0; i < line.length; i++) {
+            const char = line[i];
+            const nextChar = line[i + 1];
+            
+            if (char === '"' || char === "'") {
+                if (inQuotes && nextChar === char) {
+                    // Escaped quote
+                    current += char;
+                    i++; // Skip next char
+                } else {
+                    // Toggle quote state
+                    inQuotes = !inQuotes;
+                }
+            } else if (char === delimiter && !inQuotes) {
+                // End of field
+                result.push(current.trim());
+                current = '';
+            } else {
+                current += char;
+            }
+        }
+        
+        // Don't forget the last field
+        result.push(current.trim());
+        
+        return result;
     }
 
     normalizeData(data) {

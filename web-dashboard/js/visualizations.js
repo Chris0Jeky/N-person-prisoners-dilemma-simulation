@@ -334,26 +334,29 @@ class Visualizations {
             .selectAll("circle")
             .data(networkData.nodes)
             .enter().append("circle")
-            .attr("r", 15)
+            .attr("r", nodeRadius)
             .attr("fill", d => getStrategyColor(d.strategy))
             .attr("stroke", "#fff")
-            .attr("stroke-width", 2)
+            .attr("stroke-width", isLargeNetwork ? 1 : 2)
             .call(d3.drag()
                 .on("start", dragstarted)
                 .on("drag", dragged)
                 .on("end", dragended));
 
-        // Add icons
-        const nodeIcons = g.append("g")
-            .selectAll("text")
-            .data(networkData.nodes)
-            .enter().append("text")
-            .attr("text-anchor", "middle")
-            .attr("alignment-baseline", "middle")
-            .style("font-size", "16px")
-            .style("user-select", "none")
-            .style("pointer-events", "none")
-            .text(d => STRATEGIES[d.strategy]?.icon || "?");
+        // Add icons (only for small networks)
+        let nodeIcons = null;
+        if (!isLargeNetwork) {
+            nodeIcons = g.append("g")
+                .selectAll("text")
+                .data(networkData.nodes)
+                .enter().append("text")
+                .attr("text-anchor", "middle")
+                .attr("alignment-baseline", "middle")
+                .style("font-size", "16px")
+                .style("user-select", "none")
+                .style("pointer-events", "none")
+                .text(d => STRATEGIES[d.strategy]?.icon || "?");
+        }
 
         // Add tooltips
         node.append("title")

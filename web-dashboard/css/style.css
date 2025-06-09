@@ -348,6 +348,9 @@ h4 { font-size: 1.25rem; }
     border: 1px solid var(--border);
     overflow: hidden;
     transition: all var(--transition-base);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .card-header {
@@ -369,6 +372,15 @@ h4 { font-size: 1.25rem; }
 
 .card-body {
     padding: var(--space-lg);
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    position: relative;
+}
+
+.card-body canvas {
+    max-height: 400px !important;
 }
 
 /* Content Grid */
@@ -377,6 +389,13 @@ h4 { font-size: 1.25rem; }
     grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
     gap: var(--space-lg);
     margin-bottom: var(--space-2xl);
+    grid-auto-rows: minmax(450px, auto);
+}
+
+@media (max-width: 1200px) {
+    .content-grid {
+        grid-template-columns: 1fr;
+    }
 }
 
 /* Canvas */

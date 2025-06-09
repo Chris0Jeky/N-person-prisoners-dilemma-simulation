@@ -10,6 +10,7 @@ class NetworkVisualization {
         this.width = this.container.clientWidth;
         this.height = 600;
         this.simulation = null;
+        this.isRunning = true;
         
         this.init();
     }
@@ -230,6 +231,9 @@ class NetworkVisualization {
         
         // Add legend
         this.addLegend();
+        
+        // Add controls
+        this.addControls();
     }
 
     drag(simulation) {
@@ -293,6 +297,69 @@ class NetworkVisualization {
             this.simulation.stop();
         }
         this.init();
+    }
+    
+    addControls() {
+        const controls = d3.select(this.container)
+            .append('div')
+            .attr('class', 'network-controls-overlay')
+            .style('position', 'absolute')
+            .style('top', '10px')
+            .style('right', '10px')
+            .style('display', 'flex')
+            .style('gap', '10px');
+        
+        // Pause/Play button
+        const pauseBtn = controls.append('button')
+            .attr('class', 'btn btn-secondary')
+            .style('padding', '8px 16px')
+            .on('click', () => this.toggleSimulation());
+        
+        pauseBtn.append('i')
+            .attr('data-lucide', 'pause')
+            .attr('style', 'width: 16px; height: 16px; margin-right: 5px;');
+        
+        pauseBtn.append('span')
+            .text('Pause');
+        
+        // Reset button
+        const resetBtn = controls.append('button')
+            .attr('class', 'btn btn-secondary')
+            .style('padding', '8px 16px')
+            .on('click', () => this.reset());
+        
+        resetBtn.append('i')
+            .attr('data-lucide', 'refresh-cw')
+            .attr('style', 'width: 16px; height: 16px; margin-right: 5px;');
+        
+        resetBtn.append('span')
+            .text('Reset');
+        
+        // Update lucide icons
+        lucide.createIcons();
+    }
+    
+    toggleSimulation() {
+        if (this.isRunning) {
+            this.simulation.stop();
+            this.isRunning = false;
+            
+            // Update button
+            const btn = d3.select(this.container).select('.network-controls-overlay button');
+            btn.select('i').attr('data-lucide', 'play');
+            btn.select('span').text('Resume');
+        } else {
+            this.simulation.restart();
+            this.isRunning = true;
+            
+            // Update button
+            const btn = d3.select(this.container).select('.network-controls-overlay button');
+            btn.select('i').attr('data-lucide', 'pause');
+            btn.select('span').text('Pause');
+        }
+        
+        // Update lucide icons
+        lucide.createIcons();
     }
 }
 

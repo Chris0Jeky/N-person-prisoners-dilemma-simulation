@@ -175,6 +175,14 @@
                 </div>
             </div>
             
+            <div class="experiments-filter" style="margin: 1rem 0;">
+                <input type="text" id="experimentSearch" placeholder="Search experiments..." 
+                       style="width: 100%; padding: 0.75rem; border: 1px solid var(--border); 
+                              border-radius: var(--radius-md); background: var(--bg-primary); 
+                              color: var(--text-primary);"
+                       onkeyup="dashboard.filterExperiments(this.value)">
+            </div>
+            
             <div class="experiments-list" id="experimentsList">
                 <div class="empty-state">
                     <i data-lucide="inbox"></i>

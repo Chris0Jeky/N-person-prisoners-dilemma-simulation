@@ -29,20 +29,27 @@ class Visualizations {
         const ctx = container.getContext('2d');
         
         // Prepare datasets with smooth curves
-        const datasets = experiments.map((exp, idx) => ({
-            label: exp.name,
-            data: exp.results.map(r => ({
-                x: r.round,
-                y: r.cooperation_rate * 100
-            })),
-            borderColor: this.colorSchemes.strategies[idx % this.colorSchemes.strategies.length],
-            backgroundColor: this.colorSchemes.strategies[idx % this.colorSchemes.strategies.length] + '20',
-            tension: 0.3, // Smooth curves
-            fill: false,
-            pointRadius: 0,
-            pointHoverRadius: 6,
-            borderWidth: 2
-        }));
+        const datasets = experiments.map((exp, idx) => {
+            // Get primary strategy from experiment
+            const strategies = Object.keys(exp.config.agent_strategies || {});
+            const primaryStrategy = strategies[0] || 'unknown';
+            const color = getStrategyColor(primaryStrategy);
+            
+            return {
+                label: exp.name,
+                data: exp.results.map(r => ({
+                    x: r.round,
+                    y: r.cooperation_rate * 100
+                })),
+                borderColor: color,
+                backgroundColor: getStrategyColorWithOpacity(primaryStrategy, STRATEGY_COLORS.opacity.fill),
+                tension: 0.3, // Smooth curves
+                fill: false,
+                pointRadius: 0,
+                pointHoverRadius: 6,
+                borderWidth: 2
+            };
+        });
 
         this.charts[containerId] = new Chart(ctx, {
             type: 'line',
@@ -315,7 +322,7 @@ class Visualizations {
             .data(networkData.nodes)
             .enter().append("circle")
             .attr("r", 15)
-            .attr("fill", d => STRATEGIES[d.strategy]?.color || "#94a3b8")
+            .attr("fill", d => getStrategyColor(d.strategy))
             .attr("stroke", "#fff")
             .attr("stroke-width", 2)
             .call(d3.drag()

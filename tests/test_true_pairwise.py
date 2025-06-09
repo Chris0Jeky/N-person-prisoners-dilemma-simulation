@@ -376,3 +376,16 @@ class TestScenarioComparison:
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+class TestDailyT039AllCooperateRate:
+    """Daily check: all-cooperate memory reads a full cooperation rate."""
+
+    def test_all_cooperate_rate(self):
+        memory = OpponentSpecificMemory("friend", memory_length=5)
+        memory.add_interaction("cooperate", "cooperate", 3)
+        memory.add_interaction("cooperate", "cooperate", 3)
+        memory.add_interaction("cooperate", "cooperate", 3)
+        assert memory.total_interactions == 3
+        assert memory.cooperation_count == 3
+        assert memory.get_cooperation_rate() == 1.0

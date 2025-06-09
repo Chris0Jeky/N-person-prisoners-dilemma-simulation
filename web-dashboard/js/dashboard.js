@@ -735,30 +735,69 @@ class Dashboard {
                 </div>
             `;
         } else {
-            container.innerHTML = this.experiments.map(exp => `
-                <div class="experiment-item">
-                    <div onclick="dashboard.selectExperiment('${exp.id}')" style="flex: 1; cursor: pointer;">
-                        <h3>${exp.name}</h3>
-                        <div style="display: flex; gap: 2rem; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
-                            <span><i data-lucide="users" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_agents || '-'} agents</span>
-                            <span><i data-lucide="refresh-cw" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_rounds || '-'} rounds</span>
-                            <span><i data-lucide="network" style="width: 16px; height: 16px; display: inline;"></i> ${exp.metrics.networkType}</span>
-                            <span><i data-lucide="trending-up" style="width: 16px; height: 16px; display: inline;"></i> ${(exp.metrics.avgCooperation * 100).toFixed(1)}% cooperation</span>
+            // Group experiments
+            const grouped = this.groupExperiments(this.experiments);
+            
+            container.innerHTML = Object.entries(grouped).map(([group, experiments]) => `
+                <div class="experiment-group">
+                    <h3 class="group-header">
+                        <i data-lucide="folder" style="width: 16px; height: 16px;"></i>
+                        ${group} (${experiments.length})
+                    </h3>
+                    ${experiments.map(exp => `
+                        <div class="experiment-item">
+                            <div onclick="dashboard.selectExperiment('${exp.id}')" style="flex: 1; cursor: pointer;">
+                                <h3>${exp.name}</h3>
+                                <div style="display: flex; gap: 2rem; margin-top: 0.5rem; color: var(--text-secondary); font-size: 0.875rem;">
+                                    <span><i data-lucide="users" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_agents || '-'} agents</span>
+                                    <span><i data-lucide="refresh-cw" style="width: 16px; height: 16px; display: inline;"></i> ${exp.config.num_rounds || '-'} rounds</span>
+                                    <span><i data-lucide="network" style="width: 16px; height: 16px; display: inline;"></i> ${exp.metrics.networkType}</span>
+                                    <span><i data-lucide="trending-up" style="width: 16px; height: 16px; display: inline;"></i> ${(exp.metrics.avgCooperation * 100).toFixed(1)}% cooperation</span>
+                                </div>
+                                <div class="experiment-tags" style="margin-top: 0.5rem;">
+                                    ${exp.tags.slice(0, 5).map(tag => `
+                                        <span class="tag">${tag}</span>
+                                    `).join('')}
+                                    ${exp.tags.length > 5 ? `<span class="tag">+${exp.tags.length - 5} more</span>` : ''}
+                                </div>
+                            </div>
+                            <div class="experiment-actions">
+                                <button class="icon-btn-sm" onclick="dashboard.exportExperiment('${exp.id}')" title="Export experiment">
+                                    <i data-lucide="download"></i>
+                                </button>
+                                <button class="icon-btn-sm" onclick="dashboard.deleteExperiment('${exp.id}')" title="Delete experiment">
+                                    <i data-lucide="trash-2"></i>
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="experiment-actions">
-                        <button class="icon-btn-sm" onclick="dashboard.exportExperiment('${exp.id}')" title="Export experiment">
-                            <i data-lucide="download"></i>
-                        </button>
-                        <button class="icon-btn-sm" onclick="dashboard.deleteExperiment('${exp.id}')" title="Delete experiment">
-                            <i data-lucide="trash-2"></i>
-                        </button>
-                    </div>
+                    `).join('')}
                 </div>
             `).join('');
         }
         
         lucide.createIcons();
+    }
+
+    groupExperiments(experiments) {
+        const groups = {};
+        
+        experiments.forEach(exp => {
+            const group = exp.group || 'Uncategorized';
+            if (!groups[group]) {
+                groups[group] = [];
+            }
+            groups[group].push(exp);
+        });
+        
+        // Sort groups and experiments within groups
+        const sortedGroups = {};
+        Object.keys(groups).sort().forEach(key => {
+            sortedGroups[key] = groups[key].sort((a, b) => 
+                new Date(b.timestamp) - new Date(a.timestamp)
+            );
+        });
+        
+        return sortedGroups;
     }
 
     selectExperiment(id) {

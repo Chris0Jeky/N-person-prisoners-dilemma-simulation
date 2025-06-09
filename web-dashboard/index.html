@@ -155,10 +155,16 @@
         <div class="page" id="experiments-page">
             <div class="page-header">
                 <h1>Experiments</h1>
-                <button class="btn btn-primary" id="loadExampleBtn">
-                    <i data-lucide="download"></i>
-                    Load Example Data
-                </button>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn btn-secondary" onclick="dashboard.exportAllExperiments()" title="Export all experiments">
+                        <i data-lucide="archive"></i>
+                        Export All
+                    </button>
+                    <button class="btn btn-primary" id="loadExampleBtn">
+                        <i data-lucide="download"></i>
+                        Load Example Data
+                    </button>
+                </div>
             </div>
             
             <div class="experiments-list" id="experimentsList">

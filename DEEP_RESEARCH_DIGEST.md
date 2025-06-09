@@ -161,19 +161,52 @@ class AllOrNoneStrategy(Strategy):
 
 #### 2. Contrite Tit-for-Tat - Noise Tolerance
 ```python
-class ContriteTFT(Agent):
-    """TFT that apologizes for mistaken retaliation"""
+class ContriteTitForTatStrategy(Strategy):
+    """
+    TFT variant that 'apologizes' for mistaken retaliation.
+    Prevents death spirals in noisy environments.
+    """
     def __init__(self):
-        self.last_was_retaliation = False
-        
-    def choose_action(self, game_state):
-        if self.last_was_retaliation and opponent_cooperated:
-            # I retaliated but they cooperated - apologize
+        super().__init__("ContriteTFT")
+        self.my_last_action = None
+        self.was_retaliation = {}  # Track if defection was retaliation per partner
+    
+    def choose_action(self, history, neighborhood_history=None):
+        if not history and not neighborhood_history:
+            self.my_last_action = 'C'
             return 'C'
-        # Standard TFT logic...
+        
+        # Pairwise mode
+        if neighborhood_history is None:
+            # Complex logic: need to track per-partner contrition
+            total_cooperate = 0
+            total_partners = 0
+            
+            for partner_id, partner_history in history.items():
+                if partner_history:
+                    last_partner_action = partner_history[-1]
+                    
+                    # If I retaliated but partner cooperated, apologize
+                    if (self.was_retaliation.get(partner_id, False) and 
+                        last_partner_action == 'C'):
+                        total_cooperate += 1
+                        self.was_retaliation[partner_id] = False
+                    # Standard TFT
+                    elif last_partner_action == 'C':
+                        total_cooperate += 1
+                        self.was_retaliation[partner_id] = False
+                    else:
+                        # Track that this is retaliation
+                        self.was_retaliation[partner_id] = True
+                    
+                    total_partners += 1
+            
+            action = 'C' if total_cooperate > total_partners / 2 else 'D'
+            self.my_last_action = action
+            return action
 ```
 
-### 3. Adaptive Threshold Strategies
+#### 3. Adaptive Threshold Strategy
 ```python
 class AdaptiveThresholdAgent(Agent):
     """Dynamically adjust cooperation threshold based on success"""

@@ -154,28 +154,162 @@ class Dashboard {
     }
 
     async handleFileUpload(files) {
+        // Check if any files are large
+        const largeFiles = Array.from(files).filter(f => f.size > 1024 * 1024); // 1MB
+        const useWorker = largeFiles.length > 0;
+        
+        if (useWorker && typeof Worker !== 'undefined') {
+            // Use Web Worker for large files
+            this.processFilesWithWorker(files);
+        } else {
+            // Process small files directly
+            this.processFilesDirectly(files);
+        }
+    }
+
+    async processFilesDirectly(files) {
+        const dataLoader = new DataLoader();
+        
         for (const file of files) {
             try {
-                const text = await file.text();
-                const data = JSON.parse(text);
+                this.showNotification(`Loading ${file.name}...`, 'info');
+                const experiments = await dataLoader.loadFromFile(file);
                 
-                // Process based on file type
-                if (data.scenario_name || data.experiment_name) {
-                    this.addExperiment(data);
-                } else if (Array.isArray(data)) {
-                    // Handle array of experiments
-                    data.forEach(exp => this.addExperiment(exp));
+                if (Array.isArray(experiments)) {
+                    experiments.forEach(exp => this.addExperiment(exp));
+                } else {
+                    this.addExperiment(experiments);
                 }
                 
-                this.showNotification('Data loaded successfully', 'success');
+                this.showNotification(`Successfully loaded ${file.name}`, 'success');
             } catch (error) {
                 console.error('Error loading file:', error);
-                this.showNotification('Error loading file: ' + error.message, 'error');
+                this.showNotification(`Error loading ${file.name}: ${error.message}`, 'error');
             }
         }
         
         this.updateStats();
         this.refreshVisualizations();
+    }
+
+    async processFilesWithWorker(files) {
+        // Create loading modal
+        const loadingModal = this.createLoadingModal();
+        document.body.appendChild(loadingModal);
+        
+        const worker = new Worker('js/file-worker.js');
+        let filesProcessed = 0;
+        
+        // Handle worker messages
+        worker.onmessage = (event) => {
+            const { type, result, error, progress, message, id } = event.data;
+            
+            if (type === 'progress') {
+                // Update progress bar
+                const progressBar = loadingModal.querySelector('.progress-bar');
+                const progressText = loadingModal.querySelector('.progress-text');
+                if (progressBar) progressBar.style.width = `${progress}%`;
+                if (progressText) progressText.textContent = message;
+            } else if (type === 'success') {
+                // Process result
+                if (Array.isArray(result)) {
+                    result.forEach(exp => this.addExperiment(exp));
+                } else {
+                    this.addExperiment(result);
+                }
+                
+                filesProcessed++;
+                if (filesProcessed >= files.length) {
+                    // All files processed
+                    worker.terminate();
+                    document.body.removeChild(loadingModal);
+                    this.updateStats();
+                    this.refreshVisualizations();
+                    this.showNotification(`Loaded ${filesProcessed} file(s) successfully`, 'success');
+                }
+            } else if (type === 'error') {
+                // Handle error
+                console.error('Worker error:', error);
+                this.showNotification(`Error processing file: ${error}`, 'error');
+                filesProcessed++;
+                
+                if (filesProcessed >= files.length) {
+                    worker.terminate();
+                    document.body.removeChild(loadingModal);
+                }
+            }
+        };
+        
+        // Process each file
+        for (let i = 0; i < files.length; i++) {
+            const file = files[i];
+            const content = await file.text();
+            
+            worker.postMessage({
+                id: i,
+                type: 'parseFile',
+                data: {
+                    content: content,
+                    filename: file.name,
+                    fileSize: file.size
+                }
+            });
+        }
+    }
+
+    createLoadingModal() {
+        const modal = document.createElement('div');
+        modal.className = 'loading-modal';
+        modal.innerHTML = `
+            <div class="loading-content">
+                <h3>Processing Large File</h3>
+                <div class="progress-container">
+                    <div class="progress-bar" style="width: 0%"></div>
+                </div>
+                <p class="progress-text">Starting...</p>
+            </div>
+        `;
+        
+        // Add styles
+        modal.style.cssText = `
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+        `;
+        
+        const content = modal.querySelector('.loading-content');
+        content.style.cssText = `
+            background: var(--bg-primary);
+            padding: 2rem;
+            border-radius: var(--radius-lg);
+            min-width: 300px;
+            text-align: center;
+        `;
+        
+        const progressContainer = modal.querySelector('.progress-container');
+        progressContainer.style.cssText = `
+            background: var(--bg-secondary);
+            height: 20px;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        `;
+        
+        const progressBar = modal.querySelector('.progress-bar');
+        progressBar.style.cssText = `
+            background: var(--accent);
+            height: 100%;
+            transition: width 0.3s ease;
+        `;
+        
+        return modal;
     }
 
     addExperiment(data) {

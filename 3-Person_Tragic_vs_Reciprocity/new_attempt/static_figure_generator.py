@@ -2,6 +2,7 @@ import random
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
+import pandas as pd
 
 # --- Part 1: Agent and Simulation Logic (Simplified for Static Policies) ---
 

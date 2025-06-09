@@ -135,6 +135,11 @@ class DataProcessor {
     }
 
     normalizeCSVData(rows) {
+        // Check if this is agent-level data (has agent_id column)
+        if (rows.length > 0 && rows[0].hasOwnProperty('agent_id')) {
+            return this.processAgentLevelData(rows);
+        }
+        
         // Check if this is a single experiment with round data
         if (rows.length > 0 && rows[0].hasOwnProperty('round')) {
             // This appears to be round-by-round data for a single experiment
@@ -222,6 +227,91 @@ class DataProcessor {
         });
         
         return strategies;
+    }
+    
+    // Process agent-level data (like from experiment_results_rounds.csv)
+    processAgentLevelData(rows) {
+        // Group by scenario/experiment
+        const experiments = {};
+        
+        rows.forEach(row => {
+            const expId = row.scenario_name || row.experiment_id || 'default';
+            const round = parseInt(row.round) || 0;
+            
+            if (!experiments[expId]) {
+                experiments[expId] = {
+                    id: expId + '_' + Date.now(),
+                    name: expId,
+                    config: {
+                        num_agents: 0,
+                        num_rounds: 0,
+                        network_type: 'unknown',
+                        agent_strategies: {}
+                    },
+                    roundData: {},
+                    agentSet: new Set(),
+                    strategySet: {}
+                };
+            }
+            
+            // Track agents and strategies
+            experiments[expId].agentSet.add(row.agent_id);
+            if (row.strategy) {
+                experiments[expId].strategySet[row.strategy] = (experiments[expId].strategySet[row.strategy] || 0) + 1;
+            }
+            
+            // Initialize round data if needed
+            if (!experiments[expId].roundData[round]) {
+                experiments[expId].roundData[round] = {
+                    round: round,
+                    cooperators: 0,
+                    defectors: 0,
+                    totalPayoff: 0,
+                    agentCount: 0
+                };
+            }
+            
+            // Aggregate round data
+            const roundData = experiments[expId].roundData[round];
+            if (row.move === 'cooperate') {
+                roundData.cooperators++;
+            } else if (row.move === 'defect') {
+                roundData.defectors++;
+            }
+            roundData.totalPayoff += parseFloat(row.payoff) || 0;
+            roundData.agentCount++;
+        });
+        
+        // Convert to experiment format
+        return Object.entries(experiments).map(([expId, expData]) => {
+            const rounds = Object.values(expData.roundData).sort((a, b) => a.round - b.round);
+            const numAgents = expData.agentSet.size;
+            
+            // Count unique strategies
+            const strategies = {};
+            Object.entries(expData.strategySet).forEach(([strategy, count]) => {
+                // Normalize strategy counts to get number of agents per strategy
+                strategies[strategy] = Math.round(count / rounds.length);
+            });
+            
+            return {
+                id: expData.id,
+                name: expData.name,
+                config: {
+                    num_agents: numAgents,
+                    num_rounds: rounds.length,
+                    network_type: 'unknown',
+                    agent_strategies: strategies
+                },
+                results: rounds.map(round => ({
+                    round: round.round,
+                    cooperation_rate: round.cooperators / (round.cooperators + round.defectors),
+                    avg_score: round.totalPayoff / round.agentCount,
+                    num_cooperators: round.cooperators,
+                    num_defectors: round.defectors
+                }))
+            };
+        });
     }
 }
 

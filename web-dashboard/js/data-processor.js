@@ -135,7 +135,35 @@ class DataProcessor {
     }
 
     normalizeCSVData(rows) {
-        // Group by experiment/scenario if possible
+        // Check if this is a single experiment with round data
+        if (rows.length > 0 && rows[0].hasOwnProperty('round')) {
+            // This appears to be round-by-round data for a single experiment
+            const firstRow = rows[0];
+            
+            // Extract experiment metadata from first row if available
+            const experiment = {
+                id: firstRow.experiment_id || firstRow.scenario || Date.now().toString(),
+                name: firstRow.experiment_name || firstRow.scenario_name || 'CSV Import',
+                config: {
+                    num_agents: firstRow.num_agents || this.inferNumAgents(rows) || 0,
+                    num_rounds: rows.length,
+                    network_type: firstRow.network_type || 'unknown',
+                    agent_strategies: this.inferStrategies(rows)
+                },
+                results: rows.map(row => ({
+                    round: parseInt(row.round) || 0,
+                    cooperation_rate: parseFloat(row.cooperation_rate || row.coop_rate || row.avg_cooperation || 0),
+                    avg_score: parseFloat(row.avg_score || row.average_score || row.mean_score || 0),
+                    num_cooperators: parseInt(row.num_cooperators || row.cooperators || 0),
+                    num_defectors: parseInt(row.num_defectors || row.defectors || 0),
+                    ...row
+                }))
+            };
+            
+            return [experiment];
+        }
+        
+        // Otherwise, try to group by experiment/scenario
         const experiments = {};
         
         rows.forEach(row => {
@@ -148,21 +176,52 @@ class DataProcessor {
                     config: {
                         num_agents: row.num_agents || 0,
                         num_rounds: row.num_rounds || 0,
-                        network_type: row.network_type || 'unknown'
+                        network_type: row.network_type || 'unknown',
+                        agent_strategies: {}
                     },
                     results: []
                 };
             }
             
             experiments[expId].results.push({
-                round: row.round || experiments[expId].results.length,
-                cooperation_rate: row.cooperation_rate || row.coop_rate || 0,
-                avg_score: row.avg_score || row.average_score || 0,
+                round: parseInt(row.round) || experiments[expId].results.length,
+                cooperation_rate: parseFloat(row.cooperation_rate || row.coop_rate || 0),
+                avg_score: parseFloat(row.avg_score || row.average_score || 0),
                 ...row
             });
         });
         
         return Object.values(experiments);
+    }
+
+    inferNumAgents(rows) {
+        // Try to infer number of agents from cooperators + defectors
+        for (const row of rows) {
+            const cooperators = parseInt(row.num_cooperators || row.cooperators || 0);
+            const defectors = parseInt(row.num_defectors || row.defectors || 0);
+            if (cooperators + defectors > 0) {
+                return cooperators + defectors;
+            }
+        }
+        return 0;
+    }
+
+    inferStrategies(rows) {
+        // Try to infer strategies from column names
+        const strategies = {};
+        const firstRow = rows[0];
+        
+        // Look for strategy-related columns
+        Object.keys(firstRow).forEach(key => {
+            if (key.includes('strategy_') || key.includes('num_') && !key.includes('round')) {
+                const strategyName = key.replace('strategy_', '').replace('num_', '');
+                if (strategyName !== 'cooperators' && strategyName !== 'defectors') {
+                    strategies[strategyName] = parseInt(firstRow[key]) || 0;
+                }
+            }
+        });
+        
+        return strategies;
     }
 }
 

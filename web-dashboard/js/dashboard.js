@@ -469,6 +469,18 @@ class Dashboard {
                                 font: {
                                     size: 12
                                 }
+                            },
+                            onClick: (e, legendItem, legend) => {
+                                // Toggle dataset visibility
+                                const index = legendItem.datasetIndex;
+                                const ci = legend.chart;
+                                const meta = ci.getDatasetMeta(index);
+                                
+                                // Toggle visibility
+                                meta.hidden = meta.hidden === null ? !ci.data.datasets[index].hidden : null;
+                                
+                                // Update chart
+                                ci.update();
                             }
                         },
                         tooltip: {

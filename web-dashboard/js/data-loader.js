@@ -157,8 +157,118 @@ class DataLoader {
         }
     }
 
+    // Load scenario files from the project
+    async loadScenarioFiles() {
+        const scenarioFiles = [
+            '../scenarios/scenarios.json',
+            '../scenarios/enhanced_scenarios.json',
+            '../scenarios/pairwise_scenarios.json',
+            '../scenarios/true_pairwise_scenarios.json'
+        ];
+
+        for (const file of scenarioFiles) {
+            try {
+                const response = await fetch(file);
+                if (response.ok) {
+                    const scenarios = await response.json();
+                    return this.processScenarios(scenarios);
+                }
+            } catch (error) {
+                console.warn(`Failed to load scenario file ${file}:`, error);
+            }
+        }
+
+        // Fallback to synthetic data
+        return this.generateSyntheticData();
+    }
+
+    // Process scenario definitions into experiment data
+    processScenarios(scenarios) {
+        if (!Array.isArray(scenarios)) {
+            scenarios = [scenarios];
+        }
+
+        return scenarios.slice(0, 3).map(scenario => ({
+            id: `scenario_${Date.now()}_${Math.random().toString(36).substr(2, 9)}`,
+            name: scenario.scenario_name || 'Unnamed Scenario',
+            timestamp: new Date().toISOString(),
+            config: {
+                num_agents: scenario.num_agents || 30,
+                num_rounds: scenario.num_rounds || 100,
+                network_type: scenario.network_type || 'fully_connected',
+                network_params: scenario.network_params || {},
+                interaction_mode: scenario.interaction_mode || 'neighborhood',
+                agent_strategies: scenario.agent_strategies || {},
+                learning_rate: scenario.learning_rate || 0.1,
+                discount_factor: scenario.discount_factor || 0.9,
+                epsilon: scenario.epsilon || 0.1
+            },
+            results: this.simulateScenarioResults(scenario),
+            isExample: true
+        }));
+    }
+
+    // Simulate results for a scenario
+    simulateScenarioResults(scenario) {
+        const numRounds = scenario.num_rounds || 100;
+        const results = [];
+        let cooperationRate = 0.5;
+        
+        // Different evolution patterns based on strategies
+        const hasLearning = Object.keys(scenario.agent_strategies || {}).some(s => 
+            s.includes('q_learning') || s.includes('lra_q') || s.includes('hysteretic_q')
+        );
+        const hasCooperative = Object.keys(scenario.agent_strategies || {}).some(s => 
+            s.includes('cooperate') || s.includes('tit_for_tat') || s.includes('generous')
+        );
+        const hasDefectors = Object.keys(scenario.agent_strategies || {}).some(s => 
+            s.includes('defect')
+        );
+
+        for (let round = 0; round < numRounds; round++) {
+            // Simulate cooperation evolution based on strategy mix
+            if (hasLearning) {
+                // Learning agents: gradual improvement with exploration noise
+                cooperationRate += (0.7 - cooperationRate) * 0.01;
+                cooperationRate += (Math.random() - 0.5) * 0.05;
+            } else if (hasCooperative && !hasDefectors) {
+                // Cooperative environment: high and stable
+                cooperationRate += (0.9 - cooperationRate) * 0.05;
+                cooperationRate += (Math.random() - 0.5) * 0.02;
+            } else if (hasDefectors && !hasCooperative) {
+                // Defection dominant: low and declining
+                cooperationRate += (0.1 - cooperationRate) * 0.05;
+                cooperationRate += (Math.random() - 0.5) * 0.02;
+            } else {
+                // Mixed: oscillating around 0.5
+                cooperationRate = 0.5 + 0.2 * Math.sin(round / 20);
+                cooperationRate += (Math.random() - 0.5) * 0.1;
+            }
+
+            // Clamp between 0 and 1
+            cooperationRate = Math.max(0, Math.min(1, cooperationRate));
+
+            results.push({
+                round: round,
+                cooperation_rate: cooperationRate,
+                avg_score: 1 + cooperationRate * 3 + (Math.random() - 0.5) * 0.5,
+                num_cooperators: Math.round(cooperationRate * (scenario.num_agents || 30)),
+                num_defectors: Math.round((1 - cooperationRate) * (scenario.num_agents || 30))
+            });
+        }
+
+        return results;
+    }
+
     // Load example data from the project
     async loadExampleData() {
+        // First try to load real scenario files
+        const scenarioData = await this.loadScenarioFiles();
+        if (scenarioData && scenarioData.length > 0) {
+            return scenarioData;
+        }
+
+        // Then try to load result files
         const exampleURLs = [
             '../results/Baseline_QL_BasicState/run_00/experiment_results_rounds.csv',
             '../analysis_results/comparative_analysis.csv',

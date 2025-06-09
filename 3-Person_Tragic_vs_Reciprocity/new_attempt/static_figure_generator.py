@@ -151,10 +151,10 @@ def setup_experiments():
             StaticAgent(agent_id="TFT_2", strategy_name="TFT"),
             StaticAgent(agent_id="TFT_3", strategy_name="TFT"),
         ],
-        "2 TFT + 1 AllC": [
-            StaticAgent(agent_id="TFT_1", strategy_name="TFT"),
-            StaticAgent(agent_id="TFT_2", strategy_name="TFT"),
-            StaticAgent(agent_id="AllC_1", strategy_name="AllC"),
+        "2 TFT-E + 1 AllD": [
+            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="AllD_1", strategy_name="AllD"),
         ],
         "2 TFT + 1 AllD": [
             StaticAgent(agent_id="TFT_1", strategy_name="TFT"),

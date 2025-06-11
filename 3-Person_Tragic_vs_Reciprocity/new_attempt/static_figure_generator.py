@@ -3,6 +3,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import pandas as pd
+import os
+from datetime import datetime
 
 # --- Part 1: Agent and Simulation Logic (Simplified for Static Policies) ---
 
@@ -169,7 +171,39 @@ def setup_experiments():
     }
 
 
-def plot_results(data, title, smoothing_window=5):
+def save_data_to_csv(data, filename_prefix, results_dir):
+    """Saves the simulation data to CSV files."""
+    # Save individual experiment files
+    for exp_name, history in data.items():
+        # Create a DataFrame with round numbers and cooperation rates
+        df = pd.DataFrame({
+            'Round': range(1, len(history) + 1),
+            'TFT_Cooperation_Rate': history
+        })
+        
+        # Clean experiment name for filename
+        clean_name = exp_name.replace(' ', '_').replace('+', '_plus_')
+        filename = f"{filename_prefix}_{clean_name}.csv"
+        filepath = os.path.join(results_dir, filename)
+        
+        df.to_csv(filepath, index=False)
+        print(f"  - Saved: {filename}")
+    
+    # Also save a combined file with all experiments
+    # Get number of rounds from the first history
+    num_rounds = len(next(iter(data.values())))
+    combined_df = pd.DataFrame({'Round': range(1, num_rounds + 1)})
+    for exp_name, history in data.items():
+        clean_name = exp_name.replace(' ', '_').replace('+', '_plus_')
+        combined_df[clean_name] = history
+    
+    combined_filename = f"{filename_prefix}_all_experiments.csv"
+    combined_filepath = os.path.join(results_dir, combined_filename)
+    combined_df.to_csv(combined_filepath, index=False)
+    print(f"  - Saved combined: {combined_filename}")
+
+
+def plot_results(data, title, smoothing_window=5, save_path=None):
     """Creates a 2x2 grid of plots for the given simulation data."""
     sns.set_style("whitegrid")
     fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
@@ -196,6 +230,10 @@ def plot_results(data, title, smoothing_window=5):
     for i in range(len(data), len(axes_flat)):
         axes_flat[i].set_visible(False)
 
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  - Saved figure: {os.path.basename(save_path)}")
+    
     plt.show()
 
 
@@ -204,9 +242,14 @@ def plot_results(data, title, smoothing_window=5):
 if __name__ == "__main__":
     NUM_ROUNDS = 50  # As per the paper draft
     experiments = setup_experiments()
+    
+    # --- Create results directory ---
+    results_dir = "results"
+    os.makedirs(results_dir, exist_ok=True)
+    print(f"Results will be saved to: {os.path.abspath(results_dir)}")
 
     # --- Run Simulations for Figure 1 (Pairwise) ---
-    print("Running Pairwise simulations for Figure 1...")
+    print("\nRunning Pairwise simulations for Figure 1...")
     pairwise_data = {}
     for name, agent_list in experiments.items():
         print(f"  - Simulating: {name}")
@@ -219,8 +262,18 @@ if __name__ == "__main__":
         print(f"  - Simulating: {name}")
         neighbourhood_data[name] = run_nperson_simulation(agent_list, NUM_ROUNDS)
 
-    # --- Generate Plots ---
-    print("\nGenerating plots...")
-    plot_results(pairwise_data, title="Figure 1: TFT Cooperation Dynamics with Pairwise Voting")
-    plot_results(neighbourhood_data, title="Figure 2: TFT Cooperation Dynamics with Neighbourhood Voting")
-    print("Done.")
+    # --- Save Data to CSV ---
+    print("\nSaving data to CSV files...")
+    save_data_to_csv(pairwise_data, "pairwise_cooperation", results_dir)
+    save_data_to_csv(neighbourhood_data, "neighbourhood_cooperation", results_dir)
+    
+    # --- Generate and Save Plots ---
+    print("\nGenerating and saving plots...")
+    plot_results(pairwise_data, 
+                title="Figure 1: TFT Cooperation Dynamics with Pairwise Voting",
+                save_path=os.path.join(results_dir, "figure1_pairwise_cooperation.png"))
+    plot_results(neighbourhood_data, 
+                title="Figure 2: TFT Cooperation Dynamics with Neighbourhood Voting",
+                save_path=os.path.join(results_dir, "figure2_neighbourhood_cooperation.png"))
+    
+    print("\nDone! All results saved to the 'results' directory.")

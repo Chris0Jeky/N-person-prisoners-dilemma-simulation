@@ -353,6 +353,110 @@ def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
     plt.show()
 
 
+def plot_agent_scores(score_data, title, save_path=None):
+    """Creates plots showing cumulative scores for each agent type over time."""
+    sns.set_style("whitegrid")
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
+    fig.suptitle(title + " - Agent Scores (20 run average)", fontsize=16, weight='bold')
+    
+    axes_flat = axes.flatten()
+    
+    for i, (exp_name, exp_data) in enumerate(score_data.items()):
+        ax = axes_flat[i]
+        
+        # Group scores by agent type
+        agent_type_scores = {}
+        for agent_id, scores in exp_data.items():
+            # Extract agent type from ID (e.g., "TFT_1" -> "TFT")
+            agent_type = agent_id.split('_')[0]
+            if agent_type not in agent_type_scores:
+                agent_type_scores[agent_type] = []
+            agent_type_scores[agent_type].append(scores['mean'])
+        
+        # Plot each agent type
+        colors = {'TFT': 'blue', 'TFT-E': 'green', 'AllC': 'orange', 'AllD': 'red'}
+        for agent_type, scores_list in agent_type_scores.items():
+            # Average across agents of the same type
+            avg_scores = np.mean(scores_list, axis=0)
+            rounds = range(1, len(avg_scores) + 1)
+            
+            ax.plot(rounds, avg_scores, color=colors.get(agent_type, 'black'), 
+                   linewidth=2.5, label=agent_type, marker='o', markersize=2)
+        
+        ax.set_title(exp_name, fontsize=12)
+        ax.set_xlabel("Round")
+        ax.set_ylabel("Cumulative Score")
+        ax.legend(loc='best')
+        ax.grid(True, alpha=0.3)
+    
+    # Hide unused subplots
+    for i in range(len(score_data), len(axes_flat)):
+        axes_flat[i].set_visible(False)
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  - Saved figure: {os.path.basename(save_path)}")
+    
+    plt.show()
+
+
+def plot_all_agent_cooperation(coop_data, title, save_path=None):
+    """Creates plots showing cooperation rates for all agent types."""
+    sns.set_style("whitegrid")
+    fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
+    fig.suptitle(title + " - All Agent Cooperation Rates (20 run average)", fontsize=16, weight='bold')
+    
+    axes_flat = axes.flatten()
+    
+    for i, (exp_name, exp_data) in enumerate(coop_data.items()):
+        ax = axes_flat[i]
+        
+        # Group cooperation by agent type
+        agent_type_coop = {}
+        for agent_id, coop in exp_data.items():
+            # Extract agent type from ID
+            agent_type = agent_id.split('_')[0]
+            if agent_type not in agent_type_coop:
+                agent_type_coop[agent_type] = []
+            agent_type_coop[agent_type].append(coop['mean'])
+        
+        # Plot each agent type
+        colors = {'TFT': 'blue', 'TFT-E': 'green', 'AllC': 'orange', 'AllD': 'red'}
+        for agent_type, coop_list in agent_type_coop.items():
+            # Average across agents of the same type
+            avg_coop = np.mean(coop_list, axis=0)
+            rounds = range(1, len(avg_coop) + 1)
+            
+            # Also calculate and show confidence intervals
+            std_coop = np.std(coop_list, axis=0)
+            n_agents = len(coop_list)
+            sem = std_coop / np.sqrt(n_agents) if n_agents > 0 else 0
+            ci_95 = 1.96 * sem
+            
+            color = colors.get(agent_type, 'black')
+            ax.fill_between(rounds, avg_coop - ci_95, avg_coop + ci_95, 
+                           alpha=0.2, color=color)
+            ax.plot(rounds, avg_coop, color=color, linewidth=2.5, 
+                   label=agent_type, marker='o', markersize=2)
+        
+        ax.set_title(exp_name, fontsize=12)
+        ax.set_xlabel("Round")
+        ax.set_ylabel("Cooperation Rate")
+        ax.set_ylim(-0.05, 1.05)
+        ax.legend(loc='best')
+        ax.grid(True, alpha=0.3)
+    
+    # Hide unused subplots
+    for i in range(len(coop_data), len(axes_flat)):
+        axes_flat[i].set_visible(False)
+    
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"  - Saved figure: {os.path.basename(save_path)}")
+    
+    plt.show()
+
+
 # --- Part 3: Main Execution ---
 
 if __name__ == "__main__":

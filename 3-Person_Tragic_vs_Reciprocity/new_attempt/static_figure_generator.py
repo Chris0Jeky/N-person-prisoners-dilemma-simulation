@@ -143,6 +143,53 @@ def run_nperson_simulation(agents, num_rounds):
     return tft_coop_history
 
 
+# --- Multiple Run Support ---
+
+def run_multiple_simulations(simulation_func, agents, num_rounds, num_runs=20):
+    """Run multiple simulations and collect all results."""
+    all_runs = []
+    for run in range(num_runs):
+        # Create fresh agents for each run to avoid state carryover
+        fresh_agents = []
+        for agent in agents:
+            fresh_agents.append(StaticAgent(
+                agent_id=agent.agent_id,
+                strategy_name=agent.strategy_name,
+                exploration_rate=agent.exploration_rate
+            ))
+        
+        run_history = simulation_func(fresh_agents, num_rounds)
+        all_runs.append(run_history)
+    
+    return all_runs
+
+
+def aggregate_results(all_runs):
+    """Aggregate results from multiple runs into statistics."""
+    # Convert to numpy array for easier computation
+    runs_array = np.array(all_runs)
+    
+    # Calculate statistics for each round
+    mean_values = np.mean(runs_array, axis=0)
+    std_values = np.std(runs_array, axis=0)
+    
+    # Calculate 95% confidence intervals
+    n_runs = len(all_runs)
+    sem = std_values / np.sqrt(n_runs)  # Standard error of the mean
+    ci_95 = 1.96 * sem  # 95% confidence interval
+    
+    lower_bound = mean_values - ci_95
+    upper_bound = mean_values + ci_95
+    
+    return {
+        'mean': mean_values,
+        'std': std_values,
+        'lower_95': lower_bound,
+        'upper_95': upper_bound,
+        'all_runs': all_runs
+    }
+
+
 # --- Part 2: Experiment Setup and Plotting ---
 
 def setup_experiments():
@@ -171,60 +218,85 @@ def setup_experiments():
     }
 
 
-def save_data_to_csv(data, filename_prefix, results_dir):
-    """Saves the simulation data to CSV files."""
-    # Save individual experiment files
-    for exp_name, history in data.items():
-        # Create a DataFrame with round numbers and cooperation rates
+def save_aggregated_data_to_csv(data, filename_prefix, results_dir):
+    """Saves the aggregated simulation data to CSV files with statistics."""
+    # Save individual experiment files with statistics
+    for exp_name, stats in data.items():
+        # Create a DataFrame with statistics
         df = pd.DataFrame({
-            'Round': range(1, len(history) + 1),
-            'TFT_Cooperation_Rate': history
+            'Round': range(1, len(stats['mean']) + 1),
+            'Mean_Cooperation_Rate': stats['mean'],
+            'Std_Dev': stats['std'],
+            'Lower_95_CI': stats['lower_95'],
+            'Upper_95_CI': stats['upper_95']
         })
+        
+        # Add individual run columns
+        for i, run in enumerate(stats['all_runs']):
+            df[f'Run_{i+1}'] = run
 
         # Clean experiment name for filename
         clean_name = exp_name.replace(' ', '_').replace('+', '_plus_')
-        filename = f"{filename_prefix}_{clean_name}.csv"
+        filename = f"{filename_prefix}_{clean_name}_aggregated.csv"
         filepath = os.path.join(results_dir, filename)
 
         df.to_csv(filepath, index=False)
         print(f"  - Saved: {filename}")
 
-    # Also save a combined file with all experiments
-    # Get number of rounds from the first history
-    num_rounds = len(next(iter(data.values())))
+    # Also save a combined summary file with just means
+    num_rounds = len(next(iter(data.values()))['mean'])
     combined_df = pd.DataFrame({'Round': range(1, num_rounds + 1)})
-    for exp_name, history in data.items():
+    
+    for exp_name, stats in data.items():
         clean_name = exp_name.replace(' ', '_').replace('+', '_plus_')
-        combined_df[clean_name] = history
+        combined_df[f'{clean_name}_mean'] = stats['mean']
+        combined_df[f'{clean_name}_std'] = stats['std']
 
-    combined_filename = f"{filename_prefix}_all_experiments.csv"
+    combined_filename = f"{filename_prefix}_all_experiments_summary.csv"
     combined_filepath = os.path.join(results_dir, combined_filename)
     combined_df.to_csv(combined_filepath, index=False)
-    print(f"  - Saved combined: {combined_filename}")
+    print(f"  - Saved combined summary: {combined_filename}")
 
 
-def plot_results(data, title, smoothing_window=5, save_path=None):
-    """Creates a 2x2 grid of plots for the given simulation data."""
+def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
+    """Creates a 2x2 grid of plots showing mean and confidence intervals."""
     sns.set_style("whitegrid")
     fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
-    fig.suptitle(title, fontsize=16, weight='bold')
+    fig.suptitle(title + " (20 runs with 95% CI)", fontsize=16, weight='bold')
 
     axes_flat = axes.flatten()
-    for i, (exp_name, history) in enumerate(data.items()):
+    rounds = None
+    
+    for i, (exp_name, stats) in enumerate(data.items()):
         ax = axes_flat[i]
-
-        # Raw data
-        ax.plot(history, color='skyblue', alpha=0.6, label='Raw Cooperation')
-
-        # Smoothed data
-        smoothed_history = pd.Series(history).rolling(window=smoothing_window, min_periods=1, center=True).mean()
-        ax.plot(smoothed_history, color='blue', linewidth=2.5, label=f'Smoothed (window={smoothing_window})')
+        
+        if rounds is None:
+            rounds = range(1, len(stats['mean']) + 1)
+        
+        # Plot confidence interval as shaded region
+        ax.fill_between(rounds, stats['lower_95'], stats['upper_95'], 
+                       alpha=0.3, color='blue', label='95% CI')
+        
+        # Plot mean
+        ax.plot(rounds, stats['mean'], color='blue', linewidth=2.5, 
+               label='Mean', marker='o', markersize=2)
+        
+        # Plot smoothed mean
+        smoothed_mean = pd.Series(stats['mean']).rolling(
+            window=smoothing_window, min_periods=1, center=True).mean()
+        ax.plot(rounds, smoothed_mean, color='darkblue', linewidth=2, 
+               linestyle='--', label=f'Smoothed (window={smoothing_window})')
+        
+        # Add individual run traces (faint)
+        for run in stats['all_runs'][:5]:  # Show first 5 runs as examples
+            ax.plot(rounds, run, alpha=0.1, color='gray', linewidth=0.5)
 
         ax.set_title(exp_name, fontsize=12)
         ax.set_xlabel("Round")
         ax.set_ylabel("Avg. TFT/TFT-E Cooperation Rate")
         ax.set_ylim(-0.05, 1.05)
-        ax.legend()
+        ax.legend(loc='best', fontsize=9)
+        ax.grid(True, alpha=0.3)
 
     # Hide any unused subplots
     for i in range(len(data), len(axes_flat)):

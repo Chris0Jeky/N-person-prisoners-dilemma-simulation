@@ -142,3 +142,11 @@ class TestPairwisePayoffs:
 
          with pytest.raises(ValueError):
              get_pairwise_payoffs("cooperate", "invalid")
+
+
+class TestDailyT040LinearDefectBounds:
+    """Daily check: linear defect payoff hits its endpoints."""
+
+    def test_linear_defect_bounds(self):
+        assert linear_payoff_D(0, 10, T=5, P=1) == pytest.approx(1.0)
+        assert linear_payoff_D(9, 10, T=5, P=1) == pytest.approx(5.0)

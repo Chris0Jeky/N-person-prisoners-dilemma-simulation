@@ -519,36 +519,70 @@ if __name__ == "__main__":
     print(f"Results will be saved to: {os.path.abspath(results_dir)}")
     print(f"Running {NUM_RUNS} simulations per experiment for statistical aggregation...")
 
-    # --- Run Multiple Simulations for Figure 1 (Pairwise) ---
-    print(f"\nRunning {NUM_RUNS} Pairwise simulations for each experiment...")
-    pairwise_aggregated = {}
+    # --- Run Extended Pairwise Simulations ---
+    print(f"\nRunning {NUM_RUNS} Extended Pairwise simulations for each experiment...")
+    pairwise_tft_aggregated = {}
+    pairwise_all_coop_aggregated = {}
+    pairwise_scores_aggregated = {}
+    
     for name, agent_list in experiments.items():
         print(f"  - Running {NUM_RUNS} simulations for: {name}")
-        all_runs = run_multiple_simulations(run_pairwise_simulation, agent_list, NUM_ROUNDS, NUM_RUNS)
-        pairwise_aggregated[name] = aggregate_results(all_runs)
-        print(f"    Mean cooperation rate: {np.mean(pairwise_aggregated[name]['mean']):.3f} ± {np.mean(pairwise_aggregated[name]['std']):.3f}")
+        tft_runs, coop_runs, score_runs = run_multiple_simulations_extended(
+            run_pairwise_simulation_extended, agent_list, NUM_ROUNDS, NUM_RUNS)
+        
+        pairwise_tft_aggregated[name] = aggregate_results(tft_runs)
+        pairwise_all_coop_aggregated[name] = aggregate_agent_data(coop_runs)
+        pairwise_scores_aggregated[name] = aggregate_agent_data(score_runs)
+        
+        print(f"    Mean TFT cooperation rate: {np.mean(pairwise_tft_aggregated[name]['mean']):.3f} ± {np.mean(pairwise_tft_aggregated[name]['std']):.3f}")
 
-    # --- Run Multiple Simulations for Figure 2 (Neighbourhood) ---
-    print(f"\nRunning {NUM_RUNS} Neighbourhood simulations for each experiment...")
-    neighbourhood_aggregated = {}
+    # --- Run Extended Neighbourhood Simulations ---
+    print(f"\nRunning {NUM_RUNS} Extended Neighbourhood simulations for each experiment...")
+    neighbourhood_tft_aggregated = {}
+    neighbourhood_all_coop_aggregated = {}
+    neighbourhood_scores_aggregated = {}
+    
     for name, agent_list in experiments.items():
         print(f"  - Running {NUM_RUNS} simulations for: {name}")
-        all_runs = run_multiple_simulations(run_nperson_simulation, agent_list, NUM_ROUNDS, NUM_RUNS)
-        neighbourhood_aggregated[name] = aggregate_results(all_runs)
-        print(f"    Mean cooperation rate: {np.mean(neighbourhood_aggregated[name]['mean']):.3f} ± {np.mean(neighbourhood_aggregated[name]['std']):.3f}")
+        tft_runs, coop_runs, score_runs = run_multiple_simulations_extended(
+            run_nperson_simulation_extended, agent_list, NUM_ROUNDS, NUM_RUNS)
+        
+        neighbourhood_tft_aggregated[name] = aggregate_results(tft_runs)
+        neighbourhood_all_coop_aggregated[name] = aggregate_agent_data(coop_runs)
+        neighbourhood_scores_aggregated[name] = aggregate_agent_data(score_runs)
+        
+        print(f"    Mean TFT cooperation rate: {np.mean(neighbourhood_tft_aggregated[name]['mean']):.3f} ± {np.mean(neighbourhood_tft_aggregated[name]['std']):.3f}")
 
     # --- Save Aggregated Data to CSV ---
     print("\nSaving aggregated data to CSV files...")
-    save_aggregated_data_to_csv(pairwise_aggregated, "pairwise_cooperation", results_dir)
-    save_aggregated_data_to_csv(neighbourhood_aggregated, "neighbourhood_cooperation", results_dir)
+    save_aggregated_data_to_csv(pairwise_tft_aggregated, "pairwise_tft_cooperation", results_dir)
+    save_aggregated_data_to_csv(neighbourhood_tft_aggregated, "neighbourhood_tft_cooperation", results_dir)
 
-    # --- Generate and Save Plots with Confidence Intervals ---
-    print("\nGenerating and saving plots with confidence intervals...")
-    plot_aggregated_results(pairwise_aggregated,
+    # --- Generate All Plots ---
+    print("\nGenerating and saving all plots...")
+    
+    # Original TFT cooperation plots
+    plot_aggregated_results(pairwise_tft_aggregated,
                            title="Figure 1: TFT Cooperation Dynamics with Pairwise Voting",
-                           save_path=os.path.join(results_dir, "figure1_pairwise_cooperation_aggregated.png"))
-    plot_aggregated_results(neighbourhood_aggregated,
+                           save_path=os.path.join(results_dir, "figure1_pairwise_tft_cooperation.png"))
+    plot_aggregated_results(neighbourhood_tft_aggregated,
                            title="Figure 2: TFT Cooperation Dynamics with Neighbourhood Voting",
-                           save_path=os.path.join(results_dir, "figure2_neighbourhood_cooperation_aggregated.png"))
+                           save_path=os.path.join(results_dir, "figure2_neighbourhood_tft_cooperation.png"))
+    
+    # Agent scores plots
+    plot_agent_scores(pairwise_scores_aggregated,
+                     title="Figure 3: Pairwise Agent Scores",
+                     save_path=os.path.join(results_dir, "figure3_pairwise_agent_scores.png"))
+    plot_agent_scores(neighbourhood_scores_aggregated,
+                     title="Figure 4: Neighbourhood Agent Scores",
+                     save_path=os.path.join(results_dir, "figure4_neighbourhood_agent_scores.png"))
+    
+    # All agent cooperation plots
+    plot_all_agent_cooperation(pairwise_all_coop_aggregated,
+                              title="Figure 5: Pairwise All Agents",
+                              save_path=os.path.join(results_dir, "figure5_pairwise_all_cooperation.png"))
+    plot_all_agent_cooperation(neighbourhood_all_coop_aggregated,
+                              title="Figure 6: Neighbourhood All Agents",
+                              save_path=os.path.join(results_dir, "figure6_neighbourhood_all_cooperation.png"))
 
     print(f"\nDone! All results from {NUM_RUNS} runs saved to the 'results' directory.")

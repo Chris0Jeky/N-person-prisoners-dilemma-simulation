@@ -208,6 +208,55 @@ def run_multiple_simulations(simulation_func, agents, num_rounds, num_runs=20):
     return all_runs
 
 
+def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_runs=20):
+    """Run multiple simulations and collect extended results (TFT coop, all coop, scores)."""
+    all_tft_runs = []
+    all_coop_runs = {agent.agent_id: [] for agent in agents}
+    all_score_runs = {agent.agent_id: [] for agent in agents}
+    
+    for run in range(num_runs):
+        # Create fresh agents for each run
+        fresh_agents = []
+        for agent in agents:
+            fresh_agents.append(StaticAgent(
+                agent_id=agent.agent_id,
+                strategy_name=agent.strategy_name,
+                exploration_rate=agent.exploration_rate
+            ))
+        
+        tft_history, coop_history, score_history = simulation_func(fresh_agents, num_rounds)
+        all_tft_runs.append(tft_history)
+        
+        for agent_id in coop_history:
+            all_coop_runs[agent_id].append(coop_history[agent_id])
+            all_score_runs[agent_id].append(score_history[agent_id])
+    
+    return all_tft_runs, all_coop_runs, all_score_runs
+
+
+def aggregate_agent_data(agent_runs):
+    """Aggregate per-agent data from multiple runs."""
+    aggregated = {}
+    for agent_id, runs in agent_runs.items():
+        runs_array = np.array(runs)
+        mean_values = np.mean(runs_array, axis=0)
+        std_values = np.std(runs_array, axis=0)
+        
+        n_runs = len(runs)
+        sem = std_values / np.sqrt(n_runs)
+        ci_95 = 1.96 * sem
+        
+        aggregated[agent_id] = {
+            'mean': mean_values,
+            'std': std_values,
+            'lower_95': mean_values - ci_95,
+            'upper_95': mean_values + ci_95,
+            'all_runs': runs
+        }
+    
+    return aggregated
+
+
 def aggregate_results(all_runs):
     """Aggregate results from multiple runs into statistics."""
     # Convert to numpy array for easier computation

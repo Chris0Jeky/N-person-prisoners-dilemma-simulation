@@ -313,39 +313,45 @@ def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
 
 if __name__ == "__main__":
     NUM_ROUNDS = 50  # As per the paper draft
+    NUM_RUNS = 20    # Number of simulation runs for aggregation
     experiments = setup_experiments()
 
     # --- Create results directory ---
     results_dir = "results"
     os.makedirs(results_dir, exist_ok=True)
     print(f"Results will be saved to: {os.path.abspath(results_dir)}")
+    print(f"Running {NUM_RUNS} simulations per experiment for statistical aggregation...")
 
-    # --- Run Simulations for Figure 1 (Pairwise) ---
-    print("\nRunning Pairwise simulations for Figure 1...")
-    pairwise_data = {}
+    # --- Run Multiple Simulations for Figure 1 (Pairwise) ---
+    print(f"\nRunning {NUM_RUNS} Pairwise simulations for each experiment...")
+    pairwise_aggregated = {}
     for name, agent_list in experiments.items():
-        print(f"  - Simulating: {name}")
-        pairwise_data[name] = run_pairwise_simulation(agent_list, NUM_ROUNDS)
+        print(f"  - Running {NUM_RUNS} simulations for: {name}")
+        all_runs = run_multiple_simulations(run_pairwise_simulation, agent_list, NUM_ROUNDS, NUM_RUNS)
+        pairwise_aggregated[name] = aggregate_results(all_runs)
+        print(f"    Mean cooperation rate: {np.mean(pairwise_aggregated[name]['mean']):.3f} ± {np.mean(pairwise_aggregated[name]['std']):.3f}")
 
-    # --- Run Simulations for Figure 2 (Neighbourhood) ---
-    print("\nRunning Neighbourhood simulations for Figure 2...")
-    neighbourhood_data = {}
+    # --- Run Multiple Simulations for Figure 2 (Neighbourhood) ---
+    print(f"\nRunning {NUM_RUNS} Neighbourhood simulations for each experiment...")
+    neighbourhood_aggregated = {}
     for name, agent_list in experiments.items():
-        print(f"  - Simulating: {name}")
-        neighbourhood_data[name] = run_nperson_simulation(agent_list, NUM_ROUNDS)
+        print(f"  - Running {NUM_RUNS} simulations for: {name}")
+        all_runs = run_multiple_simulations(run_nperson_simulation, agent_list, NUM_ROUNDS, NUM_RUNS)
+        neighbourhood_aggregated[name] = aggregate_results(all_runs)
+        print(f"    Mean cooperation rate: {np.mean(neighbourhood_aggregated[name]['mean']):.3f} ± {np.mean(neighbourhood_aggregated[name]['std']):.3f}")
 
-    # --- Save Data to CSV ---
-    print("\nSaving data to CSV files...")
-    save_data_to_csv(pairwise_data, "pairwise_cooperation", results_dir)
-    save_data_to_csv(neighbourhood_data, "neighbourhood_cooperation", results_dir)
+    # --- Save Aggregated Data to CSV ---
+    print("\nSaving aggregated data to CSV files...")
+    save_aggregated_data_to_csv(pairwise_aggregated, "pairwise_cooperation", results_dir)
+    save_aggregated_data_to_csv(neighbourhood_aggregated, "neighbourhood_cooperation", results_dir)
 
-    # --- Generate and Save Plots ---
-    print("\nGenerating and saving plots...")
-    plot_results(pairwise_data,
-                 title="Figure 1: TFT Cooperation Dynamics with Pairwise Voting",
-                 save_path=os.path.join(results_dir, "figure1_pairwise_cooperation.png"))
-    plot_results(neighbourhood_data,
-                 title="Figure 2: TFT Cooperation Dynamics with Neighbourhood Voting",
-                 save_path=os.path.join(results_dir, "figure2_neighbourhood_cooperation.png"))
+    # --- Generate and Save Plots with Confidence Intervals ---
+    print("\nGenerating and saving plots with confidence intervals...")
+    plot_aggregated_results(pairwise_aggregated,
+                           title="Figure 1: TFT Cooperation Dynamics with Pairwise Voting",
+                           save_path=os.path.join(results_dir, "figure1_pairwise_cooperation_aggregated.png"))
+    plot_aggregated_results(neighbourhood_aggregated,
+                           title="Figure 2: TFT Cooperation Dynamics with Neighbourhood Voting",
+                           save_path=os.path.join(results_dir, "figure2_neighbourhood_cooperation_aggregated.png"))
 
-    print("\nDone! All results saved to the 'results' directory.")
+    print(f"\nDone! All results from {NUM_RUNS} runs saved to the 'results' directory.")

@@ -76,16 +76,20 @@ class StaticAgent:
 
 # --- Simulation Functions ---
 
-def run_pairwise_simulation(agents, num_rounds):
-    """Runs a single pairwise tournament and logs TFT cooperation."""
+def run_pairwise_simulation_extended(agents, num_rounds):
+    """Runs a single pairwise tournament and logs cooperation and scores for all agents."""
     for agent in agents: agent.reset()
 
-    # Identify TFT agents to log their performance
+    # Initialize tracking
     tft_agents = [agent for agent in agents if "TFT" in agent.strategy_name]
     tft_coop_history = []
+    all_coop_history = {agent.agent_id: [] for agent in agents}
+    score_history = {agent.agent_id: [] for agent in agents}
+    cumulative_scores = {agent.agent_id: 0 for agent in agents}
 
-    for _ in range(num_rounds):
+    for round_num in range(num_rounds):
         round_payoffs = {agent.agent_id: 0 for agent in agents}
+        round_moves = {agent.agent_id: {} for agent in agents}
 
         # All pairs play one round
         for i in range(len(agents)):
@@ -93,6 +97,10 @@ def run_pairwise_simulation(agents, num_rounds):
                 agent1, agent2 = agents[i], agents[j]
                 move1 = agent1.choose_pairwise_action(agent2.agent_id)
                 move2 = agent2.choose_pairwise_action(agent1.agent_id)
+
+                # Record moves for cooperation tracking
+                round_moves[agent1.agent_id][agent2.agent_id] = move1
+                round_moves[agent2.agent_id][agent1.agent_id] = move2
 
                 # Record opponent's move for next round's TFT decision
                 agent1.opponent_last_moves[agent2.agent_id] = move2
@@ -102,34 +110,64 @@ def run_pairwise_simulation(agents, num_rounds):
                 round_payoffs[agent1.agent_id] += payoff1
                 round_payoffs[agent2.agent_id] += payoff2
 
+        # Update cumulative scores and track history
+        for agent in agents:
+            cumulative_scores[agent.agent_id] += round_payoffs[agent.agent_id]
+            score_history[agent.agent_id].append(cumulative_scores[agent.agent_id])
+            
+            # Calculate cooperation rate for this agent
+            if len(agents) > 1:
+                coop_count = sum(1 for move in round_moves[agent.agent_id].values() if move == COOPERATE)
+                coop_rate = coop_count / (len(agents) - 1)
+                all_coop_history[agent.agent_id].append(coop_rate)
+
         # Log the cooperation rate of TFT agents in this round
         if tft_agents:
             tft_coop_count = 0
-            # To get a fair per-round rate, we check the intended moves for all pairings
             for tft_agent in tft_agents:
                 for opponent in agents:
                     if tft_agent.agent_id != opponent.agent_id:
-                        if tft_agent.choose_pairwise_action(opponent.agent_id) == COOPERATE:
+                        if round_moves[tft_agent.agent_id][opponent.agent_id] == COOPERATE:
                             tft_coop_count += 1
             avg_coop_rate = tft_coop_count / (len(tft_agents) * (len(agents) - 1))
             tft_coop_history.append(avg_coop_rate)
 
+    return tft_coop_history, all_coop_history, score_history
+
+
+def run_pairwise_simulation(agents, num_rounds):
+    """Backward compatible wrapper that returns only TFT cooperation."""
+    tft_coop_history, _, _ = run_pairwise_simulation_extended(agents, num_rounds)
     return tft_coop_history
 
 
-def run_nperson_simulation(agents, num_rounds):
-    """Runs a single N-Person simulation and logs TFT cooperation."""
+def run_nperson_simulation_extended(agents, num_rounds):
+    """Runs a single N-Person simulation and logs cooperation and scores for all agents."""
     tft_agents = [agent for agent in agents if "TFT" in agent.strategy_name]
     tft_coop_history = []
+    all_coop_history = {agent.agent_id: [] for agent in agents}
+    score_history = {agent.agent_id: [] for agent in agents}
+    cumulative_scores = {agent.agent_id: 0 for agent in agents}
 
     prev_round_coop_ratio = None
     num_total_agents = len(agents)
 
-    for _ in range(num_rounds):
+    for round_num in range(num_rounds):
         moves = {agent.agent_id: agent.choose_nperson_action(prev_round_coop_ratio) for agent in agents}
 
         num_cooperators = list(moves.values()).count(COOPERATE)
         current_coop_ratio = num_cooperators / num_total_agents if num_total_agents > 0 else 0
+
+        # Calculate payoffs for each agent
+        for agent in agents:
+            my_move = moves[agent.agent_id]
+            num_other_cooperators = num_cooperators - (1 if my_move == COOPERATE else 0)
+            payoff = nperson_payoff(my_move, num_other_cooperators, num_total_agents)
+            cumulative_scores[agent.agent_id] += payoff
+            score_history[agent.agent_id].append(cumulative_scores[agent.agent_id])
+            
+            # Track individual cooperation
+            all_coop_history[agent.agent_id].append(1 if my_move == COOPERATE else 0)
 
         # Log the cooperation rate of TFT agents in this round
         if tft_agents:
@@ -140,6 +178,12 @@ def run_nperson_simulation(agents, num_rounds):
         # Update state for next round
         prev_round_coop_ratio = current_coop_ratio
 
+    return tft_coop_history, all_coop_history, score_history
+
+
+def run_nperson_simulation(agents, num_rounds):
+    """Backward compatible wrapper that returns only TFT cooperation."""
+    tft_coop_history, _, _ = run_nperson_simulation_extended(agents, num_rounds)
     return tft_coop_history
 
 

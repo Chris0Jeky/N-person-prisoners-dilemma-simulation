@@ -312,7 +312,7 @@ def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
 # --- Part 3: Main Execution ---
 
 if __name__ == "__main__":
-    NUM_ROUNDS = 50  # As per the paper draft
+    NUM_ROUNDS = 200  # As per the paper draft
     NUM_RUNS = 20    # Number of simulation runs for aggregation
     experiments = setup_experiments()
 

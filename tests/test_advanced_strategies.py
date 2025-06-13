@@ -491,3 +491,12 @@ class TestDailyT031WolfPhcDefaults:
         agent = Agent(agent_id=2, strategy="wolf_phc", learning_rate=0.3)
         assert agent.strategy_type == "wolf_phc"
         assert agent.strategy.learning_rate == 0.3
+
+
+class TestDailyT041LraQDiscount:
+    """Daily check: LRA-Q keeps its configured discount factor."""
+
+    def test_lra_q_discount_factor(self):
+        agent = Agent(agent_id=4, strategy="lra_q")
+        assert agent.strategy_type == "lra_q"
+        assert agent.strategy.discount_factor == 0.9

@@ -31,6 +31,7 @@ class BaseAgent:
             self.num_defections += 1
 
     def reset(self):
+        """Clear score and cooperation counters for a new run."""
         self.total_score = 0
         self.num_cooperations = 0
         self.num_defections = 0

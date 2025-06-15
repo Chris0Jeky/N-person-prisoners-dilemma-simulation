@@ -188,3 +188,11 @@ class TestDailyT033TftFirstMove:
     def test_tft_first_move(self):
         agent = Agent(agent_id=6, strategy="tit_for_tat")
         assert agent.choose_move([]) == "cooperate"
+
+
+class TestDailyT043QLearningRate:
+    """Daily check: Q-learning keeps its default learning rate."""
+
+    def test_q_learning_default_learning_rate(self):
+        agent = Agent(agent_id=9, strategy="q_learning")
+        assert agent.strategy.learning_rate == 0.1

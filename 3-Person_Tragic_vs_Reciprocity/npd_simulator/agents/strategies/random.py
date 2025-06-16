@@ -5,8 +5,17 @@ Random strategy agent
 from typing import Tuple
 import random
 from ..base.agent import NPDAgent, PairwiseAgent
+from ..registry import AgentRegistry
 
 
+@AgentRegistry.register(
+    name="Random",
+    category="basic",
+    description="Random: Cooperates with fixed probability",
+    parameters={
+        "cooperation_probability": "Probability of cooperation (0-1)"
+    }
+)
 class RandomAgent(NPDAgent, PairwiseAgent):
     """
     Random agent that cooperates with a fixed probability.

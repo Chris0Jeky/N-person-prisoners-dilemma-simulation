@@ -71,9 +71,9 @@ def test_different_environments():
     
     # Test against different opponent compositions
     test_cases = [
-        ("vs 2 Cooperators", ["QL", "TFT", "TFT"]),
+        ("vs 2 Cooperators", ["QL", "pTFT", "pTFT"]),
         ("vs 2 Defectors", ["QL", "AllD", "AllD"]),
-        ("vs Mixed", ["QL", "TFT", "AllD"])
+        ("vs Mixed", ["QL", "pTFT", "AllD"])
     ]
     
     for test_name, agent_types in test_cases:

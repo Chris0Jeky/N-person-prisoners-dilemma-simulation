@@ -85,18 +85,23 @@ class SimpleCSVAnalyzer:
         
         # Parse agent stats from summary if available
         if summary_data:
-            agent_stats_started = False
-            for row in summary_data:
-                if row.get('Metric') == 'Agent Stats':
-                    agent_stats_started = True
-                    continue
-                
-                if agent_stats_started and row.get('Metric', '').isdigit():
-                    agent_id = int(row['Metric'])
-                    agent_analysis[f'agent_{agent_id}'] = {
-                        'total_score': float(row['Value']),
-                        'cooperation_rate': float(row.get('cooperation_rate', 0))
-                    }
+            # Check if we have the agent stats header row
+            for i, row in enumerate(summary_data):
+                if 'agent_id' in row and 'total_score' in row and 'cooperation_rate' in row:
+                    # This is the header row for agent stats
+                    # The next rows contain the actual agent data
+                    for j in range(i + 1, len(summary_data)):
+                        agent_row = summary_data[j]
+                        if agent_row.get('agent_id', '').strip():
+                            try:
+                                agent_id = int(agent_row['agent_id'])
+                                agent_analysis[f'agent_{agent_id}'] = {
+                                    'total_score': float(agent_row['total_score']),
+                                    'cooperation_rate': float(agent_row['cooperation_rate'])
+                                }
+                            except (ValueError, KeyError):
+                                break
+                    break
         
         # Analyze actions from history
         if history_data and not agent_analysis:

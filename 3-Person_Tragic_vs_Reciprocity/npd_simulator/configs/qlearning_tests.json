@@ -1,0 +1,89 @@
+[
+  {
+    "name": "basic_qlearning_vs_allc",
+    "description": "Test basic Q-learning against always cooperate",
+    "agents": [
+      {
+        "id": 0,
+        "type": "QLearning",
+        "exploration_rate": 0.0,
+        "learning_rate": 0.15,
+        "epsilon": 0.1,
+        "state_type": "basic"
+      },
+      {
+        "id": 1,
+        "type": "AllC",
+        "exploration_rate": 0.0
+      },
+      {
+        "id": 2,
+        "type": "AllC",
+        "exploration_rate": 0.0
+      }
+    ],
+    "num_rounds": 2000
+  },
+  {
+    "name": "enhanced_qlearning_vs_allc",
+    "description": "Test enhanced Q-learning with improvements",
+    "agents": [
+      {
+        "id": 0,
+        "type": "EnhancedQLearning",
+        "exploration_rate": 0.0,
+        "learning_rate": 0.15,
+        "epsilon": 0.1,
+        "epsilon_decay": 0.995,
+        "epsilon_min": 0.001,
+        "exclude_self": true,
+        "opponent_modeling": false,
+        "state_type": "basic"
+      },
+      {
+        "id": 1,
+        "type": "AllC",
+        "exploration_rate": 0.0
+      },
+      {
+        "id": 2,
+        "type": "AllC",
+        "exploration_rate": 0.0
+      }
+    ],
+    "num_rounds": 2000
+  },
+  {
+    "name": "qlearning_mixed_opponents",
+    "description": "Q-learning in mixed strategy environment",
+    "agents": [
+      {
+        "id": 0,
+        "type": "EnhancedQLearning",
+        "exploration_rate": 0.0,
+        "learning_rate": 0.1,
+        "epsilon": 0.15,
+        "epsilon_decay": 0.998,
+        "exclude_self": true,
+        "opponent_modeling": true
+      },
+      {
+        "id": 1,
+        "type": "TFT",
+        "exploration_rate": 0.05
+      },
+      {
+        "id": 2,
+        "type": "AllD",
+        "exploration_rate": 0.0
+      },
+      {
+        "id": 3,
+        "type": "Random",
+        "exploration_rate": 0.0,
+        "cooperation_probability": 0.5
+      }
+    ],
+    "num_rounds": 3000
+  }
+]

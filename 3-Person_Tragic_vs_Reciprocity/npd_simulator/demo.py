@@ -8,9 +8,9 @@ from pathlib import Path
 # Add npd_simulator to path
 sys.path.insert(0, str(Path(__file__).parent))
 
-from npd_simulator.main import NPDSimulator
-from npd_simulator.experiments.scenarios.scenario_generator import ScenarioGenerator
-from npd_simulator.utils.config_loader import create_sample_config
+from main import NPDSimulator
+from experiments.scenarios.scenario_generator import ScenarioGenerator
+from utils.config_loader import create_sample_config
 
 
 def demo_single_experiment():

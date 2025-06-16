@@ -6,7 +6,8 @@ import pandas as pd
 import os
 from datetime import datetime
 
-# --- Part 1: Agent and Simulation Logic (Simplified for Static Policies) ---
+# Static Figure Generator for N-Person Prisoner's Dilemma
+# Analyzes cooperation dynamics with traditional strategies (TFT, AllC, AllD)
 
 # --- Constants and Payoffs ---
 COOPERATE = 0

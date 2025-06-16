@@ -511,7 +511,7 @@ def plot_all_agent_cooperation(coop_data, title, save_path=None):
 
 if __name__ == "__main__":
     NUM_ROUNDS = 100
-    NUM_RUNS = 15
+    NUM_RUNS = 100
     experiments = setup_experiments()
 
     # --- Create results directory ---

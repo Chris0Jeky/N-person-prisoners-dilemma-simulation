@@ -17,6 +17,9 @@ from profiles.profile_loader import ProfileLoader
 from utils.results_manager import ResultsManager
 from static_style_visualizer import StaticStyleVisualizer
 
+# Ensure agents are registered
+import agents
+
 
 class ResearchExperiments:
     """

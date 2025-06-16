@@ -12,8 +12,23 @@ from typing import Tuple, Optional, Dict, Any
 import random
 from collections import defaultdict, deque
 from ..base.agent import NPDAgent, PairwiseAgent
+from ..registry import AgentRegistry
 
 
+@AgentRegistry.register(
+    name="EnhancedQLearning",
+    category="learning",
+    description="Enhanced Q-Learning with advanced features",
+    parameters={
+        "learning_rate": "Learning rate (alpha)",
+        "discount_factor": "Discount factor (gamma)",
+        "epsilon": "Initial exploration rate",
+        "epsilon_decay": "Epsilon decay factor per episode",
+        "epsilon_min": "Minimum epsilon value",
+        "exclude_self": "Exclude self from state calculation",
+        "opponent_modeling": "Enable opponent modeling"
+    }
+)
 class EnhancedQLearningAgent(NPDAgent, PairwiseAgent):
     """
     Enhanced Q-Learning with configurable improvements.

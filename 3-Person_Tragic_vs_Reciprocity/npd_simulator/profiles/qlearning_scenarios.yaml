@@ -1,0 +1,66 @@
+# Q-Learning Agent Scenarios
+# Tests adaptive learning agents in various environments
+
+name: qlearning_scenarios
+description: Q-Learning agents in different strategic environments
+
+# Base configuration with Q-learning agent
+base_agents:
+  - type: EnhancedQLearning
+    learning_rate: 0.1
+    discount_factor: 0.95
+    epsilon: 0.2
+    epsilon_decay: 0.995
+    epsilon_min: 0.01
+    state_type: basic
+  - type: TFT
+    exploration_rate: 0.0
+  - type: TFT
+    exploration_rate: 0.0
+
+# Longer rounds for learning
+num_rounds: 500
+episode_length: 50
+
+# Variations to test Q-learning in different contexts
+variations:
+  - name: vs_cooperative
+    description: Q-learner in cooperative environment (2 TFT)
+    
+  - name: vs_mixed
+    description: Q-learner with one TFT and one defector
+    replace:
+      2: {type: AllD, exploration_rate: 0.0}
+  
+  - name: vs_hostile
+    description: Q-learner with two defectors
+    replace:
+      1: {type: AllD, exploration_rate: 0.0}
+      2: {type: AllD, exploration_rate: 0.0}
+  
+  - name: two_learners
+    description: Two Q-learners with one TFT
+    replace:
+      1:
+        type: EnhancedQLearning
+        learning_rate: 0.1
+        discount_factor: 0.95
+        epsilon: 0.2
+        epsilon_decay: 0.995
+        epsilon_min: 0.01
+  
+  - name: all_learners
+    description: Three Q-learning agents
+    replace:
+      1:
+        type: EnhancedQLearning
+        learning_rate: 0.1
+        discount_factor: 0.95
+        epsilon: 0.2
+        epsilon_decay: 0.995
+      2:
+        type: EnhancedQLearning
+        learning_rate: 0.15
+        discount_factor: 0.9
+        epsilon: 0.3
+        epsilon_decay: 0.99

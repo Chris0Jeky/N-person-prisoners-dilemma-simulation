@@ -1,0 +1,67 @@
+# Scaling Test Configurations
+# Tests performance with different group sizes
+
+name: scaling_tests
+description: Test cooperation dynamics with varying group sizes
+
+# Parameters that apply to all variations
+num_rounds: 100
+rounds_per_pair: 100
+
+# Different group sizes
+variations:
+  - name: 3_agents
+    description: Small group (3 agents)
+    agents:
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+  
+  - name: 6_agents
+    description: Medium group (6 agents)
+    agents:
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+  
+  - name: 9_agents
+    description: Large group (9 agents)
+    agents:
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+  
+  - name: 12_agents
+    description: Very large group (12 agents)
+    agents:
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+  
+  - name: mixed_6_agents
+    description: Mixed strategies in medium group
+    agents:
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: pTFT, exploration_rate: 0.0}
+      - {type: TFT, exploration_rate: 0.1}
+      - {type: TFT, exploration_rate: 0.1}
+      - {type: AllD, exploration_rate: 0.0}
+      - {type: Random, cooperation_probability: 0.5}

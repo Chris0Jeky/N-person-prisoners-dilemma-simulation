@@ -9,7 +9,7 @@ from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
 
 from .experiment_runner import ExperimentRunner
-from ...utils.logging import setup_logger
+from utils.logging import setup_logger
 
 
 class BatchRunner:

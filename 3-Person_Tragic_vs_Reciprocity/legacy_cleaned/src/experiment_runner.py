@@ -46,7 +46,7 @@ class ExperimentRunner:
             {
                 "name": "3_TFTs",
                 "agents": [
-                    {"id": "TFT_1", "strategy": "TFT"},
+                    {"id": "TFT_1", "strategy": "TFT"},  # Will be converted to pTFT for N-person
                     {"id": "TFT_2", "strategy": "TFT"},
                     {"id": "TFT_3", "strategy": "TFT"}
                 ]
@@ -54,7 +54,7 @@ class ExperimentRunner:
             {
                 "name": "2_TFTs_1_AllD",
                 "agents": [
-                    {"id": "TFT_1", "strategy": "TFT"},
+                    {"id": "TFT_1", "strategy": "TFT"},  # Will be converted to pTFT for N-person
                     {"id": "TFT_2", "strategy": "TFT"},
                     {"id": "AllD_1", "strategy": "AllD"}
                 ]

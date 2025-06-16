@@ -1,0 +1,23 @@
+{
+  "name": "agent_count_scaling",
+  "description": "Base configuration for testing different agent counts",
+  "agents": [
+    {
+      "id": 0,
+      "type": "TFT",
+      "exploration_rate": 0.1
+    },
+    {
+      "id": 1,
+      "type": "AllD",
+      "exploration_rate": 0.0
+    },
+    {
+      "id": 2,
+      "type": "AllC",
+      "exploration_rate": 0.0
+    }
+  ],
+  "num_rounds": 1000,
+  "note": "This configuration will be scaled to different agent counts"
+}

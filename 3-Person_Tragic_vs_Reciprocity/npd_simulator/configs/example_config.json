@@ -1,0 +1,27 @@
+{
+  "name": "example_npd_experiment",
+  "description": "Example configuration for N-Person Prisoner's Dilemma",
+  "agents": [
+    {
+      "id": 0,
+      "type": "TFT",
+      "exploration_rate": 0.1
+    },
+    {
+      "id": 1,
+      "type": "AllD",
+      "exploration_rate": 0.0
+    },
+    {
+      "id": 2,
+      "type": "QLearning",
+      "exploration_rate": 0.0,
+      "learning_rate": 0.1,
+      "discount_factor": 0.9,
+      "epsilon": 0.1,
+      "state_type": "basic"
+    }
+  ],
+  "num_rounds": 1000,
+  "episode_length": 100
+}

@@ -2,6 +2,8 @@
 Extended agents for 3-person games including AllC strategy and Q-learning integration
 """
 
+import random
+
 from main_neighbourhood import (
     NPersonAgent, NPERSON_COOPERATE, NPERSON_DEFECT,
     nperson_move_to_str

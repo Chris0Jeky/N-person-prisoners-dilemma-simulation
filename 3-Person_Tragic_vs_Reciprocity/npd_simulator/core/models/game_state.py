@@ -2,7 +2,7 @@
 Game State Management for N-Person Prisoner's Dilemma
 """
 
-from typing import Dict, List, Optional
+from typing import Dict, List, Optional, Tuple
 from collections import defaultdict
 
 

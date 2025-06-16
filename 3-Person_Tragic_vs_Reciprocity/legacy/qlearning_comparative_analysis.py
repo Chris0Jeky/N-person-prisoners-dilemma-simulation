@@ -65,7 +65,7 @@ def get_ql_agent_columns(df, ql_type):
     return []
 
 
-def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1QL"):
+def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1 QL"):
     """Create comparison plots for QL vs Enhanced QL by scenario."""
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     fig.suptitle(f'{scenario_type} Comparison: Basic QL vs Enhanced QL', fontsize=16, weight='bold')
@@ -340,7 +340,7 @@ def create_summary_heatmap(ql_data, eql_data):
     """Create a heatmap showing performance differences between QL and Enhanced QL."""
     # Prepare data for heatmap
     metrics = ['pairwise_coop', 'pairwise_scores', 'nperson_coop', 'nperson_scores']
-    scenarios = ['1QL', '2QL']
+    scenarios = ['1 QL', '2 QL']
     
     improvement_data = []
     
@@ -474,7 +474,7 @@ def main():
         f.write("=" * 50 + "\n\n")
         
         # Compare average cooperation rates
-        for scenario in ['1QL', '2QL']:
+        for scenario in ['1 QL', '2 QL']:
             f.write(f"\n{scenario} Scenario:\n")
             f.write("-" * 30 + "\n")
             

@@ -229,21 +229,27 @@ def create_summary_heatmap(ql_data, eql_data):
     for scenario in scenarios:
         row_data = []
         for metric in metrics:
-            if ql_data[metric] is not None and eql_data[metric] is not None:
+            if ql_data.get(metric) is not None and eql_data.get(metric) is not None:
+                # Get the correct column name based on data type
+                value_col = 'Avg_Cooperation' if 'coop' in metric else 'Final_Score'
+                
                 # Filter for scenario
-                ql_filtered = ql_data[metric][ql_data[metric]['Experiment'].str.contains(f'{scenario[0]} QL')]
-                eql_filtered = eql_data[metric][eql_data[metric]['Experiment'].str.contains(f'{scenario[0]} EQL')]
+                ql_filtered = ql_data[metric][ql_data[metric]['Experiment'].str.contains(f'{scenario[0]} QL', regex=False)]
+                eql_filtered = eql_data[metric][eql_data[metric]['Experiment'].str.contains(f'{scenario[0]} EQL', regex=False)]
                 
                 # Get QL agent data
                 ql_agents = ql_filtered[ql_filtered['Agent'].str.contains('QL')]
                 eql_agents = eql_filtered[eql_filtered['Agent'].str.contains('EQL')]
                 
-                # Calculate average improvement
-                ql_avg = ql_agents['Avg_Cooperation'].mean() if 'coop' in metric else ql_agents['Final_Score'].mean()
-                eql_avg = eql_agents['Avg_Cooperation'].mean() if 'coop' in metric else eql_agents['Final_Score'].mean()
-                
-                improvement = ((eql_avg - ql_avg) / (ql_avg + 0.001)) * 100  # Percentage improvement
-                row_data.append(improvement)
+                if len(ql_agents) > 0 and len(eql_agents) > 0:
+                    # Calculate average improvement
+                    ql_avg = ql_agents[value_col].mean()
+                    eql_avg = eql_agents[value_col].mean()
+                    
+                    improvement = ((eql_avg - ql_avg) / (abs(ql_avg) + 0.001)) * 100  # Percentage improvement
+                    row_data.append(improvement)
+                else:
+                    row_data.append(0)
             else:
                 row_data.append(0)
         

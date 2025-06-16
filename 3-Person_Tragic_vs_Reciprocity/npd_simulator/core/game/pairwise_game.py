@@ -155,8 +155,8 @@ class PairwiseGame:
         
         # Calculate overall statistics
         total_cooperations = sum(self.tournament_cooperation_counts.values())
-        total_moves = sum(self.tournament_cooperation_counts.values() + 
-                         self.tournament_defection_counts.values())
+        total_moves = sum(self.tournament_cooperation_counts.values()) + \
+                     sum(self.tournament_defection_counts.values())
         overall_cooperation_rate = total_cooperations / total_moves if total_moves > 0 else 0
         
         return {

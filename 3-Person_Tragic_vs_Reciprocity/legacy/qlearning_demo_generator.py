@@ -488,11 +488,11 @@ def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_r
             if agent.strategy_name == "QLearning":
                 fresh_agents.append(QLearningAgent(
                     agent_id=agent.agent_id,
-                    learning_rate=0.1,
-                    discount_factor=0.9,
+                    learning_rate=0.15,  # Improved learning rate
+                    discount_factor=0.95,  # Higher to value future more
                     epsilon=0.3,  # Start with higher exploration
-                    epsilon_decay=0.999,
-                    epsilon_min=0.01
+                    epsilon_decay=0.995,  # Faster decay
+                    epsilon_min=0.05  # Higher minimum
                 ))
             else:
                 fresh_agents.append(StaticAgent(

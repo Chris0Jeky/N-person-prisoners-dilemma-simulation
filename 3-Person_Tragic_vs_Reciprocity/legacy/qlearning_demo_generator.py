@@ -437,14 +437,25 @@ def aggregate_agent_data(agent_runs):
         std_values = np.std(runs_array, axis=0)
         
         n_runs = len(runs)
-        sem = std_values / np.sqrt(n_runs)
-        ci_95 = 1.96 * sem
+        sqrt_n = np.sqrt(n_runs)
+        
+        # Handle list vs single values
+        if isinstance(std_values, list):
+            sem = [s / sqrt_n for s in std_values]
+            ci_95 = [1.96 * s for s in sem]
+            lower_95 = [m - c for m, c in zip(mean_values, ci_95)]
+            upper_95 = [m + c for m, c in zip(mean_values, ci_95)]
+        else:
+            sem = std_values / sqrt_n
+            ci_95 = 1.96 * sem
+            lower_95 = mean_values - ci_95
+            upper_95 = mean_values + ci_95
         
         aggregated[agent_id] = {
             'mean': mean_values,
             'std': std_values,
-            'lower_95': mean_values - ci_95,
-            'upper_95': mean_values + ci_95,
+            'lower_95': lower_95,
+            'upper_95': upper_95,
             'all_runs': runs
         }
     

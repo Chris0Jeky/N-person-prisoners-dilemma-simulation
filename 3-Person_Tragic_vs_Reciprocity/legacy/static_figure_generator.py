@@ -55,7 +55,7 @@ class StaticAgent:
         """Choose action for an N-player group game."""
         intended_move = None
         if self.strategy_name in ["TFT", "TFT-E"]:
-            # This is the pTFT logic described in the paper
+            # This is the pTFT logic
             if prev_round_group_coop_ratio is None:  # First round
                 intended_move = COOPERATE
             else:
@@ -189,7 +189,7 @@ def run_nperson_simulation(agents, num_rounds):
 
 # --- Multiple Run Support ---
 
-def run_multiple_simulations(simulation_func, agents, num_rounds, num_runs=20):
+def run_multiple_simulations(simulation_func, agents, num_rounds, num_runs=15):
     """Run multiple simulations and collect all results."""
     all_runs = []
     for run in range(num_runs):
@@ -208,7 +208,7 @@ def run_multiple_simulations(simulation_func, agents, num_rounds, num_runs=20):
     return all_runs
 
 
-def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_runs=20):
+def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_runs=15):
     """Run multiple simulations and collect extended results (TFT coop, all coop, scores)."""
     all_tft_runs = []
     all_coop_runs = {agent.agent_id: [] for agent in agents}
@@ -355,7 +355,7 @@ def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
     """Creates a 2x2 grid of plots showing mean and confidence intervals."""
     sns.set_style("whitegrid")
     fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
-    fig.suptitle(title + " (20 runs with 95% CI)", fontsize=16, weight='bold')
+    fig.suptitle(title + " (15 runs with 95% CI)", fontsize=16, weight='bold')
 
     axes_flat = axes.flatten()
     rounds = None
@@ -406,7 +406,7 @@ def plot_agent_scores(score_data, title, save_path=None):
     """Creates plots showing cumulative scores for each agent type over time."""
     sns.set_style("whitegrid")
     fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
-    fig.suptitle(title + " - Agent Scores (20 run average)", fontsize=16, weight='bold')
+    fig.suptitle(title + " - Agent Scores (15 run average)", fontsize=16, weight='bold')
     
     axes_flat = axes.flatten()
     
@@ -453,7 +453,7 @@ def plot_all_agent_cooperation(coop_data, title, save_path=None):
     """Creates plots showing cooperation rates for all agent types."""
     sns.set_style("whitegrid")
     fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
-    fig.suptitle(title + " - All Agent Cooperation Rates (20 run average)", fontsize=16, weight='bold')
+    fig.suptitle(title + " - All Agent Cooperation Rates (15 run average)", fontsize=16, weight='bold')
     
     axes_flat = axes.flatten()
     
@@ -509,8 +509,8 @@ def plot_all_agent_cooperation(coop_data, title, save_path=None):
 # --- Part 3: Main Execution ---
 
 if __name__ == "__main__":
-    NUM_ROUNDS = 200  # As per the paper draft
-    NUM_RUNS = 20    # Number of simulation runs for aggregation
+    NUM_ROUNDS = 100
+    NUM_RUNS = 15
     experiments = setup_experiments()
 
     # --- Create results directory ---

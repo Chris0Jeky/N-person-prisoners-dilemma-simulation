@@ -11,13 +11,13 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
 
-from ...core import NPDGame, PairwiseGame
-from ...agents import (
+from core import NPDGame, PairwiseGame
+from agents import (
     Agent, TFTAgent, pTFTAgent, pTFTThresholdAgent,
     AllCAgent, AllDAgent, RandomAgent,
     QLearningAgent, EnhancedQLearningAgent
 )
-from ...utils.logging import setup_logger
+from utils.logging import setup_logger
 
 
 class ExperimentRunner:

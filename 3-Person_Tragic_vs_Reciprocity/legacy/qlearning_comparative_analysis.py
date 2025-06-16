@@ -442,7 +442,7 @@ def main():
     detailed_scenarios = [
         "1 QL + 2 AllD",
         "1 QL + 2 TFT",
-        "1 QL + 1 AllC + 1 AllD",
+        "1 QL + 1 AllD + 1 AllC",  # Fixed order to match actual files
         "2 QL + 1 AllD",
         "2 QL + 1 TFT"
     ]
@@ -505,6 +505,11 @@ def main():
                             f.write(f"  Basic QL: {ql_avg:.3f}\n")
                             f.write(f"  Enhanced QL: {eql_avg:.3f}\n")
                             f.write(f"  Improvement: {((eql_avg - ql_avg) / (abs(ql_avg) + 0.001)) * 100:.1f}%\n")
+                        else:
+                            # Debug info
+                            f.write(f"\n{game_mode.capitalize()} {metric}: No data found\n")
+                            f.write(f"  QL agents found: {len(ql_agents)}\n")
+                            f.write(f"  EQL agents found: {len(eql_agents)}\n")
     
     print(f"\nAnalysis complete! Results saved to '{output_dir}' directory.")
     print("\nKey findings:")

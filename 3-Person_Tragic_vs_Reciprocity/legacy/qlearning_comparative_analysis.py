@@ -108,13 +108,13 @@ def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1QL"):
     return fig
 
 
-def create_detailed_comparison_plots(base_dir, experiment_name, num_rounds=100):
+def create_detailed_comparison_plots(experiment_name, num_rounds=100):
     """Create detailed comparison plots for a specific experiment showing evolution over time."""
     # Load data for both QL types
-    ql_pairwise = load_detailed_data(base_dir, '1QL', experiment_name, 'pairwise_cooperation')
-    eql_pairwise = load_detailed_data(base_dir, '1EQL', experiment_name, 'pairwise_cooperation')
-    ql_nperson = load_detailed_data(base_dir, '1QL', experiment_name, 'nperson_cooperation')
-    eql_nperson = load_detailed_data(base_dir, '1EQL', experiment_name, 'nperson_cooperation')
+    ql_pairwise = load_detailed_data(None, '1QL', experiment_name, 'pairwise_cooperation')
+    eql_pairwise = load_detailed_data(None, '1EQL', experiment_name, 'pairwise_cooperation')
+    ql_nperson = load_detailed_data(None, '1QL', experiment_name, 'nperson_cooperation')
+    eql_nperson = load_detailed_data(None, '1EQL', experiment_name, 'nperson_cooperation')
     
     fig, axes = plt.subplots(2, 2, figsize=(16, 10))
     fig.suptitle(f'Detailed Comparison: {experiment_name}', fontsize=16, weight='bold')
@@ -154,8 +154,8 @@ def create_detailed_comparison_plots(base_dir, experiment_name, num_rounds=100):
     ax.grid(True, alpha=0.3)
     
     # Pairwise Scores
-    ql_pairwise_scores = load_detailed_data(base_dir, '1QL', experiment_name, 'pairwise_scores')
-    eql_pairwise_scores = load_detailed_data(base_dir, '1EQL', experiment_name, 'pairwise_scores')
+    ql_pairwise_scores = load_detailed_data(None, '1QL', experiment_name, 'pairwise_scores')
+    eql_pairwise_scores = load_detailed_data(None, '1EQL', experiment_name, 'pairwise_scores')
     
     ax = axes[1, 0]
     if ql_pairwise_scores is not None and eql_pairwise_scores is not None:

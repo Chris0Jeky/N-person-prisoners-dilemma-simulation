@@ -12,9 +12,9 @@ sys.path.insert(0, '.')
 import qlearning_demo_generator as ql
 
 # Set parameters (can be modified)
-NUM_ROUNDS = 100
-NUM_RUNS = 15
-TRAINING_ROUNDS = 1000
+NUM_ROUNDS = 200
+NUM_RUNS = 100
+TRAINING_ROUNDS = 0
 
 print("=== Q-Learning Demo Generator ===")
 print(f"Configuration:")

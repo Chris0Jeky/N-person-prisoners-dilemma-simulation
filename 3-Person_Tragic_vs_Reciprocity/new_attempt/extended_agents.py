@@ -2,6 +2,8 @@
 Extended agents for 3-person games including AllC strategy and Q-learning integration
 """
 
+import random
+
 from main_neighbourhood import (
     NPersonAgent, NPERSON_COOPERATE, NPERSON_DEFECT,
     nperson_move_to_str
@@ -146,7 +148,3 @@ class QLearningPairwiseWrapper:
         self.num_cooperations = 0
         self.num_defections = 0
         self.opponent_last_moves = {}
-
-
-# Need to import random for exploration
-import random

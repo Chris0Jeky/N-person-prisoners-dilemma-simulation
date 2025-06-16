@@ -7,7 +7,7 @@ import os
 from datetime import datetime
 
 # Static Figure Generator for N-Person Prisoner's Dilemma
-# Analyzes cooperation dynamics with traditional strategies (TFT, AllC, AllD)
+# Modified version: Only generates 2TFT-E with AllC and 2TFT-E with AllD figures
 
 # --- Constants and Payoffs ---
 COOPERATE = 0
@@ -287,27 +287,17 @@ def aggregate_results(all_runs):
 # --- Part 2: Experiment Setup and Plotting ---
 
 def setup_experiments():
-    """Defines the four agent compositions for the static policy experiments."""
+    """Defines only the two agent compositions: 2 TFT-E + 1 AllC and 2 TFT-E + 1 AllD."""
     return {
-        "3 TFT": [
-            StaticAgent(agent_id="TFT_1", strategy_name="TFT"),
-            StaticAgent(agent_id="TFT_2", strategy_name="TFT"),
-            StaticAgent(agent_id="TFT_3", strategy_name="TFT"),
+        "2 TFT-E + 1 AllC": [
+            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="AllC_1", strategy_name="AllC"),
         ],
         "2 TFT-E + 1 AllD": [
             StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),
             StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1),
             StaticAgent(agent_id="AllD_1", strategy_name="AllD"),
-        ],
-        "2 TFT + 1 AllD": [
-            StaticAgent(agent_id="TFT_1", strategy_name="TFT"),
-            StaticAgent(agent_id="TFT_2", strategy_name="TFT"),
-            StaticAgent(agent_id="AllD_1", strategy_name="AllD"),
-        ],
-        "2 TFT-E + 1 AllC": [
-            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),
-            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1),
-            StaticAgent(agent_id="AllC_1", strategy_name="AllC"),
         ],
     }
 
@@ -353,12 +343,12 @@ def save_aggregated_data_to_csv(data, filename_prefix, results_dir):
 
 
 def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
-    """Creates a 2x2 grid of plots showing mean and confidence intervals."""
+    """Creates a 1x2 grid of plots showing mean and confidence intervals for only 2 experiments."""
     sns.set_style("whitegrid")
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), constrained_layout=True)
     fig.suptitle(title + " (15 runs with 95% CI)", fontsize=16, weight='bold')
 
-    axes_flat = axes.flatten()
+    axes_flat = axes if isinstance(axes, np.ndarray) else [axes]
     rounds = None
     
     for i, (exp_name, stats) in enumerate(data.items()):
@@ -392,10 +382,6 @@ def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
         ax.legend(loc='best', fontsize=9)
         ax.grid(True, alpha=0.3)
 
-    # Hide any unused subplots
-    for i in range(len(data), len(axes_flat)):
-        axes_flat[i].set_visible(False)
-
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"  - Saved figure: {os.path.basename(save_path)}")
@@ -406,10 +392,10 @@ def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
 def plot_agent_scores(score_data, title, save_path=None):
     """Creates plots showing cumulative scores for each agent type over time."""
     sns.set_style("whitegrid")
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), constrained_layout=True)
     fig.suptitle(title + " - Agent Scores (15 run average)", fontsize=16, weight='bold')
     
-    axes_flat = axes.flatten()
+    axes_flat = axes if isinstance(axes, np.ndarray) else [axes]
     
     for i, (exp_name, exp_data) in enumerate(score_data.items()):
         ax = axes_flat[i]
@@ -439,10 +425,6 @@ def plot_agent_scores(score_data, title, save_path=None):
         ax.legend(loc='best')
         ax.grid(True, alpha=0.3)
     
-    # Hide unused subplots
-    for i in range(len(score_data), len(axes_flat)):
-        axes_flat[i].set_visible(False)
-    
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"  - Saved figure: {os.path.basename(save_path)}")
@@ -453,10 +435,10 @@ def plot_agent_scores(score_data, title, save_path=None):
 def plot_all_agent_cooperation(coop_data, title, save_path=None):
     """Creates plots showing cooperation rates for all agent types."""
     sns.set_style("whitegrid")
-    fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
+    fig, axes = plt.subplots(1, 2, figsize=(14, 6), constrained_layout=True)
     fig.suptitle(title + " - All Agent Cooperation Rates (15 run average)", fontsize=16, weight='bold')
     
-    axes_flat = axes.flatten()
+    axes_flat = axes if isinstance(axes, np.ndarray) else [axes]
     
     for i, (exp_name, exp_data) in enumerate(coop_data.items()):
         ax = axes_flat[i]
@@ -496,10 +478,6 @@ def plot_all_agent_cooperation(coop_data, title, save_path=None):
         ax.legend(loc='best')
         ax.grid(True, alpha=0.3)
     
-    # Hide unused subplots
-    for i in range(len(coop_data), len(axes_flat)):
-        axes_flat[i].set_visible(False)
-    
     if save_path:
         plt.savefig(save_path, dpi=300, bbox_inches='tight')
         print(f"  - Saved figure: {os.path.basename(save_path)}")
@@ -515,7 +493,7 @@ if __name__ == "__main__":
     experiments = setup_experiments()
 
     # --- Create results directory ---
-    results_dir = "results"
+    results_dir = "results_2tfte_only"
     os.makedirs(results_dir, exist_ok=True)
     print(f"Results will be saved to: {os.path.abspath(results_dir)}")
     print(f"Running {NUM_RUNS} simulations per experiment for statistical aggregation...")
@@ -586,4 +564,4 @@ if __name__ == "__main__":
                               title="Figure 6: Neighbourhood All Agents",
                               save_path=os.path.join(results_dir, "figure6_neighbourhood_all_cooperation.png"))
 
-    print(f"\nDone! All results from {NUM_RUNS} runs saved to the 'results' directory.")
+    print(f"\nDone! All results from {NUM_RUNS} runs saved to the '{results_dir}' directory.")

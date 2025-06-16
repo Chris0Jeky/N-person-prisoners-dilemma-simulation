@@ -1,3 +1,9 @@
+#!/usr/bin/env python3
+"""
+Q-Learning Demo Generator for N-Person Prisoner's Dilemma
+Experiments with basic Q-learning agents in multi-agent settings
+"""
+
 import random
 import os
 from datetime import datetime

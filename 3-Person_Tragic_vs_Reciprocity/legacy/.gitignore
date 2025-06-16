@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Results directories (uncomment if you don't want to track results)
+# results/
+# qlearning_results/
+# enhanced_qlearning_results/
+# comparative_analysis/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+
+# OS
+.DS_Store
+Thumbs.db

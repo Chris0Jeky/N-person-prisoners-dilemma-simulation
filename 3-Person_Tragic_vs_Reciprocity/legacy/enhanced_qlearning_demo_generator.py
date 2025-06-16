@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+"""
+Enhanced Q-Learning Demo Generator for N-Person Prisoner's Dilemma
+Experiments with advanced Q-learning agents featuring optimistic initialization
+and sophisticated state representations
+"""
+
 import random
 import numpy as np
 import matplotlib.pyplot as plt

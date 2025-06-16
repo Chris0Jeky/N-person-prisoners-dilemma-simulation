@@ -4,6 +4,7 @@ Always Cooperate and Always Defect strategies
 
 from typing import Tuple, Optional
 from ..base.agent import NPDAgent, PairwiseAgent
+from ..registry import AgentRegistry
 
 
 class AlwaysCooperateBase:
@@ -22,6 +23,11 @@ class AlwaysDefectBase:
         return 1  # Always defect
 
 
+@AgentRegistry.register(
+    name="AllC",
+    category="basic",
+    description="Always Cooperate: Always chooses to cooperate"
+)
 class AllCAgent(AlwaysCooperateBase, NPDAgent, PairwiseAgent):
     """
     Always Cooperate agent for both N-Person and Pairwise games.
@@ -40,6 +46,11 @@ class AllCAgent(AlwaysCooperateBase, NPDAgent, PairwiseAgent):
         return intended_action, actual_action
 
 
+@AgentRegistry.register(
+    name="AllD",
+    category="basic",
+    description="Always Defect: Always chooses to defect"
+)
 class AllDAgent(AlwaysDefectBase, NPDAgent, PairwiseAgent):
     """
     Always Defect agent for both N-Person and Pairwise games.

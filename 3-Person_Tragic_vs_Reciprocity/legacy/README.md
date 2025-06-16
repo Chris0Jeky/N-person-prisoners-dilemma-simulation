@@ -102,9 +102,14 @@ Default parameters (can be modified in the scripts):
 - **Confidence Intervals**: Shown as shaded regions (95% CI from 15 runs)
 - **Q-Learning Performance**: Enhanced version typically shows ~20-40% improvement in cooperation stability
 
-## Quick Start Example
+## Quick Start
 
-To run a complete analysis:
+To run a complete analysis with one command:
+```bash
+python run_all_experiments.py
+```
+
+Or run individual experiments:
 ```bash
 # 1. Static strategies
 python static_figure_generator.py
@@ -118,3 +123,10 @@ python qlearning_comparative_analysis.py
 ```
 
 All results will be saved in their respective directories with both data (CSV) and visualizations (PNG).
+
+## Files You Can Safely Remove
+
+These files are not used in the main experiments and can be deleted:
+- `enhanced_experiment_runner.py` - Older experiment framework (not used)
+- `extended_agents.py` - Unused agent implementations
+- `experiment_runner.py` - Superseded by newer scripts

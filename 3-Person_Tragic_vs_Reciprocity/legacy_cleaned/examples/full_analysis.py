@@ -27,24 +27,24 @@ def analyze_cooperation_dynamics():
         {
             "name": "Baseline_3TFT",
             "agents": [
-                {"id": "TFT_1", "strategy": "TFT"},
-                {"id": "TFT_2", "strategy": "TFT"},
-                {"id": "TFT_3", "strategy": "TFT"}
+                {"id": "TFT_1", "strategy": "pTFT"},
+                {"id": "TFT_2", "strategy": "pTFT"},
+                {"id": "TFT_3", "strategy": "pTFT"}
             ]
         },
         {
             "name": "QL_Learning",
             "agents": [
                 {"id": "QL_1", "strategy": "NPDLQL"},
-                {"id": "TFT_1", "strategy": "TFT"},
-                {"id": "TFT_2", "strategy": "TFT"}
+                {"id": "TFT_1", "strategy": "pTFT"},
+                {"id": "TFT_2", "strategy": "pTFT"}
             ]
         },
         {
             "name": "QL_vs_Defector",
             "agents": [
                 {"id": "QL_1", "strategy": "NPDLQL"},
-                {"id": "TFT_1", "strategy": "TFT"},
+                {"id": "TFT_1", "strategy": "pTFT"},
                 {"id": "AllD_1", "strategy": "AllD"}
             ]
         },
@@ -53,7 +53,7 @@ def analyze_cooperation_dynamics():
             "agents": [
                 {"id": "QL_1", "strategy": "NPDLQL"},
                 {"id": "QL_2", "strategy": "NPDLQL"},
-                {"id": "TFT_1", "strategy": "TFT"}
+                {"id": "TFT_1", "strategy": "pTFT"}
             ]
         }
     ]

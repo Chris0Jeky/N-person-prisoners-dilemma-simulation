@@ -4,7 +4,7 @@ Test script for static style visualization using existing demo results
 
 import json
 from pathlib import Path
-from static_style_visualizer import StaticStyleVisualizer
+from npd_simulator.static_style_visualizer import StaticStyleVisualizer
 
 
 def test_with_demo_results():
@@ -70,7 +70,7 @@ def test_with_demo_results():
 
 def test_with_static_runner():
     """Test by running a small experiment with static runner."""
-    from experiments.runners.static_style_runner import StaticStyleRunner
+    from npd_simulator.experiments.runners.static_style_runner import StaticStyleRunner
     
     # Run a quick test with fewer rounds and runs
     runner = StaticStyleRunner(

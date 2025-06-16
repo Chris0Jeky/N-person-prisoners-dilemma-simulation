@@ -15,7 +15,8 @@ from core import NPDGame, PairwiseGame
 from agents import (
     Agent, TFTAgent, pTFTAgent, pTFTThresholdAgent,
     AllCAgent, AllDAgent, RandomAgent,
-    QLearningAgent, EnhancedQLearningAgent
+    QLearningAgent, EnhancedQLearningAgent,
+    AgentRegistry
 )
 from utils.logging import setup_logger
 

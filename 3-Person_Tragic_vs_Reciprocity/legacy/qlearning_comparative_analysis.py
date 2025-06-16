@@ -33,7 +33,7 @@ def load_summary_data(base_dir, ql_type):
 
 def load_detailed_data(base_dir, ql_type, experiment_name, game_mode):
     """Load detailed CSV file for a specific experiment."""
-    clean_name = experiment_name.replace(' ', '_').replace('+', '_plus_')
+    clean_name = experiment_name.replace(' ', '_').replace('+', 'plus')
     
     # Determine the correct base directory based on QL type
     if 'EQL' in ql_type:

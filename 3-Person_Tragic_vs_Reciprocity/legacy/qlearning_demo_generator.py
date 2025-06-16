@@ -508,59 +508,112 @@ def save_aggregated_data_to_csv(data, exp_type, game_mode, results_dir):
     csv_dir = os.path.join(results_dir, "csv")
     os.makedirs(csv_dir, exist_ok=True)
     
-    # Save individual agent data for each experiment
-    for exp_name, exp_data in data.items():
-        # Create DataFrame with all agent data
-        dfs = []
-        for agent_id, stats in exp_data.items():
-            df = pd.DataFrame({
-                'Round': range(1, len(stats['mean']) + 1),
-                f'{agent_id}_mean': stats['mean'],
-                f'{agent_id}_std': stats['std'],
-                f'{agent_id}_lower_95': stats['lower_95'],
-                f'{agent_id}_upper_95': stats['upper_95']
-            })
+    if HAS_PANDAS:
+        # Save individual agent data for each experiment
+        for exp_name, exp_data in data.items():
+            # Create DataFrame with all agent data
+            dfs = []
+            for agent_id, stats in exp_data.items():
+                df = pd.DataFrame({
+                    'Round': range(1, len(stats['mean']) + 1),
+                    f'{agent_id}_mean': stats['mean'],
+                    f'{agent_id}_std': stats['std'],
+                    f'{agent_id}_lower_95': stats['lower_95'],
+                    f'{agent_id}_upper_95': stats['upper_95']
+                })
+                
+                # Add individual runs
+                for i, run in enumerate(stats['all_runs']):
+                    df[f'{agent_id}_run_{i+1}'] = run
+                
+                dfs.append(df)
             
-            # Add individual runs
-            for i, run in enumerate(stats['all_runs']):
-                df[f'{agent_id}_run_{i+1}'] = run
+            # Merge all agent data
+            combined_df = dfs[0]
+            for df in dfs[1:]:
+                combined_df = pd.merge(combined_df, df, on='Round')
             
-            dfs.append(df)
+            # Clean filename
+            clean_name = exp_name.replace(' ', '_').replace('+', 'plus')
+            filename = f"{exp_type}_{game_mode}_{clean_name}.csv"
+            filepath = os.path.join(csv_dir, filename)
+            combined_df.to_csv(filepath, index=False)
+            print(f"  - Saved: {filename}")
         
-        # Merge all agent data
-        combined_df = dfs[0]
-        for df in dfs[1:]:
-            combined_df = pd.merge(combined_df, df, on='Round')
+        # Also save summary file
+        summary_data = []
+        for exp_name, exp_data in data.items():
+            for agent_id, stats in exp_data.items():
+                avg_coop = np.mean(stats['mean'])
+                final_score = stats['mean'][-1] if 'score' in agent_id else avg_coop
+                summary_data.append({
+                    'Experiment': exp_name,
+                    'Agent': agent_id,
+                    'Avg_Cooperation': avg_coop,
+                    'Final_Score': final_score
+                })
         
-        # Clean filename
-        clean_name = exp_name.replace(' ', '_').replace('+', 'plus')
-        filename = f"{exp_type}_{game_mode}_{clean_name}.csv"
-        filepath = os.path.join(csv_dir, filename)
-        combined_df.to_csv(filepath, index=False)
-        print(f"  - Saved: {filename}")
-    
-    # Also save summary file
-    summary_data = []
-    for exp_name, exp_data in data.items():
-        for agent_id, stats in exp_data.items():
-            avg_coop = np.mean(stats['mean'])
-            final_score = stats['mean'][-1] if 'score' in agent_id else avg_coop
-            summary_data.append({
-                'Experiment': exp_name,
-                'Agent': agent_id,
-                'Avg_Cooperation': avg_coop,
-                'Final_Score': final_score
-            })
-    
-    summary_df = pd.DataFrame(summary_data)
-    summary_filename = f"{exp_type}_{game_mode}_summary.csv"
-    summary_filepath = os.path.join(csv_dir, summary_filename)
-    summary_df.to_csv(summary_filepath, index=False)
-    print(f"  - Saved summary: {summary_filename}")
+        summary_df = pd.DataFrame(summary_data)
+        summary_filename = f"{exp_type}_{game_mode}_summary.csv"
+        summary_filepath = os.path.join(csv_dir, summary_filename)
+        summary_df.to_csv(summary_filepath, index=False)
+        print(f"  - Saved summary: {summary_filename}")
+    else:
+        # Basic CSV output without pandas
+        for exp_name, exp_data in data.items():
+            # Prepare data for CSV
+            rows = []
+            headers = ['Round']
+            
+            # Collect all agent data
+            agent_data = {}
+            for agent_id, stats in exp_data.items():
+                agent_data[agent_id] = stats
+                headers.extend([f'{agent_id}_mean', f'{agent_id}_std', 
+                               f'{agent_id}_lower_95', f'{agent_id}_upper_95'])
+            
+            # Build rows
+            num_rounds = len(list(exp_data.values())[0]['mean'])
+            for i in range(num_rounds):
+                row = [i + 1]  # Round number
+                for agent_id, stats in agent_data.items():
+                    row.extend([stats['mean'][i], stats['std'][i], 
+                               stats['lower_95'][i], stats['upper_95'][i]])
+                rows.append(row)
+            
+            # Write CSV
+            clean_name = exp_name.replace(' ', '_').replace('+', 'plus')
+            filename = f"{exp_type}_{game_mode}_{clean_name}.csv"
+            filepath = os.path.join(csv_dir, filename)
+            
+            with open(filepath, 'w') as f:
+                f.write(','.join(headers) + '\n')
+                for row in rows:
+                    f.write(','.join(str(x) for x in row) + '\n')
+            
+            print(f"  - Saved: {filename}")
+        
+        # Save summary file
+        summary_filename = f"{exp_type}_{game_mode}_summary.csv"
+        summary_filepath = os.path.join(csv_dir, summary_filename)
+        
+        with open(summary_filepath, 'w') as f:
+            f.write('Experiment,Agent,Avg_Cooperation,Final_Score\n')
+            for exp_name, exp_data in data.items():
+                for agent_id, stats in exp_data.items():
+                    avg_coop = sum(stats['mean']) / len(stats['mean'])
+                    final_score = stats['mean'][-1] if 'score' in agent_id else avg_coop
+                    f.write(f'{exp_name},{agent_id},{avg_coop},{final_score}\n')
+        
+        print(f"  - Saved summary: {summary_filename}")
 
 
 def plot_ql_cooperation(coop_data, title, exp_type, game_mode, save_path=None):
     """Plot cooperation rates for Q-learning experiments."""
+    if not HAS_PLOTTING:
+        print(f"  - Skipping plot: {title} (matplotlib not available)")
+        return
+    
     sns.set_style("whitegrid")
     
     # Determine subplot layout
@@ -628,6 +681,10 @@ def plot_ql_cooperation(coop_data, title, exp_type, game_mode, save_path=None):
 
 def plot_ql_scores(score_data, title, exp_type, game_mode, save_path=None):
     """Plot cumulative scores for Q-learning experiments."""
+    if not HAS_PLOTTING:
+        print(f"  - Skipping plot: {title} (matplotlib not available)")
+        return
+    
     sns.set_style("whitegrid")
     
     # Determine subplot layout

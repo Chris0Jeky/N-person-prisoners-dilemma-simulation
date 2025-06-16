@@ -136,8 +136,8 @@ def parameter_sensitivity_analysis():
             agents = [
                 create_agent("QL_1", "NPDLQL", 
                            learning_rate=lr, epsilon=eps),
-                create_agent("TFT_1", "TFT"),
-                create_agent("TFT_2", "TFT")
+                create_agent("TFT_1", "pTFT"),
+                create_agent("TFT_2", "pTFT")
             ]
             
             # Run multiple simulations

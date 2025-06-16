@@ -156,29 +156,33 @@ def create_detailed_comparison_plots(experiment_name, num_rounds=100):
     ax = axes[0, 0]
     if ql_pairwise is not None and eql_pairwise is not None:
         rounds = range(1, num_rounds + 1)
-        ax.plot(rounds, ql_pairwise['QL_1_mean'][:num_rounds], label='Basic QL', color='lightblue', linewidth=2)
-        ax.plot(rounds, eql_pairwise['EQL_1_mean'][:num_rounds], label='Enhanced QL', color='darkblue', linewidth=2)
-        ax.fill_between(rounds, ql_pairwise['QL_1_lower_95'][:num_rounds], 
-                       ql_pairwise['QL_1_upper_95'][:num_rounds], alpha=0.2, color='lightblue')
-        ax.fill_between(rounds, eql_pairwise['EQL_1_lower_95'][:num_rounds], 
-                       eql_pairwise['EQL_1_upper_95'][:num_rounds], alpha=0.2, color='darkblue')
+        # For QL, column is QL_1_mean; for EQL, column is EQL_1_mean
+        if 'QL_1_mean' in ql_pairwise.columns and 'EQL_1_mean' in eql_pairwise.columns:
+            ax.plot(rounds, ql_pairwise['QL_1_mean'][:num_rounds], label='Basic QL', color='lightblue', linewidth=2)
+            ax.plot(rounds, eql_pairwise['EQL_1_mean'][:num_rounds], label='Enhanced QL', color='darkblue', linewidth=2)
+            ax.fill_between(rounds, ql_pairwise['QL_1_lower_95'][:num_rounds], 
+                           ql_pairwise['QL_1_upper_95'][:num_rounds], alpha=0.2, color='lightblue')
+            ax.fill_between(rounds, eql_pairwise['EQL_1_lower_95'][:num_rounds], 
+                           eql_pairwise['EQL_1_upper_95'][:num_rounds], alpha=0.2, color='darkblue')
+            ax.legend()
     ax.set_title('Pairwise Cooperation Rate')
     ax.set_xlabel('Round')
     ax.set_ylabel('Cooperation Rate')
     ax.set_ylim(-0.05, 1.05)
-    ax.legend()
     ax.grid(True, alpha=0.3)
     
     # Neighbourhood Cooperation
     ax = axes[0, 1]
     if ql_nperson is not None and eql_nperson is not None:
         rounds = range(1, num_rounds + 1)
-        ax.plot(rounds, ql_nperson['QL_1_mean'][:num_rounds], label='Basic QL', color='lightblue', linewidth=2)
-        ax.plot(rounds, eql_nperson['EQL_1_mean'][:num_rounds], label='Enhanced QL', color='darkblue', linewidth=2)
-        ax.fill_between(rounds, ql_nperson['QL_1_lower_95'][:num_rounds], 
-                       ql_nperson['QL_1_upper_95'][:num_rounds], alpha=0.2, color='lightblue')
-        ax.fill_between(rounds, eql_nperson['EQL_1_lower_95'][:num_rounds], 
-                       eql_nperson['EQL_1_upper_95'][:num_rounds], alpha=0.2, color='darkblue')
+        if 'QL_1_mean' in ql_nperson.columns and 'EQL_1_mean' in eql_nperson.columns:
+            ax.plot(rounds, ql_nperson['QL_1_mean'][:num_rounds], label='Basic QL', color='lightblue', linewidth=2)
+            ax.plot(rounds, eql_nperson['EQL_1_mean'][:num_rounds], label='Enhanced QL', color='darkblue', linewidth=2)
+            ax.fill_between(rounds, ql_nperson['QL_1_lower_95'][:num_rounds], 
+                           ql_nperson['QL_1_upper_95'][:num_rounds], alpha=0.2, color='lightblue')
+            ax.fill_between(rounds, eql_nperson['EQL_1_lower_95'][:num_rounds], 
+                           eql_nperson['EQL_1_upper_95'][:num_rounds], alpha=0.2, color='darkblue')
+            ax.legend()
     ax.set_title('Neighbourhood Cooperation Rate')
     ax.set_xlabel('Round')
     ax.set_ylabel('Cooperation Rate')

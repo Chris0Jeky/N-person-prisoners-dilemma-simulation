@@ -11,11 +11,11 @@ from typing import Dict, List, Any, Optional
 import concurrent.futures
 from tqdm import tqdm
 
-from experiments.runners.experiment_runner import ExperimentRunner
-from core.models.enhanced_game_state import EnhancedGameState
-from core import NPDGame, PairwiseGame
-from static_style_visualizer import StaticStyleVisualizer
-from utils.logging import setup_logger
+from npd_simulator.experiments.runners.experiment_runner import ExperimentRunner
+from npd_simulator.core.models.enhanced_game_state import EnhancedGameState
+from npd_simulator.core import NPDGame, PairwiseGame
+from npd_simulator.static_style_visualizer import StaticStyleVisualizer
+from npd_simulator.utils.logging import setup_logger
 
 
 class StaticStyleRunner(ExperimentRunner):

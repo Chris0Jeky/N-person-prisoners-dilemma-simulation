@@ -1,0 +1,32 @@
+{
+  "base_config": {
+    "name": "qlearning_parameter_sweep",
+    "agents": [
+      {
+        "id": 0,
+        "type": "EnhancedQLearning",
+        "exploration_rate": 0.0,
+        "learning_rate": 0.1,
+        "epsilon": 0.1,
+        "epsilon_decay": 1.0,
+        "exclude_self": true
+      },
+      {
+        "id": 1,
+        "type": "AllC",
+        "exploration_rate": 0.0
+      },
+      {
+        "id": 2,
+        "type": "AllC",
+        "exploration_rate": 0.0
+      }
+    ],
+    "num_rounds": 1000
+  },
+  "parameters": {
+    "agents.0.learning_rate": [0.01, 0.05, 0.1, 0.2, 0.3],
+    "agents.0.epsilon": [0.01, 0.05, 0.1, 0.2],
+    "agents.0.epsilon_decay": [0.99, 0.995, 0.999, 1.0]
+  }
+}

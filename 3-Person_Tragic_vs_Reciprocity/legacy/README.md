@@ -123,10 +123,3 @@ python qlearning_comparative_analysis.py
 ```
 
 All results will be saved in their respective directories with both data (CSV) and visualizations (PNG).
-
-## Files You Can Safely Remove
-
-These files are not used in the main experiments and can be deleted:
-- `enhanced_experiment_runner.py` - Older experiment framework (not used)
-- `extended_agents.py` - Unused agent implementations
-- `experiment_runner.py` - Superseded by newer scripts

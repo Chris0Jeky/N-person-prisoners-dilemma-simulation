@@ -70,6 +70,16 @@ class ExperimentRunner:
         """
         agent_type = agent_config['type']
         agent_id = agent_config['id']
+        
+        # Try to use registry first
+        try:
+            # Extract parameters
+            params = {k: v for k, v in agent_config.items() if k not in ['type', 'id']}
+            return AgentRegistry.create(agent_type, agent_id, **params)
+        except (ValueError, KeyError):
+            # Fallback to direct creation for backward compatibility
+            pass
+        
         exploration_rate = agent_config.get('exploration_rate', 0.0)
         
         # Strategy-based agents

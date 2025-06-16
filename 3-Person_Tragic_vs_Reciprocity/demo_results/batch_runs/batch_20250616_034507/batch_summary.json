@@ -1,0 +1,24 @@
+{
+  "batch_name": "20250616_034507",
+  "num_experiments": 2,
+  "successful": 2,
+  "failed": 0,
+  "experiments": [
+    {
+      "name": "basic_qlearning",
+      "num_agents": 3,
+      "num_rounds": 1000,
+      "avg_cooperation": 0.977,
+      "avg_score": 2977.0,
+      "score_range": 241.5
+    },
+    {
+      "name": "enhanced_qlearning",
+      "num_agents": 3,
+      "num_rounds": 1000,
+      "avg_cooperation": 0.828,
+      "avg_score": 2828.0,
+      "score_range": 1806.0
+    }
+  ]
+}

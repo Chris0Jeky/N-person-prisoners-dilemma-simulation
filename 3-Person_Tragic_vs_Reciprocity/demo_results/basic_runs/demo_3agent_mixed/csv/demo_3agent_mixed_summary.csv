@@ -1,0 +1,10 @@
+Metric,Value
+num_agents,3
+num_rounds,500
+average_cooperation,0.6373333333333333
+
+Agent Stats
+agent_id,total_score,cooperation_rate
+0,816.0,0.912
+1,2412.0,0.0
+2,684.0,1.0

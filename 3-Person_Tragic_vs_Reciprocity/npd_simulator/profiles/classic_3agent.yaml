@@ -1,0 +1,42 @@
+# Classic 3-Agent Experiment Configurations
+# Matches the experiments from static_figure_generator.py
+
+name: classic_3agent
+description: Classic 3-agent scenarios for tragic vs reciprocity analysis
+
+# Base agent configuration
+base_agents:
+  - type: TFT
+    exploration_rate: 0.0
+  - type: TFT
+    exploration_rate: 0.0
+  - type: TFT
+    exploration_rate: 0.0
+
+# Experiment parameters
+num_rounds: 100
+rounds_per_pair: 100
+
+# Define variations
+variations:
+  - name: 3_TFT
+    description: Three pure TFT agents
+
+  - name: 2_TFT_E_1_AllD
+    description: Two TFT with exploration vs one always defector
+    replace:
+      0: {type: TFT, exploration_rate: 0.1}
+      1: {type: TFT, exploration_rate: 0.1}
+      2: {type: AllD, exploration_rate: 0.0}
+
+  - name: 2_TFT_1_AllD
+    description: Two pure TFT vs one always defector
+    replace:
+      2: {type: AllD, exploration_rate: 0.0}
+
+  - name: 2_TFT_E_1_AllC
+    description: Two TFT with exploration vs one always cooperator
+    replace:
+      0: {type: TFT, exploration_rate: 0.1}
+      1: {type: TFT, exploration_rate: 0.1}
+      2: {type: AllC, exploration_rate: 0.0}

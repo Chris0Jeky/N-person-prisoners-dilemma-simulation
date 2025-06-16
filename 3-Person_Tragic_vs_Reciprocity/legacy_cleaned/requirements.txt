@@ -1,0 +1,14 @@
+# Core requirements (no external dependencies needed for basic functionality)
+# The code is designed to work with just Python standard library
+
+# Optional dependencies for enhanced functionality
+numpy>=1.21.0          # For numerical computations and statistics
+matplotlib>=3.4.0      # For plotting and visualizations
+seaborn>=0.11.0       # For enhanced statistical plots
+pandas>=1.3.0         # For data manipulation and CSV handling
+
+# To install only core (no dependencies):
+# python main.py
+
+# To install with visualization support:
+# pip install -r requirements.txt

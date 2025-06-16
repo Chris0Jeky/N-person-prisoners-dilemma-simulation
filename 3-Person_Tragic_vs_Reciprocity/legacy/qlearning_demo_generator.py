@@ -142,71 +142,107 @@ class StaticAgent:
 
 
 class QLearningAgent:
-    """Q-Learning agent implementation."""
-    def __init__(self, agent_id, learning_rate=0.1, discount_factor=0.9, 
-                 epsilon=0.1, epsilon_decay=0.999, epsilon_min=0.01):
+    """Improved Q-Learning with 2-round history for richer state representation."""
+    
+    def __init__(self, agent_id, learning_rate=0.15, discount_factor=0.95, 
+                 epsilon=0.2, epsilon_decay=0.995, epsilon_min=0.05):
         self.agent_id = agent_id
         self.strategy_name = "QLearning"
         self.learning_rate = learning_rate
-        self.discount_factor = discount_factor
+        self.discount_factor = discount_factor  # Higher to value future more
         self.epsilon = epsilon
         self.initial_epsilon = epsilon
         self.epsilon_decay = epsilon_decay
         self.epsilon_min = epsilon_min
         
-        # Q-tables for different game modes
+        # Q-tables
         self.q_table_pairwise = {}
         self.q_table_nperson = {}
         
-        # Memory for state tracking
+        # History tracking for richer state
+        self.my_history_pairwise = {}  # opponent_id -> [my last 2 moves]
+        self.opp_history_pairwise = {}  # opponent_id -> [their last 2 moves]
+        self.my_history_nperson = []  # my last 2 moves
+        self.coop_ratio_history = []  # last 2 cooperation ratios
+        
+        # For current round
         self.last_state_pairwise = {}
         self.last_action_pairwise = {}
         self.last_state_nperson = None
         self.last_action_nperson = None
-        self.last_coop_ratio = None
         
-        # For pairwise mode
+        # For compatibility with existing code
         self.opponent_last_moves = {}
-        
-        # Episode counter for epsilon decay
         self.episode_count = 0
-
-    def _get_state_pairwise(self, opponent_id):
-        """Get state representation for pairwise mode."""
-        if opponent_id not in self.opponent_last_moves:
+    
+    def _get_state_pairwise_history(self, opponent_id):
+        """Get state based on last 2 rounds of history."""
+        if opponent_id not in self.my_history_pairwise:
             return 'initial'
-        last_move = self.opponent_last_moves[opponent_id]
-        return 'opp_coop' if last_move == COOPERATE else 'opp_defect'
-
-    def _get_state_nperson(self, coop_ratio):
-        """Get state representation for N-person mode."""
-        if coop_ratio is None:
+        
+        my_hist = self.my_history_pairwise[opponent_id]
+        opp_hist = self.opp_history_pairwise[opponent_id]
+        
+        if len(my_hist) < 2 or len(opp_hist) < 2:
+            # Only 1 round of history
+            if len(my_hist) == 1 and len(opp_hist) == 1:
+                return f"1round_M{'C' if my_hist[0] == COOPERATE else 'D'}_O{'C' if opp_hist[0] == COOPERATE else 'D'}"
             return 'initial'
-        # Discretize cooperation ratio into bins
-        if coop_ratio <= 0.2:
-            return 'very_low'
-        elif coop_ratio <= 0.4:
+        
+        # Full 2-round history: (My_t-2, Opp_t-2, My_t-1, Opp_t-1)
+        state = f"M{self._move_to_char(my_hist[0])}{self._move_to_char(my_hist[1])}_O{self._move_to_char(opp_hist[0])}{self._move_to_char(opp_hist[1])}"
+        return state
+    
+    def _get_state_nperson_history(self):
+        """Get state based on cooperation trends and my recent behavior."""
+        if len(self.coop_ratio_history) == 0:
+            return 'initial'
+        
+        if len(self.coop_ratio_history) == 1:
+            # One round of history
+            ratio = self.coop_ratio_history[0]
+            my_last = 'C' if self.my_history_nperson[0] == COOPERATE else 'D' if len(self.my_history_nperson) > 0 else 'X'
+            return f"1round_{self._ratio_to_category(ratio)}_M{my_last}"
+        
+        # Two rounds of history - look at trend
+        ratio_t2 = self.coop_ratio_history[0]
+        ratio_t1 = self.coop_ratio_history[1]
+        trend = 'up' if ratio_t1 > ratio_t2 + 0.1 else 'down' if ratio_t1 < ratio_t2 - 0.1 else 'stable'
+        
+        # Include my recent behavior
+        my_recent = ""
+        if len(self.my_history_nperson) >= 2:
+            my_recent = f"_M{self._move_to_char(self.my_history_nperson[0])}{self._move_to_char(self.my_history_nperson[1])}"
+        
+        return f"{self._ratio_to_category(ratio_t1)}_{trend}{my_recent}"
+    
+    def _move_to_char(self, move):
+        """Convert move to character."""
+        return 'C' if move == COOPERATE else 'D'
+    
+    def _ratio_to_category(self, ratio):
+        """Convert ratio to category."""
+        if ratio <= 0.33:
             return 'low'
-        elif coop_ratio <= 0.6:
+        elif ratio <= 0.67:
             return 'medium'
-        elif coop_ratio <= 0.8:
-            return 'high'
         else:
-            return 'very_high'
-
+            return 'high'
+    
     def _ensure_state_exists(self, state, q_table):
-        """Initialize Q-values for new states."""
+        """Initialize Q-values for new states with optimistic values."""
         if state not in q_table:
+            # Optimistic initialization to encourage exploration
             q_table[state] = {
-                COOPERATE: random.uniform(-0.01, 0.01),
-                DEFECT: random.uniform(-0.01, 0.01)
+                COOPERATE: 0.5,  # Start optimistic about cooperation
+                DEFECT: 0.3
             }
-
+    
     def _choose_action_epsilon_greedy(self, state, q_table):
         """Choose action using epsilon-greedy policy."""
         self._ensure_state_exists(state, q_table)
         
-        # Exploration
+        # Epsilon-greedy
         if random.random() < self.epsilon:
             return random.choice([COOPERATE, DEFECT])
         
@@ -217,11 +253,12 @@ class QLearningAgent:
         elif q_values[DEFECT] > q_values[COOPERATE]:
             return DEFECT
         else:
-            return random.choice([COOPERATE, DEFECT])
-
+            # Tie-breaking: slightly favor cooperation
+            return COOPERATE if random.random() > 0.45 else DEFECT
+    
     def choose_pairwise_action(self, opponent_id):
-        """Choose action for pairwise mode."""
-        state = self._get_state_pairwise(opponent_id)
+        """Choose action for pairwise mode using history."""
+        state = self._get_state_pairwise_history(opponent_id)
         action = self._choose_action_epsilon_greedy(state, self.q_table_pairwise)
         
         # Store for later update
@@ -229,27 +266,61 @@ class QLearningAgent:
         self.last_action_pairwise[opponent_id] = action
         
         return action
-
+    
     def choose_nperson_action(self, prev_round_group_coop_ratio):
-        """Choose action for N-person mode."""
-        state = self._get_state_nperson(prev_round_group_coop_ratio)
+        """Choose action for N-person mode using history."""
+        # Update history if we have a new ratio
+        if prev_round_group_coop_ratio is not None:
+            self.coop_ratio_history.append(prev_round_group_coop_ratio)
+            if len(self.coop_ratio_history) > 2:
+                self.coop_ratio_history.pop(0)
+        
+        state = self._get_state_nperson_history()
         action = self._choose_action_epsilon_greedy(state, self.q_table_nperson)
         
         # Store for later update
         self.last_state_nperson = state
         self.last_action_nperson = action
-        self.last_coop_ratio = prev_round_group_coop_ratio
         
         return action
-
+    
+    def update_pairwise_history(self, opponent_id, my_move, opponent_move):
+        """Update history after a pairwise interaction."""
+        # Initialize if needed
+        if opponent_id not in self.my_history_pairwise:
+            self.my_history_pairwise[opponent_id] = []
+            self.opp_history_pairwise[opponent_id] = []
+        
+        # Add to history
+        self.my_history_pairwise[opponent_id].append(my_move)
+        self.opp_history_pairwise[opponent_id].append(opponent_move)
+        
+        # Keep only last 2 moves
+        if len(self.my_history_pairwise[opponent_id]) > 2:
+            self.my_history_pairwise[opponent_id].pop(0)
+            self.opp_history_pairwise[opponent_id].pop(0)
+        
+        # Also update opponent_last_moves for compatibility
+        self.opponent_last_moves[opponent_id] = opponent_move
+    
+    def update_nperson_history(self, my_move):
+        """Update history after N-person round."""
+        self.my_history_nperson.append(my_move)
+        if len(self.my_history_nperson) > 2:
+            self.my_history_nperson.pop(0)
+    
     def update_q_value_pairwise(self, opponent_id, opponent_move, my_payoff):
         """Update Q-value for pairwise interaction."""
-        self.opponent_last_moves[opponent_id] = opponent_move
-        
-        if opponent_id in self.last_state_pairwise:
+        # Get my move from stored action
+        if opponent_id in self.last_action_pairwise:
+            my_move = self.last_action_pairwise[opponent_id]
+            
+            # First update history
+            self.update_pairwise_history(opponent_id, my_move, opponent_move)
+            
             state = self.last_state_pairwise[opponent_id]
             action = self.last_action_pairwise[opponent_id]
-            next_state = self._get_state_pairwise(opponent_id)
+            next_state = self._get_state_pairwise_history(opponent_id)
             
             self._ensure_state_exists(state, self.q_table_pairwise)
             self._ensure_state_exists(next_state, self.q_table_pairwise)
@@ -261,13 +332,24 @@ class QLearningAgent:
                 my_payoff + self.discount_factor * max_next_q - current_q
             )
             self.q_table_pairwise[state][action] = new_q
-
+    
     def update_q_value_nperson(self, my_move, payoff, current_coop_ratio):
         """Update Q-value for N-person game."""
+        # Update history
+        self.update_nperson_history(my_move)
+        
         if self.last_state_nperson is not None:
             state = self.last_state_nperson
             action = self.last_action_nperson
-            next_state = self._get_state_nperson(current_coop_ratio)
+            
+            # Update ratio history for next state
+            temp_history = self.coop_ratio_history.copy()
+            temp_history.append(current_coop_ratio)
+            if len(temp_history) > 2:
+                temp_history.pop(0)
+            self.coop_ratio_history = temp_history
+            
+            next_state = self._get_state_nperson_history()
             
             self._ensure_state_exists(state, self.q_table_nperson)
             self._ensure_state_exists(next_state, self.q_table_nperson)
@@ -279,20 +361,23 @@ class QLearningAgent:
                 payoff + self.discount_factor * max_next_q - current_q
             )
             self.q_table_nperson[state][action] = new_q
-
+    
     def decay_epsilon(self):
         """Decay epsilon for exploration."""
         self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
         self.episode_count += 1
-
+    
     def reset(self):
         """Reset for new episode."""
-        self.opponent_last_moves = {}
+        self.my_history_pairwise = {}
+        self.opp_history_pairwise = {}
+        self.my_history_nperson = []
+        self.coop_ratio_history = []
         self.last_state_pairwise = {}
         self.last_action_pairwise = {}
         self.last_state_nperson = None
         self.last_action_nperson = None
-        self.last_coop_ratio = None
+        self.opponent_last_moves = {}
         self.decay_epsilon()
 
 

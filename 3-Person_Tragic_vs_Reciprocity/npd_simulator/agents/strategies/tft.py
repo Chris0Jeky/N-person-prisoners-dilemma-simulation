@@ -5,8 +5,17 @@ Tit-for-Tat and variants
 from typing import Tuple, Optional
 import random
 from ..base.agent import NPDAgent, PairwiseAgent
+from ..registry import AgentRegistry
 
 
+@AgentRegistry.register(
+    name="TFT",
+    category="basic",
+    description="Tit-for-Tat: Cooperates first, then copies opponent's last move",
+    parameters={
+        "exploration_rate": "Random exploration probability (0-1)"
+    }
+)
 class TFTAgent(PairwiseAgent):
     """
     Standard Tit-for-Tat for pairwise games.
@@ -33,6 +42,14 @@ class TFTAgent(PairwiseAgent):
         return intended_action, actual_action
 
 
+@AgentRegistry.register(
+    name="pTFT",
+    category="basic",
+    description="Probabilistic TFT: Cooperates with probability = group cooperation ratio",
+    parameters={
+        "exploration_rate": "Random exploration probability (0-1)"
+    }
+)
 class pTFTAgent(NPDAgent):
     """
     Probabilistic Tit-for-Tat for N-Person games.
@@ -58,6 +75,15 @@ class pTFTAgent(NPDAgent):
         return intended_action, actual_action
 
 
+@AgentRegistry.register(
+    name="pTFT-Threshold",
+    category="advanced",
+    description="pTFT with threshold: Cooperates if cooperation >= threshold",
+    parameters={
+        "exploration_rate": "Random exploration probability (0-1)",
+        "threshold": "Cooperation threshold (0-1, default 0.5)"
+    }
+)
 class pTFTThresholdAgent(NPDAgent):
     """
     Probabilistic Tit-for-Tat with Threshold for N-Person games.

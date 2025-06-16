@@ -34,24 +34,24 @@ class ResearchExperiments:
         # TFT-centric configurations
         self.tft_configs = {
             "3_TFT": [
-                {"type": "TFT", "exploration_rate": 0.0},
-                {"type": "TFT", "exploration_rate": 0.0},
-                {"type": "TFT", "exploration_rate": 0.0}
+                {"id": 0, "type": "TFT", "exploration_rate": 0.0},
+                {"id": 1, "type": "TFT", "exploration_rate": 0.0},
+                {"id": 2, "type": "TFT", "exploration_rate": 0.0}
             ],
             "2_TFT-E__plus__1_AllD": [
-                {"type": "TFT", "exploration_rate": 0.1},
-                {"type": "TFT", "exploration_rate": 0.1},
-                {"type": "AllD", "exploration_rate": 0.0}
+                {"id": 0, "type": "TFT", "exploration_rate": 0.1},
+                {"id": 1, "type": "TFT", "exploration_rate": 0.1},
+                {"id": 2, "type": "AllD", "exploration_rate": 0.0}
             ],
             "2_TFT__plus__1_AllD": [
-                {"type": "TFT", "exploration_rate": 0.0},
-                {"type": "TFT", "exploration_rate": 0.0},
-                {"type": "AllD", "exploration_rate": 0.0}
+                {"id": 0, "type": "TFT", "exploration_rate": 0.0},
+                {"id": 1, "type": "TFT", "exploration_rate": 0.0},
+                {"id": 2, "type": "AllD", "exploration_rate": 0.0}
             ],
             "2_TFT-E__plus__1_AllC": [
-                {"type": "TFT", "exploration_rate": 0.1},
-                {"type": "TFT", "exploration_rate": 0.1},
-                {"type": "AllC", "exploration_rate": 0.0}
+                {"id": 0, "type": "TFT", "exploration_rate": 0.1},
+                {"id": 1, "type": "TFT", "exploration_rate": 0.1},
+                {"id": 2, "type": "AllC", "exploration_rate": 0.0}
             ]
         }
         

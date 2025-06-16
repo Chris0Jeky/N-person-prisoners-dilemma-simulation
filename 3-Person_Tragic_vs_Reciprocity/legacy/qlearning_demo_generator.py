@@ -1,11 +1,70 @@
 import random
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import pandas as pd
 import os
 from datetime import datetime
 from itertools import combinations
+
+# Try to import optional libraries
+try:
+    import numpy as np
+    HAS_NUMPY = True
+except ImportError:
+    HAS_NUMPY = False
+    print("Warning: numpy not available, using built-in functions")
+
+try:
+    import matplotlib.pyplot as plt
+    import seaborn as sns
+    HAS_PLOTTING = True
+except ImportError:
+    HAS_PLOTTING = False
+    print("Warning: matplotlib/seaborn not available, plots will be skipped")
+
+try:
+    import pandas as pd
+    HAS_PANDAS = True
+except ImportError:
+    HAS_PANDAS = False
+    print("Warning: pandas not available, CSV output will use basic format")
+
+# Helper functions for when numpy is not available
+if not HAS_NUMPY:
+    def np_mean(data, axis=None):
+        if axis is None:
+            return sum(data) / len(data)
+        elif axis == 0:
+            # Mean across rows
+            if not data:
+                return []
+            return [sum(col) / len(col) for col in zip(*data)]
+        return data
+    
+    def np_std(data, axis=None):
+        if axis is None:
+            mean = np_mean(data)
+            return (sum((x - mean) ** 2 for x in data) / len(data)) ** 0.5
+        elif axis == 0:
+            # Std across rows
+            if not data:
+                return []
+            means = np_mean(data, axis=0)
+            return [(sum((row[i] - means[i]) ** 2 for row in data) / len(data)) ** 0.5 
+                    for i in range(len(data[0]))]
+        return data
+    
+    def np_sqrt(x):
+        return x ** 0.5
+    
+    # Create a mock numpy module
+    class MockNumpy:
+        mean = staticmethod(np_mean)
+        std = staticmethod(np_std)
+        sqrt = staticmethod(np_sqrt)
+        
+        @staticmethod
+        def array(data):
+            return data
+    
+    np = MockNumpy()
 
 # --- Constants and Payoffs ---
 COOPERATE = 0

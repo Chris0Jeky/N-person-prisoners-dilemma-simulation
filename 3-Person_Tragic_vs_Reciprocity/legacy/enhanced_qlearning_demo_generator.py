@@ -702,9 +702,9 @@ def plot_ql_scores(score_data, title, exp_type, game_mode, save_path=None):
 
 # --- Main Execution ---
 if __name__ == "__main__":
-    NUM_ROUNDS = 100
-    NUM_RUNS = 15
-    TRAINING_ROUNDS = 1000
+    NUM_ROUNDS = 200
+    NUM_RUNS = 100
+    TRAINING_ROUNDS = 0
     
     # Create main results directory
     results_dir = "enhanced_qlearning_results"

@@ -31,7 +31,7 @@ def load_summary_data(base_dir, ql_type):
     return data
 
 
-def load_detailed_data(base_dir, ql_type, experiment_name, game_mode):
+def load_detailed_data(ql_type, experiment_name, game_mode):
     """Load detailed CSV file for a specific experiment."""
     # For enhanced QL, we need to adjust the experiment name
     if 'EQL' in ql_type:
@@ -52,6 +52,19 @@ def load_detailed_data(base_dir, ql_type, experiment_name, game_mode):
         return None
 
 
+def get_ql_agent_columns(df, ql_type):
+    """Get the QL agent column names from a dataframe."""
+    if ql_type == '1QL':
+        return ['QL_1']
+    elif ql_type == '2QL':
+        return ['QL_1', 'QL_2']
+    elif ql_type == '1EQL':
+        return ['EQL_1']
+    elif ql_type == '2EQL':
+        return ['EQL_1', 'EQL_2']
+    return []
+
+
 def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1QL"):
     """Create comparison plots for QL vs Enhanced QL by scenario."""
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
@@ -70,46 +83,51 @@ def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1QL"):
             # Get the correct column name based on data type
             value_col = 'Avg_Cooperation' if 'coop' in data_key else 'Final_Score'
             
-            # Filter data for the scenario type - check for exact match
-            scenario_prefix = scenario_type.replace('QL', 'QL')  # Ensure proper format
-            ql_filtered = ql_data[data_key][ql_data[data_key]['Experiment'].str.contains(scenario_prefix, regex=False)]
+            # Filter data for the scenario type
+            ql_scenario = scenario_type
+            eql_scenario = scenario_type.replace('QL', 'EQL')
             
-            # For EQL data, need to adjust the filter
-            eql_scenario_prefix = scenario_type.replace('QL', 'EQL')
-            eql_filtered = eql_data[data_key][eql_data[data_key]['Experiment'].str.contains(eql_scenario_prefix, regex=False)]
+            ql_filtered = ql_data[data_key][ql_data[data_key]['Experiment'].str.contains(ql_scenario, regex=False)]
+            eql_filtered = eql_data[data_key][eql_data[data_key]['Experiment'].str.contains(eql_scenario, regex=False)]
             
             # Get QL agent data only
             ql_agent_data = ql_filtered[ql_filtered['Agent'].str.contains('QL')]
             eql_agent_data = eql_filtered[eql_filtered['Agent'].str.contains('EQL')]
             
-            # Group by experiment type (opponent configuration)
-            ql_grouped = ql_agent_data.groupby('Experiment')[value_col].mean()
-            eql_grouped = eql_agent_data.groupby('Experiment')[value_col].mean()
+            # Group by experiment and calculate mean across QL agents
+            ql_exp_means = {}
+            eql_exp_means = {}
             
-            # Prepare data for plotting - align experiment names
-            ql_experiments = list(ql_grouped.index)
-            eql_experiments = list(eql_grouped.index)
+            for exp in ql_filtered['Experiment'].unique():
+                exp_data = ql_agent_data[ql_agent_data['Experiment'] == exp]
+                if len(exp_data) > 0:
+                    ql_exp_means[exp] = exp_data[value_col].mean()
             
-            # Create aligned experiment names by removing the QL/EQL prefix
+            for exp in eql_filtered['Experiment'].unique():
+                exp_data = eql_agent_data[eql_agent_data['Experiment'] == exp]
+                if len(exp_data) > 0:
+                    eql_exp_means[exp] = exp_data[value_col].mean()
+            
+            # Align experiments
             aligned_experiments = []
             ql_values = []
             eql_values = []
             
-            for ql_exp in ql_experiments:
+            for ql_exp in sorted(ql_exp_means.keys()):
                 # Extract opponent configuration
                 opponent_config = ql_exp.split(' + ', 1)[1] if ' + ' in ql_exp else ql_exp
                 aligned_experiments.append(opponent_config)
-                ql_values.append(ql_grouped[ql_exp])
+                ql_values.append(ql_exp_means[ql_exp])
                 
                 # Find matching EQL experiment
-                eql_exp_match = None
-                for eql_exp in eql_experiments:
+                matching_eql = None
+                for eql_exp in eql_exp_means:
                     if opponent_config in eql_exp:
-                        eql_exp_match = eql_exp
+                        matching_eql = eql_exp
                         break
                 
-                if eql_exp_match:
-                    eql_values.append(eql_grouped[eql_exp_match])
+                if matching_eql:
+                    eql_values.append(eql_exp_means[matching_eql])
                 else:
                     eql_values.append(0)
             
@@ -120,12 +138,12 @@ def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1QL"):
             width = 0.35
             
             # Create bars
-            ax.bar(x - width/2, ql_values, width, label='Basic QL', color='lightblue', edgecolor='black')
-            ax.bar(x + width/2, eql_values, width, label='Enhanced QL', color='darkblue', edgecolor='black')
+            bars1 = ax.bar(x - width/2, ql_values, width, label='Basic QL', color='lightblue', edgecolor='black')
+            bars2 = ax.bar(x + width/2, eql_values, width, label='Enhanced QL', color='darkblue', edgecolor='black')
             
             # Customize plot
             ax.set_xlabel('Opponent Configuration')
-            ax.set_ylabel('Average Cooperation Rate' if 'coop' in data_key else 'Final Score')
+            ax.set_ylabel('Average Cooperation Rate' if 'coop' in data_key else 'Average Final Score')
             ax.set_title(title)
             ax.set_xticks(x)
             ax.set_xticklabels(aligned_experiments, rotation=45, ha='right')
@@ -133,9 +151,11 @@ def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1QL"):
             ax.grid(True, alpha=0.3)
             
             # Add value labels on bars
-            for i, (ql_val, eql_val) in enumerate(zip(ql_values, eql_values)):
-                ax.text(i - width/2, ql_val + 0.01, f'{ql_val:.2f}', ha='center', va='bottom', fontsize=8)
-                ax.text(i + width/2, eql_val + 0.01, f'{eql_val:.2f}', ha='center', va='bottom', fontsize=8)
+            for bars in [bars1, bars2]:
+                for bar in bars:
+                    height = bar.get_height()
+                    ax.text(bar.get_x() + bar.get_width()/2., height + 0.01,
+                           f'{height:.2f}', ha='center', va='bottom', fontsize=8)
     
     plt.tight_layout()
     return fig
@@ -143,11 +163,19 @@ def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1QL"):
 
 def create_detailed_comparison_plots(experiment_name, num_rounds=100):
     """Create detailed comparison plots for a specific experiment showing evolution over time."""
+    # Determine QL type from experiment name
+    if '2 QL' in experiment_name:
+        ql_type = '2QL'
+        eql_type = '2EQL'
+    else:
+        ql_type = '1QL'
+        eql_type = '1EQL'
+    
     # Load data for both QL types
-    ql_pairwise = load_detailed_data(None, '1QL', experiment_name, 'pairwise_cooperation')
-    eql_pairwise = load_detailed_data(None, '1EQL', experiment_name, 'pairwise_cooperation')
-    ql_nperson = load_detailed_data(None, '1QL', experiment_name, 'nperson_cooperation')
-    eql_nperson = load_detailed_data(None, '1EQL', experiment_name, 'nperson_cooperation')
+    ql_pairwise = load_detailed_data(ql_type, experiment_name, 'pairwise_cooperation')
+    eql_pairwise = load_detailed_data(eql_type, experiment_name, 'pairwise_cooperation')
+    ql_nperson = load_detailed_data(ql_type, experiment_name, 'nperson_cooperation')
+    eql_nperson = load_detailed_data(eql_type, experiment_name, 'nperson_cooperation')
     
     fig, axes = plt.subplots(2, 2, figsize=(16, 10))
     fig.suptitle(f'Detailed Comparison: {experiment_name}', fontsize=16, weight='bold')
@@ -155,16 +183,34 @@ def create_detailed_comparison_plots(experiment_name, num_rounds=100):
     # Pairwise Cooperation
     ax = axes[0, 0]
     if ql_pairwise is not None and eql_pairwise is not None:
-        rounds = range(1, num_rounds + 1)
-        # For QL, column is QL_1_mean; for EQL, column is EQL_1_mean
-        if 'QL_1_mean' in ql_pairwise.columns and 'EQL_1_mean' in eql_pairwise.columns:
-            ax.plot(rounds, ql_pairwise['QL_1_mean'][:num_rounds], label='Basic QL', color='lightblue', linewidth=2)
-            ax.plot(rounds, eql_pairwise['EQL_1_mean'][:num_rounds], label='Enhanced QL', color='darkblue', linewidth=2)
-            ax.fill_between(rounds, ql_pairwise['QL_1_lower_95'][:num_rounds], 
-                           ql_pairwise['QL_1_upper_95'][:num_rounds], alpha=0.2, color='lightblue')
-            ax.fill_between(rounds, eql_pairwise['EQL_1_lower_95'][:num_rounds], 
-                           eql_pairwise['EQL_1_upper_95'][:num_rounds], alpha=0.2, color='darkblue')
-            ax.legend()
+        rounds = range(1, min(num_rounds + 1, len(ql_pairwise) + 1))
+        
+        # Get QL agent columns
+        ql_agents = get_ql_agent_columns(ql_pairwise, ql_type)
+        eql_agents = get_ql_agent_columns(eql_pairwise, eql_type)
+        
+        # Plot average of QL agents
+        ql_means = []
+        for col in ql_agents:
+            if f'{col}_mean' in ql_pairwise.columns:
+                ql_means.append(ql_pairwise[f'{col}_mean'].values)
+        
+        if ql_means:
+            ql_avg = np.mean(ql_means, axis=0)
+            ax.plot(rounds, ql_avg[:len(rounds)], label='Basic QL', color='lightblue', linewidth=2)
+        
+        # Plot average of EQL agents
+        eql_means = []
+        for col in eql_agents:
+            if f'{col}_mean' in eql_pairwise.columns:
+                eql_means.append(eql_pairwise[f'{col}_mean'].values)
+        
+        if eql_means:
+            eql_avg = np.mean(eql_means, axis=0)
+            ax.plot(rounds, eql_avg[:len(rounds)], label='Enhanced QL', color='darkblue', linewidth=2)
+        
+        ax.legend()
+    
     ax.set_title('Pairwise Cooperation Rate')
     ax.set_xlabel('Round')
     ax.set_ylabel('Cooperation Rate')
@@ -174,49 +220,113 @@ def create_detailed_comparison_plots(experiment_name, num_rounds=100):
     # Neighbourhood Cooperation
     ax = axes[0, 1]
     if ql_nperson is not None and eql_nperson is not None:
-        rounds = range(1, num_rounds + 1)
-        if 'QL_1_mean' in ql_nperson.columns and 'EQL_1_mean' in eql_nperson.columns:
-            ax.plot(rounds, ql_nperson['QL_1_mean'][:num_rounds], label='Basic QL', color='lightblue', linewidth=2)
-            ax.plot(rounds, eql_nperson['EQL_1_mean'][:num_rounds], label='Enhanced QL', color='darkblue', linewidth=2)
-            ax.fill_between(rounds, ql_nperson['QL_1_lower_95'][:num_rounds], 
-                           ql_nperson['QL_1_upper_95'][:num_rounds], alpha=0.2, color='lightblue')
-            ax.fill_between(rounds, eql_nperson['EQL_1_lower_95'][:num_rounds], 
-                           eql_nperson['EQL_1_upper_95'][:num_rounds], alpha=0.2, color='darkblue')
-            ax.legend()
+        rounds = range(1, min(num_rounds + 1, len(ql_nperson) + 1))
+        
+        # Get QL agent columns
+        ql_agents = get_ql_agent_columns(ql_nperson, ql_type)
+        eql_agents = get_ql_agent_columns(eql_nperson, eql_type)
+        
+        # Plot average of QL agents
+        ql_means = []
+        for col in ql_agents:
+            if f'{col}_mean' in ql_nperson.columns:
+                ql_means.append(ql_nperson[f'{col}_mean'].values)
+        
+        if ql_means:
+            ql_avg = np.mean(ql_means, axis=0)
+            ax.plot(rounds, ql_avg[:len(rounds)], label='Basic QL', color='lightblue', linewidth=2)
+        
+        # Plot average of EQL agents
+        eql_means = []
+        for col in eql_agents:
+            if f'{col}_mean' in eql_nperson.columns:
+                eql_means.append(eql_nperson[f'{col}_mean'].values)
+        
+        if eql_means:
+            eql_avg = np.mean(eql_means, axis=0)
+            ax.plot(rounds, eql_avg[:len(rounds)], label='Enhanced QL', color='darkblue', linewidth=2)
+        
+        ax.legend()
+    
     ax.set_title('Neighbourhood Cooperation Rate')
     ax.set_xlabel('Round')
     ax.set_ylabel('Cooperation Rate')
     ax.set_ylim(-0.05, 1.05)
-    ax.legend()
     ax.grid(True, alpha=0.3)
     
     # Pairwise Scores
-    ql_pairwise_scores = load_detailed_data(None, '1QL', experiment_name, 'pairwise_scores')
-    eql_pairwise_scores = load_detailed_data(None, '1EQL', experiment_name, 'pairwise_scores')
+    ql_pairwise_scores = load_detailed_data(ql_type, experiment_name, 'pairwise_scores')
+    eql_pairwise_scores = load_detailed_data(eql_type, experiment_name, 'pairwise_scores')
     
     ax = axes[1, 0]
     if ql_pairwise_scores is not None and eql_pairwise_scores is not None:
-        rounds = range(1, num_rounds + 1)
-        if 'QL_1_mean' in ql_pairwise_scores.columns and 'EQL_1_mean' in eql_pairwise_scores.columns:
-            ax.plot(rounds, ql_pairwise_scores['QL_1_mean'][:num_rounds], label='Basic QL', color='lightblue', linewidth=2)
-            ax.plot(rounds, eql_pairwise_scores['EQL_1_mean'][:num_rounds], label='Enhanced QL', color='darkblue', linewidth=2)
-            ax.legend()
+        rounds = range(1, min(num_rounds + 1, len(ql_pairwise_scores) + 1))
+        
+        # Get QL agent columns
+        ql_agents = get_ql_agent_columns(ql_pairwise_scores, ql_type)
+        eql_agents = get_ql_agent_columns(eql_pairwise_scores, eql_type)
+        
+        # Plot average of QL agents
+        ql_means = []
+        for col in ql_agents:
+            if f'{col}_mean' in ql_pairwise_scores.columns:
+                ql_means.append(ql_pairwise_scores[f'{col}_mean'].values)
+        
+        if ql_means:
+            ql_avg = np.mean(ql_means, axis=0)
+            ax.plot(rounds, ql_avg[:len(rounds)], label='Basic QL', color='lightblue', linewidth=2)
+        
+        # Plot average of EQL agents
+        eql_means = []
+        for col in eql_agents:
+            if f'{col}_mean' in eql_pairwise_scores.columns:
+                eql_means.append(eql_pairwise_scores[f'{col}_mean'].values)
+        
+        if eql_means:
+            eql_avg = np.mean(eql_means, axis=0)
+            ax.plot(rounds, eql_avg[:len(rounds)], label='Enhanced QL', color='darkblue', linewidth=2)
+        
+        ax.legend()
+    
     ax.set_title('Pairwise Cumulative Scores')
     ax.set_xlabel('Round')
     ax.set_ylabel('Cumulative Score')
     ax.grid(True, alpha=0.3)
     
     # Neighbourhood Scores
-    ql_nperson_scores = load_detailed_data(None, '1QL', experiment_name, 'nperson_scores')
-    eql_nperson_scores = load_detailed_data(None, '1EQL', experiment_name, 'nperson_scores')
+    ql_nperson_scores = load_detailed_data(ql_type, experiment_name, 'nperson_scores')
+    eql_nperson_scores = load_detailed_data(eql_type, experiment_name, 'nperson_scores')
     
     ax = axes[1, 1]
     if ql_nperson_scores is not None and eql_nperson_scores is not None:
-        rounds = range(1, num_rounds + 1)
-        if 'QL_1_mean' in ql_nperson_scores.columns and 'EQL_1_mean' in eql_nperson_scores.columns:
-            ax.plot(rounds, ql_nperson_scores['QL_1_mean'][:num_rounds], label='Basic QL', color='lightblue', linewidth=2)
-            ax.plot(rounds, eql_nperson_scores['EQL_1_mean'][:num_rounds], label='Enhanced QL', color='darkblue', linewidth=2)
-            ax.legend()
+        rounds = range(1, min(num_rounds + 1, len(ql_nperson_scores) + 1))
+        
+        # Get QL agent columns
+        ql_agents = get_ql_agent_columns(ql_nperson_scores, ql_type)
+        eql_agents = get_ql_agent_columns(eql_nperson_scores, eql_type)
+        
+        # Plot average of QL agents
+        ql_means = []
+        for col in ql_agents:
+            if f'{col}_mean' in ql_nperson_scores.columns:
+                ql_means.append(ql_nperson_scores[f'{col}_mean'].values)
+        
+        if ql_means:
+            ql_avg = np.mean(ql_means, axis=0)
+            ax.plot(rounds, ql_avg[:len(rounds)], label='Basic QL', color='lightblue', linewidth=2)
+        
+        # Plot average of EQL agents
+        eql_means = []
+        for col in eql_agents:
+            if f'{col}_mean' in eql_nperson_scores.columns:
+                eql_means.append(eql_nperson_scores[f'{col}_mean'].values)
+        
+        if eql_means:
+            eql_avg = np.mean(eql_means, axis=0)
+            ax.plot(rounds, eql_avg[:len(rounds)], label='Enhanced QL', color='darkblue', linewidth=2)
+        
+        ax.legend()
+    
     ax.set_title('Neighbourhood Cumulative Scores')
     ax.set_xlabel('Round')
     ax.set_ylabel('Cumulative Score')
@@ -242,19 +352,22 @@ def create_summary_heatmap(ql_data, eql_data):
                 value_col = 'Avg_Cooperation' if 'coop' in metric else 'Final_Score'
                 
                 # Filter for scenario
-                ql_filtered = ql_data[metric][ql_data[metric]['Experiment'].str.contains(f'{scenario[0]} QL', regex=False)]
-                eql_filtered = eql_data[metric][eql_data[metric]['Experiment'].str.contains(f'{scenario[0]} EQL', regex=False)]
+                ql_scenario = scenario
+                eql_scenario = scenario.replace('QL', 'EQL')
+                
+                ql_filtered = ql_data[metric][ql_data[metric]['Experiment'].str.contains(ql_scenario, regex=False)]
+                eql_filtered = eql_data[metric][eql_data[metric]['Experiment'].str.contains(eql_scenario, regex=False)]
                 
                 # Get QL agent data
                 ql_agents = ql_filtered[ql_filtered['Agent'].str.contains('QL')]
                 eql_agents = eql_filtered[eql_filtered['Agent'].str.contains('EQL')]
                 
                 if len(ql_agents) > 0 and len(eql_agents) > 0:
-                    # Calculate average improvement
+                    # Calculate average
                     ql_avg = ql_agents[value_col].mean()
                     eql_avg = eql_agents[value_col].mean()
                     
-                    improvement = ((eql_avg - ql_avg) / (abs(ql_avg) + 0.001)) * 100  # Percentage improvement
+                    improvement = ((eql_avg - ql_avg) / (abs(ql_avg) + 0.001)) * 100
                     row_data.append(improvement)
                 else:
                     row_data.append(0)
@@ -272,7 +385,8 @@ def create_summary_heatmap(ql_data, eql_data):
                                        'Neighbourhood\nCooperation', 'Neighbourhood\nScores'])
     
     sns.heatmap(improvement_df, annot=True, fmt='.1f', cmap='RdYlGn', center=0,
-                cbar_kws={'label': 'Improvement %'}, ax=ax)
+                cbar_kws={'label': 'Improvement %'}, ax=ax,
+                vmin=-50, vmax=50)
     
     ax.set_title('Enhanced QL Performance Improvement over Basic QL (%)', fontsize=14, weight='bold')
     ax.set_xlabel('Metric')
@@ -280,13 +394,6 @@ def create_summary_heatmap(ql_data, eql_data):
     
     plt.tight_layout()
     return fig
-
-
-def create_game_mode_comparison():
-    """Create comparison between Pairwise and Neighbourhood modes."""
-    # This would require loading all the data and creating a comprehensive comparison
-    # For brevity, I'll create a template
-    pass
 
 
 def main():
@@ -300,10 +407,12 @@ def main():
     
     # Load summary data
     print("\nLoading summary data...")
-    ql_data = load_summary_data('qlearning_results', '1QL')
+    ql_data = {}
+    ql_data.update(load_summary_data('qlearning_results', '1QL'))
     ql_data.update(load_summary_data('qlearning_results', '2QL'))
     
-    eql_data = load_summary_data('enhanced_qlearning_results', '1EQL')
+    eql_data = {}
+    eql_data.update(load_summary_data('enhanced_qlearning_results', '1EQL'))
     eql_data.update(load_summary_data('enhanced_qlearning_results', '2EQL'))
     
     # Create output directory
@@ -312,20 +421,30 @@ def main():
     
     # 1. Create comparison plots by scenario
     print("\nCreating scenario comparison plots...")
-    fig_1ql = create_comparison_plots_by_scenario(ql_data, eql_data, "1 QL")
-    fig_1ql.savefig(f'{output_dir}/1QL_vs_1EQL_comparison.png', dpi=300, bbox_inches='tight')
-    plt.close(fig_1ql)
+    try:
+        fig_1ql = create_comparison_plots_by_scenario(ql_data, eql_data, "1 QL")
+        fig_1ql.savefig(f'{output_dir}/1QL_vs_1EQL_comparison.png', dpi=300, bbox_inches='tight')
+        plt.close(fig_1ql)
+        print("  - Created 1QL comparison plot")
+    except Exception as e:
+        print(f"  - Error creating 1QL comparison: {e}")
     
-    fig_2ql = create_comparison_plots_by_scenario(ql_data, eql_data, "2 QL")
-    fig_2ql.savefig(f'{output_dir}/2QL_vs_2EQL_comparison.png', dpi=300, bbox_inches='tight')
-    plt.close(fig_2ql)
+    try:
+        fig_2ql = create_comparison_plots_by_scenario(ql_data, eql_data, "2 QL")
+        fig_2ql.savefig(f'{output_dir}/2QL_vs_2EQL_comparison.png', dpi=300, bbox_inches='tight')
+        plt.close(fig_2ql)
+        print("  - Created 2QL comparison plot")
+    except Exception as e:
+        print(f"  - Error creating 2QL comparison: {e}")
     
     # 2. Create detailed comparison for specific scenarios
     print("\nCreating detailed comparison plots...")
     detailed_scenarios = [
         "1 QL + 2 AllD",
         "1 QL + 2 TFT",
-        "1 QL + 1 AllC + 1 AllD"
+        "1 QL + 1 AllC + 1 AllD",
+        "2 QL + 1 AllD",
+        "2 QL + 1 TFT"
     ]
     
     for scenario in detailed_scenarios:
@@ -334,14 +453,19 @@ def main():
             clean_name = scenario.replace(' ', '_').replace('+', 'plus')
             fig.savefig(f'{output_dir}/detailed_{clean_name}.png', dpi=300, bbox_inches='tight')
             plt.close(fig)
+            print(f"  - Created detailed plot for {scenario}")
         except Exception as e:
-            print(f"Warning: Could not create detailed plot for {scenario}: {e}")
+            print(f"  - Error creating detailed plot for {scenario}: {e}")
     
     # 3. Create summary heatmap
     print("\nCreating summary heatmap...")
-    fig_heatmap = create_summary_heatmap(ql_data, eql_data)
-    fig_heatmap.savefig(f'{output_dir}/performance_improvement_heatmap.png', dpi=300, bbox_inches='tight')
-    plt.close(fig_heatmap)
+    try:
+        fig_heatmap = create_summary_heatmap(ql_data, eql_data)
+        fig_heatmap.savefig(f'{output_dir}/performance_improvement_heatmap.png', dpi=300, bbox_inches='tight')
+        plt.close(fig_heatmap)
+        print("  - Created summary heatmap")
+    except Exception as e:
+        print(f"  - Error creating heatmap: {e}")
     
     # 4. Generate summary statistics report
     print("\nGenerating summary report...")
@@ -360,8 +484,11 @@ def main():
                     if ql_data.get(key) is not None and eql_data.get(key) is not None:
                         value_col = 'Avg_Cooperation' if metric == 'coop' else 'Final_Score'
                         
-                        ql_filtered = ql_data[key][ql_data[key]['Experiment'].str.contains(f'{scenario[0]} QL', regex=False)]
-                        eql_filtered = eql_data[key][eql_data[key]['Experiment'].str.contains(f'{scenario[0]} EQL', regex=False)]
+                        ql_scenario = scenario
+                        eql_scenario = scenario.replace('QL', 'EQL')
+                        
+                        ql_filtered = ql_data[key][ql_data[key]['Experiment'].str.contains(ql_scenario, regex=False)]
+                        eql_filtered = eql_data[key][eql_data[key]['Experiment'].str.contains(eql_scenario, regex=False)]
                         
                         ql_agents = ql_filtered[ql_filtered['Agent'].str.contains('QL')]
                         eql_agents = eql_filtered[eql_filtered['Agent'].str.contains('EQL')]
@@ -381,10 +508,9 @@ def main():
     
     print(f"\nAnalysis complete! Results saved to '{output_dir}' directory.")
     print("\nKey findings:")
-    print("- Enhanced QL generally shows improved cooperation rates")
-    print("- Optimistic initialization helps with exploration")
-    print("- State discretization provides more stable learning")
-    print("- Performance improvements vary by opponent strategies")
+    print("- Check the comparison plots to see performance differences")
+    print("- The heatmap shows percentage improvements across scenarios")
+    print("- Detailed plots show evolution over time")
 
 
 if __name__ == "__main__":

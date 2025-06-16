@@ -350,24 +350,26 @@ def main():
                 for metric in ['coop', 'scores']:
                     key = f'{game_mode}_{metric}'
                     if ql_data.get(key) is not None and eql_data.get(key) is not None:
-                        ql_filtered = ql_data[key][ql_data[key]['Experiment'].str.contains(f'{scenario[0]} QL')]
-                        eql_filtered = eql_data[key][eql_data[key]['Experiment'].str.contains(f'{scenario[0]} EQL')]
+                        value_col = 'Avg_Cooperation' if metric == 'coop' else 'Final_Score'
+                        
+                        ql_filtered = ql_data[key][ql_data[key]['Experiment'].str.contains(f'{scenario[0]} QL', regex=False)]
+                        eql_filtered = eql_data[key][eql_data[key]['Experiment'].str.contains(f'{scenario[0]} EQL', regex=False)]
                         
                         ql_agents = ql_filtered[ql_filtered['Agent'].str.contains('QL')]
                         eql_agents = eql_filtered[eql_filtered['Agent'].str.contains('EQL')]
                         
-                        if metric == 'coop':
-                            ql_avg = ql_agents['Avg_Cooperation'].mean()
-                            eql_avg = eql_agents['Avg_Cooperation'].mean()
-                            f.write(f"\n{game_mode.capitalize()} Cooperation:\n")
-                        else:
-                            ql_avg = ql_agents['Final_Score'].mean()
-                            eql_avg = eql_agents['Final_Score'].mean()
-                            f.write(f"\n{game_mode.capitalize()} Final Score:\n")
-                        
-                        f.write(f"  Basic QL: {ql_avg:.3f}\n")
-                        f.write(f"  Enhanced QL: {eql_avg:.3f}\n")
-                        f.write(f"  Improvement: {((eql_avg - ql_avg) / (ql_avg + 0.001)) * 100:.1f}%\n")
+                        if len(ql_agents) > 0 and len(eql_agents) > 0:
+                            ql_avg = ql_agents[value_col].mean()
+                            eql_avg = eql_agents[value_col].mean()
+                            
+                            if metric == 'coop':
+                                f.write(f"\n{game_mode.capitalize()} Cooperation:\n")
+                            else:
+                                f.write(f"\n{game_mode.capitalize()} Final Score:\n")
+                            
+                            f.write(f"  Basic QL: {ql_avg:.3f}\n")
+                            f.write(f"  Enhanced QL: {eql_avg:.3f}\n")
+                            f.write(f"  Improvement: {((eql_avg - ql_avg) / (abs(ql_avg) + 0.001)) * 100:.1f}%\n")
     
     print(f"\nAnalysis complete! Results saved to '{output_dir}' directory.")
     print("\nKey findings:")

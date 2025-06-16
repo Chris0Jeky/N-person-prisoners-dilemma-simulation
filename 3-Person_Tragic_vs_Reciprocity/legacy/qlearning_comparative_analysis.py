@@ -64,27 +64,58 @@ def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1QL"):
     ]
     
     for data_key, title, ax in plot_configs:
-        if ql_data[data_key] is not None and eql_data[data_key] is not None:
-            # Filter data for the scenario type
-            ql_filtered = ql_data[data_key][ql_data[data_key]['Experiment'].str.contains(scenario_type)]
-            eql_filtered = eql_data[data_key][eql_data[data_key]['Experiment'].str.contains(scenario_type)]
+        if ql_data.get(data_key) is not None and eql_data.get(data_key) is not None:
+            # Get the correct column name based on data type
+            value_col = 'Avg_Cooperation' if 'coop' in data_key else 'Final_Score'
+            
+            # Filter data for the scenario type - check for exact match
+            scenario_prefix = scenario_type.replace('QL', 'QL')  # Ensure proper format
+            ql_filtered = ql_data[data_key][ql_data[data_key]['Experiment'].str.contains(scenario_prefix, regex=False)]
+            
+            # For EQL data, need to adjust the filter
+            eql_scenario_prefix = scenario_type.replace('QL', 'EQL')
+            eql_filtered = eql_data[data_key][eql_data[data_key]['Experiment'].str.contains(eql_scenario_prefix, regex=False)]
             
             # Get QL agent data only
             ql_agent_data = ql_filtered[ql_filtered['Agent'].str.contains('QL')]
             eql_agent_data = eql_filtered[eql_filtered['Agent'].str.contains('EQL')]
             
             # Group by experiment type (opponent configuration)
-            ql_grouped = ql_agent_data.groupby('Experiment')['Avg_Cooperation'].mean()
-            eql_grouped = eql_agent_data.groupby('Experiment')['Avg_Cooperation'].mean()
+            ql_grouped = ql_agent_data.groupby('Experiment')[value_col].mean()
+            eql_grouped = eql_agent_data.groupby('Experiment')[value_col].mean()
             
-            # Prepare data for plotting
-            experiments = sorted(set(ql_grouped.index) | set(eql_grouped.index))
-            x = np.arange(len(experiments))
+            # Prepare data for plotting - align experiment names
+            ql_experiments = list(ql_grouped.index)
+            eql_experiments = list(eql_grouped.index)
+            
+            # Create aligned experiment names by removing the QL/EQL prefix
+            aligned_experiments = []
+            ql_values = []
+            eql_values = []
+            
+            for ql_exp in ql_experiments:
+                # Extract opponent configuration
+                opponent_config = ql_exp.split(' + ', 1)[1] if ' + ' in ql_exp else ql_exp
+                aligned_experiments.append(opponent_config)
+                ql_values.append(ql_grouped[ql_exp])
+                
+                # Find matching EQL experiment
+                eql_exp_match = None
+                for eql_exp in eql_experiments:
+                    if opponent_config in eql_exp:
+                        eql_exp_match = eql_exp
+                        break
+                
+                if eql_exp_match:
+                    eql_values.append(eql_grouped[eql_exp_match])
+                else:
+                    eql_values.append(0)
+            
+            if not aligned_experiments:
+                continue
+                
+            x = np.arange(len(aligned_experiments))
             width = 0.35
-            
-            # Get values
-            ql_values = [ql_grouped.get(exp, 0) for exp in experiments]
-            eql_values = [eql_grouped.get(exp, 0) for exp in experiments]
             
             # Create bars
             ax.bar(x - width/2, ql_values, width, label='Basic QL', color='lightblue', edgecolor='black')
@@ -95,7 +126,7 @@ def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1QL"):
             ax.set_ylabel('Average Cooperation Rate' if 'coop' in data_key else 'Final Score')
             ax.set_title(title)
             ax.set_xticks(x)
-            ax.set_xticklabels([exp.split(scenario_type + ' + ')[1] for exp in experiments], rotation=45, ha='right')
+            ax.set_xticklabels(aligned_experiments, rotation=45, ha='right')
             ax.legend()
             ax.grid(True, alpha=0.3)
             

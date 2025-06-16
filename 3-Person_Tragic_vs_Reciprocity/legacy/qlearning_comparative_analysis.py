@@ -34,7 +34,14 @@ def load_summary_data(base_dir, ql_type):
 def load_detailed_data(base_dir, ql_type, experiment_name, game_mode):
     """Load detailed CSV file for a specific experiment."""
     clean_name = experiment_name.replace(' ', '_').replace('+', 'plus')
-    filepath = f'{base_dir}/{ql_type}_experiments/csv/{ql_type}_{game_mode}_{clean_name}.csv'
+    
+    # Determine the correct base directory based on QL type
+    if 'EQL' in ql_type:
+        results_dir = 'enhanced_qlearning_results'
+    else:
+        results_dir = 'qlearning_results'
+    
+    filepath = f'{results_dir}/{ql_type}_experiments/csv/{ql_type}_{game_mode}_{clean_name}.csv'
     
     if os.path.exists(filepath):
         return pd.read_csv(filepath)

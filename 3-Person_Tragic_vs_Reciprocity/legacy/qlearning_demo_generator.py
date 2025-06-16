@@ -1,7 +1,14 @@
 #!/usr/bin/env python3
 """
 Q-Learning Demo Generator for N-Person Prisoner's Dilemma
-Experiments with basic Q-learning agents in multi-agent settings
+Experiments with improved Q-learning agents using 2-round history
+
+Key improvements over basic Q-learning:
+- Richer state space: Tracks last 2 rounds of history for both self and opponents
+- State format: "MCD_OCC" = "My moves: Cooperate then Defect, Opponent: Cooperate twice"
+- Better learning parameters: learning_rate=0.15, discount_factor=0.95
+- Optimistic initialization: Q-values start at 0.5 for cooperation, 0.3 for defection
+- Trend detection in N-person mode: Tracks if cooperation is increasing/decreasing
 """
 
 import random

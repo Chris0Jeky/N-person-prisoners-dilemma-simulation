@@ -197,12 +197,13 @@ def create_detailed_comparison_plots(experiment_name, num_rounds=100):
     ax = axes[1, 0]
     if ql_pairwise_scores is not None and eql_pairwise_scores is not None:
         rounds = range(1, num_rounds + 1)
-        ax.plot(rounds, ql_pairwise_scores['QL_1_mean'][:num_rounds], label='Basic QL', color='lightblue', linewidth=2)
-        ax.plot(rounds, eql_pairwise_scores['EQL_1_mean'][:num_rounds], label='Enhanced QL', color='darkblue', linewidth=2)
+        if 'QL_1_mean' in ql_pairwise_scores.columns and 'EQL_1_mean' in eql_pairwise_scores.columns:
+            ax.plot(rounds, ql_pairwise_scores['QL_1_mean'][:num_rounds], label='Basic QL', color='lightblue', linewidth=2)
+            ax.plot(rounds, eql_pairwise_scores['EQL_1_mean'][:num_rounds], label='Enhanced QL', color='darkblue', linewidth=2)
+            ax.legend()
     ax.set_title('Pairwise Cumulative Scores')
     ax.set_xlabel('Round')
     ax.set_ylabel('Cumulative Score')
-    ax.legend()
     ax.grid(True, alpha=0.3)
     
     # Neighbourhood Scores

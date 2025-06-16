@@ -22,9 +22,16 @@ class StaticStyleVisualizer:
         self.output_dir = Path(output_dir)
         self.output_dir.mkdir(parents=True, exist_ok=True)
         
-        # Set consistent style
-        plt.style.use('seaborn-v0_8-whitegrid')
-        sns.set_context("paper", font_scale=1.2)
+        # Set consistent style matching static_figure_generator.py
+        sns.set_style("whitegrid")
+        sns.set_context("paper", font_scale=1.5)
+        plt.rcParams['figure.figsize'] = (15, 12)
+        plt.rcParams['axes.titlesize'] = 16
+        plt.rcParams['axes.labelsize'] = 14
+        plt.rcParams['xtick.labelsize'] = 12
+        plt.rcParams['ytick.labelsize'] = 12
+        plt.rcParams['legend.fontsize'] = 12
+        plt.rcParams['figure.dpi'] = 100
         
         # Color mapping for agent types
         self.agent_colors = {

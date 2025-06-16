@@ -12,13 +12,13 @@ from datetime import datetime
 from scipy import stats
 import logging
 
-from npd_simulator.experiments.runners.experiment_runner import ExperimentRunner
-from npd_simulator.profiles.profile_loader import ProfileLoader
-from npd_simulator.utils.results_manager import ResultsManager
-from npd_simulator.static_style_visualizer import StaticStyleVisualizer
+from experiments.runners.experiment_runner import ExperimentRunner
+from profiles.profile_loader import ProfileLoader
+from utils.results_manager import ResultsManager
+from static_style_visualizer import StaticStyleVisualizer
 
 # Ensure agents are registered
-import npd_simulator.agents
+import agents
 
 
 class ResearchExperiments:

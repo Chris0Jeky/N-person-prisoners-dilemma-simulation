@@ -16,6 +16,7 @@ __all__ = [
     "Agent",
     "NPDAgent", 
     "PairwiseAgent",
+    "AgentRegistry",
     "TFTAgent",
     "pTFTAgent",
     "pTFTThresholdAgent",

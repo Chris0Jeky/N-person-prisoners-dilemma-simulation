@@ -169,8 +169,8 @@ def create_detailed_comparison_plots(experiment_name, num_rounds=100):
     ax.grid(True, alpha=0.3)
     
     # Neighbourhood Scores
-    ql_nperson_scores = load_detailed_data(base_dir, '1QL', experiment_name, 'nperson_scores')
-    eql_nperson_scores = load_detailed_data(base_dir, '1EQL', experiment_name, 'nperson_scores')
+    ql_nperson_scores = load_detailed_data(None, '1QL', experiment_name, 'nperson_scores')
+    eql_nperson_scores = load_detailed_data(None, '1EQL', experiment_name, 'nperson_scores')
     
     ax = axes[1, 1]
     if ql_nperson_scores is not None and eql_nperson_scores is not None:
@@ -285,7 +285,7 @@ def main():
     
     for scenario in detailed_scenarios:
         try:
-            fig = create_detailed_comparison_plots('.', scenario)
+            fig = create_detailed_comparison_plots(scenario)
             clean_name = scenario.replace(' ', '_').replace('+', 'plus')
             fig.savefig(f'{output_dir}/detailed_{clean_name}.png', dpi=300, bbox_inches='tight')
             plt.close(fig)

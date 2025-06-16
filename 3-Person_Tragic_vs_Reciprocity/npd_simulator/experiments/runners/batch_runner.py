@@ -8,8 +8,8 @@ import json
 from concurrent.futures import ProcessPoolExecutor, as_completed
 from datetime import datetime
 
-from npd_simulator.experiments.runners.experiment_runner import ExperimentRunner
-from npd_simulator.utils.logging import setup_logger
+from .experiment_runner import ExperimentRunner
+from utils.logging import setup_logger
 
 
 class BatchRunner:

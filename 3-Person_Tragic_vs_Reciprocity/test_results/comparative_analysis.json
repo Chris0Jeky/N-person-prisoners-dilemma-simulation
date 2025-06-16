@@ -1,0 +1,87 @@
+{
+  "timestamp": "2025-06-16T05:41:57.468572",
+  "tft_analysis": {
+    "pairwise": {
+      "3_TFT": {
+        "mean_final_cooperation": 0.0,
+        "std_final_cooperation": 0.0,
+        "convergence_round": -1
+      }
+    },
+    "neighbourhood": {
+      "3_TFT": {
+        "mean_final_cooperation": 1.0,
+        "std_final_cooperation": 0.0,
+        "convergence_round": -1
+      }
+    },
+    "differences": {
+      "3_TFT": {
+        "cooperation_difference": 1.0,
+        "shows_tragic_valley": false,
+        "shows_reciprocity_hill": true
+      }
+    }
+  },
+  "ql_analysis": {
+    "2QL": {
+      "2_QL__plus__1_AllD": {
+        "mean_early_cooperation": 0.4222222222222221,
+        "mean_late_cooperation": 0.4222222222222221,
+        "learning_improvement": 0.0,
+        "final_scores": {
+          "agent_0": {
+            "mean_score": 30.5,
+            "std_score": 22.056745000112777
+          },
+          "agent_1": {
+            "mean_score": 28.5,
+            "std_score": 22.056745000112777
+          },
+          "agent_2": {
+            "mean_score": 70.66666666666667,
+            "std_score": 15.173075568988056
+          }
+        }
+      },
+      "2_EQL__plus__1_AllD": {
+        "mean_early_cooperation": 0.35555555555555557,
+        "mean_late_cooperation": 0.35555555555555557,
+        "learning_improvement": 0.0,
+        "final_scores": {
+          "agent_0": {
+            "mean_score": 27.166666666666668,
+            "std_score": 1.4337208778404378
+          },
+          "agent_1": {
+            "mean_score": 29.166666666666668,
+            "std_score": 1.8408935028645437
+          },
+          "agent_2": {
+            "mean_score": 62.666666666666664,
+            "std_score": 8.219218670625303
+          }
+        }
+      }
+    },
+    "1QL": {
+      "1_QL__plus__1_AllD__plus__1_AllD": {
+        "mean_early_cooperation": 0.10555555555555553,
+        "mean_late_cooperation": 0.10555555555555553,
+        "learning_improvement": 0.0
+      },
+      "1_EQL__plus__1_AllD__plus__1_AllD": {
+        "mean_early_cooperation": 0.18333333333333335,
+        "mean_late_cooperation": 0.18333333333333335,
+        "learning_improvement": 0.0
+      }
+    },
+    "learning_effectiveness": {}
+  },
+  "comparative_insights": {
+    "tragic_valley_observed": false,
+    "reciprocity_hill_observed": false,
+    "ql_adaptation_success": {},
+    "key_findings": []
+  }
+}

@@ -10,7 +10,7 @@ import inspect
 import logging
 from pathlib import Path
 
-from .base import Agent, NPDAgent, PairwiseAgent
+from .base.agent import Agent, NPDAgent, PairwiseAgent
 
 
 class AgentRegistry:

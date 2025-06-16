@@ -8,8 +8,20 @@ from typing import Tuple, Optional, Dict
 import random
 from collections import defaultdict
 from ..base.agent import NPDAgent, PairwiseAgent
+from ..registry import AgentRegistry
 
 
+@AgentRegistry.register(
+    name="QLearning",
+    category="learning",
+    description="Q-Learning: Learns optimal strategies through reinforcement",
+    parameters={
+        "learning_rate": "Learning rate (alpha)",
+        "discount_factor": "Discount factor (gamma)",
+        "epsilon": "Exploration rate for epsilon-greedy",
+        "state_type": "State representation type"
+    }
+)
 class QLearningAgent(NPDAgent, PairwiseAgent):
     """
     Q-Learning agent that can play in both N-Person and Pairwise modes.

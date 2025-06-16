@@ -148,7 +148,3 @@ class QLearningPairwiseWrapper:
         self.num_cooperations = 0
         self.num_defections = 0
         self.opponent_last_moves = {}
-
-
-# Need to import random for exploration
-import random

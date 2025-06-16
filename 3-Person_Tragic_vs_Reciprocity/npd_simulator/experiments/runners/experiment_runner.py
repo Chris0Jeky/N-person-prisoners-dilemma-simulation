@@ -11,14 +11,14 @@ from datetime import datetime
 from typing import List, Dict, Any, Optional, Tuple
 from pathlib import Path
 
-from npd_simulator.core import NPDGame, PairwiseGame
-from npd_simulator.agents import (
+from core import NPDGame, PairwiseGame
+from agents import (
     Agent, TFTAgent, pTFTAgent, pTFTThresholdAgent,
     AllCAgent, AllDAgent, RandomAgent,
     QLearningAgent, EnhancedQLearningAgent,
     AgentRegistry
 )
-from npd_simulator.utils.logging import setup_logger
+from utils.logging import setup_logger
 
 
 class ExperimentRunner:

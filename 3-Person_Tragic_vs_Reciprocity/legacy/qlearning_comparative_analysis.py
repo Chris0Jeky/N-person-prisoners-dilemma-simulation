@@ -1,3 +1,10 @@
+#!/usr/bin/env python3
+"""
+Q-Learning Comparative Analysis
+Compares performance between basic and enhanced Q-learning implementations
+Generates visualization plots and statistical summaries
+"""
+
 import numpy as np
 import pandas as pd
 import matplotlib.pyplot as plt

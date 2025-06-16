@@ -252,23 +252,3 @@ for lr in [0.05, 0.1, 0.2]:
 1. **Import Errors**: Ensure you're running from the correct directory
 2. **No Plots Generated**: Install matplotlib and seaborn: `pip install matplotlib seaborn`
 3. **Memory Issues**: Reduce `num_runs` or `num_rounds` for large experiments
-
-## Citation
-
-If you use this framework in your research, please cite:
-```
-@software{npd_simulation,
-  title={N-Person Prisoner's Dilemma Simulation Framework},
-  author={Research Team},
-  year={2024},
-  url={https://github.com/yourusername/yourrepo}
-}
-```
-
-## License
-
-This project is released under the MIT License. See LICENSE file for details.
-
-## Contributing
-
-Contributions are welcome! Please feel free to submit issues or pull requests.

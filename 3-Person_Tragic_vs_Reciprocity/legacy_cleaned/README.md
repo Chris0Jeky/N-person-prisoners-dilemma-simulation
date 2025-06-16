@@ -74,7 +74,8 @@ results = game.run_simulation()
 
 1. **TFT (Tit-for-Tat)**
    - Pairwise: Copies opponent's last move
-   - N-person: Uses pTFT (probabilistic TFT) or pTFT-Threshold
+   - N-person: Automatically converted to pTFT or pTFT-Threshold
+   - Note: When creating agents directly for N-person games, use "pTFT" or "pTFT-Threshold"
 
 2. **AllD (Always Defect)**
    - Always chooses to defect

@@ -88,6 +88,7 @@ class StaticAgent(BaseAgent):
         return move
 
     def record_outcome(self, context):
+        """Record the outcome and track the opponent's move in pairwise mode."""
         super().record_outcome(context)
         if context['mode'] == 'pairwise': self.opponent_last_moves[context['opponent_id']] = context['opponent_move']
 

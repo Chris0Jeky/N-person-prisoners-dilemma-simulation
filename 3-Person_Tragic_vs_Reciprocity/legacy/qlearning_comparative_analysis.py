@@ -168,7 +168,7 @@ def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1 QL")
     return fig
 
 
-def create_detailed_comparison_plots(experiment_name, num_rounds=100):
+def create_detailed_comparison_plots(experiment_name, num_rounds=1000):
     """Create detailed comparison plots for a specific experiment showing evolution over time."""
     # Determine QL type from experiment name
     if '2 QL' in experiment_name:

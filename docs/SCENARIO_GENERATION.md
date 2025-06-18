@@ -21,7 +21,7 @@ This approach helps you efficiently explore the vast parameter space of Prisoner
 To run the complete workflow (generation, evaluation, selection, analysis):
 
 ```bash
-python run_sweep_analysis.py
+python scripts/runners/run_sweep_analysis.py
 ```
 
 This will:
@@ -36,12 +36,12 @@ This will:
 For more control over the process:
 
 ```bash
-python run_sweep_analysis.py --num_generate 50 --eval_runs 3 --save_runs 15 --top_n 8 --results_dir "results/my_scenario_sweep" --analysis_dir "my_analysis_results"
+python scripts/runners/run_sweep_analysis.py --num_generate 50 --eval_runs 3 --save_runs 15 --top_n 8 --results_dir "results/my_scenario_sweep" --analysis_dir "my_analysis_results"
 ```
 
 ## Components
 
-### 1. Scenario Generator (`run_scenario_generator.py`)
+### 1. Scenario Generator (`scripts/runners/run_scenario_generator.py`)
 
 This script:
 - Generates random scenarios by sampling from parameter pools
@@ -56,7 +56,7 @@ Key functions:
 - `calculate_interestingness_score()`: Computes a composite score based on multiple metrics
 - `run_scenario_generation()`: Main function that orchestrates the entire process
 
-### 2. Sweep Visualizer (`analysis/sweep_visualizer.py`)
+### 2. Sweep Visualizer (`npdl/analysis/sweep_visualizer.py`)
 
 This module:
 - Loads metadata about generated scenarios
@@ -233,7 +233,7 @@ This would require modifying the `run_scenario_generator.py` script to add mutat
 
 1. **Generate a diverse set of scenarios**:
    ```bash
-   python run_scenario_generator.py --num_generate 100 --eval_runs 3 --top_n 10
+   python scripts/runners/run_scenario_generator.py --num_generate 100 --eval_runs 3 --top_n 10
    ```
 
 2. **Examine the metadata to understand what makes scenarios interesting**:
@@ -252,7 +252,7 @@ This would require modifying the `run_scenario_generator.py` script to add mutat
 
 3. **Generate visualizations**:
    ```bash
-   python -m analysis.sweep_visualizer --metadata "results/generated_scenarios/generated_scenarios_metadata.json"
+   python -m npdl.analysis.sweep_visualizer --metadata "results/generated_scenarios/generated_scenarios_metadata.json"
    ```
 
 4. **Refine parameter pools based on findings**:
@@ -261,7 +261,7 @@ This would require modifying the `run_scenario_generator.py` script to add mutat
 
 5. **Run a more focused sweep**:
    ```bash
-   python run_sweep_analysis.py --num_generate 50 --results_dir "results/refined_sweep"
+   python scripts/runners/run_sweep_analysis.py --num_generate 50 --results_dir "results/refined_sweep"
    ```
 
 ## Troubleshooting

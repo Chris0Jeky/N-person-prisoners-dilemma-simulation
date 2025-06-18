@@ -413,9 +413,9 @@ def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_r
                 fresh_agents.append(EnhancedQLearningAgent(
                     agent_id=agent.agent_id,
                     learning_rate=0.1,
-                    discount_factor=0.9,
-                    epsilon=0.3,  # Start with higher exploration
-                    epsilon_decay=0.98,
+                    discount_factor=0.95,
+                    epsilon=0.25,  # Start with higher exploration
+                    epsilon_decay=0.9,
                     epsilon_min=0.01,
                     state_type="proportion_discretized",  # Default enhanced state
                     q_init_type="optimistic"  # Optimistic initialization
@@ -748,7 +748,7 @@ def plot_ql_scores(score_data, title, exp_type, game_mode, save_path=None):
 # --- Main Execution ---
 if __name__ == "__main__":
     NUM_ROUNDS = 1000
-    NUM_RUNS = 500
+    NUM_RUNS = 20
     TRAINING_ROUNDS = 0
     
     # Create main results directory

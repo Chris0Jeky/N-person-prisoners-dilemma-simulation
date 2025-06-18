@@ -3,9 +3,10 @@ logs/
 htmlcov/
 backups/
 results/
+!results/parameter_sweep_results/
 analysis_results/
-3-Person_Tragic_vs_Reciprocity/failed_attempt/results/
-simple_models/simple_results/
+examples/3_person_tragic_vs_reciprocity/failed_attempt/results/
+examples/simple_models/simple_results/
 archive/
 
 # Python caches & env
@@ -46,7 +47,7 @@ fix_network_visualization.py
 # Temporary fix documentation (can be removed after line endings are fixed)
 # QUICK_FIX.txt
 NPD_PROJECT_SUMMARY.md
-/3-Person_Tragic_vs_Reciprocity/legacy/qlearning_results
-/3-Person_Tragic_vs_Reciprocity/legacy/enhanced_qlearning_results
-/3-Person_Tragic_vs_Reciprocity/legacy/comparative_analysis
-/3-Person_Tragic_vs_Reciprocity/legacy/results_2tfte_only
+examples/3_person_tragic_vs_reciprocity/legacy/qlearning_results
+examples/3_person_tragic_vs_reciprocity/legacy/enhanced_qlearning_results
+examples/3_person_tragic_vs_reciprocity/legacy/comparative_analysis
+examples/3_person_tragic_vs_reciprocity/legacy/results_2tfte_only

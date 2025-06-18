@@ -58,6 +58,10 @@ npdl/
 │       ├── run_scenario_generator.py    # Scenario generation and evaluation
 │       ├── run_sweep_analysis.py        # Complete sweep workflow
 │       └── run_evolutionary_generator.py # Evolution-based scenario generation
+├── examples/               # Educational and legacy experiments
+│   ├── simple_models/      # Minimal reference implementations
+│   └── 3_person_tragic_vs_reciprocity/  # Legacy 3-Person study
+├── results/                # Parameter sweep outputs
 ```
 
 ## Usage

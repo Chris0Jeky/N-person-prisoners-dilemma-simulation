@@ -42,13 +42,13 @@ This directory contains simple, standalone implementations of the Iterated Priso
 ### Install Requirements (for CSV export and analysis)
 
 ```bash
-pip install -r simple_models/requirements.txt
+pip install -r examples/simple_models/requirements.txt
 ```
 
 ### Run Example Simulations
 
 ```bash
-python simple_models/run_simple_simulation.py
+python examples/simple_models/run_simple_simulation.py
 ```
 
 This runs three pre-configured examples:
@@ -59,7 +59,7 @@ This runs three pre-configured examples:
 ### Interactive Mode
 
 ```bash
-python simple_models/interactive_simulation.py
+python examples/simple_models/interactive_simulation.py
 ```
 
 This allows you to:
@@ -71,7 +71,7 @@ This allows you to:
 ### Custom Usage
 
 ```python
-from simple_models.simple_ipd import Agent, Strategy, PrisonersDilemmaGame, Simulation
+from examples.simple_models.simple_ipd import Agent, Strategy, PrisonersDilemmaGame, Simulation
 
 # Create agents
 alice = Agent("Alice", Strategy.TIT_FOR_TAT, exploration_rate=0.1)
@@ -121,13 +121,13 @@ The simulation can export results in CSV format compatible with the main npdl an
 
 ```bash
 # Run batch simulations with CSV export
-python simple_models/run_csv_export.py
+python examples/simple_models/run_csv_export.py
 
 # Run a single export example
-python simple_models/run_csv_export.py --single
+python examples/simple_models/run_csv_export.py --single
 
 # Create summary statistics from existing results
-python simple_models/run_csv_export.py --summary
+python examples/simple_models/run_csv_export.py --summary
 ```
 
 ### Export Format
@@ -143,7 +143,7 @@ After running CSV export, analyze the results:
 
 ```bash
 # Generate plots and statistics
-python simple_models/analyze_results.py
+python examples/simple_models/analyze_results.py
 ```
 
 This creates several visualizations in the `simple_results` directory:
@@ -191,7 +191,7 @@ The N-Person version (`simple_npd.py`) implements a true multi-agent interaction
 
 #### Interactive Examples
 ```bash
-python simple_models/run_npd_simulation.py
+python examples/simple_models/run_npd_simulation.py
 ```
 
 This runs 5 pre-configured N-Person examples:
@@ -203,7 +203,7 @@ This runs 5 pre-configured N-Person examples:
 
 #### Batch Export for Analysis
 ```bash
-python simple_models/run_npd_csv_export.py
+python examples/simple_models/run_npd_csv_export.py
 ```
 
 This runs multiple N-Person scenarios with 10 runs each and exports to CSV.
@@ -211,7 +211,7 @@ This runs multiple N-Person scenarios with 10 runs each and exports to CSV.
 ### N-Person Usage Example
 
 ```python
-from simple_models.simple_npd import NPDAgent, Strategy, NPrisonersDilemmaGame, NPersonSimulation
+from examples.simple_models.simple_npd import NPDAgent, Strategy, NPrisonersDilemmaGame, NPersonSimulation
 
 # Create 3 agents
 alice = NPDAgent("Alice", Strategy.TIT_FOR_TAT, exploration_rate=0.1)

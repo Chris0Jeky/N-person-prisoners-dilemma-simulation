@@ -140,9 +140,11 @@ NPDL/
 │   └── visualization/        # Output generation
 │       ├── dashboard.py      # Main visualization interface
 │       └── network_viz.py    # Network topology rendering
-├── simple_models/            # Simplified reference implementations
-│   ├── simple_ipd.py        # Basic 2-player IPD
-│   └── simple_npd.py        # Basic N-player IPD
+├── examples/
+│   ├── simple_models/       # Simplified reference implementations
+│   │   ├── simple_ipd.py    # Basic 2-player IPD
+│   │   └── simple_npd.py    # Basic N-player IPD
+│   └── 3_person_tragic_vs_reciprocity/  # Legacy experiments
 ├── tests/                    # Comprehensive test suite
 │   ├── test_agents.py       # Strategy behavior tests
 │   ├── test_pairwise.py     # Pairwise interaction tests

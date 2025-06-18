@@ -38,19 +38,19 @@ The simulation provides extremely detailed round-by-round information:
 
 ### Interactive Simulation
 ```bash
-python simple_models/run_npd_simulation.py
+python examples/simple_models/run_npd_simulation.py
 ```
 Runs 5 pre-configured examples demonstrating different scenarios.
 
 ### Batch Export for Analysis
 ```bash
-python simple_models/run_npd_csv_export.py
+python examples/simple_models/run_npd_csv_export.py
 ```
 Runs multiple scenarios with 10 runs each, exporting to CSV format compatible with your analysis tools.
 
 ### Custom Usage
 ```python
-from simple_models.simple_npd import NPDAgent, Strategy, NPrisonersDilemmaGame, NPersonSimulation
+from examples.simple_models.simple_npd import NPDAgent, Strategy, NPrisonersDilemmaGame, NPersonSimulation
 
 # Create agents
 alice = NPDAgent("Alice", Strategy.TIT_FOR_TAT, exploration_rate=0.1)

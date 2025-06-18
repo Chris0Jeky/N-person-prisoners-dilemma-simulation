@@ -342,7 +342,7 @@ def save_aggregated_data_to_csv(data, filename_prefix, results_dir):
     print(f"  - Saved combined summary: {combined_filename}")
 
 
-def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
+def plot_aggregated_results(data, title, smoothing_window=15, save_path=None):
     """Creates a 1x2 grid of plots showing mean and confidence intervals for only 2 experiments."""
     sns.set_style("whitegrid")
     fig, axes = plt.subplots(1, 2, figsize=(14, 6), constrained_layout=True)

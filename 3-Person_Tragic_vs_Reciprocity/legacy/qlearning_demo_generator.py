@@ -779,10 +779,11 @@ def plot_ql_cooperation(coop_data, title, exp_type, game_mode, save_path=None):
             
             # Add smoothed line using rolling average
             smoothing_window = 20
-            smoothed_mean = pd.Series(avg_mean).rolling(
-                window=smoothing_window, min_periods=1, center=True).mean()
-            ax.plot(rounds, smoothed_mean, color=colors.get(agent_type, 'black'),
-                   linewidth=2, linestyle='--', alpha=0.7)
+            if HAS_PANDAS:
+                smoothed_mean = pd.Series(avg_mean).rolling(
+                    window=smoothing_window, min_periods=1, center=True).mean()
+                ax.plot(rounds, smoothed_mean, color=colors.get(agent_type, 'black'),
+                       linewidth=2, linestyle='--', alpha=0.7)
             
             # Add Savitzky-Golay filter smoothing if scipy is available
             try:
@@ -862,10 +863,11 @@ def plot_ql_scores(score_data, title, exp_type, game_mode, save_path=None):
             
             # Add smoothed line using rolling average
             smoothing_window = 20
-            smoothed_mean = pd.Series(avg_mean).rolling(
-                window=smoothing_window, min_periods=1, center=True).mean()
-            ax.plot(rounds, smoothed_mean, color=colors.get(agent_type, 'black'),
-                   linewidth=2, linestyle='--', alpha=0.7)
+            if HAS_PANDAS:
+                smoothed_mean = pd.Series(avg_mean).rolling(
+                    window=smoothing_window, min_periods=1, center=True).mean()
+                ax.plot(rounds, smoothed_mean, color=colors.get(agent_type, 'black'),
+                       linewidth=2, linestyle='--', alpha=0.7)
             
             # Add Savitzky-Golay filter smoothing if scipy is available
             try:

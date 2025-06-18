@@ -51,3 +51,5 @@ NPD_PROJECT_SUMMARY.md
 /3-Person_Tragic_vs_Reciprocity/legacy/comparative_analysis
 /3-Person_Tragic_vs_Reciprocity/legacy/results_2tfte_only
 /3-Person_Tragic_vs_Reciprocity/legacy/parameter_sweep_results_20250618_053804
+*.csv
+*.png

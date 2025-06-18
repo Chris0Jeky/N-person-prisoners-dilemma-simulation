@@ -352,7 +352,7 @@ def save_aggregated_data_to_csv(data, filename_prefix, results_dir):
     print(f"  - Saved combined summary: {combined_filename}")
 
 
-def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
+def plot_aggregated_results(data, title, smoothing_window=15, save_path=None):
     """Creates a 2x2 grid of plots showing mean and confidence intervals."""
     sns.set_style("whitegrid")
     fig, axes = plt.subplots(2, 2, figsize=(14, 10), constrained_layout=True)
@@ -375,11 +375,25 @@ def plot_aggregated_results(data, title, smoothing_window=5, save_path=None):
         ax.plot(rounds, stats['mean'], color='blue', linewidth=2.5, 
                label='Mean', marker='o', markersize=2)
         
-        # Plot smoothed mean
+        # Plot smoothed mean using rolling average
         smoothed_mean = pd.Series(stats['mean']).rolling(
             window=smoothing_window, min_periods=1, center=True).mean()
         ax.plot(rounds, smoothed_mean, color='darkblue', linewidth=2, 
                linestyle='--', label=f'Smoothed (window={smoothing_window})')
+        
+        # Add Savitzky-Golay filter smoothing if scipy is available
+        try:
+            from scipy.signal import savgol_filter
+            # Use window size that's odd and less than data length
+            savgol_window = min(smoothing_window * 2 + 1, len(stats['mean']) - 1)
+            if savgol_window % 2 == 0:
+                savgol_window -= 1
+            if savgol_window >= 5:  # Minimum window size for savgol
+                smoothed_savgol = savgol_filter(stats['mean'], savgol_window, 3)
+                ax.plot(rounds, smoothed_savgol, color='darkgreen', linewidth=2, 
+                       linestyle='-.', label=f'Savitzky-Golay (window={savgol_window})')
+        except ImportError:
+            pass
         
         # Add individual run traces (faint)
         for run in stats['all_runs'][:5]:  # Show first 5 runs as examples

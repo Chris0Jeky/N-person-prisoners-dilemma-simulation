@@ -321,15 +321,41 @@ class EnhancedParameterAnalyzer:
         
         for round in range(0, 1000, 100):
             if round > 0:
-                # Simulate some rounds
+                # Simulate some rounds in pairwise mode
                 for _ in range(100):
-                    actions = [q_agent.choose_action() for _ in range(2)]
-                    q_agent.update(actions, [3, 3])  # Mutual cooperation payoff
+                    # Q-agent chooses action
+                    q_action = q_agent.choose_pairwise_action(opponent.agent_id)
+                    # Opponent chooses action
+                    opp_action = opponent.choose_pairwise_action(q_agent.agent_id)
+                    
+                    # Calculate payoffs (using standard PD payoffs)
+                    if q_action == COOPERATE and opp_action == COOPERATE:
+                        q_payoff, opp_payoff = 3, 3
+                    elif q_action == COOPERATE and opp_action == DEFECT:
+                        q_payoff, opp_payoff = 0, 5
+                    elif q_action == DEFECT and opp_action == COOPERATE:
+                        q_payoff, opp_payoff = 5, 0
+                    else:  # Both defect
+                        q_payoff, opp_payoff = 1, 1
+                    
+                    # Update Q-agent
+                    q_agent.update_pairwise(opponent.agent_id, opp_action, q_payoff)
+                    # Update opponent's memory
+                    opponent.update_opponent_move(q_agent.agent_id, q_action)
             
-            q_snapshot = {}
-            for state in q_agent.q_table:
-                q_snapshot[state] = q_agent.q_table[state].copy()
-            q_snapshots.append((round, q_snapshot))
+            # Take snapshot of Q-values
+            q_snapshot_pairwise = {}
+            for state in q_agent.q_table_pairwise:
+                q_snapshot_pairwise[state] = q_agent.q_table_pairwise[state].copy()
+            
+            q_snapshot_nperson = {}
+            for state in q_agent.q_table_nperson:
+                q_snapshot_nperson[state] = q_agent.q_table_nperson[state].copy()
+                
+            q_snapshots.append((round, {
+                'pairwise': q_snapshot_pairwise,
+                'nperson': q_snapshot_nperson
+            }))
         
         diagnosis = {
             'opponent_performance': opponent_results,

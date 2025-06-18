@@ -61,6 +61,7 @@ def main():
     print("="*60)
     print("\nResults have been saved to:")
     print("  - results/                    (Static strategy results)")
+    print("  - results_2tfte_only/         (2TFT-E strategy results)")
     print("  - qlearning_results/          (Basic Q-learning results)")
     print("  - enhanced_qlearning_results/ (Enhanced Q-learning results)")
     print("  - comparative_analysis/       (Comparison between Q-learning variants)")

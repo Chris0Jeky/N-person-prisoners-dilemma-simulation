@@ -333,12 +333,16 @@ def save_aggregated_data_to_csv(data, filename_prefix, results_dir):
 
     # Also save a combined summary file with just means
     num_rounds = len(next(iter(data.values()))['mean'])
-    combined_df = pd.DataFrame({'Round': range(1, num_rounds + 1)})
+    # Build all columns at once to avoid fragmentation
+    combined_columns = {'Round': range(1, num_rounds + 1)}
     
     for exp_name, stats in data.items():
         clean_name = exp_name.replace(' ', '_').replace('+', '_plus_')
-        combined_df[f'{clean_name}_mean'] = stats['mean']
-        combined_df[f'{clean_name}_std'] = stats['std']
+        combined_columns[f'{clean_name}_mean'] = stats['mean']
+        combined_columns[f'{clean_name}_std'] = stats['std']
+    
+    # Create DataFrame with all columns at once
+    combined_df = pd.DataFrame(combined_columns)
 
     combined_filename = f"{filename_prefix}_all_experiments_summary.csv"
     combined_filepath = os.path.join(results_dir, combined_filename)

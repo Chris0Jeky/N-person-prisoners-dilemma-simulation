@@ -11,8 +11,8 @@ from itertools import product, combinations
 import pandas as pd
 from enhanced_qlearning_demo_generator import (
     EnhancedQLearningAgent, StaticAgent, 
-    run_multiple_simulations_extended, simulate_pairwise_games,
-    simulate_nperson_single_group
+    run_multiple_simulations_extended, run_pairwise_simulation_extended,
+    run_nperson_simulation_extended
 )
 import os
 from datetime import datetime
@@ -86,14 +86,14 @@ class ParameterSweepAnalyzer:
         # Add opponents based on game type
         if game_type == 'pairwise':
             agents.append(StaticAgent(agent_id=1, strategy_name=opponent_strategy))
-            sim_func = simulate_pairwise_games
+            sim_func = run_pairwise_simulation_extended
         else:  # n-person game
             for i in range(1, 5):  # 5-person game
                 if i <= 2:
                     agents.append(StaticAgent(agent_id=i, strategy_name='TFT'))
                 else:
                     agents.append(StaticAgent(agent_id=i, strategy_name='AllD'))
-            sim_func = simulate_nperson_single_group
+            sim_func = run_nperson_simulation_extended
         
         # Run simulations
         coop_runs, score_runs = run_multiple_simulations_extended(

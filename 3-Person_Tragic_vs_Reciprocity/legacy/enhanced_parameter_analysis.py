@@ -111,20 +111,35 @@ class EnhancedParameterAnalyzer:
             sim_func, agents, num_rounds, num_runs, training_rounds=training_rounds
         )
         
+        # Aggregate data across all agents and runs
+        all_coop_data = []
+        all_score_data = []
+        
+        # Extract cooperation and score data for all agents
+        for agent_id in coop_runs:
+            for run in coop_runs[agent_id]:
+                all_coop_data.append(run)
+            for run in score_runs[agent_id]:
+                all_score_data.append(run)
+        
+        # Convert to numpy arrays for easier manipulation
+        all_coop_data = np.array(all_coop_data)
+        all_score_data = np.array(all_score_data)
+        
         # Calculate comprehensive metrics
-        avg_coop = np.mean(coop_runs)
-        avg_score = np.mean(score_runs)
-        coop_stability = np.std(coop_runs)
-        score_stability = np.std(score_runs)
+        avg_coop = np.mean(all_coop_data)
+        avg_score = np.mean(all_score_data)
+        coop_stability = np.std(all_coop_data)
+        score_stability = np.std(all_score_data)
         
         # Learning metrics
-        early_coop = np.mean([run[:20] for run in coop_runs])
-        late_coop = np.mean([run[-20:] for run in coop_runs])
+        early_coop = np.mean(all_coop_data[:, :20])
+        late_coop = np.mean(all_coop_data[:, -20:])
         learning_improvement = late_coop - early_coop
         
         # Convergence speed (rounds to reach stable performance)
         convergence_rounds = []
-        for run in coop_runs:
+        for run in all_coop_data:
             rolling_mean = pd.Series(run).rolling(10).mean()
             rolling_std = pd.Series(run).rolling(10).std()
             stable_idx = np.where((rolling_std < 0.1) & (~np.isnan(rolling_std)))[0]

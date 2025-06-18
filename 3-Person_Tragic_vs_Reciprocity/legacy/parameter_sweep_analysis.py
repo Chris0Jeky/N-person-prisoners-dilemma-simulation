@@ -47,13 +47,12 @@ class ParameterSweepAnalyzer:
             'epsilon': np.linspace(0.1, 0.5, 10),
             'epsilon_decay': np.linspace(0.8, 0.999, 10),
             'epsilon_min': np.logspace(-3, -1, 10),
-            'memory_length': np.array([10, 20, 30, 50, 75, 100, 150, 200])
+            'memory_length': np.array([10, 20, 30, 50, 75, 100, 150, 200], dtype=int)
         }
         
-        # Create output directory
+        # Create output directory - static folder that gets overwritten
         if output_dir is None:
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            output_dir = f"parameter_sweep_results_{timestamp}"
+            output_dir = "parameter_sweep_results"
         self.output_dir = output_dir
         os.makedirs(self.output_dir, exist_ok=True)
         
@@ -331,6 +330,12 @@ class ParameterSweepAnalyzer:
         plt.close()
         
         print(f"Saved single parameter sweep visualization: {filename}")
+        
+        # Save results to CSV
+        csv_filename = os.path.join(self.output_dir, f'single_sweep_{param_name}.csv')
+        df = pd.DataFrame(results)
+        df.to_csv(csv_filename, index=False)
+        print(f"Saved CSV data: {csv_filename}")
     
     def visualize_double_parameter_sweep(self, param1_name, param2_name, results=None):
         """Create comprehensive visualizations for double parameter sweep."""
@@ -437,6 +442,12 @@ class ParameterSweepAnalyzer:
         plt.close()
         
         print(f"Saved double parameter sweep visualization: {filename}")
+        
+        # Save results to CSV
+        csv_filename = os.path.join(self.output_dir, f'double_sweep_{param1_name}__{param2_name}.csv')
+        df = pd.DataFrame(results)
+        df.to_csv(csv_filename, index=False)
+        print(f"Saved CSV data: {csv_filename}")
     
     def visualize_triple_parameter_sweep(self, param1_name, param2_name, param3_name, results=None):
         """Create visualizations for triple parameter sweep."""
@@ -500,6 +511,13 @@ class ParameterSweepAnalyzer:
         plt.close()
         
         print(f"Saved triple parameter sweep visualization: {filename}")
+        
+        # Save results to CSV
+        csv_filename = os.path.join(self.output_dir, 
+                                    f'triple_sweep_{param1_name}__{param2_name}__{param3_name}.csv')
+        df = pd.DataFrame(results)
+        df.to_csv(csv_filename, index=False)
+        print(f"Saved CSV data: {csv_filename}")
     
     def create_summary_report(self):
         """Create a comprehensive summary report of all parameter sweeps."""

@@ -412,11 +412,11 @@ def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_r
             if agent.strategy_name == "EnhancedQLearning":
                 fresh_agents.append(EnhancedQLearningAgent(
                     agent_id=agent.agent_id,
-                    learning_rate=0.1,
-                    discount_factor=0.95,
-                    epsilon=0.25,  # Start with higher exploration
-                    epsilon_decay=0.9,
-                    epsilon_min=0.01,
+                    learning_rate=0.282,
+                    discount_factor=0.881,
+                    epsilon=0.5,  # Start with higher exploration
+                    epsilon_decay=0.822,
+                    epsilon_min=0.0046,
                     state_type="proportion_discretized",  # Default enhanced state
                     q_init_type="optimistic"  # Optimistic initialization
                 ))

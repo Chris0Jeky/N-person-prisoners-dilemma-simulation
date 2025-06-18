@@ -339,9 +339,12 @@ class EnhancedParameterAnalyzer:
                         q_payoff, opp_payoff = 1, 1
                     
                     # Update Q-agent
-                    q_agent.update_pairwise(opponent.agent_id, opp_action, q_payoff)
+                    q_agent.update_q_value_pairwise(opponent.agent_id, opp_action, q_payoff)
                     # Update opponent's memory
-                    opponent.update_opponent_move(q_agent.agent_id, q_action)
+                    if hasattr(opponent, 'update_opponent_move'):
+                        opponent.update_opponent_move(q_agent.agent_id, q_action)
+                    elif hasattr(opponent, 'opponent_last_moves'):
+                        opponent.opponent_last_moves[q_agent.agent_id] = q_action
             
             # Take snapshot of Q-values
             q_snapshot_pairwise = {}

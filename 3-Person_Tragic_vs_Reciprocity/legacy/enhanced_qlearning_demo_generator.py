@@ -89,7 +89,7 @@ class EnhancedQLearningAgent:
     def __init__(self, agent_id, learning_rate=0.1, discount_factor=0.9, 
                  epsilon=0.1, epsilon_decay=0.999, epsilon_min=0.01,
                  state_type="proportion_discretized", q_init_type="optimistic",
-                 max_possible_payoff=5.0, memory_length=10):
+                 max_possible_payoff=5.0, memory_length=50):
         self.agent_id = agent_id
         self.strategy_name = "EnhancedQLearning"
         self.learning_rate = learning_rate
@@ -399,7 +399,7 @@ def run_nperson_simulation_extended(agents, num_rounds):
 
 
 # --- Multiple Run Support ---
-def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_runs=15, 
+def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_runs=100,
                                     training_rounds=1000):
     """Run multiple simulations with enhanced Q-learning training phase."""
     all_coop_runs = {agent.agent_id: [] for agent in agents}
@@ -415,7 +415,7 @@ def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_r
                     learning_rate=0.1,
                     discount_factor=0.9,
                     epsilon=0.3,  # Start with higher exploration
-                    epsilon_decay=0.999,
+                    epsilon_decay=0.98,
                     epsilon_min=0.01,
                     state_type="proportion_discretized",  # Default enhanced state
                     q_init_type="optimistic"  # Optimistic initialization
@@ -745,7 +745,7 @@ def plot_ql_scores(score_data, title, exp_type, game_mode, save_path=None):
 # --- Main Execution ---
 if __name__ == "__main__":
     NUM_ROUNDS = 1000
-    NUM_RUNS = 200
+    NUM_RUNS = 500
     TRAINING_ROUNDS = 0
     
     # Create main results directory

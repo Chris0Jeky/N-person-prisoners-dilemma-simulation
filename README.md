@@ -53,8 +53,11 @@ npdl/
 │   ├── data_loader.py       # Functions for loading simulation data
 │   ├── data_processor.py    # Data processing utilities
 │   └── network_viz.py       # Network visualization components
-├── run_scenario_generator.py # Scenario generation and evaluation
-└── run_sweep_analysis.py    # Complete sweep workflow
+├── scripts/
+│   └── runners/
+│       ├── run_scenario_generator.py    # Scenario generation and evaluation
+│       ├── run_sweep_analysis.py        # Complete sweep workflow
+│       └── run_evolutionary_generator.py # Evolution-based scenario generation
 ```
 
 ## Usage
@@ -83,7 +86,7 @@ For systematic exploration of the parameter space, NPDL includes tools to genera
 #### Basic Random Scenario Generation
 
 ```bash
-python run_sweep_analysis.py [options]
+python scripts/runners/run_sweep_analysis.py [options]
 ```
 
 Options:
@@ -110,7 +113,7 @@ This workflow:
 For more sophisticated scenario discovery, the evolutionary algorithm approach iteratively improves scenarios through selection, crossover, and mutation:
 
 ```bash
-python run_evolutionary_generator.py [options]
+python scripts/runners/run_evolutionary_generator.py [options]
 ```
 
 Options:
@@ -138,18 +141,9 @@ The evolutionary approach offers several advantages:
    - Mutation (random variations to explore new possibilities)
    - Generational improvement tracking
 
-To visualize and analyze the evolutionary process:
-
-```bash
-python -m analysis.evolution_visualizer [options]
-```
-
-This generates a comprehensive evolution report including:
-- Evolution progress across generations
-- Strategy composition changes over time
-- Metric improvements through evolution
-- Comparison of top evolved scenarios
-- Strategy performance analysis
+To visualize and analyze results, inspect the files generated in the
+`evolution_analysis` directory after the run. These include CSV data and
+several plots summarizing progress across generations.
 
 #### Interestingness Metrics
 
@@ -171,7 +165,7 @@ Example output graphs include:
 For more targeted exploration, you can also run only the basic scenario generation step:
 
 ```bash
-python run_scenario_generator.py --num_generate 50 --eval_runs 3 --save_runs 10 --top_n 5
+python scripts/runners/run_scenario_generator.py --num_generate 50 --eval_runs 3 --save_runs 10 --top_n 5
 ```
 
 ### Visualization Dashboard
@@ -459,13 +453,13 @@ pytest --cov=npdl
 python -m npdl.core.test_basic
 
 # Generate and analyze random scenarios
-python run_sweep_analysis.py --num_generate 10 --top_n 3
+python scripts/runners/run_sweep_analysis.py --num_generate 10 --top_n 3
 
 # Run evolutionary scenario generation with parallel processing
-python run_evolutionary_generator.py --pop_size 20 --generations 5 --eval_runs 3
+python scripts/runners/run_evolutionary_generator.py --pop_size 20 --generations 5 --eval_runs 3
 
 # Analyze evolutionary results
-python -m analysis.evolution_visualizer --output evolution_report
+# (visualization script removed - view data in the `evolution_analysis` directory)
 
 # Lint code
 black npdl/

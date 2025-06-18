@@ -77,7 +77,7 @@ class ParameterSweepAnalyzer:
             epsilon=params.get('epsilon', self.base_params['epsilon']),
             epsilon_decay=params.get('epsilon_decay', self.base_params['epsilon_decay']),
             epsilon_min=params.get('epsilon_min', self.base_params['epsilon_min']),
-            memory_length=params.get('memory_length', self.base_params['memory_length']),
+            memory_length=int(params.get('memory_length', self.base_params['memory_length'])),
             state_type=params.get('state_type', self.base_params['state_type']),
             q_init_type=params.get('q_init_type', self.base_params['q_init_type'])
         )

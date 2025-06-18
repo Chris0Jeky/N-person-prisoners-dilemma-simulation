@@ -389,3 +389,17 @@ class TestDailyT034ThreeDefectors:
         moves, _ = env.run_round()
         assert len(moves) == 3
         assert set(moves.values()) == {"defect"}
+
+
+class TestDailyT044TftMirrorsCooperator:
+    """Daily check: TFT mirrors a lone cooperator for two rounds."""
+
+    def test_tft_mirrors_cooperator(self):
+        agents = [
+            Agent(agent_id=0, strategy="tit_for_tat"),
+            Agent(agent_id=1, strategy="always_cooperate"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env.run_round()
+        moves, _ = env.run_round()
+        assert moves[0] == "cooperate"

@@ -25,6 +25,13 @@ except ImportError:
     print("Warning: numpy not available, using built-in functions")
 
 try:
+    import pandas as pd
+    HAS_PANDAS = True
+except ImportError:
+    HAS_PANDAS = False
+    print("Warning: pandas not available, smoothing will be limited")
+
+try:
     import matplotlib.pyplot as plt
     import seaborn as sns
     HAS_PLOTTING = True
@@ -769,6 +776,27 @@ def plot_ql_cooperation(coop_data, title, exp_type, game_mode, save_path=None):
             
             ax.plot(rounds, avg_mean, color=colors.get(agent_type, 'black'),
                    linewidth=2.5, label=agent_type, marker='o', markersize=2)
+            
+            # Add smoothed line using rolling average
+            smoothing_window = 20
+            smoothed_mean = pd.Series(avg_mean).rolling(
+                window=smoothing_window, min_periods=1, center=True).mean()
+            ax.plot(rounds, smoothed_mean, color=colors.get(agent_type, 'black'),
+                   linewidth=2, linestyle='--', alpha=0.7)
+            
+            # Add Savitzky-Golay filter smoothing if scipy is available
+            try:
+                from scipy.signal import savgol_filter
+                # Use window size that's odd and less than data length
+                savgol_window = min(smoothing_window * 2 + 1, len(avg_mean) - 1)
+                if savgol_window % 2 == 0:
+                    savgol_window -= 1
+                if savgol_window >= 5:  # Minimum window size for savgol
+                    smoothed_savgol = savgol_filter(avg_mean, savgol_window, 3)
+                    ax.plot(rounds, smoothed_savgol, color=colors.get(agent_type, 'black'),
+                           linewidth=2, linestyle='-.', alpha=0.8)
+            except ImportError:
+                pass
         
         ax.set_title(exp_name, fontsize=12)
         ax.set_xlabel("Round")
@@ -831,6 +859,27 @@ def plot_ql_scores(score_data, title, exp_type, game_mode, save_path=None):
             
             ax.plot(rounds, avg_mean, color=colors.get(agent_type, 'black'),
                    linewidth=2.5, label=agent_type, marker='o', markersize=2)
+            
+            # Add smoothed line using rolling average
+            smoothing_window = 20
+            smoothed_mean = pd.Series(avg_mean).rolling(
+                window=smoothing_window, min_periods=1, center=True).mean()
+            ax.plot(rounds, smoothed_mean, color=colors.get(agent_type, 'black'),
+                   linewidth=2, linestyle='--', alpha=0.7)
+            
+            # Add Savitzky-Golay filter smoothing if scipy is available
+            try:
+                from scipy.signal import savgol_filter
+                # Use window size that's odd and less than data length
+                savgol_window = min(smoothing_window * 2 + 1, len(avg_mean) - 1)
+                if savgol_window % 2 == 0:
+                    savgol_window -= 1
+                if savgol_window >= 5:  # Minimum window size for savgol
+                    smoothed_savgol = savgol_filter(avg_mean, savgol_window, 3)
+                    ax.plot(rounds, smoothed_savgol, color=colors.get(agent_type, 'black'),
+                           linewidth=2, linestyle='-.', alpha=0.8)
+            except ImportError:
+                pass
         
         ax.set_title(exp_name, fontsize=12)
         ax.set_xlabel("Round")

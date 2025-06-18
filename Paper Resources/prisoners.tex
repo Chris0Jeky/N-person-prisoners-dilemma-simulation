@@ -342,12 +342,60 @@ Pairwise &Q Learning& 85\%&TFT &80\%undone\\
 
 
 
-\section{General Discussion}
-\label{sec:general_discussion}
-The simulations show that the pairwise voting leads to a cooperative system,
-and the neighbourhood voting leads to systems where the agents defect.  This
-shows the Tragic Valley (neighourhood voting) and the Collaborative Hill
-(pairwise voting).  
+\section{Escaping the Tragic Valley with Enhanced Reinforcement Learning}
+\label{sec:enhanced_rl}
+
+The preceding sections have established a critical dichotomy: the pairwise interaction model creates a "Collaborative Hill" where simple reciprocity can thrive, while the neighbourhood voting model leads to a "Tragic Valley" of mutual defection for both static agents (Section \ref{sec:tragicValley}) and basic reinforcement learners (Section \ref{sec:tragicValley}). The diffuse nature of rewards in the neighbourhood setting obscures the one-to-one accountability needed for simple learning algorithms to foster cooperation.
+
+This raises a crucial question: is the Tragic Valley an inescapable feature of the N-IPD's neighbourhood structure, or can it be overcome by more sophisticated agents? To investigate this, we developed an "Enhanced Q-Learning" (EQL) agent, designed to better perceive and react to the dynamics of group behaviour.
+
+\subsection{The Enhanced Q-Learning Agent}
+
+The standard Q-learning agent, which bases its state on a simple discretization of the previous round's cooperation, struggles to identify meaningful patterns. Our Enhanced Q-Learning agent incorporates several key improvements inspired by advancements in MARL to create a more sophisticated learning mechanism:
+
+\begin{itemize}
+    \item \textbf{Richer State Representation:} Instead of just the previous round's cooperation level, the EQL agent's state can incorporate its own action history and the trend of group cooperation over multiple rounds. For example, a state might capture not only that cooperation is 'high', but also that it is 'stable' or 'increasing', and whether the agent itself has been cooperating or defecting. This allows the agent to learn the consequences of its actions on the group's trajectory.
+    \item \textbf{Optimistic Initialisation:} The EQL agent's Q-table is initialised with optimistic values for unexplored state-action pairs \cite{SuttonBarto2018}. This encourages the agent to thoroughly explore its options, particularly cooperative actions, before committing to a potentially suboptimal defect-heavy strategy.
+    \item \textbf{Adaptive Exploration:} The agent employs a decaying epsilon-greedy strategy. It explores more at the beginning of a tournament and gradually reduces its randomness to exploit the knowledge it has gained, allowing for convergence to a stable policy.
+\end{itemize}
+
+These enhancements transform the agent from a purely reactive learner into one that can perceive and respond to the emergent dynamics of the system.
+
+\subsection{Comparative Results: Learning to Cooperate}
+
+To test the EQL agent's capabilities, we ran a series of tournaments mirroring those in the previous sections. The results demonstrate a clear and significant ability to escape the Tragic Valley.
+
+The most striking result is observed when placing a single EQL agent in a group with two Tit-for-Tat (TFT) agents. As established in your email, a basic Q-learner in this scenario learns to exploit the initially cooperative TFTs, leading to a downward spiral of defection. The EQL agent, however, behaves entirely differently.
+
+As shown in Figure \ref{fig:EQL_vs_TFT_neighbourhood}, the EQL agent learns to reciprocate the TFTs' cooperative nature. Its cooperation rate climbs and stabilises at a high level, resulting in a system of mutual cooperation. Crucially, its cumulative score rises in lockstep with the TFT agents, indicating it has discovered a high-payoff, cooperative equilibrium. This emergence of sustained cooperation, driven by a higher score, is precisely the intelligent behaviour we seek.
+
+% --- Figure Placeholder ---
+% You should create this figure by taking the top-right subplot from your "1 Enhanced QL Neighbourhood - Cooperation Rates" image
+% and the top-right subplot from your "1 Enhanced QL Neighbourhood - Cumulative Scores" image and combining them.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{placeholder_EQL_vs_2TFT_neighbourhood.png}
+    \caption{Performance of a single Enhanced Q-Learning (EQL) agent with two TFT agents in the neighbourhood setting (average of 500 runs). Left: The EQL agent's cooperation rate rises to match the TFT agents. Right: The EQL agent achieves a high cumulative score, comparable to the cooperative TFT agents, demonstrating it has learned a beneficial, cooperative policy.}
+    \label{fig:EQL_vs_TFT_neighbourhood}
+\end{figure}
+% --- End Figure Placeholder ---
+
+The EQL agent also demonstrates rational behaviour in less cooperative environments. When paired with two "Always Defect" (AllD) agents, it quickly learns that cooperation is futile and its cooperation rate drops to the baseline exploration level (Figure \ref{fig:EQL_vs_AllD_AllC_neighbourhood}, left panel). This confirms the agent is not simply a blind cooperator; it is learning an appropriate, context-dependent strategy.
+
+Interestingly, when placed with one AllD and one "Always Cooperate" (AllC) agent, the EQL agent learns a mixed strategy, settling on approximately 50\% cooperation (Figure \ref{fig:EQL_vs_AllD_AllC_neighbourhood}, right panel). It learns that cooperating does not influence the AllD agent and is not strictly necessary to exploit the AllC agent, finding a local optimum between the two extremes.
+
+% --- Figure Placeholder ---
+% You should create this figure by taking the top-left subplot ("1 EQL + 2 AllD") and the middle-right subplot ("1 EQL + 1 AllD + 1 AllC")
+% from your "1 Enhanced QL Neighbourhood - Cooperation Rates" image and placing them side-by-side.
+\begin{figure}[ht]
+    \centering
+    \includegraphics[width=\textwidth]{placeholder_EQL_vs_AllD_AllC_neighbourhood.png}
+    \caption{Cooperation rate of an EQL agent in uncooperative neighbourhood settings. Left: Against two AllD agents, the EQL agent learns to defect. Right: Against one AllD and one AllC agent, the EQL agent learns a mixed strategy.}
+    \label{fig:EQL_vs_AllD_AllC_neighbourhood}
+\end{figure}
+% --- End Figure Placeholder ---
+
+These results show that the structural barrier of the Tragic Valley is not insurmountable. An agent equipped with a sufficiently rich state representation and a robust exploration mechanism can learn to identify and foster cooperative dynamics even in the absence of direct, pairwise reciprocity.
 
 
 \section{Conclusion}

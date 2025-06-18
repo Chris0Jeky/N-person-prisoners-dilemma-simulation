@@ -89,7 +89,7 @@ class EnhancedQLearningAgent:
     def __init__(self, agent_id, learning_rate=0.1, discount_factor=0.9, 
                  epsilon=0.1, epsilon_decay=0.999, epsilon_min=0.01,
                  state_type="proportion_discretized", q_init_type="optimistic",
-                 max_possible_payoff=5.0, memory_length=50):
+                 max_possible_payoff=5.0, memory_length=10):
         self.agent_id = agent_id
         self.strategy_name = "EnhancedQLearning"
         self.learning_rate = learning_rate
@@ -412,11 +412,11 @@ def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_r
             if agent.strategy_name == "EnhancedQLearning":
                 fresh_agents.append(EnhancedQLearningAgent(
                     agent_id=agent.agent_id,
-                    learning_rate=0.23,
-                    discount_factor=0.61,
-                    epsilon=0.28,  # Start with higher exploration
-                    epsilon_decay=0.80,
-                    epsilon_min=0.0046,
+                    learning_rate=0.1,
+                    discount_factor=0.9,
+                    epsilon=0.3,  # Start with higher exploration
+                    epsilon_decay=0.999,
+                    epsilon_min=0.01,
                     state_type="proportion_discretized",  # Default enhanced state
                     q_init_type="optimistic"  # Optimistic initialization
                 ))

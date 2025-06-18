@@ -11,7 +11,7 @@ import pandas as pd
 from enhanced_qlearning_demo_generator import (
     EnhancedQLearningAgent, StaticAgent, 
     run_multiple_simulations_extended, run_pairwise_simulation_extended,
-    run_nperson_simulation_extended
+    run_nperson_simulation_extended, COOPERATE, DEFECT
 )
 import os
 from datetime import datetime

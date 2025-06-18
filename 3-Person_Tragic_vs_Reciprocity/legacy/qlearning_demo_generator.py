@@ -630,18 +630,21 @@ def save_aggregated_data_to_csv(data, exp_type, game_mode, results_dir):
             # Create DataFrame with all agent data
             dfs = []
             for agent_id, stats in exp_data.items():
-                df = pd.DataFrame({
+                # Build all columns at once to avoid fragmentation
+                columns = {
                     'Round': range(1, len(stats['mean']) + 1),
                     f'{agent_id}_mean': stats['mean'],
                     f'{agent_id}_std': stats['std'],
                     f'{agent_id}_lower_95': stats['lower_95'],
                     f'{agent_id}_upper_95': stats['upper_95']
-                })
+                }
                 
-                # Add individual runs
+                # Add individual runs to the columns dict
                 for i, run in enumerate(stats['all_runs']):
-                    df[f'{agent_id}_run_{i+1}'] = run
+                    columns[f'{agent_id}_run_{i+1}'] = run
                 
+                # Create DataFrame with all columns at once
+                df = pd.DataFrame(columns)
                 dfs.append(df)
             
             # Merge all agent data

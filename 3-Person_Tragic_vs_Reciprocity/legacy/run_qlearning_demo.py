@@ -13,7 +13,7 @@ import qlearning_demo_generator as ql
 
 # Set parameters (can be modified)
 NUM_ROUNDS = 1000
-NUM_RUNS = 50
+NUM_RUNS = 200
 TRAINING_ROUNDS = 0
 
 print("=== Q-Learning Demo Generator ===")

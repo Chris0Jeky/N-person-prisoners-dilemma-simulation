@@ -433,6 +433,40 @@ class Environment:
         self.logger.info(f"Simulation completed: {num_rounds} rounds")
         return results
 
+    def run(
+        self,
+        rounds: int,
+        logging_interval: int = 10,
+        use_global_bonus: bool = True,
+        rewiring_interval: int = 0,
+        rewiring_prob: float = 0.0,
+    ):
+        """Compatibility wrapper to run a simulation for a number of rounds.
+
+        Some older parts of the codebase (and tests) expect :meth:`run` to be
+        available on the :class:`Environment` class.  It simply delegates to
+        :meth:`run_simulation` which contains the real implementation.
+
+        Args:
+            rounds: Number of rounds to simulate.
+            logging_interval: How often to log statistics.
+            use_global_bonus: Whether to include the global cooperation bonus.
+            rewiring_interval: Interval for network rewiring.
+            rewiring_prob: Probability of rewiring edges.
+
+        Returns:
+            List of round result dictionaries as produced by
+            :meth:`run_simulation`.
+        """
+
+        return self.run_simulation(
+            num_rounds=rounds,
+            logging_interval=logging_interval,
+            use_global_bonus=use_global_bonus,
+            rewiring_interval=rewiring_interval,
+            rewiring_prob=rewiring_prob,
+        )
+
     def update_network(self, rewiring_prob=0.05, cooperation_bias=0.7):
         """Dynamically update the network structure during simulation.
 

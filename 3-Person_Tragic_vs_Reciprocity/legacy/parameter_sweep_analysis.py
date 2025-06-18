@@ -731,6 +731,72 @@ class ParameterSweepAnalyzer:
                 f.write(f"- Total configurations tested: {len(all_performances)}\n")
                 f.write(f"- Performance range: {min(all_performances):.4f} - {max(all_performances):.4f}\n")
                 f.write(f"- Average performance: {np.mean(all_performances):.4f} ± {np.std(all_performances):.4f}\n")
+        
+        # Save comprehensive CSV summary
+        all_results = []
+        
+        # Collect single parameter sweep results
+        for param_name, results in self.results['single'].items():
+            for r in results:
+                row = {
+                    'sweep_type': 'single',
+                    'param1_name': param_name,
+                    'param1_value': r['param_value'],
+                    'param2_name': None,
+                    'param2_value': None,
+                    'param3_name': None,
+                    'param3_value': None,
+                    'avg_cooperation': r['avg_cooperation'],
+                    'avg_score': r['avg_score'],
+                    'final_cooperation': r['final_cooperation'],
+                    'cooperation_stability': r['cooperation_stability']
+                }
+                all_results.append(row)
+        
+        # Collect double parameter sweep results
+        for key, results in self.results['double'].items():
+            param1_name, param2_name = key.split('__')
+            for r in results:
+                row = {
+                    'sweep_type': 'double',
+                    'param1_name': param1_name,
+                    'param1_value': r['param1_value'],
+                    'param2_name': param2_name,
+                    'param2_value': r['param2_value'],
+                    'param3_name': None,
+                    'param3_value': None,
+                    'avg_cooperation': r['avg_cooperation'],
+                    'avg_score': r['avg_score'],
+                    'final_cooperation': r['final_cooperation'],
+                    'cooperation_stability': r['cooperation_stability']
+                }
+                all_results.append(row)
+        
+        # Collect triple parameter sweep results
+        for key, results in self.results['triple'].items():
+            param1_name, param2_name, param3_name = key.split('__')
+            for r in results:
+                row = {
+                    'sweep_type': 'triple',
+                    'param1_name': param1_name,
+                    'param1_value': r['param1_value'],
+                    'param2_name': param2_name,
+                    'param2_value': r['param2_value'],
+                    'param3_name': param3_name,
+                    'param3_value': r['param3_value'],
+                    'avg_cooperation': r['avg_cooperation'],
+                    'avg_score': r['avg_score'],
+                    'final_cooperation': r['final_cooperation'],
+                    'cooperation_stability': r['cooperation_stability']
+                }
+                all_results.append(row)
+        
+        # Save comprehensive results
+        if all_results:
+            df_all = pd.DataFrame(all_results)
+            csv_filename = os.path.join(self.output_dir, 'all_sweep_results.csv')
+            df_all.to_csv(csv_filename, index=False)
+            print(f"Saved comprehensive CSV: {csv_filename}")
 
 
 def main():

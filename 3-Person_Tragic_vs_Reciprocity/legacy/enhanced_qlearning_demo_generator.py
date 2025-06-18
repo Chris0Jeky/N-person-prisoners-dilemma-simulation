@@ -89,7 +89,7 @@ class EnhancedQLearningAgent:
     def __init__(self, agent_id, learning_rate=0.1, discount_factor=0.9, 
                  epsilon=0.1, epsilon_decay=0.999, epsilon_min=0.01,
                  state_type="proportion_discretized", q_init_type="optimistic",
-                 max_possible_payoff=5.0, memory_length=50):
+                 max_possible_payoff=5.0, memory_length=30):
         self.agent_id = agent_id
         self.strategy_name = "EnhancedQLearning"
         self.learning_rate = learning_rate

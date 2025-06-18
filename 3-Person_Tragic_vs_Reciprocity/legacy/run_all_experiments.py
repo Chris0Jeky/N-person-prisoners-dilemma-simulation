@@ -26,7 +26,7 @@ def main():
     print("This will run all experiments and generate results.")
     
     # Check if results already exist
-    if os.path.exists("results") or os.path.exists("qlearning_results"):
+    if os.path.exists("results") or os.path.exists("qlearning_results") or os.path.exists("results_2tfte_only"):
         response = input("\nResults directories already exist. Continue anyway? (y/n): ")
         if response.lower() != 'y':
             print("Exiting.")
@@ -36,6 +36,9 @@ def main():
     experiments = [
         ("python static_figure_generator.py", 
          "Static Strategy Experiments (TFT, AllC, AllD)"),
+        
+        ("python static_figure_generator_2tfte_allc_alld.py", 
+         "Static Strategy Experiments (2TFT-E + AllC/AllD)"),
         
         ("python run_qlearning_demo.py", 
          "Basic Q-Learning Experiments"),

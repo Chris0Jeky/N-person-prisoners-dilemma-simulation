@@ -158,7 +158,7 @@ class EnhancedParameterAnalyzer:
             'late_cooperation': late_coop,
             'learning_improvement': learning_improvement,
             'convergence_speed': avg_convergence,
-            'final_coop': np.mean([run[-1] for run in coop_runs])
+            'final_coop': np.mean(all_coop_data[:, -1])
         }
     
     def analyze_parameter_sensitivity(self, param_name, other_params=None):

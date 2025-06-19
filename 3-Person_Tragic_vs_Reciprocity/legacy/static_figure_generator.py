@@ -70,12 +70,25 @@ class StaticAgent:
             intended_move = DEFECT
 
         # Apply exploration for TFT-E
-        if self.strategy_name == "TFT-E" and random.random() < self.exploration_rate:
+        if self.strategy_name == "TFT-E" and random.random() < self._get_current_exploration_rate():
             return 1 - intended_move
         return intended_move
 
+    def _get_current_exploration_rate(self):
+        """Calculate the current exploration rate based on decay."""
+        if self.exploration_decay == 0:
+            return self.exploration_rate
+        # Exponential decay: rate = initial_rate * (1 - decay_rate)^round_count
+        return self.initial_exploration_rate * ((1 - self.exploration_decay) ** self.round_count)
+    
+    def increment_round(self):
+        """Increment the round counter for exploration decay."""
+        self.round_count += 1
+    
     def reset(self):
         self.opponent_last_moves = {}
+        self.round_count = 0
+        self.exploration_rate = self.initial_exploration_rate
 
 
 # --- Simulation Functions ---
@@ -135,6 +148,10 @@ def run_pairwise_simulation_extended(agents, num_rounds):
                             tft_coop_count += 1
             avg_coop_rate = tft_coop_count / (len(tft_agents) * (len(agents) - 1))
             tft_coop_history.append(avg_coop_rate)
+        
+        # Increment round counter for all agents (for exploration decay)
+        for agent in agents:
+            agent.increment_round()
 
     return tft_coop_history, all_coop_history, score_history
 

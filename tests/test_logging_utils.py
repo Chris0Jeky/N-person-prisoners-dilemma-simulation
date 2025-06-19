@@ -467,3 +467,16 @@ class TestDailyT035FileHandlerPresent:
         assert isinstance(logger, logging.Logger)
         assert os.path.exists(log_file)
         assert any(isinstance(h, logging.FileHandler) for h in logger.handlers)
+
+
+class TestDailyT045ConsoleHandlerPresent:
+    """Daily check: default logging attaches a console handler."""
+
+    def test_console_handler_present(self):
+        logger = setup_logging()
+        assert isinstance(logger, logging.Logger)
+        assert any(
+            isinstance(h, logging.StreamHandler)
+            and not isinstance(h, logging.FileHandler)
+            for h in logger.handlers
+        )

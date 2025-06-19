@@ -289,10 +289,10 @@ def aggregate_results(all_runs):
 def setup_experiments():
     """Defines the four agent compositions for the static policy experiments."""
     return {
-        "3 TFT": [
-            StaticAgent(agent_id="TFT_1", strategy_name="TFT"),
-            StaticAgent(agent_id="TFT_2", strategy_name="TFT"),
-            StaticAgent(agent_id="TFT_3", strategy_name="TFT"),
+        "3 TFT-E": [
+            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="TFT-E_3", strategy_name="TFT-E", exploration_rate=0.1),
         ],
         "2 TFT-E + 1 AllD": [
             StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),

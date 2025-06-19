@@ -313,7 +313,12 @@ def aggregate_results(all_runs):
 # --- Part 2: Experiment Setup and Plotting ---
 
 def setup_experiments():
-    """Defines the four agent compositions for the static policy experiments."""
+    """Defines the four agent compositions for the static policy experiments.
+    
+    Example of using decaying exploration:
+    StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.2, exploration_decay=0.01)
+    This would start with 20% exploration and decay by 1% each round.
+    """
     return {
         "3 TFT-E": [
             StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),

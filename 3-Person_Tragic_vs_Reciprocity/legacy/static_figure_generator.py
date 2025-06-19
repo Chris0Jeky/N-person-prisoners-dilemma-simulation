@@ -198,6 +198,10 @@ def run_nperson_simulation_extended(agents, num_rounds):
 
         # Update state for next round
         prev_round_coop_ratio = current_coop_ratio
+        
+        # Increment round counter for all agents (for exploration decay)
+        for agent in agents:
+            agent.increment_round()
 
     return tft_coop_history, all_coop_history, score_history
 

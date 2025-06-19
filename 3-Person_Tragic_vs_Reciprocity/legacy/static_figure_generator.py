@@ -343,6 +343,32 @@ def setup_experiments():
     }
 
 
+def setup_experiments_with_decay():
+    """Example setup showing how to use decaying exploration rates."""
+    return {
+        "3 TFT-E (decay=0.005)": [
+            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.2, exploration_decay=0.005),
+            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.2, exploration_decay=0.005),
+            StaticAgent(agent_id="TFT-E_3", strategy_name="TFT-E", exploration_rate=0.2, exploration_decay=0.005),
+        ],
+        "2 TFT-E (decay) + 1 AllD": [
+            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.15, exploration_decay=0.01),
+            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.15, exploration_decay=0.01),
+            StaticAgent(agent_id="AllD_1", strategy_name="AllD"),
+        ],
+        "2 TFT-E (no decay) + 1 AllD": [
+            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="AllD_1", strategy_name="AllD"),
+        ],
+        "Mixed decay rates": [
+            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.3, exploration_decay=0.02),
+            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1, exploration_decay=0.0),
+            StaticAgent(agent_id="TFT-E_3", strategy_name="TFT-E", exploration_rate=0.2, exploration_decay=0.005),
+        ],
+    }
+
+
 def save_aggregated_data_to_csv(data, filename_prefix, results_dir):
     """Saves the aggregated simulation data to CSV files with statistics."""
     # Save individual experiment files with statistics

@@ -30,10 +30,13 @@ def nperson_payoff(my_move, num_other_cooperators, total_agents):
 
 # --- Agent Class ---
 class StaticAgent:
-    def __init__(self, agent_id, strategy_name, exploration_rate=0.0):
+    def __init__(self, agent_id, strategy_name, exploration_rate=0.0, exploration_decay=0.0):
         self.agent_id = agent_id
         self.strategy_name = strategy_name
         self.exploration_rate = exploration_rate
+        self.initial_exploration_rate = exploration_rate
+        self.exploration_decay = exploration_decay
+        self.round_count = 0
         # For Pairwise TFT
         self.opponent_last_moves = {}
 
@@ -48,7 +51,7 @@ class StaticAgent:
             intended_move = DEFECT
 
         # Apply exploration for TFT-E
-        if self.strategy_name == "TFT-E" and random.random() < self.exploration_rate:
+        if self.strategy_name == "TFT-E" and random.random() < self._get_current_exploration_rate():
             return 1 - intended_move
         return intended_move
 

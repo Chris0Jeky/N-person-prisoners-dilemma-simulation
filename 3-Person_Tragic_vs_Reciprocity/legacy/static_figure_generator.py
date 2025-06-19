@@ -321,13 +321,13 @@ def setup_experiments():
     """
     return {
         "3 TFT-E": [
-            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1, exploration_decay=0.02),
             StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1),
             StaticAgent(agent_id="TFT-E_3", strategy_name="TFT-E", exploration_rate=0.1),
         ],
         "2 TFT-E + 1 AllD": [
-            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),
-            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1, exploration_decay=0.02),
+            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1, exploration_decay=0.02),
             StaticAgent(agent_id="AllD_1", strategy_name="AllD"),
         ],
         "2 TFT + 1 AllD": [
@@ -336,8 +336,8 @@ def setup_experiments():
             StaticAgent(agent_id="AllD_1", strategy_name="AllD"),
         ],
         "2 TFT-E + 1 AllC": [
-            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1),
-            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1),
+            StaticAgent(agent_id="TFT-E_1", strategy_name="TFT-E", exploration_rate=0.1, exploration_decay=0.02),
+            StaticAgent(agent_id="TFT-E_2", strategy_name="TFT-E", exploration_rate=0.1, exploration_decay=0.02),
             StaticAgent(agent_id="AllC_1", strategy_name="AllC"),
         ],
     }

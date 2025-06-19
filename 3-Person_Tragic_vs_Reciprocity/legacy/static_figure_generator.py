@@ -224,7 +224,8 @@ def run_multiple_simulations(simulation_func, agents, num_rounds, num_runs=15):
             fresh_agents.append(StaticAgent(
                 agent_id=agent.agent_id,
                 strategy_name=agent.strategy_name,
-                exploration_rate=agent.exploration_rate
+                exploration_rate=agent.exploration_rate,
+                exploration_decay=agent.exploration_decay
             ))
         
         run_history = simulation_func(fresh_agents, num_rounds)

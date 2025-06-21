@@ -190,6 +190,7 @@ class BetterEnhancedAgent(SimpleQLearningAgent):
         return f"{base_state}_My_{move_state}"
 
     def choose_action(self, context):
+        """Decay exploration, then delegate the action choice."""
         # Epsilon decay based on steps taken
         self.epsilon = self.eps_end + (self.eps_start - self.eps_end) * \
                        np.exp(-1. * self.step / self.eps_decay_rate)

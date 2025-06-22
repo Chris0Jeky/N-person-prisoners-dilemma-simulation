@@ -1,9 +1,8 @@
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
-from itertools import combinations
+from collections import defaultdict
 
 # Import the new, robust agents and simulation runners
 from final_agents import StaticAgent, EnhancedQLearningAgent, SimpleQLearningAgent
@@ -17,16 +16,16 @@ def run_experiment_set(agent_templates, num_rounds, num_runs):
     nperson_runs = []
 
     for i in range(num_runs):
-        print(f"  Run {i + 1}/{num_runs}...", end='\r')
-        # Create fresh instances for each run
+        print(f"    Run {i + 1}/{num_runs}...", end='\r')
+        # Create fresh instances for each run to ensure statelessness
         fresh_agents_p = [type(a)(**a.__dict__) for a in agent_templates]
         fresh_agents_n = [type(a)(**a.__dict__) for a in agent_templates]
 
         pairwise_runs.append(run_pairwise_tournament(fresh_agents_p, num_rounds))
         nperson_runs.append(run_nperson_simulation(fresh_agents_n, num_rounds))
-    print("\n  Done.")
+    print("\n    Done.")
 
-    # Aggregate results
+    # Aggregate results by taking the mean across all runs
     def aggregate(runs):
         agg = {agent_id: {'coop_rate': [], 'score': []} for agent_id in runs[0]}
         for agent_id in agg:
@@ -39,8 +38,8 @@ def run_experiment_set(agent_templates, num_rounds, num_runs):
 
 
 # --- Plotting ---
-def plot_comparison(basic_data, enhanced_data, title):
-    """Generates a 4-panel comparison plot."""
+def plot_comparison(basic_data, enhanced_data, title, save_path):
+    """Generates a 4-panel comparison plot for a single experiment."""
     fig, axes = plt.subplots(2, 2, figsize=(20, 15), dpi=100)
     fig.suptitle(f"Detailed Comparison: {title}", fontsize=22, weight='bold')
     sns.set_style("whitegrid")
@@ -50,24 +49,28 @@ def plot_comparison(basic_data, enhanced_data, title):
         ('Neighbourhood Cooperation', 'coop_rate', 1, 0), ('Neighbourhood Scores', 'score', 1, 1)
     ]
 
-    # Extract data for QL agents only
     b_data_p, b_data_n = basic_data
     e_data_p, e_data_n = enhanced_data
 
-    b_ql_id = next(k for k in b_data_p if "QL" in k)
-    e_ql_id = next(k for k in e_data_p if "QL" in k)
+    # Find all QL agent IDs in the results
+    b_ql_ids = sorted([k for k in b_data_p if "QL" in k])
+    e_ql_ids = sorted([k for k in e_data_p if "EQL" in k])
 
     data_map = {
-        (0, 0): (b_data_p[b_ql_id], e_data_p[e_ql_id]), (0, 1): (b_data_p[b_ql_id], e_data_p[e_ql_id]),
-        (1, 0): (b_data_n[b_ql_id], e_data_n[e_ql_id]), (1, 1): (b_data_n[b_ql_id], e_data_n[e_ql_id]),
+        (0, 0): (b_data_p, e_data_p), (0, 1): (b_data_p, e_data_p),
+        (1, 0): (b_data_n, e_data_n), (1, 1): (b_data_n, e_data_n),
     }
 
     for label, metric, r, c in metrics:
         ax = axes[r, c]
         basic_plot_data, enhanced_plot_data = data_map[(r, c)]
 
-        ax.plot(basic_plot_data[metric], label='Basic QL_1', color='blue', linestyle='-')
-        ax.plot(enhanced_plot_data[metric], label='Final Enhanced EQL_1', color='darkblue', linestyle='--')
+        # Plot all Basic QL agents
+        for i, ql_id in enumerate(b_ql_ids):
+            ax.plot(basic_plot_data[ql_id][metric], label=f'Basic {ql_id}', color=f'C{i}', linestyle='-')
+        # Plot all Enhanced QL agents
+        for i, ql_id in enumerate(e_ql_ids):
+            ax.plot(enhanced_plot_data[ql_id][metric], label=f'Enhanced {ql_id}', color=f'C{i}', linestyle='--')
 
         ax.set_title(label, fontsize=16)
         ax.set_xlabel("Round", fontsize=12)
@@ -76,36 +79,65 @@ def plot_comparison(basic_data, enhanced_data, title):
         ax.grid(True, linestyle='--', alpha=0.6)
 
     plt.tight_layout(rect=[0, 0, 1, 0.96])
-    return fig
+    plt.savefig(save_path)
+    plt.close(fig)
+    print(f"  Chart saved to {save_path}")
 
 
-# --- Main ---
+# --- Main Execution ---
 if __name__ == "__main__":
     NUM_ROUNDS = 1000
-    NUM_RUNS = 20  # Keep low for a quick demonstration
+    NUM_RUNS = 200  # Keep low for faster demo runs; increase for smoother final charts
 
-    # --- Experiment 1: Basic QL vs. AllD and AllC ---
-    print("--- Running Basic QL vs. 1 AllD + 1 AllC ---")
-    basic_templates = [
-        SimpleQLearningAgent(agent_id="Basic_QL_1"),
-        StaticAgent(agent_id="AllD_1", strategy_name="AllD"),
-        StaticAgent(agent_id="AllC_1", strategy_name="AllC"),
-    ]
-    basic_data_allx = run_experiment_set(basic_templates, NUM_ROUNDS, NUM_RUNS)
+    # Define all experiment configurations
+    experiment_configs = {
+        "1_QL_plus_1_AllD_plus_1_AllC": [("QL", {}), ("AllD", {}), ("AllC", {})],
+        "1_QL_plus_2_AllD": [("QL", {}), ("AllD", {}), ("AllD", {})],
+        "1_QL_plus_2_TFT": [("QL", {}), ("TFT", {}), ("TFT", {})],
+        "2_QL_plus_1_AllD": [("QL", {}), ("QL", {}), ("AllD", {})],
+        "2_QL_plus_1_TFT": [("QL", {}), ("TFT", {})]  # Corrected this line
+    }
 
-    # --- Experiment 2: Enhanced QL vs. AllD and AllC ---
-    print("\n--- Running Enhanced QL vs. 1 AllD + 1 AllC ---")
-    enhanced_templates = [
-        EnhancedQLearningAgent(agent_id="Enhanced_EQL_1"),
-        StaticAgent(agent_id="AllD_1", strategy_name="AllD"),
-        StaticAgent(agent_id="AllC_1", strategy_name="AllC"),
-    ]
-    enhanced_data_allx = run_experiment_set(enhanced_templates, NUM_ROUNDS, NUM_RUNS)
+    # Ensure the output directory exists
+    output_dir = "final_charts_all_scenarios"
+    os.makedirs(output_dir, exist_ok=True)
 
-    # --- Generate and Save Plot ---
-    os.makedirs("final_charts", exist_ok=True)
-    fig = plot_comparison(basic_data_allx, enhanced_data_allx, "1 QL + 1 AllD + 1 AllC")
-    fig.savefig("final_charts/final_comparison_AllDxAllC.png")
-    plt.show()
+    # --- Loop through experiments, run, and plot ---
+    for name, config in experiment_configs.items():
+        print(f"\n--- Running Experiment: {name} ---")
 
-    print("\nDemonstration complete. Chart saved to 'final_charts/'.")
+        # --- 1. Basic QL Version ---
+        print("  Running Basic QL version...")
+        basic_templates = []
+        counts = defaultdict(int)
+        for agent_type, params in config:
+            counts[agent_type] += 1
+            if agent_type == "QL":
+                basic_templates.append(SimpleQLearningAgent(agent_id=f"Basic_QL_{counts[agent_type]}", **params))
+            else:
+                basic_templates.append(
+                    StaticAgent(agent_id=f"{agent_type}_{counts[agent_type]}", strategy_name=agent_type, **params))
+
+        basic_data = run_experiment_set(basic_templates, NUM_ROUNDS, NUM_RUNS)
+
+        # --- 2. Enhanced QL Version ---
+        print("  Running Enhanced QL version...")
+        enhanced_templates = []
+        counts = defaultdict(int)
+        for agent_type, params in config:
+            counts[agent_type] += 1
+            if agent_type == "QL":
+                enhanced_templates.append(
+                    EnhancedQLearningAgent(agent_id=f"Enhanced_EQL_{counts[agent_type]}", **params))
+            else:
+                enhanced_templates.append(
+                    StaticAgent(agent_id=f"{agent_type}_{counts[agent_type]}", strategy_name=agent_type, **params))
+
+        enhanced_data = run_experiment_set(enhanced_templates, NUM_ROUNDS, NUM_RUNS)
+
+        # --- 3. Generate and Save Plot ---
+        print("  Generating plot...")
+        plot_path = os.path.join(output_dir, f"comparison_{name}.png")
+        plot_comparison(basic_data, enhanced_data, name.replace('_', ' '), plot_path)
+
+    print(f"\nAll experiments complete. Charts saved to '{output_dir}'.")

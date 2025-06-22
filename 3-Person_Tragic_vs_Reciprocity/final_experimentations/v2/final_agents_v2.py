@@ -1,5 +1,6 @@
 import random
 from collections import defaultdict, deque
+import numpy as np  
 
 # --- Constants ---
 COOPERATE = 0
@@ -150,7 +151,7 @@ class BetterEnhancedAgent(SimpleQLearningAgent):
     - State representation is slightly more informative but not overly complex.
     """
 
-    def __init__(self, agent_id, lr=0.1, df=0.95, eps_start=0.4, eps_end=0.05, eps_decay_rate=500, **kwargs):
+    def __init__(self, agent_id, lr=0.1, df=0.95, eps_start=0.3, eps_end=0.01, eps_decay_rate=500, **kwargs):
         super().__init__(agent_id, lr, df, eps_start)
         self.strategy_name = "BetterEnhanced"
         self.eps_start = eps_start

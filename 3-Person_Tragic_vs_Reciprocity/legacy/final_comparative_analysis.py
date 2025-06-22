@@ -62,7 +62,7 @@ def get_ql_agent_columns(df, ql_type):
     return []
 
 
-def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1 QL", results_dir="final_qlearning_results", eql_results_dir="final_enhanced_qlearning_results"):
+def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1 QL", results_dir="qlearning_results", eql_results_dir="final_enhanced_qlearning_results"):
     """Create comparison plots for QL vs Enhanced QL by scenario."""
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     fig.suptitle(f'{scenario_type} Comparison: Basic QL vs Final Enhanced QL', fontsize=16, weight='bold')
@@ -128,7 +128,7 @@ def create_comparison_plots_by_scenario(ql_data, eql_data, scenario_type="1 QL",
     return fig
 
 
-def create_detailed_comparison(experiment_name, ql_type='1QL', results_dir="final_qlearning_results", eql_results_dir="final_enhanced_qlearning_results"):
+def create_detailed_comparison(experiment_name, ql_type='1QL', results_dir="qlearning_results", eql_results_dir="final_enhanced_qlearning_results"):
     """Create detailed time-series comparison for a specific experiment."""
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     experiment_display = experiment_name.replace('_', ' ').replace('plus', '+')
@@ -172,7 +172,7 @@ def create_detailed_comparison(experiment_name, ql_type='1QL', results_dir="fina
     return fig
 
 
-def create_performance_heatmap(results_dir="final_qlearning_results", eql_results_dir="final_enhanced_qlearning_results"):
+def create_performance_heatmap(results_dir="qlearning_results", eql_results_dir="final_enhanced_qlearning_results"):
     """Create a heatmap showing performance differences between QL and Enhanced QL."""
     # Load all summary data
     ql_data_1 = load_summary_data(results_dir, '1QL')
@@ -272,7 +272,7 @@ def create_performance_heatmap(results_dir="final_qlearning_results", eql_result
 def main():
     """Main function to run all comparative analyses."""
     # Check which results are available
-    basic_results_dir = 'final_qlearning_results'
+    basic_results_dir = 'qlearning_results'
     enhanced_results_dir = 'final_enhanced_qlearning_results'
     
     has_basic = os.path.exists(basic_results_dir)

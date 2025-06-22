@@ -44,7 +44,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
     for each opponent it encounters.
     """
 
-    def __init__(self, agent_id, params):
+    def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "PairwiseAdaptive")
         self.params = params
         self.reset()

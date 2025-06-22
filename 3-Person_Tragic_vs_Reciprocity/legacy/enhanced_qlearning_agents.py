@@ -50,6 +50,9 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
         # Initialize the parent class (SimpleQLearningAgent)
         super().__init__(agent_id, learning_rate, discount_factor, epsilon, exploration_rate)
         
+        # Strategy name for compatibility
+        self.strategy_name = "EnhancedQLearning"
+        
         # Enhanced-specific attributes
         self.initial_epsilon = epsilon
         self.epsilon_decay = epsilon_decay

@@ -1,0 +1,18 @@
+\begin{figure} [ht]
+\begin{center}
+\input {pairwise.tex} 
+\end {center}
+\caption{Results from four static 50 round tournaments with
+  neighbourhood voting.  3-TFT refers to 3 Tit-for-Tat agents that
+  start cooperating; note that they continue to cooperate.  2-TFT+D
+  refers to two Tit-for-Tat agents with an agent that always defects;
+  this leads to system where the TFT agents collaborate with each
+  other and defect against the defecting agent.  2-TFT-E+D refers to
+  two Tit-for-Tat agents with 10\% exploration and an always defect
+  agent; this leads to a system where the TFT agents have some
+  collaboration but mostly defect.  2-TFT-E+C refers to two
+  Tit-for-Tat agents with 10\% exploration and an agent that always
+  cooperates; the TFT agents mostly collaborate, but there is some
+  defection. }
+  \label{figStaticTwoVotes}
+\end {figure}

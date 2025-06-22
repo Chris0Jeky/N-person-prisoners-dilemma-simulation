@@ -40,7 +40,8 @@
   A similar result is shown with agents that learn via reinforcement learning.
 
 
-\keywords{N-Person Prisoner's Dilemma \and \and Reinforcement Learning \and Emergence of Cooperation \and Multi-Agent Systems.}
+\keywords{N-Person Prisoner's Dilemma \and Reinforcement Learning \and
+    Emergence of Cooperation \and Multi-Agent Systems.}
 % Agent-Based Modelling  \and Tragic Valley \and Collaborative Hill 
 
 \end{abstract}
@@ -65,7 +66,7 @@ However, many real-world social and economic dilemmas—ranging from
 managing common resources to international climate agreements—involve
 more than two interacting parties. The N-Person Iterated Prisoner's
 Dilemma (N-IPD) generalizes the IPD to scenarios with $N$ participants
-\cite{Hamburger1973}\cite{Hardin1971}.
+\cite{Hamburger1973,Hardin1971}.
 
 
 This paper will first provide a brief background on the N-IPD and
@@ -81,14 +82,14 @@ N-Person Prisoner's Dilemma (N-IPD), and introduces the Agent-Based Modelling
 paper. 
 
 \subsection{The Prisoner's Dilemma}
-The canonical version of the Prioner's Dilemma was presented by
-Axelrod and Hamilton \cite {Axelrod}.  There are two prisoners
+The Prisoner's Dilemma \cite {Scodel,Axelrod} is widely
+known problem used to study collaboration.  There are two prisoners
 and they are given the option to turn the other in.  So both have
 the option to collaborate, and not turn the other in, or defect.
 That is each has a choice {\it C} or {\it D}.  Each is given a reward
 based on their decision and the decision of the other.  If they both
-collaborate they both are given $R$, a reward.  If both defect they
-are $P$, a punishment.  If one defects, and the other collaborates,
+collaborate, they both are given $R$, a reward.  If both defect, they
+are both given $P$, a punishment.  If one defects, and the other collaborates,
 the defector is given $T$, a temptation, and the collaborator is given
 $S$, a sucker's payoff.  
 
@@ -136,17 +137,16 @@ cooperation difficult to maintain \cite {Holt}.
 
 The Iterated Prisoner's Dilemma (IPD) serves as a model for
 understanding cooperation. While Axelrod's work highlighted the
-success of strategies like TFT in two-player encounters,
+success of strategies like Tit-for-Tat in two-player encounters,
 extending this to multi-agent scenarios (N-Person IPD or N-IPD)
-reveals a more complex strategic landscape. This section details our
-agent-based modeling framework, the specific experimental
-configurations used to explore this landscape, and the metrics for
-evaluating outcomes. Our central aim is to contrast how interaction
-structure influences cooperative dynamics, leading to what we term the
-"Reciprocity Hill" in pairwise settings and the "Tragedy Valley" in
-N-Person group settings.
+reveals a more complex strategic landscape \cite {Weil}.
+
+The overall reward increases linearly as the number of collaborators
+increase \cite {Archetti}.  However, the individual reward
+is greater when the agent defects (see section \ref {secCore}).  
 
 \subsection{Core Interaction Models}
+\label {secCore}
 When there are $N$ agents (and they all have only one vote), 
 an individual agent's payoff is determined by its
 own choice and the total number of other agents in the group who
@@ -192,7 +192,7 @@ it collaborates or defects.
 \subsection{Agent-Based Modelling (ABM) for Social Dilemmas}
 Agent-Based Modelling (ABM) offers a powerful computational
 methodology for studying complex social systems from the bottom up
-\cite{Gilbert2007, Macal2010}. By simulating the actions and
+\cite{Gilbert2019,Macal2010}. By simulating the actions and
 interactions of autonomous, heterogeneous agents according to
 predefined rules within a specified environment, ABM allows
 researchers to observe emergent macroscopic phenomena, such as the
@@ -207,7 +207,7 @@ into the conditions favoring cooperative strategies \cite{Axelrod}.
 Reinforcement Learning (RL) is a class of machine learning where
 agents learn to make sequences of decisions by interacting with an
 environment and receiving feedback in the form of rewards or
-punishments \cite{SuttonBarto2018}.  Standard Q-learning is a
+punishments \cite{SuttonBarto1998}.  Standard Q-learning is a
 foundational RL algorithm that learns the value of taking a particular
 action in a given state. However, when applied to multi-agent
 systems, where multiple agents are learning simultaneously, standard
@@ -218,19 +218,21 @@ agents \cite{Busoniu2008}.  This can destabilize learning and prevent
 convergence to cooperative equilibria. To address these issues within
 the N-IPD context, prior work has explored more advanced multi-agent
 reinforcement learning (MARL) techniques like Hysteretic Q-learning
-\cite{Matignon2007Hysteretic} and WoLF-PHC \cite{Bowling2002WoLF},
+\cite{Matignon} and WoLF-PHC \cite{Bowling},
 which aim to endow agents with more sophisticated learning
-capabilities. Our study focuses on simpler reactive strategies and
-their adaptations to highlight structural effects.
+capabilities. 
 
-Q-learning \cite {Watkins} is a system that learns by building tables
-of results from prior experience.  For example, in the case below, three
-agents participate, and make decisions.  If one is a Q-learning agent,
-it can build a table of, for example, the last two moves.  Each step
-move has eight possible outcomes $2^3$, so there are 64 cells to fill.
-Additionally, the Q-learning agent typically has an explore option,
-so that no matter what the tables say, it will try a random move a
-small percentage of the time.  
+Q-learning \cite {Watkins} is a system that learns by building a table
+of results from prior experience, called a Q-table.  For example, in
+the section \ref {sec:qLearning}, three agents participate, and make
+decisions.  If one is a Q-learning agent, it can build a table of, for
+example, the last two moves.  Each step move has eight possible
+outcomes $2^3$, so there are 64 cells to fill.  Additionally, the
+Q-learning agent typically has an explore option, so that no matter
+what the tables say, it will try a random move a small percentage of
+the time.
+
+undone discount factor
 
 
 \section{The Collaborative Hill and the Tragic Valley}
@@ -241,22 +243,26 @@ Simulations on this task show that the voting mechanism largely determines
 whether the agents converge on a cooperative solution (the Collaborative
 Hill) or whether they defect (the Tragic Valley).
 
-\input {embedStaticFig1.tex}
+\input {embedPairwiseStatic.tex}
 
 The first set of simulations uses pairwise voting, and tournaments are
-run with agents with static policies.  Fifty iteratitions are
-performed on four different sets of three agents with static policies:
-three Tit-for-Tat (TFT) agents, two TFT with 10\% exploration (TFT-E)
-and one always defect, two TFT agents and one always defect agent, and
-two TFT-E agents and one always collaborate agent.  The results are
-shown in figure \ref {figStaticTwoVotes}.  The vertical axis refers to
-how often the two or three TFT or TFT-E agents voted collaborate.  The
-Tit-for-Tat agents start off by collaborating, and the three TFT
-system continues to collaborate.  The two TFT agents with the always
-defect agent always collaborate with each other but (undone, after an
-initial collaboration) always defect against the always defect agent.
-This leads to a lower average payout, but is still largely
-collaborative.  Both of these give horizontal lines in figure \ref
+run with agents with static policies.  Fifty iterations are
+performed on all of the combinations of agents with the static policies
+of always defect, always collaborate, Tit-for-Tat (TFT), Tit-for-Tat with
+exploration (TFT-E), and random.
+
+Figure \ref {figStaticTwoVotes} show the results of four different
+sets of three agents with static policies: three TFT agents, two TFT
+with 10\% exploration (TFT-E) and one always defect, two TFT agents
+and one always defect agent, and two TFT-E agents and one always
+collaborate agent.  The vertical axis refers to how often the two or
+three TFT or TFT-E agents voted collaborate.  The Tit-for-Tat agents
+start off by collaborating, and the three TFT system continues to
+collaborate.  The two TFT agents with the always defect agent always
+collaborate with each other but (undone, after an initial
+collaboration) always defect against the always defect agent.  This
+leads to a lower average payout, but is still largely collaborative.
+Both of these give horizontal lines in figure \ref
 {figStaticTwoVotes}.
 
 The TFT-E agents behave more stochastically, as sometimes they change
@@ -279,10 +285,13 @@ collaborative agent being more collaborative, and the pair with the
 defecting agent being less collaborative.  Below (figure \ref
 {figStaticAverage}) it is shown that the ratio is 80\% and 20\% .
 
-\input {embedStaticFig2.tex}
+\input {embedNeighbourhoodStatic.tex}
 
-The reason behind this is that the reward space for each agent tends
-toward the positive when there is pairwise voting.  Each agent can
+undone something about TFT-E and variability.  replace 3TFT with 3-TFT-E
+on the second figure
+
+The reason behind the difference between the two is that the reward space for
+each agent reinforces collaboration with with pairwise voting.  Each agent can
 punish particular defectors and reward particular collaborators.  This
 is why the agents can all get better results and ascend the
 Collaborative Hill.  On the other hand, with neighbourhood voting,
@@ -311,90 +320,209 @@ between the two Tit-for-Tat agents.
 \input {embedFigStaticAvg.tex}
 
 \section {Reinforcement Learning Agents}
-
-The authors were suprised that they found no papers explicitly stating
-that pairwise voting led to largely good performance.  However, this
-may be due to pairwise voting being largely equivalent to
-$(N-1)*(N-2)$ individual tournaments.  Thus, the original work on the
-two person Prisoner's Dilemma holds.
+\label{sec:qLearning}
 
 Using standard Q-learning agents with only two steps of history,
-agents become cooperative with two votes, and defect with one.
+agents become cooperative with pairwise voting, and defect with
+neighbourhood votign.  Figure \ref {figQAverage} shows this.  Over
+time the neighbourhood voting descends toward 20\% cooperation while
+the pairwise voting agents remain at around 80 \%.  The static TFT
+agents follow their counterparts that have learned policies.  Undone
+are these true Variance to 80 and 20\% are due to the exploratory
+behaviour of the Q-Learning agents.  When the exploration gradually
+decays the cooperation values go to 100 and 0\%.
 
 \input {embedFigQLearningAvg.tex}
 undone results from 5 7 19 and 25 agents
+
+undone payout vs collaboration in figures
 
 undone results of q-learning agents vs. always cooperate pairwise and
 neighbour
 
 \begin{table}
-  \caption{System Parameters}
+  \caption{Sample Results}
   \label{tableResults}
   
 \begin {tabular}  {|c|c c|c c|}
 \hline
-Agent 1 and 2 Type & Average Cooperation & Agent 3 Type  & Average Cooperation \\
+Voting & Agent 1 \& 2 Type & Avg. Cooperation & Agent 3 Type  & Avg. Cooperation \\
 \hline
-Pairwise &Q Learning& 85\%&TFT &80\%undone\\
+Pairwise &Q Learning& 64.1\%& Random &50\%\\
+\hline
+Neighbour &Q Learning& 19.6\%& Random &50\%\\
+\hline
+
+Pairwise &Q Learning& 52.7\%& Defect&0\%\\
+\hline
+Neighbour &Q Learning& 31.8\%& Defect&0\%\\
+\hline
+
+Pairwise &Q Defect& 0\%& Q Learning &17.1\%\\
+\hline
+Neighbour &Q Defect& 0\%& Q Learning &17.6\%\\
 \hline
 \end {tabular}
 \end{table}
 
 
+The authors were suprised that they have found no papers explicitly stating
+that pairwise voting led to largely collaborative performance.  However, this
+may be due to pairwise voting being largely equivalent to
+$(N-1)*(N-2)$ individual tournaments.  Thus, the original work on the
+two person Prisoner's Dilemma holds.
+
 
 \section{Escaping the Tragic Valley with Enhanced Reinforcement Learning}
 \label{sec:enhanced_rl}
 
-The preceding sections have established a critical dichotomy: the pairwise interaction model creates a "Collaborative Hill" where simple reciprocity can thrive, while the neighbourhood voting model leads to a "Tragic Valley" of mutual defection for both static agents (Section \ref{sec:tragicValley}) and basic reinforcement learners (Section \ref{sec:tragicValley}). The diffuse nature of rewards in the neighbourhood setting obscures the one-to-one accountability needed for simple learning algorithms to foster cooperation.
+The preceding sections have established a critical dichotomy: the
+pairwise interaction model creates a Collaborative Hill where simple
+reciprocity can thrive, while the neighbourhood voting model leads to
+a Tragic Valley of mutual defection for both static agents (Section
+\ref{sec:tragicValley}) and basic reinforcement learners (Section
+\ref{sec:qLearning}). The diffuse nature of rewards in the
+neighbourhood setting obscures the one-to-one accountability needed
+for simple learning algorithms to foster cooperation.
 
-This raises a crucial question: is the Tragic Valley an inescapable feature of the N-IPD's neighbourhood structure, or can it be overcome by more sophisticated agents? To investigate this, we developed an "Enhanced Q-Learning" (EQL) agent, designed to better perceive and react to the dynamics of group behaviour.
+This raises a crucial question: is the Tragic Valley an inescapable
+feature of the N-IPD's neighbourhood structure, or can it be overcome
+by more sophisticated agents? To investigate this, an
+Enhanced Q-Learning (EQL) agent, designed to better perceive and
+react to the dynamics of group behaviour, was developed.
 
 \subsection{The Enhanced Q-Learning Agent}
 
-The standard Q-learning agent, which bases its state on a simple discretization of the previous round's cooperation, struggles to identify meaningful patterns. Our Enhanced Q-Learning agent incorporates several key improvements inspired by advancements in MARL to create a more sophisticated learning mechanism:
+The standard Q-learning agent, which bases its state on a simple
+discretization of the previous rounds' cooperation, struggles to
+identify meaningful patterns. The Enhanced Q-Learning agent
+incorporates several key improvements inspired by advancements in MARL
+to create a more sophisticated learning mechanism:
 
 \begin{itemize}
-    \item \textbf{Richer State Representation:} Instead of just the previous round's cooperation level, the EQL agent's state can incorporate its own action history and the trend of group cooperation over multiple rounds. For example, a state might capture not only that cooperation is 'high', but also that it is 'stable' or 'increasing', and whether the agent itself has been cooperating or defecting. This allows the agent to learn the consequences of its actions on the group's trajectory.
-    \item \textbf{Optimistic Initialisation:} The EQL agent's Q-table is initialised with optimistic values for unexplored state-action pairs \cite{SuttonBarto2018}. This encourages the agent to thoroughly explore its options, particularly cooperative actions, before committing to a potentially suboptimal defect-heavy strategy.
-    \item \textbf{Adaptive Exploration:} The agent employs a decaying epsilon-greedy strategy. It explores more at the beginning of a tournament and gradually reduces its randomness to exploit the knowledge it has gained, allowing for convergence to a stable policy.
+    \item \textbf{Richer State Representation:} Instead of just the
+      previous rounds' cooperation level, the EQL agent's state can
+      incorporate its own action history and the trend of group
+      cooperation over multiple rounds. For example, a state might
+      capture not only that cooperation is {\it high}, but also that it is
+      {\it stable} or {\it increasing}, and whether the agent itself has been
+      cooperating or defecting. This allows the agent to learn the
+      consequences of its actions on the group's trajectory.
+      
+    \item \textbf{Optimistic Initialisation:} The EQL agent's Q-table
+      is initialised with optimistic values for unexplored
+      state-action pairs \cite{SuttonBarto1998}. This encourages the
+      agent to thoroughly explore its options, particularly
+      cooperative actions, before committing to a potentially
+      suboptimal defect-heavy strategy.
+
+    \item \textbf{Adaptive Exploration:} The agent employs a decaying
+      exploration strategy. It explores more at the beginning of a
+      tournament and gradually reduces its random exploration rate to
+      exploit the knowledge it has gained, allowing for convergence to
+      a stable policy.
 \end{itemize}
 
-These enhancements transform the agent from a purely reactive learner into one that can perceive and respond to the emergent dynamics of the system.
+These enhancements transform the agent from a purely reactive learner
+into one that can perceive and respond to the emergent dynamics of the
+system.
 
 \subsection{Comparative Results: Learning to Cooperate}
 
-To test the EQL agent's capabilities, we ran a series of tournaments mirroring those in the previous sections. The results demonstrate a clear and significant ability to escape the Tragic Valley.
+To test the EQL agent's capabilities, a series of tournaments with
+neighbourhood voting, mirroring those in the previous sections, is
+described below. The results demonstrate a clear and significant
+ability to escape the Tragic Valley.
 
-The most striking result is observed when placing a single EQL agent in a group with two Tit-for-Tat (TFT) agents. As established, a basic Q-learner in this scenario learns to exploit the initially cooperative TFTs, leading to a downward spiral of defection. The EQL agent, however, behaves entirely differently.
+The most striking result is observed when placing a single EQL agent
+in a group with two Tit-for-Tat agents. As established, a basic
+Q-learner in this scenario learns to exploit the initially
+cooperative Tit-for-Tats, leading to a downward spiral of defection. The EQL
+agent, however, behaves entirely differently.
 
-As shown in Figure \ref{fig:EQL_vs_TFT_neighbourhood}, the EQL agent learns to reciprocate the TFTs' cooperative nature. Its cooperation rate climbs and stabilises at a high level, resulting in a system of mutual cooperation. Crucially, its cumulative score rises in lockstep with the TFT agents, indicating it has discovered a high-payoff, cooperative equilibrium. This emergence of sustained cooperation, driven by a higher score, is precisely the intelligent behaviour we seek.
+As shown in Figure \ref{fig:EQL_vs_TFT_neighbourhood}, the EQL agent
+learns to reciprocate the Tit-for-Tats' cooperative nature. Its cooperation
+rate climbs and stabilises at a high level, resulting in a system of
+mutual cooperation. Crucially, its cumulative score rises in lockstep
+with the Tit-for-Tat agents, indicating it has discovered a high-payoff,
+cooperative equilibrium. This emergence of sustained cooperation,
+driven by a higher score, is precisely the intelligent behaviour sought.
+
 
 % --- Figure Placeholder ---
 % create this figure by taking the top-right subplot from  "1 Enhanced QL Neighbourhood - Cooperation Rates" image
 % and the top-right subplot from  "1 Enhanced QL Neighbourhood - Cumulative Scores" image and combining them
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{placeholder_EQL_vs_2TFT_neighbourhood.png}
+    %\includegraphics[width=\textwidth]{placeholder_EQL_vs_2TFT_neighbourhood.png}
     \caption{Performance of a single Enhanced Q-Learning (EQL) agent with two TFT agents in the neighbourhood setting (average of 500 runs). Left: The EQL agent's cooperation rate rises to match the TFT agents. Right: The EQL agent achieves a high cumulative score, comparable to the cooperative TFT agents, demonstrating it has learned a beneficial, cooperative policy.}
     \label{fig:EQL_vs_TFT_neighbourhood}
 \end{figure}
 
-The EQL agent also demonstrates rational behaviour in less cooperative environments. When paired with two "Always Defect" (AllD) agents, it quickly learns that cooperation is futile and its cooperation rate drops to the baseline exploration level (Figure \ref{fig:EQL_vs_AllD_AllC_neighbourhood}, left panel). This confirms the agent is not simply a blind cooperator; it is learning an appropriate, context-dependent strategy.
+The EQL agent also demonstrates rational behaviour in less cooperative
+environments. When paired with two always defect agents, it
+quickly learns that cooperation is futile and its cooperation rate
+drops to the baseline exploration level (Figure
+\ref{fig:EQL_vs_AllD_AllC_neighbourhood}, left panel). This confirms
+the agent is not simply a blind cooperator; it is learning an
+appropriate, context-dependent strategy.
 
-Interestingly, when placed with one AllD and one "Always Cooperate" (AllC) agent, the EQL agent learns to defect. (Figure \ref{fig:EQL_vs_AllD_AllC_neighbourhood}, right panel). It learns that cooperating does not influence the AllD agent and that defecting does not influence the AllC agent.
+Interestingly, when placed with one always defect and one always
+cooperate, the EQL agent learns to defect. (Figure
+\ref{fig:EQL_vs_AllD_AllC_neighbourhood}, right panel). It learns that
+cooperating does not influence either agent.
 
 % --- Figure Placeholder ---
 % create this figure by taking the top-left subplot ("1 EQL + 2 AllD") and the middle-right subplot ("1 EQL + 1 AllD + 1 AllC")
 % from "1 Enhanced QL Neighbourhood - Cooperation Rates" image a
 \begin{figure}[ht]
     \centering
-    \includegraphics[width=\textwidth]{placeholder_EQL_vs_AllD_AllC_neighbourhood.png}
+    %\includegraphics[width=\textwidth]{placeholder_EQL_vs_AllD_AllC_neighbourhood.png}
     \caption{Cooperation rate of an EQL agent in uncooperative neighbourhood settings. Left: Against two AllD agents, the EQL agent learns to defect.}
     \label{fig:EQL_vs_AllD_AllC_neighbourhood}
 \end{figure}
 
-These results show that the structural barrier of the Tragic Valley is not insurmountable. An agent equipped with a sufficiently rich state representation and a robust exploration mechanism can learn to identify and foster cooperative dynamics even in the absence of direct, pairwise reciprocity.
+These results show that the structural barrier of the Tragic Valley is
+not insurmountable. An agent equipped with a sufficiently rich state
+representation and a robust exploration mechanism can learn to
+identify and foster cooperative dynamics even in the absence of
+direct, pairwise reciprocity.
 
+\section{General Discussion}
+\label{sec:general_discussion}
+The simulations show that the pairwise voting leads to a cooperative
+system, and the neighbourhood voting leads to systems where the agents
+defect.  This shows the Tragic Valley (neighourhood voting) and the
+Collaborative Hill (pairwise voting).
+
+The difference stems from the reward space.  If the agent knows every
+other agent's response, it will do better to select defect in almost
+every circumstance.  The only exception to this is with neighbourhood
+voting, when all of the other agents defect;  in this case, defecting
+or collaborating give the same reward (0). The real difference only occurs
+when the agent can look back.  With the two person version, TFT
+uses history from the last step to discourage defection.  With the $N > 2$
+agents, history is still imporant.  The static policies that were explored,
+random, always defect, and always collaborate do not change based on history
+and there decisions are unaffected by the other agents.
+
+Only TFT uses history, but it behaves differently with pairwise voting and
+neighbourhood voting because of the reward space.  Its history is affected
+by other agents, individually in pairwise voting, and in aggregate for
+neighbourhood voting.  When it can choose to punish or reward each individually,
+it climbs he Collaborative Hill.  When it can only choose in aggegate, it
+can only reward or punish in aggregate, so other agent will free ride, and
+the overall effect will be a descent into the Tragic Valley.
+
+The same is true with simple reinforcement learning agents.  The reward space
+moves these agents up the Collaborative Hill with pairwise voting, and
+down the Tragic Valley with neighbourhood voting.
+
+undone history and EQL
+
+undone eql fails on pairwise
+
+undone future work explore other games such as the volunteer's dilemma \cite {Archetti}.
 
 \section{Conclusion}
 \label{sec:conclusion}

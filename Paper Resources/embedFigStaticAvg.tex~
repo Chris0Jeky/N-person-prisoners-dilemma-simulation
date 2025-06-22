@@ -1,0 +1,11 @@
+\begin{figure} [ht]
+\begin{center}
+\input {avg.tex} 
+\end {center}
+\caption{Results from the average of 100  50 round tournaments with four
+  different sets of agents.  All the sets have two Tit-for-Tat agents with
+  10\%   exploration.  Two have a third agent that always defects, and
+  two have one that always cooperates.  The other variable is
+  voting (pairwise or neighbourhood).}
+  \label{figStaticAverage}
+\end {figure}

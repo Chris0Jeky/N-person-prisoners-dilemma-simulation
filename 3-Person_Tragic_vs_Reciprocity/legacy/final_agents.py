@@ -5,6 +5,26 @@ from collections import deque
 COOPERATE = 0
 DEFECT = 1
 
+# --- Payoff Matrices ---
+PAYOFFS_2P = {
+    (COOPERATE, COOPERATE): (3, 3),
+    (COOPERATE, DEFECT): (0, 5),
+    (DEFECT, COOPERATE): (5, 0),
+    (DEFECT, DEFECT): (1, 1),
+}
+
+# N-Person Payoff Constants
+T, R, P, S = 5, 3, 1, 0
+
+def nperson_payoff(my_move, num_other_cooperators, total_agents):
+    """Calculate N-Person payoff based on the linear formula."""
+    if total_agents <= 1:
+        return R if my_move == COOPERATE else P
+    if my_move == COOPERATE:
+        return S + (R - S) * (num_other_cooperators / (total_agents - 1))
+    else:  # Defect
+        return P + (T - P) * (num_other_cooperators / (total_agents - 1))
+
 
 class BaseAgent:
     """A base class defining the unified API for all agents."""

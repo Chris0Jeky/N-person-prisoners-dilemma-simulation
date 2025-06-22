@@ -1,5 +1,5 @@
 from collections import defaultdict
-from final_agents import COOPERATE, DEFECT
+from final_agents_v2 import COOPERATE, DEFECT
 
 # --- Payoff Logic ---
 PAYOFFS_2P = {

@@ -20,18 +20,30 @@ class StaticAgent(BaseAgent):
     def __init__(self, agent_id, strategy_name="TFT", **kwargs):
         super().__init__(agent_id, strategy_name)
         self.opponent_last_moves = {}
+        self.last_neighborhood_move = COOPERATE
 
     def choose_pairwise_action(self, opponent_id):
         return self.opponent_last_moves.get(opponent_id, COOPERATE)
+
+    def choose_neighborhood_action(self, coop_ratio):
+        # TFT in neighborhood: cooperate if majority cooperated last round
+        if coop_ratio is None:
+            return COOPERATE
+        return COOPERATE if coop_ratio >= 0.5 else DEFECT
 
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
         # Accepts my_move and reward to match the API, but only uses opponent_move.
         self.total_score += reward
         self.opponent_last_moves[opponent_id] = opponent_move
 
+    def record_neighborhood_outcome(self, coop_ratio, reward):
+        self.total_score += reward
+        self.last_neighborhood_move = COOPERATE if coop_ratio >= 0.5 else DEFECT
+
     def reset(self):
         super().reset();
         self.opponent_last_moves.clear()
+        self.last_neighborhood_move = COOPERATE
 
 
 # --- Specialized Q-Learning Agents ---

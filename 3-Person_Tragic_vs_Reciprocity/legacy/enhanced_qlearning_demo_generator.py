@@ -84,226 +84,8 @@ class StaticAgent:
         self.opponent_last_moves = {}
 
 
-class EnhancedQLearningAgent:
-    """Enhanced Q-Learning agent based on npdl implementation."""
-    def __init__(self, agent_id, learning_rate=0.1, discount_factor=0.9, 
-                 epsilon=0.1, epsilon_decay=0.999, epsilon_min=0.01,
-                 state_type="proportion_discretized", q_init_type="optimistic",
-                 max_possible_payoff=5.0, memory_length=10):
-        self.agent_id = agent_id
-        self.strategy_name = "EnhancedQLearning"
-        self.learning_rate = learning_rate
-        self.discount_factor = discount_factor
-        self.epsilon = epsilon
-        self.initial_epsilon = epsilon
-        self.epsilon_decay = epsilon_decay
-        self.epsilon_min = epsilon_min
-        self.state_type = state_type
-        self.q_init_type = q_init_type
-        self.max_possible_payoff = max_possible_payoff
-        
-        # Q-tables for different game modes
-        self.q_table_pairwise = {}
-        self.q_table_nperson = {}
-        
-        # Memory
-        self.memory = deque(maxlen=memory_length)
-        self.last_state_pairwise = {}
-        self.last_action_pairwise = {}
-        self.last_state_nperson = None
-        self.last_action_nperson = None
-        
-        # For pairwise mode
-        self.opponent_last_moves = {}
-        
-        # Episode counter for epsilon decay
-        self.episode_count = 0
-
-    def _get_state_pairwise(self, opponent_id):
-        """Get state representation for pairwise mode."""
-        if self.state_type == "basic":
-            return 'standard'
-        
-        if opponent_id not in self.opponent_last_moves:
-            return 'initial'
-        
-        # For memory_enhanced, we need more history
-        if self.state_type == "memory_enhanced":
-            own_last_move = self.memory[-1]['my_move'] if self.memory else COOPERATE
-            own_prev_move = self.memory[-2]['my_move'] if len(self.memory) >= 2 else own_last_move
-            own_last_bin = 1 if own_last_move == COOPERATE else 0
-            own_prev_bin = 1 if own_prev_move == COOPERATE else 0
-            
-            opponent_move = self.opponent_last_moves[opponent_id]
-            opponent_bin = 1 if opponent_move == COOPERATE else 0
-            
-            return (own_last_bin, own_prev_bin, opponent_bin)
-        
-        # Simple state based on opponent's last move
-        last_move = self.opponent_last_moves[opponent_id]
-        return 'opp_coop' if last_move == COOPERATE else 'opp_defect'
-
-    def _get_state_nperson(self, coop_ratio):
-        """Get state representation for N-person mode."""
-        if self.state_type == "basic":
-            return 'standard'
-            
-        if coop_ratio is None:
-            return 'initial'
-        
-        if self.state_type == "proportion":
-            return (round(coop_ratio, 2),)
-        elif self.state_type == "proportion_discretized":
-            # Discretize cooperation ratio into bins
-            if coop_ratio <= 0.2:
-                return (0.2,)
-            elif coop_ratio <= 0.4:
-                return (0.4,)
-            elif coop_ratio <= 0.6:
-                return (0.6,)
-            elif coop_ratio <= 0.8:
-                return (0.8,)
-            else:
-                return (1.0,)
-        elif self.state_type == "memory_enhanced":
-            own_last_move = self.memory[-1]['my_move'] if self.memory else COOPERATE
-            own_prev_move = self.memory[-2]['my_move'] if len(self.memory) >= 2 else own_last_move
-            own_last_bin = 1 if own_last_move == COOPERATE else 0
-            own_prev_bin = 1 if own_prev_move == COOPERATE else 0
-            
-            neighbor_state_bin = 0  # Low
-            if coop_ratio > 0.67:
-                neighbor_state_bin = 2  # High
-            elif coop_ratio > 0.33:
-                neighbor_state_bin = 1  # Med
-                
-            return (own_last_bin, own_prev_bin, neighbor_state_bin)
-        elif self.state_type == "threshold":
-            return (coop_ratio > 0.5,)
-        else:  # count or other
-            # For count in N-person, we'll discretize based on number of cooperators
-            num_cooperators = int(coop_ratio * 2)  # Assuming 3 agents total, 2 others
-            return (num_cooperators,)
-
-    def _initialize_q_values(self, state, q_table):
-        """Initialize Q-values for new states."""
-        if self.q_init_type == "optimistic":
-            init_val = self.max_possible_payoff
-        elif self.q_init_type == "random":
-            init_val = random.uniform(-0.1, 0.1)
-        else:  # zero
-            init_val = 0.0
-        
-        q_table[state] = {
-            COOPERATE: init_val,
-            DEFECT: init_val
-        }
-
-    def _ensure_state_exists(self, state, q_table):
-        """Initialize Q-values for new states if needed."""
-        if state not in q_table:
-            self._initialize_q_values(state, q_table)
-
-    def _choose_action_epsilon_greedy(self, state, q_table):
-        """Choose action using epsilon-greedy policy."""
-        self._ensure_state_exists(state, q_table)
-        
-        # Exploration
-        if random.random() < self.epsilon:
-            return random.choice([COOPERATE, DEFECT])
-        
-        # Exploitation
-        q_values = q_table[state]
-        if q_values[COOPERATE] >= q_values[DEFECT]:
-            return COOPERATE
-        else:
-            return DEFECT
-
-    def choose_pairwise_action(self, opponent_id):
-        """Choose action for pairwise mode."""
-        state = self._get_state_pairwise(opponent_id)
-        action = self._choose_action_epsilon_greedy(state, self.q_table_pairwise)
-        
-        # Store for later update
-        self.last_state_pairwise[opponent_id] = state
-        self.last_action_pairwise[opponent_id] = action
-        
-        return action
-
-    def choose_nperson_action(self, prev_round_group_coop_ratio):
-        """Choose action for N-person mode."""
-        state = self._get_state_nperson(prev_round_group_coop_ratio)
-        action = self._choose_action_epsilon_greedy(state, self.q_table_nperson)
-        
-        # Store for later update
-        self.last_state_nperson = state
-        self.last_action_nperson = action
-        
-        return action
-
-    def update_q_value_pairwise(self, opponent_id, opponent_move, my_payoff):
-        """Update Q-value for pairwise interaction."""
-        self.opponent_last_moves[opponent_id] = opponent_move
-        
-        if opponent_id in self.last_state_pairwise:
-            state = self.last_state_pairwise[opponent_id]
-            action = self.last_action_pairwise[opponent_id]
-            next_state = self._get_state_pairwise(opponent_id)
-            
-            self._ensure_state_exists(state, self.q_table_pairwise)
-            self._ensure_state_exists(next_state, self.q_table_pairwise)
-            
-            # Q-learning update
-            current_q = self.q_table_pairwise[state][action]
-            max_next_q = max(self.q_table_pairwise[next_state].values())
-            
-            # Standard Q-update rule (more stable than direct assignment)
-            new_q = (1 - self.learning_rate) * current_q + \
-                    self.learning_rate * (my_payoff + self.discount_factor * max_next_q)
-            
-            self.q_table_pairwise[state][action] = new_q
-
-    def update_q_value_nperson(self, my_move, payoff, current_coop_ratio):
-        """Update Q-value for N-person game."""
-        # Update memory
-        self.memory.append({
-            'my_move': my_move,
-            'reward': payoff,
-            'coop_ratio': current_coop_ratio
-        })
-        
-        if self.last_state_nperson is not None:
-            state = self.last_state_nperson
-            action = self.last_action_nperson
-            next_state = self._get_state_nperson(current_coop_ratio)
-            
-            self._ensure_state_exists(state, self.q_table_nperson)
-            self._ensure_state_exists(next_state, self.q_table_nperson)
-            
-            # Q-learning update
-            current_q = self.q_table_nperson[state][action]
-            max_next_q = max(self.q_table_nperson[next_state].values())
-            
-            # Standard Q-update rule
-            new_q = (1 - self.learning_rate) * current_q + \
-                    self.learning_rate * (payoff + self.discount_factor * max_next_q)
-            
-            self.q_table_nperson[state][action] = new_q
-
-    def decay_epsilon(self):
-        """Decay epsilon for exploration."""
-        self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
-        self.episode_count += 1
-
-    def reset(self):
-        """Reset for new episode."""
-        self.opponent_last_moves = {}
-        self.last_state_pairwise = {}
-        self.last_action_pairwise = {}
-        self.last_state_nperson = None
-        self.last_action_nperson = None
-        self.memory.clear()
-        self.decay_epsilon()
+# Import the corrected Enhanced Q-Learning agent from the enhanced_qlearning_agents module
+from enhanced_qlearning_agents import EnhancedQLearningAgent
 
 
 # --- Simulation Functions ---
@@ -324,8 +106,15 @@ def run_pairwise_simulation_extended(agents, num_rounds):
         for i in range(len(agents)):
             for j in range(i + 1, len(agents)):
                 agent1, agent2 = agents[i], agents[j]
-                move1 = agent1.choose_pairwise_action(agent2.agent_id)
-                move2 = agent2.choose_pairwise_action(agent1.agent_id)
+                if hasattr(agent1, 'choose_action_pairwise'):
+                    move1, _ = agent1.choose_action_pairwise(agent2.agent_id, round_num)
+                else:
+                    move1 = agent1.choose_pairwise_action(agent2.agent_id)
+                    
+                if hasattr(agent2, 'choose_action_pairwise'):
+                    move2, _ = agent2.choose_action_pairwise(agent1.agent_id, round_num)
+                else:
+                    move2 = agent2.choose_pairwise_action(agent1.agent_id)
 
                 # Record moves
                 round_moves[agent1.agent_id][agent2.agent_id] = move1
@@ -343,10 +132,15 @@ def run_pairwise_simulation_extended(agents, num_rounds):
                 round_payoffs[agent2.agent_id] += payoff2
 
                 # Update Q-values for Enhanced QL agents
-                if agent1.strategy_name == "EnhancedQLearning":
-                    agent1.update_q_value_pairwise(agent2.agent_id, move2, payoff1)
-                if agent2.strategy_name == "EnhancedQLearning":
-                    agent2.update_q_value_pairwise(agent1.agent_id, move1, payoff2)
+                if hasattr(agent1, 'strategy_name') and agent1.strategy_name == "EnhancedQLearning":
+                    agent1.record_interaction(agent2.agent_id, move2, payoff1, move1, move1, round_num)
+                elif hasattr(agent1, 'record_interaction'):
+                    agent1.record_interaction(agent2.agent_id, move2, payoff1, move1, move1, round_num)
+                    
+                if hasattr(agent2, 'strategy_name') and agent2.strategy_name == "EnhancedQLearning":
+                    agent2.record_interaction(agent1.agent_id, move1, payoff2, move2, move2, round_num)
+                elif hasattr(agent2, 'record_interaction'):
+                    agent2.record_interaction(agent1.agent_id, move1, payoff2, move2, move2, round_num)
 
         # Update scores and track history
         for agent in agents:
@@ -372,7 +166,13 @@ def run_nperson_simulation_extended(agents, num_rounds):
     num_total_agents = len(agents)
 
     for round_num in range(num_rounds):
-        moves = {agent.agent_id: agent.choose_nperson_action(prev_round_coop_ratio) for agent in agents}
+        moves = {}
+        for agent in agents:
+            if hasattr(agent, 'choose_action'):
+                intended_move, actual_move = agent.choose_action(prev_round_coop_ratio, round_num)
+                moves[agent.agent_id] = actual_move
+            else:
+                moves[agent.agent_id] = agent.choose_nperson_action(prev_round_coop_ratio)
 
         num_cooperators = list(moves.values()).count(COOPERATE)
         current_coop_ratio = num_cooperators / num_total_agents if num_total_agents > 0 else 0
@@ -389,8 +189,10 @@ def run_nperson_simulation_extended(agents, num_rounds):
             all_coop_history[agent.agent_id].append(1 if my_move == COOPERATE else 0)
             
             # Update Q-values for Enhanced QL agents
-            if agent.strategy_name == "EnhancedQLearning":
-                agent.update_q_value_nperson(my_move, payoff, current_coop_ratio)
+            if hasattr(agent, 'strategy_name') and agent.strategy_name == "EnhancedQLearning":
+                agent.record_round_outcome(my_move, payoff, current_coop_ratio)
+            elif hasattr(agent, 'record_round_outcome'):
+                agent.record_round_outcome(my_move, payoff)
 
         # Update state for next round
         prev_round_coop_ratio = current_coop_ratio
@@ -417,8 +219,8 @@ def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_r
                     epsilon=0.3,  # Start with higher exploration
                     epsilon_decay=0.999,
                     epsilon_min=0.01,
-                    state_type="proportion_discretized",  # Default enhanced state
-                    q_init_type="optimistic"  # Optimistic initialization
+                    state_type="basic",  # Use basic state by default to match SimpleQLearning
+                    exploration_rate=0.0  # No additional exploration noise
                 ))
             else:
                 fresh_agents.append(StaticAgent(

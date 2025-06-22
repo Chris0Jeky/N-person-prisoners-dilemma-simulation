@@ -60,7 +60,7 @@ class StaticAgent(BaseAgent):
 
     def __init__(self, agent_id, strategy_name, exploration_rate=0.0):
         super().__init__(agent_id, strategy_name)
-        self.exploration_rate = exploration_rate
+        self.exploration_rate = exploration_rate if strategy_name == "TFT-E" else 0.0
         self.opponent_last_moves = {}
 
     def choose_action(self, **kwargs):
@@ -82,10 +82,15 @@ class StaticAgent(BaseAgent):
                     intended_move = COOPERATE
                 else:
                     intended_move = COOPERATE if random.random() < coop_ratio else DEFECT
-            else:
-                intended_move = COOPERATE if self.strategy_name == "AllC" else DEFECT
+            elif self.strategy_name == "AllC":
+                intended_move = COOPERATE
+            elif self.strategy_name == "AllD":
+                intended_move = DEFECT
+            else:  # Random
+                intended_move = random.choice([COOPERATE, DEFECT])
 
-        if (self.strategy_name == "TFT-E" or self.exploration_rate > 0) and random.random() < self.exploration_rate:
+        # Apply exploration for TFT-E
+        if self.strategy_name == "TFT-E" and random.random() < self.exploration_rate:
             return 1 - intended_move
         return intended_move
 

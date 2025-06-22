@@ -1,0 +1,35 @@
+# config.py
+
+"""
+Centralized configuration for Q-learning agent parameters.
+"""
+
+# Parameters for a standard, non-adaptive Q-learning agent.
+# Serves as the stable baseline for comparison.
+VANILLA_PARAMS = {
+    'lr': 0.1,  # Learning Rate (alpha)
+    'df': 0.9,  # Discount Factor (gamma)
+    'eps': 0.1,  # Epsilon (fixed exploration rate)
+}
+
+# Parameters for the new, truly adaptive agent.
+ADAPTIVE_PARAMS = {
+    # Initial values that will be adapted during the run
+    'initial_lr': 0.2,
+    'initial_eps': 0.3,
+
+    # Bounds for the adaptive parameters
+    'min_lr': 0.05,
+    'max_lr': 0.5,
+    'min_eps': 0.01,
+    'max_eps': 0.5,
+
+    # Controls how quickly the agent adapts. Higher value = slower change.
+    'adaptation_factor': 1.05,
+
+    # How many recent rounds to consider for performance trends
+    'reward_window_size': 20,
+
+    # Discount factor remains fixed
+    'df': 0.95,
+}

@@ -14,10 +14,13 @@ T, R, P, S = 5, 3, 1, 0
 
 
 def nperson_payoff(my_move, num_other_cooperators, total_agents):
+    # In this simplified payoff, move 0 is cooperate, 1 is defect.
+    # So (1-my_move) is 1 if coop, 0 if defect.
+    others_coop = num_other_cooperators - (1 - my_move)
     if my_move == 0:
-        return S + (R - S) * (num_other_cooperators / (total_agents - 1))
+        return S + (R - S) * (others_coop / (total_agents - 1))
     else:
-        return P + (T - P) * (num_other_cooperators / (total_agents - 1))
+        return P + (T - P) * (others_coop / (total_agents - 1))
 
 
 # --- Simulation Runners ---
@@ -62,43 +65,12 @@ def run_nperson_simulation(agents, num_rounds):
         current_coop_ratio = num_cooperators / len(agents)
         for agent in agents:
             my_move = moves[agent.agent_id]
-            others_coop = num_cooperators if my_move == 1 else num_cooperators - 1
-            payoff = nperson_payoff(my_move, others_coop, len(agents))
+            payoff = nperson_payoff(my_move, num_cooperators, len(agents))
             agent.record_neighborhood_outcome(current_coop_ratio, payoff)
             history[agent.agent_id]['coop_rate'].append(1 - my_move)
             history[agent.agent_id]['score'].append(agent.total_score)
         coop_ratio = current_coop_ratio
     return history
-
-
-def run_and_plot_scenario(name, ql_agent_class, params, opponents, num_rounds, num_runs, output_dir):
-    print(f"\n--- Running Scenario: {name} ---")
-    ql_agent = ql_agent_class(agent_id=f"{name}_QL_1", params=params)
-    templates = [ql_agent] + opponents
-
-    p_runs = [run_pairwise_tournament([type(a)(**a.__dict__) for a in templates], num_rounds) for _ in range(num_runs)]
-    n_runs = [run_nperson_simulation([type(a)(**a.__dict__) for a in templates], num_rounds) for _ in range(num_runs)]
-
-    p_agg = {aid: {m: np.mean([r[aid][m] for r in p_runs if aid in r and m in r[aid]], axis=0) for m in
-                   ['coop_rate', 'score']} for aid in p_runs[0]}
-    n_agg = {aid: {m: np.mean([r[aid][m] for r in n_runs if aid in r and m in r[aid]], axis=0) for m in
-                   ['coop_rate', 'score']} for aid in n_runs[0]}
-
-    fig, axes = plt.subplots(2, 2, figsize=(20, 15))
-    fig.suptitle(f"Performance of {name} Agent vs. 2 TFTs", fontsize=22)
-    axes[0, 0].plot(p_agg[ql_agent.agent_id]['coop_rate']);
-    axes[0, 0].set_title('Pairwise Cooperation')
-    axes[0, 1].plot(p_agg[ql_agent.agent_id]['score']);
-    axes[0, 1].set_title('Pairwise Score')
-    axes[1, 0].plot(n_agg[ql_agent.agent_id]['coop_rate']);
-    axes[1, 0].set_title('Neighborhood Cooperation')
-    axes[1, 1].plot(n_agg[ql_agent.agent_id]['score']);
-    axes[1, 1].set_title('Neighborhood Score')
-    for ax in axes.flat: ax.grid(True, linestyle='--')
-
-    plt.savefig(os.path.join(output_dir, f"{name}_performance.png"))
-    plt.close(fig)
-    print(f"Chart saved to {output_dir}/{name}_performance.png")
 
 
 # --- Main ---
@@ -110,7 +82,68 @@ if __name__ == "__main__":
 
     opponents = [StaticAgent(agent_id="TFT_1"), StaticAgent(agent_id="TFT_2")]
 
-    run_and_plot_scenario("Vanilla", PairwiseAdaptiveQLearner, VANILLA_PARAMS, opponents, NUM_ROUNDS, NUM_RUNS,
-                          OUTPUT_DIR)
-    run_and_plot_scenario("Adaptive", PairwiseAdaptiveQLearner, ADAPTIVE_PARAMS, opponents, NUM_ROUNDS, NUM_RUNS,
-                          OUTPUT_DIR)
+    # Store results for plotting
+    all_results = defaultdict(dict)
+
+    # --- Agent Configurations to Test ---
+    agent_configs = {
+        "Vanilla": {"pairwise_class": PairwiseAdaptiveQLearner, "neighborhood_class": NeighborhoodAdaptiveQLearner,
+                    "params": VANILLA_PARAMS},
+        "Adaptive": {"pairwise_class": PairwiseAdaptiveQLearner, "neighborhood_class": NeighborhoodAdaptiveQLearner,
+                     "params": ADAPTIVE_PARAMS},
+    }
+
+    for name, config in agent_configs.items():
+        print(f"\n--- Running Scenario: {name} ---")
+
+        # --- Pairwise Simulation ---
+        print("  Running Pairwise Tournament...")
+        p_templates = [config["pairwise_class"](agent_id=f"{name}_QL_1", params=config["params"])] + opponents
+        p_runs = [run_pairwise_tournament([type(a)(**a.__dict__) for a in p_templates], NUM_ROUNDS) for _ in
+                  range(NUM_RUNS)]
+        p_agg = {aid: {m: np.mean([r[aid][m] for r in p_runs if aid in r], axis=0) for m in ['coop_rate', 'score']} for
+                 aid in p_runs[0]}
+        all_results[name]['pairwise'] = p_agg
+
+        # --- Neighborhood Simulation ---
+        print("  Running Neighborhood Simulation...")
+        n_templates = [config["neighborhood_class"](agent_id=f"{name}_QL_1", params=config["params"])] + opponents
+        n_runs = [run_nperson_simulation([type(a)(**a.__dict__) for a in n_templates], NUM_ROUNDS) for _ in
+                  range(NUM_RUNS)]
+        n_agg = {aid: {m: np.mean([r[aid][m] for r in n_runs if aid in r], axis=0) for m in ['coop_rate', 'score']} for
+                 aid in n_runs[0]}
+        all_results[name]['neighborhood'] = n_agg
+
+    # --- Plotting Results ---
+    print("\n--- Generating Comparison Plot ---")
+    fig, axes = plt.subplots(2, 2, figsize=(20, 15))
+    fig.suptitle("Agent Performance vs. 2 TFTs", fontsize=22)
+
+    colors = {"Vanilla": "#1f77b4", "Adaptive": "#ff7f0e"}
+
+    for name, results in all_results.items():
+        ql_id = f"{name}_QL_1"
+        axes[0, 0].plot(results['pairwise'][ql_id]['coop_rate'], label=name, color=colors[name])
+        axes[0, 1].plot(results['pairwise'][ql_id]['score'], label=name, color=colors[name])
+        axes[1, 0].plot(results['neighborhood'][ql_id]['coop_rate'], label=name, color=colors[name])
+        axes[1, 1].plot(results['neighborhood'][ql_id]['score'], label=name, color=colors[name])
+
+    axes[0, 0].set_title('Pairwise Cooperation');
+    axes[0, 0].set_ylabel('Cooperation Rate')
+    axes[0, 1].set_title('Pairwise Score');
+    axes[0, 1].set_ylabel('Cumulative Score')
+    axes[1, 0].set_title('Neighborhood Cooperation');
+    axes[1, 0].set_ylabel('Cooperation Rate')
+    axes[1, 1].set_title('Neighborhood Score');
+    axes[1, 1].set_ylabel('Cumulative Score')
+
+    for ax in axes.flat:
+        ax.set_xlabel('Round')
+        ax.legend()
+        ax.grid(True, linestyle='--')
+
+    plt.tight_layout(rect=[0, 0, 1, 0.96])
+    save_path = os.path.join(OUTPUT_DIR, "final_vanilla_vs_adaptive.png")
+    plt.savefig(save_path)
+    plt.close(fig)
+    print(f"Chart saved to {save_path}")

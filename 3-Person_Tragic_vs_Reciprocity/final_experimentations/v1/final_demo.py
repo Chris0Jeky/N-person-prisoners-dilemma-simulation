@@ -155,7 +155,7 @@ if __name__ == "__main__":
         "2_QL_plus_1_TFT": [("QL", {}), ("QL", {}), ("TFT", {})],
     }
 
-    output_dir = "final_charts_all_scenarios"
+    output_dir = "../../legacy/final_charts_all_scenarios"
     os.makedirs(output_dir, exist_ok=True)
     all_results = {}
 

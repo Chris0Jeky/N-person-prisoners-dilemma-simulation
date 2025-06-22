@@ -34,7 +34,7 @@ def plot_comparison(results, title, save_path):
     fig.suptitle(f"Agent Comparison: {title}", fontsize=22, weight='bold')
     sns.set_style("whitegrid")
 
-    agent_colors = {"VanillaQLearning": "#1f77b4", "AdaptiveAgent": "#ff7f0e"}
+    agent_colors = {"Vanilla": "#1f77b4", "Adaptive": "#ff7f0e"}  # Blue, Orange
     metrics = [
         ('Pairwise Cooperation', 'coop_rate', 0, 0), ('Pairwise Scores', 'score', 0, 1),
         ('Neighbourhood Cooperation', 'coop_rate', 1, 0), ('Neighbourhood Scores', 'score', 1, 1)
@@ -42,12 +42,16 @@ def plot_comparison(results, title, save_path):
 
     for label, metric, r, c in metrics:
         ax = axes[r, c]
-        for agent_name, data in results.items():
+        for agent_name, data in results.items():  # agent_name is now 'Vanilla' or 'Adaptive'
             data_p, data_n = data
             plot_data = data_p if 'Pairwise' in label else data_n
-            ql_id = next((k for k in plot_data if agent_name in k), None)
+
+            # Corrected logic to find the agent ID
+            ql_id = next((k for k in plot_data if k.startswith(agent_name)), None)
+
             if ql_id:
-                ax.plot(plot_data[ql_id][metric], label=agent_name, color=agent_colors[agent_name])
+                ax.plot(plot_data[ql_id][metric], label=agent_name, color=agent_colors.get(agent_name))
+
         ax.set_title(label, fontsize=16)
         ax.set_xlabel("Round"), ax.set_ylabel("Rate" if 'Coop' in label else "Score")
         ax.legend(), ax.grid(True, linestyle='--', alpha=0.6)
@@ -70,9 +74,11 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
 
     all_results = {}
+
+    # Simplified dictionary keys for robust lookup in the plot function
     agents_to_test = {
-        "VanillaQLearning": VanillaQLearningAgent(agent_id="Vanilla_1"),
-        "AdaptiveAgent": AdaptiveAgent(agent_id="Adaptive_1"),
+        "Vanilla": VanillaQLearningAgent(agent_id="Vanilla_1"),
+        "Adaptive": AdaptiveAgent(agent_id="Adaptive_1"),
     }
 
     for name, agent_instance in agents_to_test.items():

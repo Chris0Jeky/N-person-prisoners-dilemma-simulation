@@ -137,8 +137,8 @@ class AdaptiveAgent(VanillaQLearningAgent):
         self.strategy_name = "AdaptiveAgent"
 
         # Adaptive parameters
-        self.min_lr, self.max_lr = 0.05, 0.3
-        self.min_eps, self.max_eps = 0.05, 0.4
+        self.min_lr, self.max_lr = 0.05, 0.15
+        self.min_eps, self.max_eps = 0.01, 0.1
         self.reward_window = deque(maxlen=20)
         self.lr_adaptation_factor = 1.05  # How quickly to change lr/eps
         self.eps_adaptation_factor = 1.02

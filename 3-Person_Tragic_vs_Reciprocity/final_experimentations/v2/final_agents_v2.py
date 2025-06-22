@@ -198,6 +198,7 @@ class BetterEnhancedAgent(SimpleQLearningAgent):
         return super().choose_action(context)
 
     def reset(self):
+        """Reset the step count and restore exploration."""
         super().reset()
         self.step = 0
         self.epsilon = self.eps_start

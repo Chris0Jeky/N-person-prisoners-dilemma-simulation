@@ -55,7 +55,7 @@ def run_nperson_simulation(agents, num_rounds):
         current_coop_ratio = num_cooperators / len(agents)
         for agent in agents:
             my_move = moves[agent.agent_id]
-            payoff = nperson_payoff(my_move, num_cooperators - (1 - my_move), len(agents))
+            payoff = nperson_payoff(my_move, num_cooperators, len(agents))
             agent.record_neighborhood_outcome(current_coop_ratio, payoff)
             history[agent.agent_id]['coop_rate'].append(1 - my_move)
             history[agent.agent_id]['score'].append(agent.total_score)

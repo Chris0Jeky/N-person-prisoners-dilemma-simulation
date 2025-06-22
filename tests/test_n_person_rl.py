@@ -437,3 +437,21 @@ class TestDailyT036UnevenSplitFeatures:
         features = mixin._extract_group_features(agent, context)
         assert features['cooperation_rate'] == 0.75
         assert features['mode'] == 'pairwise'
+
+
+class TestDailyT046NPersonStateFive:
+    """Daily check: N-person state carries a five-agent group size."""
+
+    def test_n_person_state_five(self):
+        mixin = NPersonStateMixin()
+        mixin.state_type = "n_person_basic"
+        agent = type('MockAgent', (), {})()
+        agent.memory = deque(maxlen=10)
+        agent.memory.append({
+            'my_move': 'cooperate',
+            'neighbor_moves': {1: 'cooperate', 2: 'cooperate'},
+            'reward': 3
+        })
+        state = mixin._get_n_person_state(agent, N=5)
+        assert isinstance(state, tuple)
+        assert state[2] == 5

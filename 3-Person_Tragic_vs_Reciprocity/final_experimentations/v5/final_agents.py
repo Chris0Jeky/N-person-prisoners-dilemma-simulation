@@ -24,7 +24,9 @@ class StaticAgent(BaseAgent):
     def choose_pairwise_action(self, opponent_id):
         return self.opponent_last_moves.get(opponent_id, COOPERATE)
 
-    def record_pairwise_outcome(self, opponent_id, opponent_move):
+    def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
+        # Accepts my_move and reward to match the API, but only uses opponent_move.
+        self.total_score += reward
         self.opponent_last_moves[opponent_id] = opponent_move
 
     def reset(self):
@@ -72,7 +74,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
 
     def _adapt_parameters(self, opponent_id):
         win_size = self.params.get('reward_window_size')
-        if not win_size: return  # Don't adapt if this param is missing (i.e., for vanilla agent)
+        if not win_size: return
 
         window = self.reward_windows[opponent_id]
         if len(window) < win_size: return
@@ -135,7 +137,7 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
 
     def _adapt_parameters(self):
         win_size = self.params.get('reward_window_size')
-        if not win_size: return  # Don't adapt if param is missing
+        if not win_size: return
 
         window = self.reward_window
         if len(window) < win_size: return

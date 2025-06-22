@@ -1,4 +1,4 @@
-import random
+from collections import defaultdict
 from final_agents import COOPERATE, DEFECT
 
 # --- Payoff Logic ---
@@ -23,41 +23,43 @@ def run_pairwise_tournament(agents, num_rounds):
 
     history = {a.agent_id: {'coop_rate': [], 'score': []} for a in agents}
     agent_map = {a.agent_id: a for a in agents}
+    opponent_last_moves = defaultdict(dict)
 
     for _ in range(num_rounds):
-        # Store opponent moves to build the context for the next round
-        last_round_moves = defaultdict(dict)
-
-        # 1. Choose Actions
         moves = {}
         for i in range(len(agents)):
             for j in range(i + 1, len(agents)):
                 agent1, agent2 = agents[i], agents[j]
-                context1 = {'mode': 'pairwise', 'opponent_id': agent2.agent_id}
-                context2 = {'mode': 'pairwise', 'opponent_id': agent1.agent_id}
-                move1 = agent1.choose_action(context1)
-                move2 = agent2.choose_action(context2)
-                moves[(agent1.agent_id, agent2.agent_id)] = (move1, move2)
+                context1 = {'mode': 'pairwise', 'opponent_id': agent2.agent_id,
+                            'last_opponent_move': opponent_last_moves[agent1.agent_id].get(agent2.agent_id)}
+                context2 = {'mode': 'pairwise', 'opponent_id': agent1.agent_id,
+                            'last_opponent_move': opponent_last_moves[agent2.agent_id].get(agent1.agent_id)}
+                moves[(agent1.agent_id, agent2.agent_id)] = (agent1.choose_action(context1),
+                                                             agent2.choose_action(context2))
 
-        # 2. Record Outcomes
+        round_moves_by_agent = defaultdict(dict)
         for (id1, id2), (move1, move2) in moves.items():
-            agent1, agent2 = agent_map[id1], agent_map[id2]
             payoff1, payoff2 = PAYOFFS_2P[(move1, move2)]
 
             context1 = {'mode': 'pairwise', 'reward': payoff1, 'my_move': move1, 'opponent_id': id2,
-                        'opponent_move': move2}
+                        'opponent_move': move2, 'last_opponent_move': move2}
             context2 = {'mode': 'pairwise', 'reward': payoff2, 'my_move': move2, 'opponent_id': id1,
-                        'opponent_move': move1}
+                        'opponent_move': move1, 'last_opponent_move': move1}
 
-            agent1.record_outcome(context1)
-            agent2.record_outcome(context2)
-            last_round_moves[id1][id2] = move1
-            last_round_moves[id2][id1] = move2
+            agent_map[id1].record_outcome(context1)
+            agent_map[id2].record_outcome(context2)
 
-        # 3. Log history
+            round_moves_by_agent[id1][id2] = move1
+            round_moves_by_agent[id2][id1] = move2
+            opponent_last_moves[id1][id2] = move2
+            opponent_last_moves[id2][id1] = move1
+
         for agent in agents:
-            coop_moves = sum(1 for m in last_round_moves[agent.agent_id].values() if m == COOPERATE)
-            history[agent.agent_id]['coop_rate'].append(coop_moves / (len(agents) - 1))
+            if (len(agents) - 1) > 0:
+                coop_moves = sum(1 for m in round_moves_by_agent[agent.agent_id].values() if m == COOPERATE)
+                history[agent.agent_id]['coop_rate'].append(coop_moves / (len(agents) - 1))
+            else:
+                history[agent.agent_id]['coop_rate'].append(0)
             history[agent.agent_id]['score'].append(agent.total_score)
 
     return history
@@ -73,7 +75,7 @@ def run_nperson_simulation(agents, num_rounds):
         moves = {a.agent_id: a.choose_action(context) for a in agents}
 
         num_cooperators = sum(1 for m in moves.values() if m == COOPERATE)
-        current_coop_ratio = num_cooperators / len(agents)
+        current_coop_ratio = num_cooperators / len(agents) if len(agents) > 0 else 0
 
         for agent in agents:
             my_move = moves[agent.agent_id]

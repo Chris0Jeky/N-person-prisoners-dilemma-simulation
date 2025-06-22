@@ -124,7 +124,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
 class NeighborhoodAdaptiveQLearner(BaseAgent):
     """A Q-learning agent designed exclusively for neighborhood interactions."""
 
-    def __init__(self, agent_id, params):
+    def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "NeighborhoodAdaptive")
         self.params = params
         self.reset()

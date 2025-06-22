@@ -13,13 +13,13 @@ PAYOFFS_2P = {(0, 0): (3, 3), (0, 1): (0, 5), (1, 0): (5, 0), (1, 1): (1, 1)}
 T, R, P, S = 5, 3, 1, 0
 
 
-def nperson_payoff(my_move, num_other_cooperators, total_agents):
-    # In this simplified payoff, move 0 is cooperate, 1 is defect.
-    # So (1-my_move) is 1 if coop, 0 if defect.
-    others_coop = num_other_cooperators - (1 - my_move)
-    if my_move == 0:
+def nperson_payoff(my_move, num_cooperators, total_agents):
+    # num_cooperators includes all agents who cooperated (including self if applicable)
+    # Calculate the number of OTHER agents who cooperated
+    others_coop = num_cooperators - (1 - my_move)  # subtract 1 if I cooperated
+    if my_move == 0:  # cooperate
         return S + (R - S) * (others_coop / (total_agents - 1))
-    else:
+    else:  # defect
         return P + (T - P) * (others_coop / (total_agents - 1))
 
 

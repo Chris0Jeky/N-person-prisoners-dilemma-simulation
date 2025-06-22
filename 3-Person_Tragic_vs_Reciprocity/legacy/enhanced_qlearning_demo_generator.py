@@ -230,12 +230,12 @@ def run_multiple_simulations_extended(simulation_func, agents, num_rounds, num_r
                 ))
         
         # Training phase for Q-learning agents
-        if any(agent.strategy_name == "EnhancedQLearning" for agent in fresh_agents):
+        if any(hasattr(agent, 'strategy_name') and agent.strategy_name == "EnhancedQLearning" for agent in fresh_agents):
             for _ in range(training_rounds // num_rounds):
                 simulation_func(fresh_agents, num_rounds)
                 for agent in fresh_agents:
-                    if agent.strategy_name == "EnhancedQLearning":
-                        agent.decay_epsilon()
+                    if hasattr(agent, 'strategy_name') and agent.strategy_name == "EnhancedQLearning":
+                        agent.reset()  # Reset triggers epsilon decay in corrected implementation
         
         # Main simulation run
         coop_history, score_history = simulation_func(fresh_agents, num_rounds)

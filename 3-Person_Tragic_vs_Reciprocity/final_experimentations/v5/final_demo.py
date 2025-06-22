@@ -5,7 +5,6 @@ import seaborn as sns
 import os
 from collections import defaultdict
 
-# Import the NEW agents and config
 from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner
 from config import VANILLA_PARAMS, ADAPTIVE_PARAMS
 
@@ -31,7 +30,7 @@ def run_pairwise_tournament(agents, num_rounds):
         moves = {}
         for i in range(len(agents)):
             for j in range(i + 1, len(agents)):
-                agent1, agent2 = agents[i], agent[j]
+                agent1, agent2 = agents[i], agents[j]
                 moves[(agent1.agent_id, agent2.agent_id)] = (
                     agent1.choose_pairwise_action(agent2.agent_id),
                     agent2.choose_pairwise_action(agent1.agent_id)
@@ -46,6 +45,7 @@ def run_pairwise_tournament(agents, num_rounds):
 
         for agent in agents:
             agent_moves = round_moves_by_agent[agent.agent_id]
+            if not agent_moves: continue
             history[agent.agent_id]['coop_rate'].append(agent_moves.count(0) / len(agent_moves))
             history[agent.agent_id]['score'].append(agent.total_score)
     return history
@@ -62,7 +62,8 @@ def run_nperson_simulation(agents, num_rounds):
         current_coop_ratio = num_cooperators / len(agents)
         for agent in agents:
             my_move = moves[agent.agent_id]
-            payoff = nperson_payoff(my_move, num_cooperators - my_move, len(agents))
+            others_coop = num_cooperators if my_move == 1 else num_cooperators - 1
+            payoff = nperson_payoff(my_move, others_coop, len(agents))
             agent.record_neighborhood_outcome(current_coop_ratio, payoff)
             history[agent.agent_id]['coop_rate'].append(1 - my_move)
             history[agent.agent_id]['score'].append(agent.total_score)
@@ -75,19 +76,14 @@ def run_and_plot_scenario(name, ql_agent_class, params, opponents, num_rounds, n
     ql_agent = ql_agent_class(agent_id=f"{name}_QL_1", params=params)
     templates = [ql_agent] + opponents
 
-    # Run Pairwise
     p_runs = [run_pairwise_tournament([type(a)(**a.__dict__) for a in templates], num_rounds) for _ in range(num_runs)]
-
-    # Run Neighborhood
     n_runs = [run_nperson_simulation([type(a)(**a.__dict__) for a in templates], num_rounds) for _ in range(num_runs)]
 
-    # Aggregate results
-    p_agg = {aid: {m: np.mean([r[aid][m] for r in p_runs], axis=0) for m in ['coop_rate', 'score']} for aid in
-             p_runs[0]}
-    n_agg = {aid: {m: np.mean([r[aid][m] for r in n_runs], axis=0) for m in ['coop_rate', 'score']} for aid in
-             n_runs[0]}
+    p_agg = {aid: {m: np.mean([r[aid][m] for r in p_runs if aid in r and m in r[aid]], axis=0) for m in
+                   ['coop_rate', 'score']} for aid in p_runs[0]}
+    n_agg = {aid: {m: np.mean([r[aid][m] for r in n_runs if aid in r and m in r[aid]], axis=0) for m in
+                   ['coop_rate', 'score']} for aid in n_runs[0]}
 
-    # Plotting
     fig, axes = plt.subplots(2, 2, figsize=(20, 15))
     fig.suptitle(f"Performance of {name} Agent vs. 2 TFTs", fontsize=22)
     axes[0, 0].plot(p_agg[ql_agent.agent_id]['coop_rate']);
@@ -114,10 +110,7 @@ if __name__ == "__main__":
 
     opponents = [StaticAgent(agent_id="TFT_1"), StaticAgent(agent_id="TFT_2")]
 
-    # Run Vanilla baseline
     run_and_plot_scenario("Vanilla", PairwiseAdaptiveQLearner, VANILLA_PARAMS, opponents, NUM_ROUNDS, NUM_RUNS,
                           OUTPUT_DIR)
-
-    # Run new Adaptive agent
     run_and_plot_scenario("Adaptive", PairwiseAdaptiveQLearner, ADAPTIVE_PARAMS, opponents, NUM_ROUNDS, NUM_RUNS,
                           OUTPUT_DIR)

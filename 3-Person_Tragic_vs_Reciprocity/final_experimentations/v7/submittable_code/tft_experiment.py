@@ -72,7 +72,7 @@ ADAPTIVE_DF_095 = {
     'min_eps': 0.02,
     'max_eps': 0.15,
     'adaptation_factor': 1.08,
-    'reward_window_size': 75,
+    'reward_window_size': 20,
     'df': 0.95,
 }
 

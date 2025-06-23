@@ -581,6 +581,20 @@ def create_df_comparison_plots(all_results):
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     fig.suptitle('Effect of Discount Factor on Q-Learning Performance', fontsize=16)
     
+    # Define distinct colors for each combination
+    color_scheme = {
+        ('DF04', 'TFT'): '#1f77b4',     # Blue
+        ('DF04', 'TFT-E'): '#ff7f0e',   # Orange  
+        ('DF095', 'TFT'): '#2ca02c',    # Green
+        ('DF095', 'TFT-E'): '#d62728',  # Red
+    }
+    
+    # Define line styles for better distinction
+    line_styles = {
+        'DF04': ':',      # Dotted for short-term
+        'DF095': '-'      # Solid for long-term
+    }
+    
     scenarios_vanilla = ["1_Vanilla_DF04_vs_2_TFT", "1_Vanilla_DF095_vs_2_TFT",
                         "1_Vanilla_DF04_vs_2_TFT-E", "1_Vanilla_DF095_vs_2_TFT-E"]
     
@@ -595,27 +609,31 @@ def create_df_comparison_plots(all_results):
                 
                 ql_agent = [aid for aid in p_data.keys() if 'QL' in aid][0]
                 
+                # Determine discount factor and opponent
                 if 'DF04' in scenario:
-                    ls = '--'
+                    df_key = 'DF04'
                     df_label = 'DF=0.4'
                 else:
-                    ls = '-'
+                    df_key = 'DF095'
                     df_label = 'DF=0.95'
                 
                 if 'TFT-E' in scenario:
-                    color = '#d62728'
-                    opponent = 'vs TFT-E'
+                    opponent_key = 'TFT-E'
+                    opponent = 'vs TFT-E (10% error)'
                 else:
-                    color = '#2ca02c'
+                    opponent_key = 'TFT'
                     opponent = 'vs TFT'
                 
+                # Get color and line style
+                color = color_scheme[(df_key, opponent_key)]
+                ls = line_styles[df_key]
                 label = f"{df_label} {opponent}"
                 
                 p_coop_smooth = smooth_data(p_data[ql_agent]['coop_rate'], 100)
                 n_coop_smooth = smooth_data(n_data[ql_agent]['coop_rate'], 100)
                 
-                axes[0, ax_idx].plot(p_coop_smooth, ls=ls, color=color, label=label, linewidth=2)
-                axes[1, ax_idx].plot(n_coop_smooth, ls=ls, color=color, label=label, linewidth=2)
+                axes[0, ax_idx].plot(p_coop_smooth, ls=ls, color=color, label=label, linewidth=2.5)
+                axes[1, ax_idx].plot(n_coop_smooth, ls=ls, color=color, label=label, linewidth=2.5)
     
     axes[0, 0].set_title('Vanilla QL - Pairwise')
     axes[0, 1].set_title('Adaptive QL - Pairwise')
@@ -626,12 +644,13 @@ def create_df_comparison_plots(all_results):
         ax.set_xlabel('Round')
         ax.set_ylabel('Cooperation Rate')
         ax.set_ylim(-0.05, 1.05)
-        ax.legend()
+        ax.legend(loc='best', framealpha=0.9)
         ax.grid(True, alpha=0.3)
     
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, 'discount_factor_comparison.png'), dpi=150, bbox_inches='tight')
     plt.close()
+    print("Updated discount factor comparison plot saved!")
 
 
 def main():

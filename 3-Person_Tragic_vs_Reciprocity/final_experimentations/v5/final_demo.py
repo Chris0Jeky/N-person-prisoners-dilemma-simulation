@@ -1,8 +1,8 @@
-# final_demo.py
 import numpy as np
 import matplotlib.pyplot as plt
 import seaborn as sns
 import os
+import pandas as pd
 from collections import defaultdict
 
 from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner
@@ -14,12 +14,10 @@ T, R, P, S = 5, 3, 1, 0
 
 
 def nperson_payoff(my_move, num_cooperators, total_agents):
-    # num_cooperators includes all agents who cooperated (including self if applicable)
-    # Calculate the number of OTHER agents who cooperated
-    others_coop = num_cooperators - (1 - my_move)  # subtract 1 if I cooperated
-    if my_move == 0:  # cooperate
+    others_coop = num_cooperators - (1 - my_move)
+    if my_move == 0:
         return S + (R - S) * (others_coop / (total_agents - 1))
-    else:  # defect
+    else:
         return P + (T - P) * (others_coop / (total_agents - 1))
 
 
@@ -28,7 +26,6 @@ def run_pairwise_tournament(agents, num_rounds):
     for agent in agents: agent.reset()
     history = {a.agent_id: {'coop_rate': [], 'score': []} for a in agents}
     agent_map = {a.agent_id: a for a in agents}
-
     for _ in range(num_rounds):
         moves = {}
         for i in range(len(agents)):
@@ -45,7 +42,6 @@ def run_pairwise_tournament(agents, num_rounds):
             agent_map[id2].record_pairwise_outcome(id1, move2, move1, payoff2)
             round_moves_by_agent[id1].append(move1)
             round_moves_by_agent[id2].append(move2)
-
         for agent in agents:
             agent_moves = round_moves_by_agent[agent.agent_id]
             if not agent_moves: continue
@@ -58,7 +54,6 @@ def run_nperson_simulation(agents, num_rounds):
     for agent in agents: agent.reset()
     history = {a.agent_id: {'coop_rate': [], 'score': []} for a in agents}
     coop_ratio = None
-
     for _ in range(num_rounds):
         moves = {a.agent_id: a.choose_neighborhood_action(coop_ratio) for a in agents}
         num_cooperators = list(moves.values()).count(0)
@@ -73,77 +68,119 @@ def run_nperson_simulation(agents, num_rounds):
     return history
 
 
-# --- Main ---
-if __name__ == "__main__":
-    NUM_ROUNDS = 1000
-    NUM_RUNS = 20
-    OUTPUT_DIR = "final_comparison_charts"
-    os.makedirs(OUTPUT_DIR, exist_ok=True)
+def run_experiment_set(config, opponents, num_rounds, num_runs):
+    """Runs simulations for one agent config against a set of opponents."""
+    # Pairwise
+    p_templates = [config["class"](agent_id=f"{config['name']}_1", params=config["params"])] + opponents
+    p_runs = [run_pairwise_tournament([type(a)(**a.__dict__) for a in p_templates], num_rounds) for _ in
+              range(num_runs)]
+    p_agg = {aid: {m: np.mean([r[aid][m] for r in p_runs], axis=0) for m in ['coop_rate', 'score']} for aid in
+             p_runs[0]}
 
-    opponents = [StaticAgent(agent_id="TFT_1"), StaticAgent(agent_id="TFT_2")]
+    # Neighborhood
+    n_templates = [config["class"](agent_id=f"{config['name']}_1", params=config["params"])] + opponents
+    n_runs = [run_nperson_simulation([type(a)(**a.__dict__) for a in n_templates], num_rounds) for _ in range(num_runs)]
+    n_agg = {aid: {m: np.mean([r[aid][m] for r in n_runs], axis=0) for m in ['coop_rate', 'score']} for aid in
+             n_runs[0]}
 
-    # Store results for plotting
-    all_results = defaultdict(dict)
+    return p_agg, n_agg
 
-    # --- Agent Configurations to Test ---
-    agent_configs = {
-        "Vanilla": {"pairwise_class": PairwiseAdaptiveQLearner, "neighborhood_class": NeighborhoodAdaptiveQLearner,
-                    "params": VANILLA_PARAMS},
-        "Adaptive": {"pairwise_class": PairwiseAdaptiveQLearner, "neighborhood_class": NeighborhoodAdaptiveQLearner,
-                     "params": ADAPTIVE_PARAMS},
-    }
 
-    for name, config in agent_configs.items():
-        print(f"\n--- Running Scenario: {name} ---")
-
-        # --- Pairwise Simulation ---
-        print("  Running Pairwise Tournament...")
-        p_templates = [config["pairwise_class"](agent_id=f"{name}_QL_1", params=config["params"])] + opponents
-        p_runs = [run_pairwise_tournament([type(a)(**a.__dict__) for a in p_templates], NUM_ROUNDS) for _ in
-                  range(NUM_RUNS)]
-        p_agg = {aid: {m: np.mean([r[aid][m] for r in p_runs if aid in r], axis=0) for m in ['coop_rate', 'score']} for
-                 aid in p_runs[0]}
-        all_results[name]['pairwise'] = p_agg
-
-        # --- Neighborhood Simulation ---
-        print("  Running Neighborhood Simulation...")
-        n_templates = [config["neighborhood_class"](agent_id=f"{name}_QL_1", params=config["params"])] + opponents
-        n_runs = [run_nperson_simulation([type(a)(**a.__dict__) for a in n_templates], NUM_ROUNDS) for _ in
-                  range(NUM_RUNS)]
-        n_agg = {aid: {m: np.mean([r[aid][m] for r in n_runs if aid in r], axis=0) for m in ['coop_rate', 'score']} for
-                 aid in n_runs[0]}
-        all_results[name]['neighborhood'] = n_agg
-
-    # --- Plotting Results ---
-    print("\n--- Generating Comparison Plot ---")
+def plot_scenario_comparison(results, title, save_path):
+    """Generates a 4-panel plot comparing Vanilla vs. Adaptive for one scenario."""
     fig, axes = plt.subplots(2, 2, figsize=(20, 15))
-    fig.suptitle("Agent Performance vs. 2 TFTs", fontsize=22)
+    fig.suptitle(f"Comparison: {title}", fontsize=22)
+    colors = {"Vanilla": "blue", "Adaptive": "green"}
 
-    colors = {"Vanilla": "#1f77b4", "Adaptive": "#ff7f0e"}
-
-    for name, results in all_results.items():
+    for name, data in results.items():
+        p_data, n_data = data
         ql_id = f"{name}_QL_1"
-        axes[0, 0].plot(results['pairwise'][ql_id]['coop_rate'], label=name, color=colors[name])
-        axes[0, 1].plot(results['pairwise'][ql_id]['score'], label=name, color=colors[name])
-        axes[1, 0].plot(results['neighborhood'][ql_id]['coop_rate'], label=name, color=colors[name])
-        axes[1, 1].plot(results['neighborhood'][ql_id]['score'], label=name, color=colors[name])
+        axes[0, 0].plot(p_data[ql_id]['coop_rate'], label=name, color=colors[name])
+        axes[0, 1].plot(p_data[ql_id]['score'], label=name, color=colors[name])
+        axes[1, 0].plot(n_data[ql_id]['coop_rate'], label=name, color=colors[name])
+        axes[1, 1].plot(n_data[ql_id]['score'], label=name, color=colors[name])
 
     axes[0, 0].set_title('Pairwise Cooperation');
-    axes[0, 0].set_ylabel('Cooperation Rate')
-    axes[0, 1].set_title('Pairwise Score');
-    axes[0, 1].set_ylabel('Cumulative Score')
+    axes[0, 1].set_title('Pairwise Score')
     axes[1, 0].set_title('Neighborhood Cooperation');
-    axes[1, 0].set_ylabel('Cooperation Rate')
-    axes[1, 1].set_title('Neighborhood Score');
-    axes[1, 1].set_ylabel('Cumulative Score')
-
-    for ax in axes.flat:
-        ax.set_xlabel('Round')
-        ax.legend()
-        ax.grid(True, linestyle='--')
-
-    plt.tight_layout(rect=[0, 0, 1, 0.96])
-    save_path = os.path.join(OUTPUT_DIR, "final_vanilla_vs_adaptive.png")
-    plt.savefig(save_path)
+    axes[1, 1].set_title('Neighborhood Score')
+    for ax in axes.flat: ax.legend(); ax.grid(True, linestyle='--'); ax.set_xlabel('Round')
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95]);
+    plt.savefig(save_path);
     plt.close(fig)
-    print(f"Chart saved to {save_path}")
+
+
+def create_heatmap(all_results, save_path):
+    """Generates a heatmap comparing performance across all scenarios."""
+    heatmap_data = []
+    scenarios = sorted(all_results.keys())
+    for scenario_name in scenarios:
+        results = all_results[scenario_name]
+        v_p, v_n = results['Vanilla']
+        a_p, a_n = results['Adaptive']
+        v_id, a_id = "Vanilla_QL_1", "Adaptive_QL_1"
+
+        metrics = [
+            (np.mean(v_p[v_id]['coop_rate']), np.mean(a_p[a_id]['coop_rate'])),
+            (v_p[v_id]['score'][-1], a_p[a_id]['score'][-1]),
+            (np.mean(v_n[v_id]['coop_rate']), np.mean(a_n[a_id]['coop_rate'])),
+            (v_n[v_id]['score'][-1], a_n[a_id]['score'][-1])
+        ]
+
+        row = [((a - v) / abs(v) * 100) if v != 0 else 0 for v, a in metrics]
+        heatmap_data.append(row)
+
+    df = pd.DataFrame(heatmap_data, index=scenarios, columns=['PW Coop', 'PW Score', 'N-Hood Coop', 'N-Hood Score'])
+    plt.figure(figsize=(10, 8));
+    sns.heatmap(df, annot=True, fmt=".1f", cmap="RdYlGn", center=0)
+    plt.title("Performance % Difference (Adaptive vs. Vanilla)", fontsize=16)
+    plt.savefig(save_path);
+    plt.close()
+
+
+if __name__ == "__main__":
+    NUM_ROUNDS, NUM_RUNS = 1000, 20
+    OUTPUT_DIR = "all_scenarios_comparison"
+    os.makedirs(OUTPUT_DIR, exist_ok=True)
+
+    # --- Define Scenarios ---
+    scenario_opponents = {
+        "vs_1_AllC": [StaticAgent("AllC_1", "AllC")],
+        "vs_1_AllD": [StaticAgent("AllD_1", "AllD")],
+        "vs_1_Random": [StaticAgent("Random_1", "Random")],
+        "vs_1_TFT": [StaticAgent("TFT_1", "TFT")],
+        "vs_1_TFT-E": [StaticAgent("TFT-E_1", "TFT", exploration_rate=0.1)],
+    }
+
+    # --- Define Agent Types to Test ---
+    agent_types = {
+        "Vanilla": {"class": PairwiseAdaptiveQLearner, "params": VANILLA_PARAMS},
+        "Adaptive": {"class": PairwiseAdaptiveQLearner, "params": ADAPTIVE_PARAMS},
+    }
+
+    all_scenario_results = {}
+    for scenario_name, opponents in scenario_opponents.items():
+        print(f"\n===== Running Scenario: 2 QL Agents {scenario_name} =====")
+        scenario_results = {}
+        # We need two QL agents + the defined opponents
+        full_opponents = [StaticAgent(**opponents[0].__dict__)]
+
+        for agent_name, config in agent_types.items():
+            print(f"  --- Testing {agent_name} agents ---")
+            templates = [
+                            config["class"](agent_id=f"{agent_name}_QL_1", params=config["params"]),
+                            config["class"](agent_id=f"{agent_name}_QL_2", params=config["params"])
+                        ] + full_opponents
+            scenario_results[agent_name] = run_experiment_set(config, templates, NUM_ROUNDS, NUM_RUNS)
+
+        all_scenario_results[f"2QL_{scenario_name}"] = scenario_results
+
+        # Plot individual comparison for this scenario
+        plot_path = os.path.join(OUTPUT_DIR, f"comparison_2QL_{scenario_name}.png")
+        plot_scenario_comparison(scenario_results, f"2 QL Agents {scenario_name}", plot_path)
+
+    # --- Generate Final Heatmap ---
+    heatmap_path = os.path.join(OUTPUT_DIR, "summary_heatmap.png")
+    create_heatmap(all_scenario_results, heatmap_path)
+
+    print(f"\nAll experiments complete. Charts and heatmap saved to '{OUTPUT_DIR}'.")

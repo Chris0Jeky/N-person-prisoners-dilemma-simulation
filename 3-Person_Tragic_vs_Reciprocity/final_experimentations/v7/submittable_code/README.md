@@ -6,7 +6,7 @@ This experiment tests Vanilla and Adaptive Q-learning agents against Tit-for-Tat
 
 The experiment includes 16 scenarios testing:
 - **Agent Types**: Vanilla Q-Learning and Adaptive Q-Learning
-- **Discount Factors**: 0.6 (short-term focus) and 0.95 (long-term focus)
+- **Discount Factors**: 0.4 (short-term focus) and 0.95 (long-term focus)
 - **Configurations**: 
   - 1 QL vs 2 TFT
   - 1 QL vs 2 TFT-E (10% error rate)
@@ -46,12 +46,12 @@ The experiment will:
 ```
 tft_experiment_results/
 ├── figures/                    # Individual scenario plots
-│   ├── 1_Vanilla_DF06_vs_2_TFT.png
+│   ├── 1_Vanilla_DF04_vs_2_TFT.png
 │   ├── 1_Vanilla_DF095_vs_2_TFT.png
 │   └── ... (16 total plots)
 ├── csv_files/                  # Detailed results
-│   ├── 1_Vanilla_DF06_vs_2_TFT_pairwise.csv
-│   ├── 1_Vanilla_DF06_vs_2_TFT_neighborhood.csv
+│   ├── 1_Vanilla_DF04_vs_2_TFT_pairwise.csv
+│   ├── 1_Vanilla_DF04_vs_2_TFT_neighborhood.csv
 │   └── ... (32 total CSV files)
 ├── comparison_heatmap.png      # Overall performance comparison
 ├── discount_factor_comparison.png  # DF effect visualization
@@ -70,14 +70,14 @@ The experiment reveals:
 ### Vanilla Q-Learning Parameters
 - Learning Rate (α): 0.08
 - Exploration Rate (ε): 0.1
-- Discount Factor (γ): 0.6 or 0.95
+- Discount Factor (γ): 0.4 or 0.95
 
 ### Adaptive Q-Learning Parameters
 - Initial Learning Rate: 0.1 (adapts between 0.03-0.15)
 - Initial Exploration Rate: 0.15 (adapts between 0.02-0.15)
 - Adaptation Factor: 1.08
 - Reward Window Size: 75
-- Discount Factor (γ): 0.6 or 0.95
+- Discount Factor (γ): 0.4 or 0.95
 
 ### Game Parameters
 - Prisoner's Dilemma Payoffs: T=5, R=3, P=1, S=0

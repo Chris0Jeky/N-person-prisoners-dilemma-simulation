@@ -292,9 +292,7 @@ if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
     # Detect parallelization capability
-    # Note: On Windows, multiprocessing with complex objects can be problematic
-    import platform
-    USE_PARALLEL = True and platform.system() != 'Windows'  # Disable on Windows due to pickling issues
+    USE_PARALLEL = True  # Now works on Windows with our picklable agents
     n_cores = cpu_count()
     n_processes = max(1, n_cores - 1) if USE_PARALLEL else 1
     

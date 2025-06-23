@@ -3,6 +3,7 @@ Q-Learning vs Always Cooperate Control Experiment
 This script runs the missing control experiments for Table 2:
 - Vanilla Q-Learning vs Always Cooperate in Pairwise voting
 - Vanilla Q-Learning vs Always Cooperate in Neighbour voting
+Modified to use 1 QL vs 2 AllC configuration
 """
 
 import os
@@ -34,9 +35,9 @@ def create_vanilla_qlearning_agent(agent_id, game_type):
     return agent
 
 
-def run_ql_vs_allc_experiment(voting_model="pairwise", num_rounds=1000, num_runs=100):
+def run_ql_vs_allc_experiment(voting_model="pairwise", num_rounds=10000, num_runs=25):
     """
-    Run experiment with 2 Q-Learning agents vs 1 Always Cooperate agent
+    Run experiment with 1 Q-Learning agent vs 2 Always Cooperate agents
     
     Parameters:
     - voting_model: "pairwise" or "neighborhood"
@@ -45,30 +46,31 @@ def run_ql_vs_allc_experiment(voting_model="pairwise", num_rounds=1000, num_runs
     """
     
     print(f"\nRunning Q-Learning vs Always Cooperate - {voting_model} voting")
-    print(f"Configuration: {num_runs} runs, {num_rounds} rounds each")
+    print(f"Configuration: {num_runs} runs, {num_rounds:,} rounds each")
+    print("Setup: 1 Q-Learning agent vs 2 Always Cooperate agents")
     
     # Storage for results across all runs
     all_cooperation_rates = {
-        'QL1': [],
-        'QL2': [],
-        'AllC': []
+        'QL': [],
+        'AllC1': [],
+        'AllC2': []
     }
     all_scores = {
-        'QL1': [],
-        'QL2': [],
-        'AllC': []
+        'QL': [],
+        'AllC1': [],
+        'AllC2': []
     }
     
     # Run multiple independent simulations
     for run in range(num_runs):
-        if run % 10 == 0:
+        if run % 5 == 0:
             print(f"  Run {run+1}/{num_runs}...")
         
-        # Create fresh agents for each run
+        # Create fresh agents for each run - 1 QL vs 2 AllC
         agents = [
-            create_vanilla_qlearning_agent("QL1", voting_model),
-            create_vanilla_qlearning_agent("QL2", voting_model),
-            StaticAgent("AllC", "AllC")
+            create_vanilla_qlearning_agent("QL", voting_model),
+            StaticAgent("AllC1", "AllC"),
+            StaticAgent("AllC2", "AllC")
         ]
         
         # Run tournament
@@ -78,12 +80,12 @@ def run_ql_vs_allc_experiment(voting_model="pairwise", num_rounds=1000, num_runs
             history = run_nperson_simulation(agents, num_rounds)
         
         # Store results
-        for agent_id in ['QL1', 'QL2', 'AllC']:
+        for agent_id in ['QL', 'AllC1', 'AllC2']:
             all_cooperation_rates[agent_id].append(history[agent_id]['coop_rate'])
             all_scores[agent_id].append(history[agent_id]['score'])
     
     # Convert to numpy arrays for easier manipulation
-    for agent_id in ['QL1', 'QL2', 'AllC']:
+    for agent_id in ['QL', 'AllC1', 'AllC2']:
         all_cooperation_rates[agent_id] = np.array(all_cooperation_rates[agent_id])
         all_scores[agent_id] = np.array(all_scores[agent_id])
     
@@ -93,24 +95,26 @@ def run_ql_vs_allc_experiment(voting_model="pairwise", num_rounds=1000, num_runs
 def save_results_to_csv(cooperation_rates, scores, voting_model, output_dir):
     """Save experiment results to CSV files"""
     
-    # Calculate mean and std across runs
+    # Calculate mean and std across runs - subsample for CSV to avoid huge files
+    # Take every 100th round for the detailed CSV
+    subsample_rate = 100
     results_data = []
     
-    for round_idx in range(cooperation_rates['QL1'].shape[1]):
+    for round_idx in range(0, cooperation_rates['QL'].shape[1], subsample_rate):
         row = {
             'round': round_idx + 1,
-            'QL1_coop_mean': np.mean(cooperation_rates['QL1'][:, round_idx]),
-            'QL1_coop_std': np.std(cooperation_rates['QL1'][:, round_idx]),
-            'QL2_coop_mean': np.mean(cooperation_rates['QL2'][:, round_idx]),
-            'QL2_coop_std': np.std(cooperation_rates['QL2'][:, round_idx]),
-            'AllC_coop_mean': np.mean(cooperation_rates['AllC'][:, round_idx]),
-            'AllC_coop_std': np.std(cooperation_rates['AllC'][:, round_idx]),
-            'QL1_score_mean': np.mean(scores['QL1'][:, round_idx]),
-            'QL1_score_std': np.std(scores['QL1'][:, round_idx]),
-            'QL2_score_mean': np.mean(scores['QL2'][:, round_idx]),
-            'QL2_score_std': np.std(scores['QL2'][:, round_idx]),
-            'AllC_score_mean': np.mean(scores['AllC'][:, round_idx]),
-            'AllC_score_std': np.std(scores['AllC'][:, round_idx])
+            'QL_coop_mean': np.mean(cooperation_rates['QL'][:, round_idx]),
+            'QL_coop_std': np.std(cooperation_rates['QL'][:, round_idx]),
+            'AllC1_coop_mean': np.mean(cooperation_rates['AllC1'][:, round_idx]),
+            'AllC1_coop_std': np.std(cooperation_rates['AllC1'][:, round_idx]),
+            'AllC2_coop_mean': np.mean(cooperation_rates['AllC2'][:, round_idx]),
+            'AllC2_coop_std': np.std(cooperation_rates['AllC2'][:, round_idx]),
+            'QL_score_mean': np.mean(scores['QL'][:, round_idx]),
+            'QL_score_std': np.std(scores['QL'][:, round_idx]),
+            'AllC1_score_mean': np.mean(scores['AllC1'][:, round_idx]),
+            'AllC1_score_std': np.std(scores['AllC1'][:, round_idx]),
+            'AllC2_score_mean': np.mean(scores['AllC2'][:, round_idx]),
+            'AllC2_score_std': np.std(scores['AllC2'][:, round_idx])
         }
         results_data.append(row)
     
@@ -121,16 +125,20 @@ def save_results_to_csv(cooperation_rates, scores, voting_model, output_dir):
     print(f"  Saved CSV: {csv_path}")
     
     # Also save summary statistics
+    # Calculate final cooperation rates (last 10% of rounds)
+    final_rounds = cooperation_rates['QL'].shape[1] // 10
     summary_data = {
         'voting_model': voting_model,
-        'num_runs': cooperation_rates['QL1'].shape[0],
-        'num_rounds': cooperation_rates['QL1'].shape[1],
-        'QL1_final_coop': np.mean(cooperation_rates['QL1'][:, -100:]),
-        'QL2_final_coop': np.mean(cooperation_rates['QL2'][:, -100:]),
-        'AllC_final_coop': np.mean(cooperation_rates['AllC'][:, -100:]),
-        'QL1_final_score': np.mean(scores['QL1'][:, -1]),
-        'QL2_final_score': np.mean(scores['QL2'][:, -1]),
-        'AllC_final_score': np.mean(scores['AllC'][:, -1])
+        'num_runs': cooperation_rates['QL'].shape[0],
+        'num_rounds': cooperation_rates['QL'].shape[1],
+        'QL_final_coop': np.mean(cooperation_rates['QL'][:, -final_rounds:]),
+        'AllC1_final_coop': np.mean(cooperation_rates['AllC1'][:, -final_rounds:]),
+        'AllC2_final_coop': np.mean(cooperation_rates['AllC2'][:, -final_rounds:]),
+        'QL_final_score': np.mean(scores['QL'][:, -1]),
+        'AllC1_final_score': np.mean(scores['AllC1'][:, -1]),
+        'AllC2_final_score': np.mean(scores['AllC2'][:, -1]),
+        'QL_avg_score_per_round': np.mean(scores['QL'][:, -1]) / cooperation_rates['QL'].shape[1],
+        'AllC_avg_score_per_round': np.mean(scores['AllC1'][:, -1]) / cooperation_rates['AllC1'].shape[1]
     }
     
     summary_df = pd.DataFrame([summary_data])
@@ -147,7 +155,7 @@ def plot_results(cooperation_rates, scores, voting_model, output_dir):
     ci_coop = {}
     mean_scores = {}
     
-    for agent_id in ['QL1', 'QL2', 'AllC']:
+    for agent_id in ['QL', 'AllC1', 'AllC2']:
         mean_coop[agent_id] = np.mean(cooperation_rates[agent_id], axis=0)
         std_coop = np.std(cooperation_rates[agent_id], axis=0)
         ci_coop[agent_id] = 1.96 * std_coop / np.sqrt(cooperation_rates[agent_id].shape[0])
@@ -155,37 +163,60 @@ def plot_results(cooperation_rates, scores, voting_model, output_dir):
     
     # Apply smoothing
     window_size = 50
-    for agent_id in ['QL1', 'QL2', 'AllC']:
+    for agent_id in ['QL', 'AllC1', 'AllC2']:
         mean_coop[agent_id] = pd.Series(mean_coop[agent_id]).rolling(
             window=window_size, min_periods=1, center=True
         ).mean().values
     
     # Create figure with two subplots
-    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(10, 10))
+    fig, (ax1, ax2) = plt.subplots(2, 1, figsize=(12, 10))
     
     # Plot cooperation rates
-    rounds = np.arange(1, len(mean_coop['QL1']) + 1)
+    rounds = np.arange(1, len(mean_coop['QL']) + 1)
+    
+    # Subsample for plotting if too many points
+    if len(rounds) > 5000:
+        plot_indices = np.linspace(0, len(rounds)-1, 5000, dtype=int)
+        rounds_plot = rounds[plot_indices]
+        mean_coop_plot = {k: v[plot_indices] for k, v in mean_coop.items()}
+        ci_coop_plot = {k: v[plot_indices] for k, v in ci_coop.items()}
+        mean_scores_plot = {k: v[plot_indices] for k, v in mean_scores.items()}
+    else:
+        rounds_plot = rounds
+        mean_coop_plot = mean_coop
+        ci_coop_plot = ci_coop
+        mean_scores_plot = mean_scores
     
     # Colors for agents
-    colors = {'QL1': 'blue', 'QL2': 'green', 'AllC': 'red'}
+    colors = {'QL': 'blue', 'AllC1': 'red', 'AllC2': 'orange'}
     
-    for agent_id in ['QL1', 'QL2', 'AllC']:
-        ax1.plot(rounds, mean_coop[agent_id], label=agent_id, color=colors[agent_id], linewidth=2)
-        ax1.fill_between(rounds, 
-                        mean_coop[agent_id] - ci_coop[agent_id],
-                        mean_coop[agent_id] + ci_coop[agent_id],
+    # Plot cooperation rates
+    for agent_id in ['QL', 'AllC1', 'AllC2']:
+        label = 'Q-Learning' if agent_id == 'QL' else f'Always Cooperate {agent_id[-1]}'
+        ax1.plot(rounds_plot, mean_coop_plot[agent_id], label=label, 
+                color=colors[agent_id], linewidth=2)
+        ax1.fill_between(rounds_plot, 
+                        mean_coop_plot[agent_id] - ci_coop_plot[agent_id],
+                        mean_coop_plot[agent_id] + ci_coop_plot[agent_id],
                         alpha=0.2, color=colors[agent_id])
     
     ax1.set_xlabel('Round')
     ax1.set_ylabel('Cooperation Rate')
-    ax1.set_title(f'Q-Learning vs Always Cooperate - {voting_model.capitalize()} Voting\nCooperation Rates (100 runs)')
+    ax1.set_title(f'1 Q-Learning vs 2 Always Cooperate - {voting_model.capitalize()} Voting\n'
+                  f'Cooperation Rates ({cooperation_rates["QL"].shape[0]} runs, '
+                  f'{cooperation_rates["QL"].shape[1]:,} rounds)')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
     ax1.set_ylim(-0.05, 1.05)
     
+    # Add horizontal line at 0 to highlight defection
+    ax1.axhline(y=0, color='black', linestyle='--', alpha=0.3)
+    
     # Plot cumulative scores
-    for agent_id in ['QL1', 'QL2', 'AllC']:
-        ax2.plot(rounds, mean_scores[agent_id], label=agent_id, color=colors[agent_id], linewidth=2)
+    for agent_id in ['QL', 'AllC1', 'AllC2']:
+        label = 'Q-Learning' if agent_id == 'QL' else f'Always Cooperate {agent_id[-1]}'
+        ax2.plot(rounds_plot, mean_scores_plot[agent_id], label=label, 
+                color=colors[agent_id], linewidth=2)
     
     ax2.set_xlabel('Round')
     ax2.set_ylabel('Cumulative Score')
@@ -200,6 +231,30 @@ def plot_results(cooperation_rates, scores, voting_model, output_dir):
     plt.savefig(fig_path, dpi=300, bbox_inches='tight')
     plt.close()
     print(f"  Saved figure: {fig_path}")
+    
+    # Create a zoomed-in plot for the first 5000 rounds to see early learning
+    fig2, ax = plt.subplots(figsize=(10, 6))
+    
+    early_rounds = min(5000, len(mean_coop['QL']))
+    for agent_id in ['QL', 'AllC1', 'AllC2']:
+        label = 'Q-Learning' if agent_id == 'QL' else f'Always Cooperate {agent_id[-1]}'
+        ax.plot(range(early_rounds), mean_coop[agent_id][:early_rounds], 
+               label=label, color=colors[agent_id], linewidth=2)
+    
+    ax.set_xlabel('Round')
+    ax.set_ylabel('Cooperation Rate')
+    ax.set_title(f'Early Learning Phase - First {early_rounds} Rounds\n'
+                f'{voting_model.capitalize()} Voting')
+    ax.legend()
+    ax.grid(True, alpha=0.3)
+    ax.set_ylim(-0.05, 1.05)
+    ax.axhline(y=0, color='black', linestyle='--', alpha=0.3)
+    
+    plt.tight_layout()
+    zoom_path = output_dir / f"ql_vs_allc_{voting_model}_early_learning.png"
+    plt.savefig(zoom_path, dpi=300, bbox_inches='tight')
+    plt.close()
+    print(f"  Saved early learning plot: {zoom_path}")
 
 
 def main():
@@ -214,24 +269,27 @@ def main():
     config = {
         "experiment": "Q-Learning vs Always Cooperate Control",
         "timestamp": timestamp,
-        "num_rounds": 1000,
-        "num_runs": 100,
+        "num_rounds": 10000,
+        "num_runs": 25,
         "voting_models": ["pairwise", "neighborhood"],
-        "agents": ["QL1 (Vanilla Q-Learning)", "QL2 (Vanilla Q-Learning)", "AllC (Always Cooperate)"]
+        "agents": ["QL (Vanilla Q-Learning)", "AllC1 (Always Cooperate)", "AllC2 (Always Cooperate)"],
+        "setup": "1 Q-Learning agent vs 2 Always Cooperate agents",
+        "q_learning_params": VANILLA_PARAMS
     }
     
     with open(output_dir / "experiment_config.json", 'w') as f:
         json.dump(config, f, indent=2)
     
     print("Starting Q-Learning vs Always Cooperate Control Experiments")
+    print("Setup: 1 Q-Learning agent vs 2 Always Cooperate agents")
     print("=" * 60)
     
     # Run experiments for both voting models
     for voting_model in ["pairwise", "neighborhood"]:
         cooperation_rates, scores = run_ql_vs_allc_experiment(
             voting_model=voting_model,
-            num_rounds=1000,
-            num_runs=100
+            num_rounds=10000,
+            num_runs=25
         )
         
         # Save results

@@ -295,6 +295,11 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
         self.total_score += reward
         if not self.last_context: return
         next_state = self._get_state(coop_ratio)
+        
+        # Initialize next state if needed
+        if next_state not in self.q_table:
+            self.q_table[next_state] = self._make_q_dict()
+            
         old_q = self.q_table[self.last_context['state']][self.last_context['action']]
         next_max_q = max(self.q_table[next_state].values())
         df = self.params.get('df', 0.9)

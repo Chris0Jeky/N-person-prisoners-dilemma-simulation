@@ -288,6 +288,80 @@ def create_heatmap(all_results, output_dir):
         plt.close(fig)
 
 
+def plot_individual_scenario(scenario_name, p_data, n_data, output_dir):
+    """Create detailed plot for individual scenario"""
+    fig, axes = plt.subplots(2, 2, figsize=(15, 12))
+    fig.suptitle(f'Scenario: {scenario_name}', fontsize=16)
+    
+    # Separate QL and non-QL agents
+    ql_agents = sorted([aid for aid in p_data.keys() if 'QL' in aid])
+    other_agents = sorted([aid for aid in p_data.keys() if 'QL' not in aid])
+    
+    # Define colors
+    colors = plt.cm.tab10(np.linspace(0, 1, len(p_data)))
+    color_map = {aid: colors[i] for i, aid in enumerate(sorted(p_data.keys()))}
+    
+    # Pairwise cooperation rates
+    for aid in ql_agents:
+        smoothed = smooth_data(p_data[aid]['coop_rate'], window_size=50)
+        axes[0, 0].plot(smoothed, label=aid, color=color_map[aid], linewidth=2)
+    for aid in other_agents:
+        smoothed = smooth_data(p_data[aid]['coop_rate'], window_size=50)
+        axes[0, 0].plot(smoothed, label=aid, color=color_map[aid], linewidth=1, alpha=0.7)
+    
+    axes[0, 0].set_title('Pairwise Cooperation Rates')
+    axes[0, 0].set_ylabel('Cooperation Rate')
+    axes[0, 0].set_ylim(-0.05, 1.05)
+    axes[0, 0].legend(fontsize=8)
+    axes[0, 0].grid(True, alpha=0.3)
+    
+    # Pairwise scores
+    for aid in ql_agents:
+        axes[0, 1].plot(p_data[aid]['score'], label=aid, color=color_map[aid], linewidth=2)
+    for aid in other_agents:
+        axes[0, 1].plot(p_data[aid]['score'], label=aid, color=color_map[aid], linewidth=1, alpha=0.7)
+    
+    axes[0, 1].set_title('Pairwise Cumulative Scores')
+    axes[0, 1].set_ylabel('Cumulative Score')
+    axes[0, 1].legend(fontsize=8)
+    axes[0, 1].grid(True, alpha=0.3)
+    
+    # Neighborhood cooperation rates
+    for aid in ql_agents:
+        smoothed = smooth_data(n_data[aid]['coop_rate'], window_size=50)
+        axes[1, 0].plot(smoothed, label=aid, color=color_map[aid], linewidth=2)
+    for aid in other_agents:
+        smoothed = smooth_data(n_data[aid]['coop_rate'], window_size=50)
+        axes[1, 0].plot(smoothed, label=aid, color=color_map[aid], linewidth=1, alpha=0.7)
+    
+    axes[1, 0].set_title('Neighborhood Cooperation Rates')
+    axes[1, 0].set_ylabel('Cooperation Rate')
+    axes[1, 0].set_xlabel('Round')
+    axes[1, 0].set_ylim(-0.05, 1.05)
+    axes[1, 0].legend(fontsize=8)
+    axes[1, 0].grid(True, alpha=0.3)
+    
+    # Neighborhood scores
+    for aid in ql_agents:
+        axes[1, 1].plot(n_data[aid]['score'], label=aid, color=color_map[aid], linewidth=2)
+    for aid in other_agents:
+        axes[1, 1].plot(n_data[aid]['score'], label=aid, color=color_map[aid], linewidth=1, alpha=0.7)
+    
+    axes[1, 1].set_title('Neighborhood Cumulative Scores')
+    axes[1, 1].set_ylabel('Cumulative Score')
+    axes[1, 1].set_xlabel('Round')
+    axes[1, 1].legend(fontsize=8)
+    axes[1, 1].grid(True, alpha=0.3)
+    
+    plt.tight_layout()
+    
+    # Save in a subdirectory
+    plot_dir = os.path.join(output_dir, "individual_plots")
+    os.makedirs(plot_dir, exist_ok=True)
+    plt.savefig(os.path.join(plot_dir, f"{scenario_name}.png"), dpi=150)
+    plt.close(fig)
+
+
 def plot_multi_agent_comparison(results, title, save_path, num_rounds=None):
     """Plot results for multi-agent experiments"""
     fig, axes = plt.subplots(2, 2, figsize=(20, 15))
@@ -645,8 +719,10 @@ if __name__ == "__main__":
             plot_multi_agent_comparison(scenarios, f"Multi-Agent Experiments vs {opponent_type}", plot_path)
             print(f"  Saved plot: {plot_path}")
     
-    # Create summary
+    # Create summary and additional visualizations
     create_multi_agent_summary(all_results, OUTPUT_DIR)
+    create_master_summary_csv(all_results, OUTPUT_DIR)
+    create_heatmap(all_results, OUTPUT_DIR)
     
     # Calculate total time
     total_elapsed = time.time() - total_start_time

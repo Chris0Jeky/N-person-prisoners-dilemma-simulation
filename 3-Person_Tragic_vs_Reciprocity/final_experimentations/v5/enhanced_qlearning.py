@@ -301,6 +301,15 @@ class RevampedQLearningAgent(EnhancedQLearningAgent):
         super().__init__(agent_id, **kwargs)
 
 
+# Factory function for compatibility with the demo
+def create_enhanced_qlearning(agent_id, params=None, **kwargs):
+    """Factory function that accepts params dict for compatibility."""
+    if params is not None:
+        # Extract parameters from params dict
+        kwargs.update(params)
+    return EnhancedQLearningAgent(agent_id, **kwargs)
+
+
 class AdaptiveEnhancedQLearningAgent(EnhancedQLearningAgent):
     """
     Adaptive Enhanced Q-Learning that adjusts parameters based on performance.

@@ -232,7 +232,8 @@ Q-learning agent typically has an explore option, so that no matter
 what the tables say, it will try a random move a small percentage of
 the time.
 
-undone discount factor
+A key parameter in the Q-learning update rule is the discount factor, denoted by gamma (γ). This value, typically set between 0 and 1, determines the present value of future rewards. It controls the extent to which an agent prioritises immediate gratification over long-term gains. An agent with a discount factor of 0 is considered 'myopic', as it only optimises for the immediate reward of the current action. Conversely, a discount factor approaching 1 makes the agent 'far-sighted', causing it to weigh future rewards heavily and enabling it to learn more complex, long-term strategies.
+In the context of the Iterated Prisoner's Dilemma, the discount factor is critical for the emergence of cooperation. A myopic agent is almost always incentivised to defect in any given round to receive the higher temptation payoff (T). In contrast, a far-sighted agent can learn that an immediate cooperative action, while potentially yielding a lower reward in the short term (e.g., the sucker's payoff S), can foster reciprocal cooperation that leads to a much greater cumulative reward over the course of the tournament. Therefore, a sufficiently high discount factor is often a necessary precondition for a learning agent to overcome the immediate incentive to defect and discover the long-term benefits of collaboration \cite{SuttonBarto2018}.
 
 
 \section{The Collaborative Hill and the Tragic Valley}

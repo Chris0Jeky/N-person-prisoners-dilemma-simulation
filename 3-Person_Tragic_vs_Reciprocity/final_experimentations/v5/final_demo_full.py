@@ -378,7 +378,7 @@ if __name__ == "__main__":
                      "params": ADAPTIVE_PARAMS},
         "Hysteretic": {"class": HystereticQLearner,      # New Hysteretic Q-learner
                        "params": HYSTERETIC_PARAMS},
-        "Enhanced": {"class": EnhancedQLearningAgent,     # Enhanced with epsilon decay
+        "Enhanced": {"class": create_enhanced_qlearning,     # Enhanced with epsilon decay
                      "params": {
                          "learning_rate": 0.1,
                          "discount_factor": 0.9,

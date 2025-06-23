@@ -5,6 +5,7 @@ These agents can be composed with different state, action, and learning strategi
 """
 
 import random
+import numpy as np
 from collections import deque
 from final_agents import BaseAgent, COOPERATE, DEFECT
 from strategies import (

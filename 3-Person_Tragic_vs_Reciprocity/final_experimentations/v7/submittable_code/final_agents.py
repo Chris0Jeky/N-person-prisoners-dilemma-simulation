@@ -123,7 +123,8 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         self._adapt_parameters(reward)
 
     def choose_neighborhood_action(self, coop_ratio):
-        state = self._get_neighborhood_state(coop_ratio)
+        # First, we need to get the current state (before this round's ratio is added)
+        state = self._get_neighborhood_state()
         
         # Epsilon-greedy
         if random.random() < self._get_epsilon():
@@ -136,8 +137,17 @@ class PairwiseAdaptiveQLearner(BaseAgent):
 
     def record_neighborhood_outcome(self, coop_ratio, reward):
         self.total_score += reward
-        state = self._get_neighborhood_state(self.last_coop_ratio)
-        next_state = self._get_neighborhood_state(coop_ratio)
+        
+        # Get current state before updating history
+        state = self._get_neighborhood_state()
+        
+        # Update cooperation ratio history with category
+        if coop_ratio is not None:
+            category = self._categorize_coop_ratio(coop_ratio)
+            self.coop_ratio_history.append(category)
+        
+        # Get next state after updating history
+        next_state = self._get_neighborhood_state()
         
         # Determine my last move based on current cooperation ratio vs previous
         if self.last_coop_ratio is None:
@@ -150,9 +160,26 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         self._adapt_parameters(reward)
         self.last_coop_ratio = coop_ratio
 
-    def _get_neighborhood_state(self, coop_ratio):
-        if coop_ratio is None: return "start"
-        return "low" if coop_ratio < 0.33 else "medium" if coop_ratio < 0.67 else "high"
+    def _categorize_coop_ratio(self, coop_ratio):
+        """Convert cooperation ratio to category"""
+        if coop_ratio < 0.33:
+            return "low"
+        elif coop_ratio < 0.67:
+            return "medium"
+        else:
+            return "high"
+
+    def _get_neighborhood_state(self):
+        """Get state as tuple of last 4 cooperation ratio categories"""
+        if len(self.coop_ratio_history) == 0:
+            return "start"
+        elif len(self.coop_ratio_history) < 4:
+            # Pad with 'start' if we don't have 4 rounds yet
+            padding = ['start'] * (4 - len(self.coop_ratio_history))
+            return str(tuple(padding + list(self.coop_ratio_history)))
+        else:
+            # Return tuple of last 4 categories
+            return str(tuple(self.coop_ratio_history))
 
     def _update_q_value(self, opponent_id, state, action, reward, next_state):
         lr = self._get_learning_rate()
@@ -228,6 +255,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         self.n_q_table = defaultdict(lambda: defaultdict(float))
         self.histories = {}
         self.last_coop_ratio = None
+        self.coop_ratio_history = deque(maxlen=4)  # Store last 4 cooperation ratio categories
         self.reward_history = deque(maxlen=1000)
         
         # Set initial parameters

@@ -7,6 +7,7 @@ from collections import defaultdict
 
 from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner
 from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, SIMULATION_CONFIG
+from save_config import save_detailed_config
 
 # --- Payoff Logic ---
 PAYOFFS_2P = {(0, 0): (3, 3), (0, 1): (0, 5), (1, 0): (5, 0), (1, 1): (1, 1)}

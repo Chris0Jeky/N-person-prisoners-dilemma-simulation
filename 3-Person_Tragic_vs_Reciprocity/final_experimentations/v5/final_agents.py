@@ -95,8 +95,18 @@ class PairwiseAdaptiveQLearner(BaseAgent):
 
     def choose_pairwise_action(self, opponent_id):
         state = self._get_state(opponent_id)
+        # Initialize if needed
+        if opponent_id not in self.q_tables:
+            self.q_tables[opponent_id] = {}
+        if opponent_id not in self.epsilons:
+            self.epsilons[opponent_id] = self._get_initial_eps()
+        
         q_table = self.q_tables[opponent_id]
         epsilon = self.epsilons[opponent_id]
+        
+        # Initialize state if needed
+        if state not in q_table:
+            q_table[state] = self._make_q_dict()
         if random.random() < epsilon:
             action = random.choice(['cooperate', 'defect'])
         else:

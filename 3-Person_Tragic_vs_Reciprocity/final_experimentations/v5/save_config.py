@@ -80,7 +80,9 @@ def save_detailed_config(output_dir, scenario_descriptions=None):
         f.write("  AllC: Always Cooperate\n")
         f.write("  AllD: Always Defect\n")
         f.write("  Random: 50/50 random choice\n")
-        f.write("  TFT: Tit-for-Tat (copy opponent's last move)\n")
+        f.write("  TFT: Tit-for-Tat\n")
+        f.write("    - Pairwise: Copies opponent's last move\n")
+        f.write("    - N-Person: Cooperates with probability = cooperation ratio\n")
         f.write("  TFT-E: TFT with 10% error rate\n\n")
         
         f.write("="*80 + "\n")

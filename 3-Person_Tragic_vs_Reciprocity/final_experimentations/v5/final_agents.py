@@ -224,19 +224,19 @@ class PairwiseAdaptiveQLearner(BaseAgent):
 
     def reset(self):
         super().reset()
-        self.q_tables = defaultdict(lambda: defaultdict(self._make_q_dict))
-        self.histories = defaultdict(self._make_history_deque)
-        self.reward_windows = defaultdict(self._make_reward_window)
-        self.learning_rates = defaultdict(self._get_initial_lr)
-        self.epsilons = defaultdict(self._get_initial_eps)
+        # Use regular dicts instead of defaultdicts with lambdas
+        self.q_tables = {}
+        self.histories = {}
+        self.reward_windows = {}
+        self.learning_rates = {}
+        self.epsilons = {}
         self.last_contexts = {}
-        # Reset neighborhood-specific attributes
-        if hasattr(self, 'neighborhood_q_table'):
-            self.neighborhood_q_table = defaultdict(self._make_q_dict)
-            self.neighborhood_lr = self._get_initial_lr()
-            self.neighborhood_epsilon = self._get_initial_eps()
-            self.neighborhood_reward_window = self._make_reward_window()
-            self.last_neighborhood_context = None
+        # Initialize neighborhood attributes
+        self.neighborhood_q_table = {}
+        self.neighborhood_lr = self._get_initial_lr()
+        self.neighborhood_epsilon = self._get_initial_eps()
+        self.neighborhood_reward_window = self._make_reward_window()
+        self.last_neighborhood_context = None
 
 
 class NeighborhoodAdaptiveQLearner(BaseAgent):

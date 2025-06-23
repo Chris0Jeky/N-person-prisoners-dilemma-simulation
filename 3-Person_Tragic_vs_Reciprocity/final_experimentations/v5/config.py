@@ -6,15 +6,15 @@ Centralized configuration for Q-learning agent parameters and simulation setting
 
 # Simulation parameters
 SIMULATION_CONFIG = {
-    'num_rounds': 4000,  # Number of rounds per simulation
-    'num_runs': 10,      # Number of runs to average over
+    'num_rounds': 10000,  # Number of rounds per simulation
+    'num_runs': 4,      # Number of runs to average over
 }
 
 # Parameters for a standard, non-adaptive Q-learning agent.
 # Serves as the stable baseline for comparison.
 VANILLA_PARAMS = {
     'lr': 0.1,  # Learning Rate (alpha)
-    'df': 0.9,  # Discount Factor (gamma)
+    'df': 0.95,  # Discount Factor (gamma)
     'eps': 0.1,  # Epsilon (fixed exploration rate)
 }
 
@@ -22,45 +22,45 @@ VANILLA_PARAMS = {
 ADAPTIVE_PARAMS = {
     # Initial values that will be adapted during the run
     'initial_lr': 0.15,
-    'initial_eps': 0.1,
+    'initial_eps': 0.2,
 
     # Bounds for the adaptive parameters
     'min_lr': 0.05,
-    'max_lr': 0.5,
+    'max_lr': 0.2,
     'min_eps': 0.01,
-    'max_eps': 0.4,
+    'max_eps': 0.25,
 
     # Controls how quickly the agent adapts. Higher value = slower change.
     'adaptation_factor': 1.1,
 
     # How many recent rounds to consider for performance trends
-    'reward_window_size': 50,
+    'reward_window_size': 500,
 
-    # Discount factor remains fixed
-    'df': 0.9,
+    # Discount factor
+    'df': 0.95,
 }
 
 # Parameters for Hysteretic Q-learning agent
 # Uses different learning rates for positive and negative updates
 HYSTERETIC_PARAMS = {
     'lr': 0.1,      # Learning rate for positive updates (good news)
-    'beta': 0.01,   # Learning rate for negative updates (bad news)
-    'df': 0.9,      # Discount factor
-    'eps': 0.1,     # Exploration rate
+    'beta': 0.005,   # Learning rate for negative updates (bad news)
+    'df': 0.95,      # Discount factor
+    'eps': 0.08,     # Exploration rate
 }
 
 # Parameters for Modular Q-learning agents
 MODULAR_BASE_PARAMS = {
     'lr': 0.1,      # Learning rate
-    'df': 0.9,      # Discount factor
-    'eps': 0.1,     # Epsilon for epsilon-greedy
+    'df': 0.95,      # Discount factor
+    'eps': 0.2,     # Epsilon for epsilon-greedy
 }
 
 # Softmax specific parameters
 SOFTMAX_PARAMS = {
     'temperature': 2.0,          # Initial temperature
-    'min_temperature': 0.1,      # Minimum temperature
-    'decay_rate': 0.995,         # Temperature decay rate
+    'min_temperature': 0.01,      # Minimum temperature
+    'decay_rate': 0.98,         # Temperature decay rate
     'lr': 0.1,                   # Learning rate
-    'df': 0.9,                   # Discount factor
+    'df': 0.95,                   # Discount factor
 }

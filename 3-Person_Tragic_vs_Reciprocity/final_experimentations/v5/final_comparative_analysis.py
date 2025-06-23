@@ -4,7 +4,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from final_agents import StaticAgent, PairwiseAdaptiveQLearner
-from config import VANILLA_PARAMS, ADAPTIVE_PARAMS
+from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, SIMULATION_CONFIG
 
 def quick_pairwise_test(agent1, agent2, rounds=100):
     """Quick pairwise test between two agents"""

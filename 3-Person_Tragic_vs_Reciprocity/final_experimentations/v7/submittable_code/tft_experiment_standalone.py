@@ -27,9 +27,9 @@ NUM_RUNS = 25
 OUTPUT_DIR = "tft_experiment_results"
 
 # Q-learner configurations with different discount factors
-VANILLA_DF_06 = {
+VANILLA_DF_04 = {
     'lr': 0.08,
-    'df': 0.6,
+    'df': 0.4,
     'eps': 0.1,
 }
 
@@ -39,7 +39,7 @@ VANILLA_DF_095 = {
     'eps': 0.1,
 }
 
-ADAPTIVE_DF_06 = {
+ADAPTIVE_DF_04 = {
     'initial_lr': 0.1,
     'initial_eps': 0.15,
     'min_lr': 0.03,
@@ -48,7 +48,7 @@ ADAPTIVE_DF_06 = {
     'max_eps': 0.15,
     'adaptation_factor': 1.08,
     'reward_window_size': 75,
-    'df': 0.6,
+    'df': 0.4,
 }
 
 ADAPTIVE_DF_095 = {
@@ -617,9 +617,9 @@ def main():
     os.makedirs(figures_dir, exist_ok=True)
     
     scenarios = {
-        "1_Vanilla_DF06_vs_2_TFT": {
+        "1_Vanilla_DF04_vs_2_TFT": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Vanilla_QL_DF06", VANILLA_DF_06),
+                PairwiseAdaptiveQLearner("Vanilla_QL_DF04", VANILLA_DF_04),
                 StaticAgent("TFT_1", "TFT", 0.0),
                 StaticAgent("TFT_2", "TFT", 0.0)
             ]
@@ -631,9 +631,9 @@ def main():
                 StaticAgent("TFT_2", "TFT", 0.0)
             ]
         },
-        "1_Adaptive_DF06_vs_2_TFT": {
+        "1_Adaptive_DF04_vs_2_TFT": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Adaptive_QL_DF06", ADAPTIVE_DF_06),
+                PairwiseAdaptiveQLearner("Adaptive_QL_DF04", ADAPTIVE_DF_04),
                 StaticAgent("TFT_1", "TFT", 0.0),
                 StaticAgent("TFT_2", "TFT", 0.0)
             ]

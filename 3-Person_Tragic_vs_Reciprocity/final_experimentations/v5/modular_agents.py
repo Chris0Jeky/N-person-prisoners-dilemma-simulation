@@ -13,6 +13,7 @@ from strategies import (
     EpsilonGreedyStrategy, SoftmaxStrategy,
     StandardQLearning, HystereticQLearning
 )
+from config import MODULAR_BASE_PARAMS, SOFTMAX_PARAMS, HYSTERETIC_PARAMS
 
 
 class ModularAdaptiveQLearner(BaseAgent):
@@ -386,43 +387,59 @@ class ModularQLearner(BaseAgent):
 
 # === Factory functions for easy agent creation ===
 
-def create_vanilla_qlearner(agent_id, **kwargs):
+def create_vanilla_qlearner(agent_id, params=None, **kwargs):
     """Create a vanilla Q-learner with simple state and epsilon-greedy"""
+    if params is None:
+        params = MODULAR_BASE_PARAMS
     return ModularQLearner(
         agent_id,
         SimpleStateStrategy(),
-        EpsilonGreedyStrategy(epsilon=0.1),
-        StandardQLearning(learning_rate=0.1, discount_factor=0.9)
+        EpsilonGreedyStrategy(epsilon=params.get('eps', 0.1)),
+        StandardQLearning(learning_rate=params.get('lr', 0.1), 
+                         discount_factor=params.get('df', 0.95))
     )
 
 
-def create_statistical_qlearner(agent_id, **kwargs):
+def create_statistical_qlearner(agent_id, params=None, **kwargs):
     """Create a Q-learner with statistical state representation"""
+    if params is None:
+        params = MODULAR_BASE_PARAMS
     return ModularQLearner(
         agent_id,
         StatisticalSummaryStrategy(),
-        EpsilonGreedyStrategy(epsilon=0.1),
-        StandardQLearning(learning_rate=0.1, discount_factor=0.9)
+        EpsilonGreedyStrategy(epsilon=params.get('eps', 0.1)),
+        StandardQLearning(learning_rate=params.get('lr', 0.1), 
+                         discount_factor=params.get('df', 0.95))
     )
 
 
-def create_softmax_qlearner(agent_id, temperature=2.0, **kwargs):
+def create_softmax_qlearner(agent_id, params=None, **kwargs):
     """Create a Q-learner with softmax action selection"""
+    if params is None:
+        params = SOFTMAX_PARAMS
     return ModularQLearner(
         agent_id,
         SimpleStateStrategy(),
-        SoftmaxStrategy(temperature=temperature),
-        StandardQLearning(learning_rate=0.1, discount_factor=0.9)
+        SoftmaxStrategy(temperature=params.get('temperature', 2.0),
+                       min_temperature=params.get('min_temperature', 0.01),
+                       decay_rate=params.get('decay_rate', 0.98)),
+        StandardQLearning(learning_rate=params.get('lr', 0.1), 
+                         discount_factor=params.get('df', 0.95))
     )
 
 
-def create_statistical_softmax_qlearner(agent_id, temperature=2.0, **kwargs):
+def create_statistical_softmax_qlearner(agent_id, params=None, **kwargs):
     """Create a Q-learner with both statistical state and softmax action"""
+    if params is None:
+        params = SOFTMAX_PARAMS
     return ModularQLearner(
         agent_id,
         StatisticalSummaryStrategy(),
-        SoftmaxStrategy(temperature=temperature),
-        StandardQLearning(learning_rate=0.1, discount_factor=0.9)
+        SoftmaxStrategy(temperature=params.get('temperature', 2.0),
+                       min_temperature=params.get('min_temperature', 0.01),
+                       decay_rate=params.get('decay_rate', 0.98)),
+        StandardQLearning(learning_rate=params.get('lr', 0.1), 
+                         discount_factor=params.get('df', 0.95))
     )
 
 

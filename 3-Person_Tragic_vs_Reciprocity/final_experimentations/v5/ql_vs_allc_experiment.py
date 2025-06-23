@@ -26,26 +26,10 @@ def create_vanilla_qlearning_agent(agent_id, game_type):
     """Create a vanilla Q-learning agent with standard parameters"""
     
     if game_type == "pairwise":
-        # For pairwise, use the adaptive learner but with fixed parameters (no adaptation)
-        agent = PairwiseAdaptiveQLearner(
-            agent_id=agent_id,
-            initial_lr=VANILLA_PARAMS['lr'],
-            initial_epsilon=VANILLA_PARAMS['eps'],
-            discount_factor=VANILLA_PARAMS['df'],
-            adaptation_rate=0.0,  # No adaptation for vanilla
-            epsilon_decay=0.0,    # No epsilon decay for vanilla
-            min_epsilon=VANILLA_PARAMS['eps']  # Keep epsilon constant
-        )
+        # For pairwise, use the adaptive learner with vanilla params
+        agent = PairwiseAdaptiveQLearner(agent_id, VANILLA_PARAMS)
     else:  # neighborhood
-        agent = NeighborhoodAdaptiveQLearner(
-            agent_id=agent_id,
-            initial_lr=VANILLA_PARAMS['lr'],
-            initial_epsilon=VANILLA_PARAMS['eps'],
-            discount_factor=VANILLA_PARAMS['df'],
-            adaptation_rate=0.0,  # No adaptation for vanilla
-            epsilon_decay=0.0,    # No epsilon decay for vanilla
-            min_epsilon=VANILLA_PARAMS['eps']  # Keep epsilon constant
-        )
+        agent = NeighborhoodAdaptiveQLearner(agent_id, VANILLA_PARAMS)
     
     return agent
 

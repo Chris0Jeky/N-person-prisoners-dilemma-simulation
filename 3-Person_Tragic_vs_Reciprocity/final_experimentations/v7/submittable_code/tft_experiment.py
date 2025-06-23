@@ -550,12 +550,13 @@ def create_df_comparison_plots(all_results):
         ax.set_xlabel('Round')
         ax.set_ylabel('Cooperation Rate')
         ax.set_ylim(-0.05, 1.05)
-        ax.legend()
+        ax.legend(loc='best', framealpha=0.9)
         ax.grid(True, alpha=0.3)
     
     plt.tight_layout()
     plt.savefig(os.path.join(OUTPUT_DIR, 'discount_factor_comparison.png'), dpi=150, bbox_inches='tight')
     plt.close()
+    print("Updated discount factor comparison plot saved!")
 
 if __name__ == "__main__":
     main()

@@ -266,6 +266,152 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         self.last_neighborhood_context = None
 
 
+class HystereticQLearner(BaseAgent):
+    """
+    Hysteretic Q-Learning agent that uses different learning rates for positive and negative updates.
+    Uses higher learning rate (lr) for positive updates and lower rate (beta) for negative updates.
+    This creates an optimistic bias that can lead to better cooperation.
+    """
+    def __init__(self, agent_id, params, **kwargs):
+        super().__init__(agent_id, "Hysteretic")
+        self.params = params
+        self.reset()
+
+    def _get_state(self, opponent_id):
+        if opponent_id not in self.histories:
+            self.histories[opponent_id] = self._make_history_deque()
+        history = self.histories[opponent_id]
+        if len(history) < 2: return "start"
+        return str(tuple(history))
+
+    def _make_q_dict(self):
+        return {'cooperate': 0.0, 'defect': 0.0}
+    
+    def _make_history_deque(self):
+        return deque(maxlen=2)
+
+    def choose_pairwise_action(self, opponent_id):
+        state = self._get_state(opponent_id)
+        # Initialize if needed
+        if opponent_id not in self.q_tables:
+            self.q_tables[opponent_id] = {}
+        
+        q_table = self.q_tables[opponent_id]
+        epsilon = self.params.get('eps', 0.1)
+        
+        # Initialize state if needed
+        if state not in q_table:
+            q_table[state] = self._make_q_dict()
+            
+        if random.random() < epsilon:
+            action = random.choice(['cooperate', 'defect'])
+        else:
+            action = 'cooperate' if q_table[state]['cooperate'] >= q_table[state]['defect'] else 'defect'
+        self.last_contexts[opponent_id] = {'state': state, 'action': action}
+        return COOPERATE if action == 'cooperate' else DEFECT
+
+    def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
+        self.total_score += reward
+        context = self.last_contexts.get(opponent_id)
+        if not context: return
+        
+        # Initialize if needed
+        if opponent_id not in self.histories:
+            self.histories[opponent_id] = self._make_history_deque()
+        
+        self.histories[opponent_id].append((my_move, opponent_move))
+        next_state = self._get_state(opponent_id)
+        q_table = self.q_tables[opponent_id]
+        
+        # Initialize next state if needed
+        if next_state not in q_table:
+            q_table[next_state] = self._make_q_dict()
+            
+        # Hysteretic Q-learning update
+        current_q = q_table[context['state']][context['action']]
+        next_max_q = max(q_table[next_state].values())
+        df = self.params.get('df', 0.9)
+        target_q = reward + df * next_max_q
+        delta = target_q - current_q
+        
+        # Use different learning rates for positive and negative updates
+        if delta >= 0:
+            # Good news: use normal learning rate
+            lr = self.params.get('lr', 0.1)
+            q_table[context['state']][context['action']] = current_q + lr * delta
+        else:
+            # Bad news: use beta (lower learning rate)
+            beta = self.params.get('beta', 0.01)
+            q_table[context['state']][context['action']] = current_q + beta * delta
+
+    def choose_neighborhood_action(self, coop_ratio):
+        """Choose action for neighborhood game based on cooperation ratio"""
+        state = self._get_neighborhood_state(coop_ratio)
+        
+        # Initialize neighborhood state if needed
+        if state not in self.neighborhood_q_table:
+            self.neighborhood_q_table[state] = self._make_q_dict()
+        
+        epsilon = self.params.get('eps', 0.1)
+        if random.random() < epsilon:
+            action = random.choice(['cooperate', 'defect'])
+        else:
+            action = 'cooperate' if self.neighborhood_q_table[state]['cooperate'] >= self.neighborhood_q_table[state]['defect'] else 'defect'
+        
+        self.last_neighborhood_context = {'state': state, 'action': action}
+        return COOPERATE if action == 'cooperate' else DEFECT
+
+    def record_neighborhood_outcome(self, coop_ratio, reward):
+        """Record outcome for neighborhood game with hysteretic learning"""
+        self.total_score += reward
+        if not hasattr(self, 'last_neighborhood_context') or not self.last_neighborhood_context:
+            return
+            
+        next_state = self._get_neighborhood_state(coop_ratio)
+        
+        # Initialize next state if needed
+        if next_state not in self.neighborhood_q_table:
+            self.neighborhood_q_table[next_state] = self._make_q_dict()
+        
+        # Hysteretic Q-learning update
+        current_q = self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']]
+        next_max_q = max(self.neighborhood_q_table[next_state].values())
+        df = self.params.get('df', 0.9)
+        target_q = reward + df * next_max_q
+        delta = target_q - current_q
+        
+        # Use different learning rates for positive and negative updates
+        if delta >= 0:
+            # Good news: use normal learning rate
+            lr = self.params.get('lr', 0.1)
+            self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']] = current_q + lr * delta
+        else:
+            # Bad news: use beta (lower learning rate)
+            beta = self.params.get('beta', 0.01)
+            self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']] = current_q + beta * delta
+
+    def _get_neighborhood_state(self, coop_ratio):
+        """Get state representation for neighborhood game"""
+        if coop_ratio is None:
+            return 'start'
+        if coop_ratio <= 0.33:
+            return 'low'
+        elif coop_ratio <= 0.67:
+            return 'medium'
+        else:
+            return 'high'
+
+    def reset(self):
+        super().reset()
+        # Use regular dicts instead of defaultdicts for picklability
+        self.q_tables = {}
+        self.histories = {}
+        self.last_contexts = {}
+        # Initialize neighborhood attributes
+        self.neighborhood_q_table = {}
+        self.last_neighborhood_context = None
+
+
 class NeighborhoodAdaptiveQLearner(BaseAgent):
     def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "NeighborhoodAdaptive")

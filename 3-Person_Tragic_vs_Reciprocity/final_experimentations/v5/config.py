@@ -34,7 +34,7 @@ ADAPTIVE_PARAMS = {
     'adaptation_factor': 1.00,
 
     # How many recent rounds to consider for performance trends
-    'reward_window_size': 1,
+    'reward_window_size': 2,
 
     # Discount factor remains fixed
     'df': 0.9,

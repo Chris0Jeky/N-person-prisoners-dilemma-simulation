@@ -443,13 +443,17 @@ def create_statistical_softmax_qlearner(agent_id, params=None, **kwargs):
     )
 
 
-def create_hysteretic_statistical_qlearner(agent_id, **kwargs):
+def create_hysteretic_statistical_qlearner(agent_id, params=None, **kwargs):
     """Create a hysteretic Q-learner with statistical state representation"""
+    if params is None:
+        params = HYSTERETIC_PARAMS
     return ModularQLearner(
         agent_id,
         StatisticalSummaryStrategy(),
-        EpsilonGreedyStrategy(epsilon=0.1),
-        HystereticQLearning(lr_positive=0.1, lr_negative=0.01, discount_factor=0.9)
+        EpsilonGreedyStrategy(epsilon=params.get('eps', 0.1)),
+        HystereticQLearning(lr_positive=params.get('lr', 0.1), 
+                           lr_negative=params.get('beta', 0.01), 
+                           discount_factor=params.get('df', 0.95))
     )
 
 

@@ -75,15 +75,38 @@ def run_nperson_simulation(agents, num_rounds):
     return history
 
 
-def run_experiment_set(agents, num_rounds, num_runs):
+def run_single_pairwise(args):
+    """Helper function for parallel pairwise simulation"""
+    agents, num_rounds = args
+    return run_pairwise_tournament([type(a)(**a.__dict__) for a in agents], num_rounds)
+
+def run_single_nperson(args):
+    """Helper function for parallel n-person simulation"""
+    agents, num_rounds = args
+    return run_nperson_simulation([type(a)(**a.__dict__) for a in agents], num_rounds)
+
+def run_experiment_set(agents, num_rounds, num_runs, use_parallel=True):
     """Runs both pairwise and neighborhood simulations for a given agent configuration."""
-    # Pairwise simulations
-    p_runs = [run_pairwise_tournament([type(a)(**a.__dict__) for a in agents], num_rounds) for _ in range(num_runs)]
+    if use_parallel:
+        # Determine number of processes (leave 1 CPU free for system)
+        n_processes = max(1, cpu_count() - 1)
+        
+        with Pool(processes=n_processes) as pool:
+            # Pairwise simulations
+            p_args = [(agents, num_rounds) for _ in range(num_runs)]
+            p_runs = pool.map(run_single_pairwise, p_args)
+            
+            # Neighborhood simulations
+            n_args = [(agents, num_rounds) for _ in range(num_runs)]
+            n_runs = pool.map(run_single_nperson, n_args)
+    else:
+        # Original sequential version
+        p_runs = [run_pairwise_tournament([type(a)(**a.__dict__) for a in agents], num_rounds) for _ in range(num_runs)]
+        n_runs = [run_nperson_simulation([type(a)(**a.__dict__) for a in agents], num_rounds) for _ in range(num_runs)]
+    
+    # Aggregate results (same as before)
     p_agg = {aid: {m: np.mean([r[aid][m] for r in p_runs if aid in r], axis=0) for m in ['coop_rate', 'score']} 
              for aid in p_runs[0]}
-    
-    # Neighborhood simulations  
-    n_runs = [run_nperson_simulation([type(a)(**a.__dict__) for a in agents], num_rounds) for _ in range(num_runs)]
     n_agg = {aid: {m: np.mean([r[aid][m] for r in n_runs if aid in r], axis=0) for m in ['coop_rate', 'score']} 
              for aid in n_runs[0]}
     

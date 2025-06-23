@@ -1,8 +1,14 @@
 # config.py
 
 """
-Centralized configuration for Q-learning agent parameters.
+Centralized configuration for Q-learning agent parameters and simulation settings.
 """
+
+# Simulation parameters
+SIMULATION_CONFIG = {
+    'num_rounds': 1000,  # Number of rounds per simulation
+    'num_runs': 20,      # Number of runs to average over
+}
 
 # Parameters for a standard, non-adaptive Q-learning agent.
 # Serves as the stable baseline for comparison.

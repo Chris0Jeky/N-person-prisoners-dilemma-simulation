@@ -171,13 +171,15 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
         else:
             self.num_defections += 1
         
-        # Update opponent history
+        # Update opponent history BEFORE getting the next state
+        # This is crucial - the next state depends on the opponent's current move
         self.opponent_last_moves[opponent_id] = opponent_actual_move
         
         # Update Q-value
         if opponent_id in self.pairwise_last_states:
             last_state = self.pairwise_last_states[opponent_id]
             last_action = self.pairwise_last_actions[opponent_id]
+            # Now get the next state AFTER updating opponent history
             next_state = self._get_state_pairwise(opponent_id)
             self.update_q_value(last_state, last_action, my_payoff, next_state)
 

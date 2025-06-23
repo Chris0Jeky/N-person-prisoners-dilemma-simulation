@@ -52,16 +52,18 @@ class StaticAgent(BaseAgent):
         elif self.strategy_name == "Random":
             intended = random.choice([COOPERATE, DEFECT])
         elif self.strategy_name == "TFT" or self.strategy_name == "TFT-E":
-            # TFT in neighborhood: cooperate if majority cooperated last round
+            # TFT in neighborhood: probabilistic cooperation based on cooperation ratio
             if coop_ratio is None:
-                intended = COOPERATE
+                intended = COOPERATE  # Cooperate on first round
             else:
-                intended = COOPERATE if coop_ratio >= 0.5 else DEFECT
+                # Cooperate with probability equal to cooperation ratio
+                intended = COOPERATE if random.random() < coop_ratio else DEFECT
         else:  # Default TFT
             if coop_ratio is None:
                 intended = COOPERATE
             else:
-                intended = COOPERATE if coop_ratio >= 0.5 else DEFECT
+                # Probabilistic cooperation based on cooperation ratio
+                intended = COOPERATE if random.random() < coop_ratio else DEFECT
         
         return self._apply_error(intended)
 

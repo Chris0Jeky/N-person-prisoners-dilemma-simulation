@@ -72,6 +72,9 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
         # For tracking pairwise states per opponent
         self.pairwise_last_states = {}
         self.pairwise_last_actions = {}
+        
+        # Override parent's epsilon with our enhanced epsilon management
+        self.epsilon = self.initial_epsilon
             
     def _get_state_neighborhood(self, coop_ratio):
         """
@@ -110,6 +113,8 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
     def choose_action(self, prev_round_overall_coop_ratio, current_round_num):
         """Choose action for neighborhood mode."""
         state = self._get_state_neighborhood(prev_round_overall_coop_ratio)
+        
+        # Use the parent's Q-table for neighborhood mode (this is fine)
         action = self._choose_action_epsilon_greedy(state)
         
         # Store state and action for the next Q-update
@@ -245,7 +250,14 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
 
     def reset(self):
         """Resets agent for a new run and decays epsilon."""
-        super().reset()  # Call the parent's reset method
+        # Don't call super().reset() as it might reset things we don't want
+        self.total_score = 0
+        self.num_cooperations = 0
+        self.num_defections = 0
+        self.last_state = None
+        self.last_action = None
+        self.last_coop_ratio = None
+        
         self.decay_epsilon()  # Decay epsilon after each full run/episode
         
         # Clear memory buffer if it exists
@@ -256,6 +268,11 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
         self.pairwise_last_states = {}
         self.pairwise_last_actions = {}
         # Note: We do NOT clear pairwise_q_tables to allow learning across episodes
+    
+    def reset_for_new_tournament(self):
+        """Reset for pairwise mode - similar to reset but clears opponent history."""
+        self.reset()
+        self.opponent_last_moves = {}  # Clear opponent history
 
 
 class EnhancedQLearningAgent(CorrectedEnhancedQLearningAgent):

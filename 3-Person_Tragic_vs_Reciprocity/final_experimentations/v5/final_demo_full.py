@@ -134,6 +134,7 @@ def plot_scenario_comparison(results, title, save_path, num_rounds=None):
         "Vanilla": "#1f77b4", 
         "Adaptive": "#ff7f0e", 
         "Hysteretic": "#2ca02c",
+        "Enhanced": "#e377c2",
         "Adaptive+Stat": "#d62728",
         "Adaptive+Soft": "#9467bd",
         "Adaptive+StatSoft": "#8c564b"

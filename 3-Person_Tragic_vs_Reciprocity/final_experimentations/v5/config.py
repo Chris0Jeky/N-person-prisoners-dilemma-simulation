@@ -48,3 +48,19 @@ HYSTERETIC_PARAMS = {
     'df': 0.9,      # Discount factor
     'eps': 0.1,     # Exploration rate
 }
+
+# Parameters for Modular Q-learning agents
+MODULAR_BASE_PARAMS = {
+    'lr': 0.1,      # Learning rate
+    'df': 0.9,      # Discount factor
+    'eps': 0.1,     # Epsilon for epsilon-greedy
+}
+
+# Softmax specific parameters
+SOFTMAX_PARAMS = {
+    'temperature': 2.0,          # Initial temperature
+    'min_temperature': 0.1,      # Minimum temperature
+    'decay_rate': 0.995,         # Temperature decay rate
+    'lr': 0.1,                   # Learning rate
+    'df': 0.9,                   # Discount factor
+}

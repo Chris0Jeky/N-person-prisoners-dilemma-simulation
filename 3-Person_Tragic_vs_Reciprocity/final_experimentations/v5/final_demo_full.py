@@ -193,8 +193,18 @@ def create_heatmap(all_results, save_path):
     heatmap_data = []
     scenario_names = []
     
+    # Get all agent types present in results
+    all_agent_types = set()
+    for results in all_results.values():
+        all_agent_types.update(results.keys())
+    
+    # Use Vanilla as baseline if available, otherwise skip heatmap
+    if 'Vanilla' not in all_agent_types:
+        print("No Vanilla baseline found for heatmap comparison")
+        return
+    
     for scenario_name, results in sorted(all_results.items()):
-        if 'Vanilla' not in results or 'Adaptive' not in results:
+        if 'Vanilla' not in results:
             continue
             
         v_p, v_n = results['Vanilla']

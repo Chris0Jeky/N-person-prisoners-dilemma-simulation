@@ -73,5 +73,6 @@ ENHANCED_PARAMS = {
     'epsilon_decay': 0.99,      # Epsilon decay rate per episode
     'epsilon_min': 0.01,         # Minimum epsilon
     'state_type': 'memory_enhanced',       # State representation type
+    'memory_length': 50,         # Number of past actions to remember
     'exploration_rate': 0.0,     # Additional random exploration
 }

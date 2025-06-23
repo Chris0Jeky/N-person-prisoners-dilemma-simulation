@@ -64,3 +64,14 @@ SOFTMAX_PARAMS = {
     'lr': 0.1,                   # Learning rate
     'df': 0.95,                   # Discount factor
 }
+
+# Enhanced Q-Learning parameters (with epsilon decay)
+ENHANCED_PARAMS = {
+    'learning_rate': 0.1,        # Learning rate
+    'discount_factor': 0.9,      # Discount factor  
+    'epsilon': 0.3,              # Starting epsilon (higher for initial exploration)
+    'epsilon_decay': 0.999,      # Epsilon decay rate per episode
+    'epsilon_min': 0.01,         # Minimum epsilon
+    'state_type': 'basic',       # State representation type
+    'exploration_rate': 0.0,     # Additional random exploration
+}

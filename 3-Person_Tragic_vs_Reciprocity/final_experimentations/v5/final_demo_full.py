@@ -7,8 +7,8 @@ from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 import time
 
-from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner
-from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, SIMULATION_CONFIG
+from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner, HystereticQLearner
+from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, SIMULATION_CONFIG
 from save_config import save_detailed_config
 
 # --- Payoff Logic ---

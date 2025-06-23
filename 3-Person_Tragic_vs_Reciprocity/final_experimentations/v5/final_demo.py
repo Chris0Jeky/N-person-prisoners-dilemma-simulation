@@ -211,7 +211,7 @@ if __name__ == "__main__":
 
         # Plot individual comparison for this scenario
         plot_path = os.path.join(OUTPUT_DIR, f"comparison_2QL_{scenario_name}.png")
-        plot_scenario_comparison(scenario_results, f"2 QL Agents {scenario_name}", plot_path)
+        plot_scenario_comparison(scenario_results, f"2 QL Agents {scenario_name}", plot_path, NUM_ROUNDS)
 
     # --- Generate Final Heatmap ---
     heatmap_path = os.path.join(OUTPUT_DIR, "summary_heatmap.png")

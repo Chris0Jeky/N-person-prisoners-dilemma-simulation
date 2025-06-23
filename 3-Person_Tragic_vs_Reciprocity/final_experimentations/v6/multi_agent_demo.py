@@ -340,6 +340,62 @@ def plot_multi_agent_comparison(results, title, save_path, num_rounds=None):
     plt.close(fig)
 
 
+def create_master_summary_csv(all_results, output_dir):
+    """Create a master CSV summarizing all scenarios"""
+    csv_path = os.path.join(output_dir, "master_summary.csv")
+    
+    with open(csv_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        
+        # Header
+        writer.writerow([
+            'scenario', 'total_agents', 'num_ql', 'ql_type', 'opponent_type',
+            'pairwise_avg_coop', 'pairwise_final_coop', 'pairwise_final_score',
+            'neighborhood_avg_coop', 'neighborhood_final_coop', 'neighborhood_final_score'
+        ])
+        
+        # Process each scenario
+        for scenario_name, (p_data, n_data) in sorted(all_results.items()):
+            # Parse scenario details
+            parts = scenario_name.split('_')
+            total_agents = int(parts[0])
+            
+            # Determine scenario type and details
+            if 'AllQL' in scenario_name:
+                num_ql = total_agents
+                ql_type = parts[-1]  # Last part should be QL type
+                opponent_type = 'None'
+            elif 'MixedQL' in scenario_name:
+                # Extract numbers from mixed scenario name
+                mixed_parts = scenario_name.split('_')[-1]  # e.g., "2v3h"
+                num_ql = total_agents
+                ql_type = 'Mixed'
+                opponent_type = 'Mixed_QL'
+            else:
+                num_ql = int(parts[1].replace('QL', ''))
+                ql_type = parts[2]  # Vanilla or Hysteretic
+                opponent_type = parts[-1]
+            
+            # Find QL agents
+            ql_agents = [aid for aid in p_data.keys() if 'QL' in aid]
+            
+            if ql_agents:
+                # Calculate metrics
+                p_avg_coop = np.mean([np.mean(p_data[aid]['coop_rate']) for aid in ql_agents])
+                p_final_coop = np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in ql_agents])
+                p_final_score = np.mean([p_data[aid]['score'][-1] for aid in ql_agents])
+                
+                n_avg_coop = np.mean([np.mean(n_data[aid]['coop_rate']) for aid in ql_agents])
+                n_final_coop = np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in ql_agents])
+                n_final_score = np.mean([n_data[aid]['score'][-1] for aid in ql_agents])
+                
+                writer.writerow([
+                    scenario_name, total_agents, num_ql, ql_type, opponent_type,
+                    p_avg_coop, p_final_coop, p_final_score,
+                    n_avg_coop, n_final_coop, n_final_score
+                ])
+
+
 def create_multi_agent_summary(all_results, output_dir):
     """Create summary of multi-agent experiments"""
     summary_path = os.path.join(output_dir, "multi_agent_summary.txt")

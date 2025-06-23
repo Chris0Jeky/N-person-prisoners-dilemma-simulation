@@ -40,9 +40,9 @@ NUM_RUNS = 25
 OUTPUT_DIR = "tft_experiment_results"
 
 # Q-learner configurations with different discount factors
-VANILLA_DF_06 = {
+VANILLA_DF_04 = {
     'lr': 0.08,
-    'df': 0.6,
+    'df': 0.4,
     'eps': 0.1,
 }
 
@@ -52,7 +52,7 @@ VANILLA_DF_095 = {
     'eps': 0.1,
 }
 
-ADAPTIVE_DF_06 = {
+ADAPTIVE_DF_04 = {
     'initial_lr': 0.1,
     'initial_eps': 0.15,
     'min_lr': 0.03,
@@ -61,7 +61,7 @@ ADAPTIVE_DF_06 = {
     'max_eps': 0.15,
     'adaptation_factor': 1.08,
     'reward_window_size': 75,
-    'df': 0.6,
+    'df': 0.4,
 }
 
 ADAPTIVE_DF_095 = {
@@ -308,9 +308,9 @@ def main():
     # Define all scenarios
     scenarios = {
         # 1 QL vs 2 TFT scenarios
-        "1_Vanilla_DF06_vs_2_TFT": {
+        "1_Vanilla_DF04_vs_2_TFT": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Vanilla_QL_DF06", VANILLA_DF_06),
+                PairwiseAdaptiveQLearner("Vanilla_QL_DF04", VANILLA_DF_04),
                 StaticAgent("TFT_1", "TFT", 0.0),
                 StaticAgent("TFT_2", "TFT", 0.0)
             ]
@@ -322,9 +322,9 @@ def main():
                 StaticAgent("TFT_2", "TFT", 0.0)
             ]
         },
-        "1_Adaptive_DF06_vs_2_TFT": {
+        "1_Adaptive_DF04_vs_2_TFT": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Adaptive_QL_DF06", ADAPTIVE_DF_06),
+                PairwiseAdaptiveQLearner("Adaptive_QL_DF04", ADAPTIVE_DF_04),
                 StaticAgent("TFT_1", "TFT", 0.0),
                 StaticAgent("TFT_2", "TFT", 0.0)
             ]
@@ -338,9 +338,9 @@ def main():
         },
         
         # 1 QL vs 2 TFT-E scenarios
-        "1_Vanilla_DF06_vs_2_TFT-E": {
+        "1_Vanilla_DF04_vs_2_TFT-E": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Vanilla_QL_DF06", VANILLA_DF_06),
+                PairwiseAdaptiveQLearner("Vanilla_QL_DF04", VANILLA_DF_04),
                 StaticAgent("TFT-E_1", "TFT-E", 0.1),
                 StaticAgent("TFT-E_2", "TFT-E", 0.1)
             ]
@@ -352,9 +352,9 @@ def main():
                 StaticAgent("TFT-E_2", "TFT-E", 0.1)
             ]
         },
-        "1_Adaptive_DF06_vs_2_TFT-E": {
+        "1_Adaptive_DF04_vs_2_TFT-E": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Adaptive_QL_DF06", ADAPTIVE_DF_06),
+                PairwiseAdaptiveQLearner("Adaptive_QL_DF04", ADAPTIVE_DF_04),
                 StaticAgent("TFT-E_1", "TFT-E", 0.1),
                 StaticAgent("TFT-E_2", "TFT-E", 0.1)
             ]
@@ -368,10 +368,10 @@ def main():
         },
         
         # 2 QL vs 1 TFT scenarios
-        "2_Vanilla_DF06_vs_1_TFT": {
+        "2_Vanilla_DF04_vs_1_TFT": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Vanilla_QL1_DF06", VANILLA_DF_06),
-                PairwiseAdaptiveQLearner("Vanilla_QL2_DF06", VANILLA_DF_06),
+                PairwiseAdaptiveQLearner("Vanilla_QL1_DF04", VANILLA_DF_04),
+                PairwiseAdaptiveQLearner("Vanilla_QL2_DF04", VANILLA_DF_04),
                 StaticAgent("TFT", "TFT", 0.0)
             ]
         },
@@ -382,10 +382,10 @@ def main():
                 StaticAgent("TFT", "TFT", 0.0)
             ]
         },
-        "2_Adaptive_DF06_vs_1_TFT": {
+        "2_Adaptive_DF04_vs_1_TFT": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Adaptive_QL1_DF06", ADAPTIVE_DF_06),
-                PairwiseAdaptiveQLearner("Adaptive_QL2_DF06", ADAPTIVE_DF_06),
+                PairwiseAdaptiveQLearner("Adaptive_QL1_DF04", ADAPTIVE_DF_04),
+                PairwiseAdaptiveQLearner("Adaptive_QL2_DF04", ADAPTIVE_DF_04),
                 StaticAgent("TFT", "TFT", 0.0)
             ]
         },
@@ -398,10 +398,10 @@ def main():
         },
         
         # 2 QL vs 1 TFT-E scenarios
-        "2_Vanilla_DF06_vs_1_TFT-E": {
+        "2_Vanilla_DF04_vs_1_TFT-E": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Vanilla_QL1_DF06", VANILLA_DF_06),
-                PairwiseAdaptiveQLearner("Vanilla_QL2_DF06", VANILLA_DF_06),
+                PairwiseAdaptiveQLearner("Vanilla_QL1_DF04", VANILLA_DF_04),
+                PairwiseAdaptiveQLearner("Vanilla_QL2_DF04", VANILLA_DF_04),
                 StaticAgent("TFT-E", "TFT-E", 0.1)
             ]
         },
@@ -412,10 +412,10 @@ def main():
                 StaticAgent("TFT-E", "TFT-E", 0.1)
             ]
         },
-        "2_Adaptive_DF06_vs_1_TFT-E": {
+        "2_Adaptive_DF04_vs_1_TFT-E": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Adaptive_QL1_DF06", ADAPTIVE_DF_06),
-                PairwiseAdaptiveQLearner("Adaptive_QL2_DF06", ADAPTIVE_DF_06),
+                PairwiseAdaptiveQLearner("Adaptive_QL1_DF04", ADAPTIVE_DF_04),
+                PairwiseAdaptiveQLearner("Adaptive_QL2_DF04", ADAPTIVE_DF_04),
                 StaticAgent("TFT-E", "TFT-E", 0.1)
             ]
         },
@@ -481,12 +481,12 @@ def create_df_comparison_plots(all_results):
     fig.suptitle('Effect of Discount Factor on Q-Learning Performance', fontsize=16)
     
     # Vanilla QL comparison
-    scenarios_vanilla = ["1_Vanilla_DF06_vs_2_TFT", "1_Vanilla_DF095_vs_2_TFT",
-                        "1_Vanilla_DF06_vs_2_TFT-E", "1_Vanilla_DF095_vs_2_TFT-E"]
+    scenarios_vanilla = ["1_Vanilla_DF04_vs_2_TFT", "1_Vanilla_DF095_vs_2_TFT",
+                        "1_Vanilla_DF04_vs_2_TFT-E", "1_Vanilla_DF095_vs_2_TFT-E"]
     
     # Adaptive QL comparison
-    scenarios_adaptive = ["1_Adaptive_DF06_vs_2_TFT", "1_Adaptive_DF095_vs_2_TFT",
-                         "1_Adaptive_DF06_vs_2_TFT-E", "1_Adaptive_DF095_vs_2_TFT-E"]
+    scenarios_adaptive = ["1_Adaptive_DF04_vs_2_TFT", "1_Adaptive_DF095_vs_2_TFT",
+                         "1_Adaptive_DF04_vs_2_TFT-E", "1_Adaptive_DF095_vs_2_TFT-E"]
     
     # Plot comparisons
     for ax_idx, (scenarios, title_prefix) in enumerate([(scenarios_vanilla, "Vanilla"), 
@@ -499,9 +499,9 @@ def create_df_comparison_plots(all_results):
                 ql_agent = [aid for aid in p_data.keys() if 'QL' in aid][0]
                 
                 # Determine line style and label
-                if 'DF06' in scenario:
+                if 'DF04' in scenario:
                     ls = '--'
-                    df_label = 'DF=0.6'
+                    df_label = 'DF=0.4'
                 else:
                     ls = '-'
                     df_label = 'DF=0.95'

@@ -134,7 +134,8 @@ def plot_scenario_comparison(results, title, save_path, num_rounds=None):
         "Adaptive": "#ff7f0e", 
         "Hysteretic": "#2ca02c",
         "Adaptive+Stat": "#d62728",
-        "Adaptive+Soft": "#9467bd"
+        "Adaptive+Soft": "#9467bd",
+        "Adaptive+StatSoft": "#8c564b"
     }
     
     # Determine smoothing window based on number of rounds
@@ -378,9 +379,10 @@ if __name__ == "__main__":
     }
     
     # Optional: Add enhanced adaptive agents (uncomment to include -- comment to exclude)
-    from modular_agents import create_adaptive_statistical, create_adaptive_softmax
+    from modular_agents import create_adaptive_statistical, create_adaptive_softmax, create_adaptive_statistical_softmax
     ql_configs["Adaptive+Stat"] = {"class": create_adaptive_statistical, "params": ADAPTIVE_PARAMS}
     ql_configs["Adaptive+Soft"] = {"class": create_adaptive_softmax, "params": ADAPTIVE_PARAMS}
+    ql_configs["Adaptive+StatSoft"] = {"class": create_adaptive_statistical_softmax, "params": ADAPTIVE_PARAMS}
     
     all_scenario_results = {}
     

@@ -86,27 +86,58 @@ def run_experiment_set(config, opponents, num_rounds, num_runs):
     return p_agg, n_agg
 
 
-def plot_scenario_comparison(results, title, save_path):
+def smooth_data(data, window_size=50):
+    """Apply rolling average to smooth data"""
+    if len(data) < window_size:
+        window_size = max(1, len(data) // 10)
+    
+    # Use pandas for efficient rolling average
+    series = pd.Series(data)
+    smoothed = series.rolling(window=window_size, center=True, min_periods=1).mean()
+    return smoothed.values
+
+def plot_scenario_comparison(results, title, save_path, num_rounds=None):
     """Generates a 4-panel plot comparing Vanilla vs. Adaptive for one scenario."""
     fig, axes = plt.subplots(2, 2, figsize=(20, 15))
     fig.suptitle(f"Comparison: {title}", fontsize=22)
-    colors = {"Vanilla": "blue", "Adaptive": "green"}
+    colors = {"Vanilla": "#1f77b4", "Adaptive": "#ff7f0e"}
+    
+    # Determine smoothing window based on number of rounds
+    if num_rounds is None:
+        num_rounds = SIMULATION_CONFIG['num_rounds']
+    smooth_window = max(50, num_rounds // 100)  # At least 50, or 1% of total rounds
 
     for name, data in results.items():
         p_data, n_data = data
         ql_id = f"{name}_QL_1"
-        axes[0, 0].plot(p_data[ql_id]['coop_rate'], label=name, color=colors[name])
-        axes[0, 1].plot(p_data[ql_id]['score'], label=name, color=colors[name])
-        axes[1, 0].plot(n_data[ql_id]['coop_rate'], label=name, color=colors[name])
-        axes[1, 1].plot(n_data[ql_id]['score'], label=name, color=colors[name])
+        
+        # Apply smoothing to cooperation rates
+        p_coop_smooth = smooth_data(p_data[ql_id]['coop_rate'], smooth_window)
+        n_coop_smooth = smooth_data(n_data[ql_id]['coop_rate'], smooth_window)
+        
+        # Plot raw data with low alpha and smoothed data with high alpha
+        axes[0, 0].plot(p_data[ql_id]['coop_rate'], color=colors[name], alpha=0.2, linewidth=0.5)
+        axes[0, 0].plot(p_coop_smooth, label=name, color=colors[name], linewidth=2.5)
+        
+        axes[1, 0].plot(n_data[ql_id]['coop_rate'], color=colors[name], alpha=0.2, linewidth=0.5)
+        axes[1, 0].plot(n_coop_smooth, label=name, color=colors[name], linewidth=2.5)
+        
+        # Scores don't need smoothing as they're cumulative
+        axes[0, 1].plot(p_data[ql_id]['score'], label=name, color=colors[name], linewidth=2)
+        axes[1, 1].plot(n_data[ql_id]['score'], label=name, color=colors[name], linewidth=2)
 
-    axes[0, 0].set_title('Pairwise Cooperation');
-    axes[0, 1].set_title('Pairwise Score')
-    axes[1, 0].set_title('Neighborhood Cooperation');
-    axes[1, 1].set_title('Neighborhood Score')
-    for ax in axes.flat: ax.legend(); ax.grid(True, linestyle='--'); ax.set_xlabel('Round')
-    plt.tight_layout(rect=[0, 0.03, 1, 0.95]);
-    plt.savefig(save_path);
+    axes[0, 0].set_title('Pairwise Cooperation'); axes[0, 0].set_ylabel('Cooperation Rate')
+    axes[0, 1].set_title('Pairwise Score'); axes[0, 1].set_ylabel('Cumulative Score')
+    axes[1, 0].set_title('Neighborhood Cooperation'); axes[1, 0].set_ylabel('Cooperation Rate')
+    axes[1, 1].set_title('Neighborhood Score'); axes[1, 1].set_ylabel('Cumulative Score')
+    
+    for ax in axes.flat: 
+        ax.legend()
+        ax.grid(True, linestyle='--', alpha=0.7)
+        ax.set_xlabel('Round')
+    
+    plt.tight_layout(rect=[0, 0.03, 1, 0.95])
+    plt.savefig(save_path, dpi=150)
     plt.close(fig)
 
 

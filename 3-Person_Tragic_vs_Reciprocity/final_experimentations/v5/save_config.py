@@ -17,7 +17,7 @@ def save_detailed_config(output_dir, scenario_descriptions=None):
     
     # Save human-readable version
     txt_path = os.path.join(output_dir, "simulation_config.txt")
-    with open(txt_path, 'w') as f:
+    with open(txt_path, 'w', encoding='utf-8') as f:
         f.write("="*80 + "\n")
         f.write(" "*20 + "SIMULATION CONFIGURATION REPORT\n")
         f.write("="*80 + "\n\n")
@@ -100,8 +100,8 @@ def save_detailed_config(output_dir, scenario_descriptions=None):
     if scenario_descriptions:
         config_dict["scenarios"] = scenario_descriptions
     
-    with open(json_path, 'w') as f:
-        json.dump(config_dict, f, indent=2)
+    with open(json_path, 'w', encoding='utf-8') as f:
+        json.dump(config_dict, f, indent=2, ensure_ascii=False)
     
     print(f"Configuration saved to:")
     print(f"  - {txt_path} (human-readable)")

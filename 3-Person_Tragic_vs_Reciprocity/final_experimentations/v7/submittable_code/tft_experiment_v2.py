@@ -418,6 +418,7 @@ def main():
     print("Q-LEARNING VS TFT COMPREHENSIVE EXPERIMENT V2")
     print("Vanilla QL: 8-state neighborhood (category + action)")
     print("EQL: 2-round cooperation history tuple")
+    print("Legacy QL: 2-round history with trends (up/down/stable)")
     print("=" * 80)
     
     # Create output directory

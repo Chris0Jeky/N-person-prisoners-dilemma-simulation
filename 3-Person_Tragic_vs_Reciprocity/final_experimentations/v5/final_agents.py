@@ -207,20 +207,35 @@ class PairwiseAdaptiveQLearner(BaseAgent):
             self.neighborhood_lr = min(max_lr, self.neighborhood_lr * adapt_factor)
             self.neighborhood_epsilon = min(max_eps, self.neighborhood_epsilon * adapt_factor)
 
+    def _make_q_dict(self):
+        return {'cooperate': 0.0, 'defect': 0.0}
+    
+    def _make_history_deque(self):
+        return deque(maxlen=2)
+    
+    def _make_reward_window(self):
+        return deque(maxlen=self.params.get('reward_window_size', 20))
+    
+    def _get_initial_lr(self):
+        return self.params.get('initial_lr', self.params.get('lr', 0.1))
+    
+    def _get_initial_eps(self):
+        return self.params.get('initial_eps', self.params.get('eps', 0.1))
+
     def reset(self):
         super().reset()
-        self.q_tables = defaultdict(lambda: defaultdict(lambda: {'cooperate': 0.0, 'defect': 0.0}))
-        self.histories = defaultdict(lambda: deque(maxlen=2))
-        self.reward_windows = defaultdict(lambda: deque(maxlen=self.params.get('reward_window_size', 20)))
-        self.learning_rates = defaultdict(lambda: self.params.get('initial_lr', self.params.get('lr', 0.1)))
-        self.epsilons = defaultdict(lambda: self.params.get('initial_eps', self.params.get('eps', 0.1)))
+        self.q_tables = defaultdict(lambda: defaultdict(self._make_q_dict))
+        self.histories = defaultdict(self._make_history_deque)
+        self.reward_windows = defaultdict(self._make_reward_window)
+        self.learning_rates = defaultdict(self._get_initial_lr)
+        self.epsilons = defaultdict(self._get_initial_eps)
         self.last_contexts = {}
         # Reset neighborhood-specific attributes
         if hasattr(self, 'neighborhood_q_table'):
-            self.neighborhood_q_table = defaultdict(lambda: {'cooperate': 0.0, 'defect': 0.0})
-            self.neighborhood_lr = self.params.get('initial_lr', self.params.get('lr', 0.1))
-            self.neighborhood_epsilon = self.params.get('initial_eps', self.params.get('eps', 0.1))
-            self.neighborhood_reward_window = deque(maxlen=self.params.get('reward_window_size', 20))
+            self.neighborhood_q_table = defaultdict(self._make_q_dict)
+            self.neighborhood_lr = self._get_initial_lr()
+            self.neighborhood_epsilon = self._get_initial_eps()
+            self.neighborhood_reward_window = self._make_reward_window()
             self.last_neighborhood_context = None
 
 

@@ -35,6 +35,7 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
     - Epsilon Decay: Epsilon is no longer fixed, allowing for more exploration at the start.
     - Advanced State Representation (for neighborhood mode): Optional, more granular states.
     - Memory Buffer: Can use a memory of past actions to inform the state.
+    - Separate Q-tables for each opponent in pairwise mode (critical fix)
     """
     def __init__(self, agent_id, 
                  learning_rate=0.1, 
@@ -64,6 +65,10 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
         if self.state_type == "memory_enhanced":
             self.memory = deque(maxlen=memory_length)
             
+        # CRITICAL FIX: Separate Q-tables for each opponent in pairwise mode
+        # This prevents the agent from treating all opponents as the same "system"
+        self.pairwise_q_tables = {}  # {opponent_id: {state: {action: q_value}}}
+        
         # For tracking pairwise states per opponent
         self.pairwise_last_states = {}
         self.pairwise_last_actions = {}
@@ -144,10 +149,23 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
 
     def choose_action_pairwise(self, opponent_id, current_round_in_episode):
         """
-        Choose action for pairwise mode - uses inherited logic from SimpleQLearningAgent.
+        Choose action for pairwise mode - now with proper per-opponent Q-tables.
         """
         state = self._get_state_pairwise(opponent_id)
-        action = self._choose_action_epsilon_greedy(state)
+        
+        # Initialize Q-table for this opponent if needed
+        if opponent_id not in self.pairwise_q_tables:
+            self.pairwise_q_tables[opponent_id] = {}
+        
+        # Initialize state in opponent's Q-table if needed
+        if state not in self.pairwise_q_tables[opponent_id]:
+            self.pairwise_q_tables[opponent_id][state] = {
+                'cooperate': random.uniform(-0.01, 0.01),
+                'defect': random.uniform(-0.01, 0.01)
+            }
+        
+        # Choose action using epsilon-greedy on THIS OPPONENT'S Q-table
+        action = self._choose_action_epsilon_greedy_pairwise(opponent_id, state)
         
         # Store per-opponent state/action
         self.pairwise_last_states[opponent_id] = state
@@ -163,7 +181,7 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
 
     def record_interaction(self, opponent_id, opponent_actual_move, my_payoff,
                           my_intended_move, my_actual_move, round_num_in_episode):
-        """Record interaction for pairwise mode - extends parent functionality."""
+        """Record interaction for pairwise mode - now with per-opponent Q-learning."""
         self.total_score += my_payoff
         
         if my_actual_move == PAIRWISE_COOPERATE:
@@ -175,14 +193,51 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
         # This is crucial - the next state depends on the opponent's current move
         self.opponent_last_moves[opponent_id] = opponent_actual_move
         
-        # Update Q-value
-        if opponent_id in self.pairwise_last_states:
+        # Update Q-value using opponent-specific Q-table
+        if opponent_id in self.pairwise_last_states and opponent_id in self.pairwise_q_tables:
             last_state = self.pairwise_last_states[opponent_id]
             last_action = self.pairwise_last_actions[opponent_id]
             # Now get the next state AFTER updating opponent history
             next_state = self._get_state_pairwise(opponent_id)
-            self.update_q_value(last_state, last_action, my_payoff, next_state)
+            
+            # Initialize next state in opponent's Q-table if needed
+            if next_state not in self.pairwise_q_tables[opponent_id]:
+                self.pairwise_q_tables[opponent_id][next_state] = {
+                    'cooperate': random.uniform(-0.01, 0.01),
+                    'defect': random.uniform(-0.01, 0.01)
+                }
+            
+            # Q-learning update on opponent-specific Q-table
+            self._update_pairwise_q_value(opponent_id, last_state, last_action, my_payoff, next_state)
 
+    def _choose_action_epsilon_greedy_pairwise(self, opponent_id, state):
+        """Choose action using epsilon-greedy policy for specific opponent."""
+        # Exploration
+        if random.random() < self.epsilon:
+            return random.choice(['cooperate', 'defect'])
+        
+        # Exploitation - use opponent-specific Q-values
+        q_values = self.pairwise_q_tables[opponent_id][state]
+        if q_values['cooperate'] > q_values['defect']:
+            return 'cooperate'
+        elif q_values['defect'] > q_values['cooperate']:
+            return 'defect'
+        else:
+            # Break ties randomly
+            return random.choice(['cooperate', 'defect'])
+    
+    def _update_pairwise_q_value(self, opponent_id, state, action, reward, next_state):
+        """Update Q-value for specific opponent using their Q-table."""
+        # Q(s,a) = Q(s,a) + α[r + γ max Q(s',a') - Q(s,a)]
+        current_q = self.pairwise_q_tables[opponent_id][state][action]
+        max_next_q = max(self.pairwise_q_tables[opponent_id][next_state].values())
+        
+        new_q = current_q + self.learning_rate * (
+            reward + self.discount_factor * max_next_q - current_q
+        )
+        
+        self.pairwise_q_tables[opponent_id][state][action] = new_q
+    
     def decay_epsilon(self):
         """Applies decay to epsilon."""
         self.epsilon = max(self.epsilon_min, self.epsilon * self.epsilon_decay)
@@ -196,9 +251,10 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
         if hasattr(self, 'memory'):
             self.memory.clear()
             
-        # Clear pairwise tracking
+        # Clear pairwise tracking but preserve Q-tables for learning across episodes
         self.pairwise_last_states = {}
         self.pairwise_last_actions = {}
+        # Note: We do NOT clear pairwise_q_tables to allow learning across episodes
 
 
 class EnhancedQLearningAgent(CorrectedEnhancedQLearningAgent):

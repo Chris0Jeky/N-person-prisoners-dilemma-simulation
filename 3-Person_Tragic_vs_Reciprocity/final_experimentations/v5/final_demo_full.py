@@ -352,6 +352,8 @@ if __name__ == "__main__":
                            error_rate=opp_config["error_rate"])
             ]
             scenario_results[ql_name] = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
+            elapsed = time.time() - start_time
+            print(f" done in {elapsed:.1f}s")
         
         all_scenario_results[scenario_name] = scenario_results
         plot_path = os.path.join(OUTPUT_DIR, f"{scenario_name}.png")
@@ -375,6 +377,8 @@ if __name__ == "__main__":
                            error_rate=opp_config["error_rate"])
             ]
             scenario_results[ql_name] = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
+            elapsed = time.time() - start_time
+            print(f" done in {elapsed:.1f}s")
         
         all_scenario_results[scenario_name] = scenario_results
         plot_path = os.path.join(OUTPUT_DIR, f"{scenario_name}.png")

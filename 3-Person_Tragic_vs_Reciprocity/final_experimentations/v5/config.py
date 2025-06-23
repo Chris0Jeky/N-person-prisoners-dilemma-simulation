@@ -6,7 +6,7 @@ Centralized configuration for Q-learning agent parameters and simulation setting
 
 # Simulation parameters
 SIMULATION_CONFIG = {
-    'num_rounds': 10000,  # Number of rounds per simulation
+    'num_rounds': 1000,  # Number of rounds per simulation
     'num_runs': 15,      # Number of runs to average over
 }
 
@@ -21,20 +21,20 @@ VANILLA_PARAMS = {
 # Parameters for the new, truly adaptive agent.
 ADAPTIVE_PARAMS = {
     # Initial values that will be adapted during the run
-    'initial_lr': 0.4,
-    'initial_eps': 0.2,
+    'initial_lr': 0.1,
+    'initial_eps': 0.1,
 
     # Bounds for the adaptive parameters
-    'min_lr': 0.05,
-    'max_lr': 0.5,
-    'min_eps': 0.01,
-    'max_eps': 0.4,
+    'min_lr': 0.1,
+    'max_lr': 0.1,
+    'min_eps': 0.1,
+    'max_eps': 0.1,
 
     # Controls how quickly the agent adapts. Higher value = slower change.
-    'adaptation_factor': 1.05,
+    'adaptation_factor': 1.00,
 
     # How many recent rounds to consider for performance trends
-    'reward_window_size': 50,
+    'reward_window_size': 1,
 
     # Discount factor remains fixed
     'df': 0.9,

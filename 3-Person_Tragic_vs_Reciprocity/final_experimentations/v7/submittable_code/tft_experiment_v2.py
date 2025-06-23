@@ -5,7 +5,7 @@ Tests Vanilla and EQL (Enhanced Q-Learning) against TFT agents with different di
 
 Key Differences:
 - Vanilla QL: Simple 8-state neighborhood representation (category + last_action)
-- EQL: Complex 4-round tuple representation with parameter adaptation
+- EQL: Complex 2-round tuple representation with parameter adaptation
 
 Scenarios:
 - 1 QL vs 2 TFT
@@ -244,7 +244,7 @@ def create_comparison_heatmap(all_results, save_path):
     
     # Create pivot table for heatmap
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
-    fig.suptitle('Performance Comparison Across All Scenarios\n(Vanilla=8-state, EQL=4-round history)', fontsize=16)
+    fig.suptitle('Performance Comparison Across All Scenarios\n(Vanilla=8-state, EQL=2-round history)', fontsize=16)
     
     # Cooperation rates
     pivot_coop_p = df.pivot_table(values='Pairwise_Coop', index='Agent', columns='Scenario')
@@ -298,10 +298,10 @@ def save_summary_stats(all_results):
     # Add explanation
     summary['_explanation'] = {
         'Vanilla_QL': 'Simple 8-state neighborhood representation (cooperation_category + last_action)',
-        'EQL': 'Enhanced QL with 4-round history tuple and adaptive parameters',
+        'EQL': 'Enhanced QL with 2-round history tuple and adaptive parameters',
         'State_Examples': {
             'Vanilla': ['start', 'low_0', 'low_1', 'medium_0', 'medium_1', 'high_0', 'high_1'],
-            'EQL': "Tuples like ('start', 'start', 'high', 'medium') - tracks 4-round cooperation trend"
+            'EQL': "Tuples like ('start', 'high') or ('medium', 'low') - tracks 2-round cooperation trend"
         }
     }
     
@@ -396,7 +396,7 @@ def main():
     print("=" * 80)
     print("Q-LEARNING VS TFT COMPREHENSIVE EXPERIMENT V2")
     print("Vanilla QL: 8-state neighborhood (category + action)")
-    print("EQL: 4-round cooperation history tuple")
+    print("EQL: 2-round cooperation history tuple")
     print("=" * 80)
     
     # Create output directory
@@ -569,7 +569,7 @@ def main():
     print(f"\nAll experiments complete! Results saved to '{OUTPUT_DIR}'")
     print("Key differences:")
     print("- Vanilla QL: 8 neighborhood states (3 categories × 2 actions + start)")
-    print("- EQL: 81+ neighborhood states (4-round history tuples)")
+    print("- EQL: 9+ neighborhood states (2-round history tuples)")
 
 if __name__ == "__main__":
     main()

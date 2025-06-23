@@ -9,7 +9,7 @@ import time
 
 from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner, HystereticQLearner
 from enhanced_qlearning import create_enhanced_qlearning
-from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, SIMULATION_CONFIG
+from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, ENHANCED_PARAMS, SIMULATION_CONFIG
 from save_config import save_detailed_config
 
 # --- Payoff Logic ---
@@ -379,15 +379,7 @@ if __name__ == "__main__":
         "Hysteretic": {"class": HystereticQLearner,      # New Hysteretic Q-learner
                        "params": HYSTERETIC_PARAMS},
         "Enhanced": {"class": create_enhanced_qlearning,     # Enhanced with epsilon decay
-                     "params": {
-                         "learning_rate": 0.1,
-                         "discount_factor": 0.9,
-                         "epsilon": 0.3,  # Start with higher exploration
-                         "epsilon_decay": 0.999,
-                         "epsilon_min": 0.01,
-                         "state_type": "basic",  # Use basic state by default
-                         "exploration_rate": 0.0  # No additional exploration noise
-                     }},
+                     "params": ENHANCED_PARAMS},
     }
     
     # Optional: Add enhanced adaptive agents (uncomment to include -- comment to exclude)

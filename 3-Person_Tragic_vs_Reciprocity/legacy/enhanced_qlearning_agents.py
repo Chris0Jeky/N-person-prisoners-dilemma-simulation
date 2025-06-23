@@ -22,6 +22,9 @@ from main_pairwise import PAIRWISE_COOPERATE, PAIRWISE_DEFECT
 # Import the SimpleQLearningAgent from the legacy module
 from qlearning_agents import SimpleQLearningAgent
 
+# Import the fixed implementation
+from fixed_enhanced_qlearning_agents import FixedEnhancedQLearningAgent
+
 
 class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
     """

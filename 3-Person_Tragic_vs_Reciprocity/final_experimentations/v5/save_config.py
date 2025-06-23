@@ -51,6 +51,14 @@ def save_detailed_config(output_dir, scenario_descriptions=None):
         f.write(f"Reward Window Size: {ADAPTIVE_PARAMS['reward_window_size']}\n")
         f.write(f"Discount Factor (γ): {ADAPTIVE_PARAMS['df']}\n\n")
         
+        # Hysteretic Q-learner
+        f.write("HYSTERETIC Q-LEARNER (Asymmetric Learning)\n")
+        f.write("-"*40 + "\n")
+        f.write(f"Learning Rate (α) for good news: {HYSTERETIC_PARAMS['lr']}\n")
+        f.write(f"Learning Rate (β) for bad news: {HYSTERETIC_PARAMS['beta']}\n")
+        f.write(f"Discount Factor (γ): {HYSTERETIC_PARAMS['df']}\n")
+        f.write(f"Exploration Rate (ε): {HYSTERETIC_PARAMS['eps']}\n\n")
+        
         # Scenario descriptions if provided
         if scenario_descriptions:
             f.write("SCENARIO DESCRIPTIONS\n")

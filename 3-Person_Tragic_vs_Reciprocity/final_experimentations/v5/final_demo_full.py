@@ -211,11 +211,9 @@ if __name__ == "__main__":
     
     # Define Q-learner configurations
     ql_configs = {
-        "Vanilla": {"pairwise_class": PairwiseAdaptiveQLearner, 
-                    "neighborhood_class": NeighborhoodAdaptiveQLearner,
+        "Vanilla": {"class": PairwiseAdaptiveQLearner,  # Using PairwiseAdaptiveQLearner for both modes
                     "params": VANILLA_PARAMS},
-        "Adaptive": {"pairwise_class": PairwiseAdaptiveQLearner,
-                     "neighborhood_class": NeighborhoodAdaptiveQLearner, 
+        "Adaptive": {"class": PairwiseAdaptiveQLearner,  # Using PairwiseAdaptiveQLearner for both modes
                      "params": ADAPTIVE_PARAMS},
     }
     

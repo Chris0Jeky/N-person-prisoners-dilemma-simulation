@@ -31,7 +31,7 @@ import json
 # Add parent directory to path to import modules
 sys.path.append('..')
 
-from final_agents_v2 import StaticAgent, VanillaQLearner, EnhancedQLearner
+from final_agents_v2 import StaticAgent, VanillaQLearner, EnhancedQLearner, LegacyQLearner
 from final_simulation import run_pairwise_tournament, run_nperson_simulation
 
 # Constants

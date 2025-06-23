@@ -18,7 +18,7 @@ import json
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner
-from final_simulation import Tournament
+from final_simulation import run_pairwise_tournament, run_nperson_simulation
 from config import VanillaQLearningConfig
 
 
@@ -89,13 +89,15 @@ def run_ql_vs_allc_experiment(voting_model="pairwise", num_rounds=1000, num_runs
         ]
         
         # Run tournament
-        tournament = Tournament(agents, voting_model=voting_model)
-        cooperation_history, score_history = tournament.run(num_rounds)
+        if voting_model == "pairwise":
+            history = run_pairwise_tournament(agents, num_rounds)
+        else:  # neighborhood
+            history = run_nperson_simulation(agents, num_rounds)
         
         # Store results
         for agent_id in ['QL1', 'QL2', 'AllC']:
-            all_cooperation_rates[agent_id].append(cooperation_history[agent_id])
-            all_scores[agent_id].append(score_history[agent_id])
+            all_cooperation_rates[agent_id].append(history[agent_id]['coop_rate'])
+            all_scores[agent_id].append(history[agent_id]['score'])
     
     # Convert to numpy arrays for easier manipulation
     for agent_id in ['QL1', 'QL2', 'AllC']:

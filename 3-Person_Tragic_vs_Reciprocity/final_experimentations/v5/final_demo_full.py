@@ -221,6 +221,44 @@ def create_heatmap(all_results, save_path):
     plt.close()
 
 
+def save_config_to_file(output_dir):
+    """Save all configuration parameters to a text file"""
+    config_path = os.path.join(output_dir, "simulation_config.txt")
+    
+    with open(config_path, 'w') as f:
+        f.write("="*60 + "\n")
+        f.write("SIMULATION CONFIGURATION\n")
+        f.write("="*60 + "\n\n")
+        
+        # Simulation parameters
+        f.write("SIMULATION PARAMETERS:\n")
+        f.write("-"*30 + "\n")
+        for key, value in SIMULATION_CONFIG.items():
+            f.write(f"{key}: {value}\n")
+        f.write("\n")
+        
+        # Vanilla Q-learner parameters
+        f.write("VANILLA Q-LEARNER PARAMETERS:\n")
+        f.write("-"*30 + "\n")
+        for key, value in VANILLA_PARAMS.items():
+            f.write(f"{key}: {value}\n")
+        f.write("\n")
+        
+        # Adaptive Q-learner parameters
+        f.write("ADAPTIVE Q-LEARNER PARAMETERS:\n")
+        f.write("-"*30 + "\n")
+        for key, value in ADAPTIVE_PARAMS.items():
+            f.write(f"{key}: {value}\n")
+        f.write("\n")
+        
+        # Timestamp
+        from datetime import datetime
+        f.write("="*60 + "\n")
+        f.write(f"Configuration saved at: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+        f.write("="*60 + "\n")
+    
+    print(f"Configuration saved to: {config_path}")
+
 if __name__ == "__main__":
     NUM_ROUNDS = SIMULATION_CONFIG['num_rounds']
     NUM_RUNS = SIMULATION_CONFIG['num_runs']
@@ -228,6 +266,9 @@ if __name__ == "__main__":
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
     print(f"Running simulations with {NUM_ROUNDS} rounds and {NUM_RUNS} runs per scenario")
+    
+    # Save configuration to file
+    save_config_to_file(OUTPUT_DIR)
     
     # Define opponent strategies
     opponent_configs = {

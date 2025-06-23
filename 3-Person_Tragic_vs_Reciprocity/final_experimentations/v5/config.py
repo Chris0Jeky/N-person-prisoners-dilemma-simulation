@@ -6,8 +6,8 @@ Centralized configuration for Q-learning agent parameters and simulation setting
 
 # Simulation parameters
 SIMULATION_CONFIG = {
-    'num_rounds': 10000,  # Number of rounds per simulation
-    'num_runs': 50,      # Number of runs to average over
+    'num_rounds': 100000,  # Number of rounds per simulation
+    'num_runs': 25,      # Number of runs to average over
 }
 
 # Parameters for a standard, non-adaptive Q-learning agent.
@@ -69,10 +69,10 @@ SOFTMAX_PARAMS = {
 ENHANCED_PARAMS = {
     'learning_rate': 0.1,        # Learning rate
     'discount_factor': 0.9,      # Discount factor  
-    'epsilon': 0.25,              # Starting epsilon (higher for initial exploration)
-    'epsilon_decay': 0.95,      # Epsilon decay rate per episode
-    'epsilon_min': 0.01,         # Minimum epsilon
+    'epsilon': 0.23,              # Starting epsilon (higher for initial exploration)
+    'epsilon_decay': 0.97,      # Epsilon decay rate per episode
+    'epsilon_min': 0.005,         # Minimum epsilon
     'state_type': 'memory_enhanced',       # State representation type
-    'memory_length': 50,         # Number of past actions to remember
+    'memory_length': 100,         # Number of past actions to remember
     'exploration_rate': 0.0,     # Additional random exploration
 }

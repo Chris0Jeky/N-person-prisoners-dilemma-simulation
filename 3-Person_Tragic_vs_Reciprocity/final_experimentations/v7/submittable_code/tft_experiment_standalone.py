@@ -298,6 +298,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         self.n_q_table = defaultdict(lambda: defaultdict(float))
         self.histories = {}
         self.last_coop_ratio = None
+        self.coop_ratio_history = deque(maxlen=4)  # Store last 4 cooperation ratio categories
         self.reward_history = deque(maxlen=1000)
         
         if 'initial_lr' in self.params:

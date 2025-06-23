@@ -137,6 +137,157 @@ def smooth_data(data, window_size=50):
     return smoothed.values
 
 
+def save_scenario_csv(scenario_name, p_data, n_data, output_dir, subsample_rate=100):
+    """Save detailed results for a scenario to CSV file"""
+    csv_dir = os.path.join(output_dir, "csv_results")
+    os.makedirs(csv_dir, exist_ok=True)
+    
+    # Create CSV for this scenario
+    csv_path = os.path.join(csv_dir, f"{scenario_name}.csv")
+    
+    with open(csv_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        
+        # Header
+        header = ['round', 'voting_model']
+        agent_ids = sorted(p_data.keys())
+        for aid in agent_ids:
+            header.extend([f'{aid}_coop_rate', f'{aid}_score'])
+        writer.writerow(header)
+        
+        # Get number of rounds
+        num_rounds = len(p_data[agent_ids[0]]['coop_rate'])
+        
+        # Write pairwise data
+        for round_idx in range(0, num_rounds, subsample_rate):
+            row = [round_idx + 1, 'pairwise']
+            for aid in agent_ids:
+                row.extend([
+                    p_data[aid]['coop_rate'][round_idx],
+                    p_data[aid]['score'][round_idx]
+                ])
+            writer.writerow(row)
+        
+        # Write neighborhood data
+        for round_idx in range(0, num_rounds, subsample_rate):
+            row = [round_idx + 1, 'neighborhood']
+            for aid in agent_ids:
+                row.extend([
+                    n_data[aid]['coop_rate'][round_idx],
+                    n_data[aid]['score'][round_idx]
+                ])
+            writer.writerow(row)
+    
+    # Also create a summary CSV
+    summary_csv_path = os.path.join(csv_dir, f"{scenario_name}_summary.csv")
+    with open(summary_csv_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        
+        # Header
+        writer.writerow(['agent_id', 'agent_type', 'voting_model', 'avg_coop_rate', 'final_coop_rate', 'final_score', 'avg_score_per_round'])
+        
+        # Write summary data
+        for aid in agent_ids:
+            agent_type = 'QL' if 'QL' in aid else aid.split('_')[0]
+            
+            # Pairwise
+            p_avg_coop = np.mean(p_data[aid]['coop_rate'])
+            p_final_coop = np.mean(p_data[aid]['coop_rate'][-1000:])  # Last 1000 rounds
+            p_final_score = p_data[aid]['score'][-1]
+            p_avg_score_per_round = p_final_score / num_rounds
+            
+            writer.writerow([aid, agent_type, 'pairwise', p_avg_coop, p_final_coop, p_final_score, p_avg_score_per_round])
+            
+            # Neighborhood
+            n_avg_coop = np.mean(n_data[aid]['coop_rate'])
+            n_final_coop = np.mean(n_data[aid]['coop_rate'][-1000:])
+            n_final_score = n_data[aid]['score'][-1]
+            n_avg_score_per_round = n_final_score / num_rounds
+            
+            writer.writerow([aid, agent_type, 'neighborhood', n_avg_coop, n_final_coop, n_final_score, n_avg_score_per_round])
+
+
+def create_heatmap(all_results, output_dir):
+    """Create heatmaps showing final cooperation rates across scenarios"""
+    # Prepare data for heatmap
+    scenarios = []
+    pairwise_coop = []
+    neighborhood_coop = []
+    
+    for scenario_name, (p_data, n_data) in sorted(all_results.items()):
+        # Find QL agents
+        ql_agents = [aid for aid in p_data.keys() if 'QL' in aid]
+        
+        if ql_agents:
+            # Calculate average final cooperation rate for QL agents
+            p_final_coop = np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in ql_agents])
+            n_final_coop = np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in ql_agents])
+            
+            scenarios.append(scenario_name)
+            pairwise_coop.append(p_final_coop)
+            neighborhood_coop.append(n_final_coop)
+    
+    # Create figure with two heatmaps
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(20, 10))
+    
+    # Reshape data for heatmap (organize by agent count and opponent type)
+    agent_counts = sorted(set(int(s.split('_')[0]) for s in scenarios if not ('AllQL' in s or 'MixedQL' in s)))
+    opponent_types = sorted(set(s.split('_')[-1] for s in scenarios if not ('AllQL' in s or 'MixedQL' in s)))
+    
+    # Create matrices for standard scenarios
+    p_matrix = np.zeros((len(agent_counts), len(opponent_types)))
+    n_matrix = np.zeros((len(agent_counts), len(opponent_types)))
+    
+    for i, count in enumerate(agent_counts):
+        for j, opp in enumerate(opponent_types):
+            # Find matching scenarios
+            for k, scenario in enumerate(scenarios):
+                if str(count) in scenario and opp in scenario and not ('AllQL' in scenario or 'MixedQL' in scenario):
+                    p_matrix[i, j] = pairwise_coop[k]
+                    n_matrix[i, j] = neighborhood_coop[k]
+                    break
+    
+    # Plot heatmaps
+    sns.heatmap(p_matrix, annot=True, fmt='.2f', cmap='RdYlGn', 
+                xticklabels=opponent_types, yticklabels=agent_counts,
+                ax=ax1, vmin=0, vmax=1, cbar_kws={'label': 'Cooperation Rate'})
+    ax1.set_title('Pairwise Final Cooperation Rates')
+    ax1.set_xlabel('Opponent Type')
+    ax1.set_ylabel('Total Agent Count')
+    
+    sns.heatmap(n_matrix, annot=True, fmt='.2f', cmap='RdYlGn',
+                xticklabels=opponent_types, yticklabels=agent_counts,
+                ax=ax2, vmin=0, vmax=1, cbar_kws={'label': 'Cooperation Rate'})
+    ax2.set_title('Neighborhood Final Cooperation Rates')
+    ax2.set_xlabel('Opponent Type')
+    ax2.set_ylabel('Total Agent Count')
+    
+    plt.suptitle('Q-Learning Agent Performance Across Scenarios', fontsize=16)
+    plt.tight_layout()
+    plt.savefig(os.path.join(output_dir, 'cooperation_heatmap.png'), dpi=150)
+    plt.close(fig)
+    
+    # Create separate heatmap for special scenarios
+    special_scenarios = [s for s in scenarios if 'AllQL' in s or 'MixedQL' in s]
+    if special_scenarios:
+        fig, ax = plt.subplots(figsize=(12, 8))
+        
+        special_p_coop = [pairwise_coop[scenarios.index(s)] for s in special_scenarios]
+        special_n_coop = [neighborhood_coop[scenarios.index(s)] for s in special_scenarios]
+        
+        data = np.array([special_p_coop, special_n_coop])
+        
+        sns.heatmap(data, annot=True, fmt='.2f', cmap='RdYlGn',
+                   xticklabels=[s.replace('_', ' ') for s in special_scenarios],
+                   yticklabels=['Pairwise', 'Neighborhood'],
+                   ax=ax, vmin=0, vmax=1, cbar_kws={'label': 'Cooperation Rate'})
+        ax.set_title('Special Scenarios - Final Cooperation Rates')
+        plt.xticks(rotation=45, ha='right')
+        plt.tight_layout()
+        plt.savefig(os.path.join(output_dir, 'special_scenarios_heatmap.png'), dpi=150)
+        plt.close(fig)
+
+
 def plot_multi_agent_comparison(results, title, save_path, num_rounds=None):
     """Plot results for multi-agent experiments"""
     fig, axes = plt.subplots(2, 2, figsize=(20, 15))

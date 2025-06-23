@@ -29,11 +29,11 @@ class EnhancedQLearningAgent(BaseAgent):
     def __init__(self, agent_id, 
                  learning_rate=0.1, 
                  discount_factor=0.9,
-                 epsilon=0.3,  # Higher starting epsilon
-                 epsilon_decay=0.999,
+                 epsilon=0.2,  # Higher starting epsilon
+                 epsilon_decay=0.99,
                  epsilon_min=0.01,
-                 state_type="basic",  # 'basic', 'fine', 'memory_enhanced'
-                 memory_length=5,
+                 state_type="memory_enhanced",  # 'basic', 'fine', 'memory_enhanced'
+                 memory_length=50,
                  exploration_rate=0.0,  # Additional random exploration
                  **kwargs):
         

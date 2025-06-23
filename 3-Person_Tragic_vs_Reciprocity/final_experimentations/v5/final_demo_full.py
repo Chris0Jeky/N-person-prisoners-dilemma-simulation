@@ -385,8 +385,7 @@ if __name__ == "__main__":
     # Optional: Add enhanced adaptive agents (uncomment to include -- comment to exclude)
     from modular_agents import create_adaptive_statistical, create_adaptive_softmax, create_adaptive_statistical_softmax
     ql_configs["Adaptive+Stat"] = {"class": create_adaptive_statistical, "params": ADAPTIVE_PARAMS}
-    ql_configs["Adaptive+Soft"] = {"class": create_adaptive_softmax, "params": ADAPTIVE_PARAMS}
-    ql_configs["Adaptive+StatSoft"] = {"class": create_adaptive_statistical_softmax, "params": ADAPTIVE_PARAMS}
+    # Removed Adaptive+Soft and Adaptive+StatSoft as requested
     
     all_scenario_results = {}
     

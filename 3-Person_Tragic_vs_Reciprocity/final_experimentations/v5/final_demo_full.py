@@ -251,7 +251,7 @@ if __name__ == "__main__":
         for ql_name, ql_config in ql_configs.items():
             print(f"  Testing {ql_name} Q-learner...")
             agents = [
-                ql_config["pairwise_class"](agent_id=f"{ql_name}_QL_1", params=ql_config["params"]),
+                ql_config["class"](agent_id=f"{ql_name}_QL_1", params=ql_config["params"]),
                 StaticAgent(agent_id=f"{opp_name}_1", strategy_name=opp_config["strategy"],
                            error_rate=opp_config["error_rate"]),
                 StaticAgent(agent_id=f"{opp_name}_2", strategy_name=opp_config["strategy"],

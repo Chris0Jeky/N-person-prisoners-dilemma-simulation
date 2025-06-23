@@ -129,7 +129,13 @@ def plot_scenario_comparison(results, title, save_path, num_rounds=None):
     """Generates a 4-panel plot comparing Q-learning variants for one scenario."""
     fig, axes = plt.subplots(2, 2, figsize=(20, 15))
     fig.suptitle(f"Comparison: {title}", fontsize=22)
-    colors = {"Vanilla": "#1f77b4", "Adaptive": "#ff7f0e", "Hysteretic": "#2ca02c"}
+    colors = {
+        "Vanilla": "#1f77b4", 
+        "Adaptive": "#ff7f0e", 
+        "Hysteretic": "#2ca02c",
+        "Adaptive+Stat": "#d62728",
+        "Adaptive+Soft": "#9467bd"
+    }
     
     # Determine smoothing window based on number of rounds
     if num_rounds is None:
@@ -342,9 +348,9 @@ if __name__ == "__main__":
     }
     
     # Optional: Add enhanced adaptive agents (uncomment to include)
-    # from modular_agents import create_adaptive_statistical, create_adaptive_softmax
-    # ql_configs["Adaptive+Stat"] = {"class": create_adaptive_statistical, "params": ADAPTIVE_PARAMS}
-    # ql_configs["Adaptive+Soft"] = {"class": create_adaptive_softmax, "params": ADAPTIVE_PARAMS}
+    from modular_agents import create_adaptive_statistical, create_adaptive_softmax
+    ql_configs["Adaptive+Stat"] = {"class": create_adaptive_statistical, "params": ADAPTIVE_PARAMS}
+    ql_configs["Adaptive+Soft"] = {"class": create_adaptive_softmax, "params": ADAPTIVE_PARAMS}
     
     all_scenario_results = {}
     

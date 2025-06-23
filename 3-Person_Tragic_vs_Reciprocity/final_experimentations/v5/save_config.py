@@ -93,6 +93,7 @@ def save_detailed_config(output_dir, scenario_descriptions=None):
         "simulation": SIMULATION_CONFIG,
         "vanilla_params": VANILLA_PARAMS,
         "adaptive_params": ADAPTIVE_PARAMS,
+        "hysteretic_params": HYSTERETIC_PARAMS,
         "game_params": {
             "payoffs": {"T": 5, "R": 3, "P": 1, "S": 0},
             "strategies": {

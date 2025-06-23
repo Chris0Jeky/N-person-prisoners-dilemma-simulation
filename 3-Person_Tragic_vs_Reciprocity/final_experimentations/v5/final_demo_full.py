@@ -395,4 +395,12 @@ if __name__ == "__main__":
     create_heatmap(all_scenario_results, heatmap_path)
     print(f"Heatmap saved: {heatmap_path}")
     
+    # Calculate total time
+    total_elapsed = time.time() - total_start_time
     print(f"\nAll experiments complete! Results saved to '{OUTPUT_DIR}'")
+    print(f"Total time: {total_elapsed:.1f}s ({total_elapsed/60:.1f} minutes)")
+    
+    if USE_PARALLEL:
+        speedup_estimate = n_processes * 0.8  # Rough estimate of speedup
+        sequential_estimate = total_elapsed * speedup_estimate
+        print(f"Estimated time saved by using {n_processes} processes: {(sequential_estimate - total_elapsed)/60:.1f} minutes")

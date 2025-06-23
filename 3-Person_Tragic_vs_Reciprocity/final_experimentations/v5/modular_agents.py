@@ -503,7 +503,7 @@ def create_adaptive_statistical_softmax(agent_id, params, **kwargs):
                        min_temperature=0.5,
                        decay_rate=0.998),
         StandardQLearning(learning_rate=params.get('initial_lr', 0.1),
-                         discount_factor=params.get('df', 0.9)),
+                         discount_factor=params.get('df', 0.95)),
         params=params
     )
 

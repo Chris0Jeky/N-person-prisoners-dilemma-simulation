@@ -87,6 +87,8 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         self.reset()
 
     def _get_state(self, opponent_id):
+        if opponent_id not in self.histories:
+            self.histories[opponent_id] = self._make_history_deque()
         history = self.histories[opponent_id]
         if len(history) < 2: return "start"
         return str(tuple(history))

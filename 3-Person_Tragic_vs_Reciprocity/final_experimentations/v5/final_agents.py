@@ -118,10 +118,23 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         self.total_score += reward
         context = self.last_contexts.get(opponent_id)
         if not context: return
+        
+        # Initialize if needed
+        if opponent_id not in self.histories:
+            self.histories[opponent_id] = self._make_history_deque()
+        if opponent_id not in self.learning_rates:
+            self.learning_rates[opponent_id] = self._get_initial_lr()
+        if opponent_id not in self.reward_windows:
+            self.reward_windows[opponent_id] = self._make_reward_window()
+        
         self.histories[opponent_id].append((my_move, opponent_move))
         next_state = self._get_state(opponent_id)
         lr = self.learning_rates[opponent_id]
         q_table = self.q_tables[opponent_id]
+        
+        # Initialize next state if needed
+        if next_state not in q_table:
+            q_table[next_state] = self._make_q_dict()
         old_q = q_table[context['state']][context['action']]
         next_max_q = max(q_table[next_state].values())
         df = self.params.get('df', 0.9)

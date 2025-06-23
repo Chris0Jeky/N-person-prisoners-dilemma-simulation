@@ -173,7 +173,7 @@ def save_config_to_file(output_dir):
     """Save all configuration parameters to a text file"""
     config_path = os.path.join(output_dir, "simulation_config.txt")
     
-    with open(config_path, 'w') as f:
+    with open(config_path, 'w', encoding='utf-8') as f:
         f.write("="*60 + "\n")
         f.write("SIMULATION CONFIGURATION\n")
         f.write("="*60 + "\n\n")

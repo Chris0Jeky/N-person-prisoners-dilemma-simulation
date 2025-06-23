@@ -349,7 +349,7 @@ if __name__ == "__main__":
                 StaticAgent(agent_id=f"{opp_name}_1", strategy_name=opp_config["strategy"], 
                            error_rate=opp_config["error_rate"])
             ]
-            scenario_results[ql_name] = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS)
+            scenario_results[ql_name] = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
         
         all_scenario_results[scenario_name] = scenario_results
         plot_path = os.path.join(OUTPUT_DIR, f"{scenario_name}.png")
@@ -372,7 +372,7 @@ if __name__ == "__main__":
                 StaticAgent(agent_id=f"{opp_name}_2", strategy_name=opp_config["strategy"],
                            error_rate=opp_config["error_rate"])
             ]
-            scenario_results[ql_name] = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS)
+            scenario_results[ql_name] = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
         
         all_scenario_results[scenario_name] = scenario_results
         plot_path = os.path.join(OUTPUT_DIR, f"{scenario_name}.png")

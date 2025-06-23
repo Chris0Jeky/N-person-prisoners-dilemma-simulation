@@ -278,12 +278,8 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
         self.opponent_last_moves = {}  # Clear opponent history
 
 
-class EnhancedQLearningAgent(CorrectedEnhancedQLearningAgent):
-    """
-    Alias for backward compatibility.
-    This is the corrected enhanced Q-learning agent.
-    """
-    pass
+# Use the fixed implementation instead of the inheritance-based one
+EnhancedQLearningAgent = FixedEnhancedQLearningAgent
 
 
 class RevampedQLearningAgent(CorrectedEnhancedQLearningAgent):

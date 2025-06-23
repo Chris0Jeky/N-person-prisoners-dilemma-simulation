@@ -80,6 +80,23 @@ EQL_DF_095 = {
     'df': 0.95,
 }
 
+# Legacy Q-learner configurations (from qlearning_demo_generator.py)
+LEGACY_DF_04 = {
+    'lr': 0.15,
+    'df': 0.4,
+    'eps': 0.2,
+    'epsilon_decay': 0.995,
+    'epsilon_min': 0.05,
+}
+
+LEGACY_DF_095 = {
+    'lr': 0.15,
+    'df': 0.95,
+    'eps': 0.2,
+    'epsilon_decay': 0.995,
+    'epsilon_min': 0.05,
+}
+
 def run_experiment_set(agents, num_rounds, num_runs):
     """Runs both pairwise and neighborhood simulations for a given agent configuration."""
     p_runs = []
@@ -89,7 +106,7 @@ def run_experiment_set(agents, num_rounds, num_runs):
         # Create fresh copies of agents for each run
         fresh_agents = []
         for agent in agents:
-            if isinstance(agent, (VanillaQLearner, EnhancedQLearner)):
+            if isinstance(agent, (VanillaQLearner, EnhancedQLearner, LegacyQLearner)):
                 fresh_agents.append(type(agent)(agent.agent_id, agent.params))
             else:
                 fresh_agents.append(StaticAgent(agent.agent_id, agent.strategy_name, agent.error_rate))

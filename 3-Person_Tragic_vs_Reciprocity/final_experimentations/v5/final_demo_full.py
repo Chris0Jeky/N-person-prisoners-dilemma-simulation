@@ -126,10 +126,10 @@ def smooth_data(data, window_size=50):
     return smoothed.values
 
 def plot_scenario_comparison(results, title, save_path, num_rounds=None):
-    """Generates a 4-panel plot comparing Vanilla vs. Adaptive for one scenario."""
+    """Generates a 4-panel plot comparing Q-learning variants for one scenario."""
     fig, axes = plt.subplots(2, 2, figsize=(20, 15))
     fig.suptitle(f"Comparison: {title}", fontsize=22)
-    colors = {"Vanilla": "#1f77b4", "Adaptive": "#ff7f0e"}
+    colors = {"Vanilla": "#1f77b4", "Adaptive": "#ff7f0e", "Hysteretic": "#2ca02c"}
     
     # Determine smoothing window based on number of rounds
     if num_rounds is None:

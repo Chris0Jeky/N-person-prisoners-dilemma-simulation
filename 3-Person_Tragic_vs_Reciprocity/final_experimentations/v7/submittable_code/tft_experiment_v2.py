@@ -624,6 +624,7 @@ def main():
     print("Key differences:")
     print("- Vanilla QL: 8 neighborhood states (3 categories × 2 actions + start)")
     print("- EQL: 9+ neighborhood states (2-round history tuples)")
+    print("- Legacy QL: Complex states with trends and own history")
 
 if __name__ == "__main__":
     main()

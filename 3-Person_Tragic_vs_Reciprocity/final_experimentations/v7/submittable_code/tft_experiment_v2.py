@@ -187,6 +187,9 @@ def plot_scenario(p_data, n_data, scenario_name, save_path):
         elif 'EQL' in agent_id:
             color = colors['EQL']
             label = agent_id
+        elif 'Legacy' in agent_id:
+            color = colors['Legacy']
+            label = agent_id
         elif 'TFT-E' in agent_id:
             color = colors['TFT-E']
             label = agent_id

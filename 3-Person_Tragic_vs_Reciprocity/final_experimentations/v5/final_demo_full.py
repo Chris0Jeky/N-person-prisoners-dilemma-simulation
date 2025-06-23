@@ -268,8 +268,22 @@ if __name__ == "__main__":
     
     print(f"Running simulations with {NUM_ROUNDS} rounds and {NUM_RUNS} runs per scenario")
     
+    # Define scenario descriptions for documentation
+    scenario_descriptions = {
+        "2QL_vs_1AllC": "Two Q-learners compete against one Always Cooperate agent",
+        "2QL_vs_1AllD": "Two Q-learners compete against one Always Defect agent",
+        "2QL_vs_1Random": "Two Q-learners compete against one Random agent",
+        "2QL_vs_1TFT": "Two Q-learners compete against one Tit-for-Tat agent",
+        "2QL_vs_1TFT-E": "Two Q-learners compete against one TFT with 10% error rate",
+        "1QL_vs_2AllC": "One Q-learner competes against two Always Cooperate agents",
+        "1QL_vs_2AllD": "One Q-learner competes against two Always Defect agents",
+        "1QL_vs_2Random": "One Q-learner competes against two Random agents",
+        "1QL_vs_2TFT": "One Q-learner competes against two Tit-for-Tat agents",
+        "1QL_vs_2TFT-E": "One Q-learner competes against two TFT with 10% error rate"
+    }
+    
     # Save configuration to file
-    save_config_to_file(OUTPUT_DIR)
+    save_detailed_config(OUTPUT_DIR, scenario_descriptions)
     
     # Define opponent strategies
     opponent_configs = {

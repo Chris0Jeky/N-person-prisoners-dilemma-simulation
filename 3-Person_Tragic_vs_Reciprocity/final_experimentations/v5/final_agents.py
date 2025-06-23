@@ -138,6 +138,75 @@ class PairwiseAdaptiveQLearner(BaseAgent):
             self.learning_rates[opponent_id] = min(max_lr, self.learning_rates[opponent_id] * adapt_factor)
             self.epsilons[opponent_id] = min(max_eps, self.epsilons[opponent_id] * adapt_factor)
 
+    def choose_neighborhood_action(self, coop_ratio):
+        """Choose action for neighborhood game based on cooperation ratio"""
+        state = self._get_neighborhood_state(coop_ratio)
+        epsilon = self.params.get('initial_eps', self.params.get('eps', 0.1))
+        
+        # Use a special neighborhood Q-table
+        if not hasattr(self, 'neighborhood_q_table'):
+            self.neighborhood_q_table = defaultdict(lambda: {'cooperate': 0.0, 'defect': 0.0})
+            self.neighborhood_lr = self.params.get('initial_lr', self.params.get('lr', 0.1))
+            self.neighborhood_epsilon = epsilon
+            self.neighborhood_reward_window = deque(maxlen=self.params.get('reward_window_size', 20))
+        
+        if random.random() < self.neighborhood_epsilon:
+            action = random.choice(['cooperate', 'defect'])
+        else:
+            action = 'cooperate' if self.neighborhood_q_table[state]['cooperate'] >= self.neighborhood_q_table[state]['defect'] else 'defect'
+        
+        self.last_neighborhood_context = {'state': state, 'action': action}
+        return COOPERATE if action == 'cooperate' else DEFECT
+    
+    def record_neighborhood_outcome(self, coop_ratio, reward):
+        """Record outcome for neighborhood game"""
+        self.total_score += reward
+        if not hasattr(self, 'last_neighborhood_context') or not self.last_neighborhood_context:
+            return
+            
+        next_state = self._get_neighborhood_state(coop_ratio)
+        old_q = self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']]
+        next_max_q = max(self.neighborhood_q_table[next_state].values())
+        df = self.params.get('df', 0.9)
+        
+        self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']] = \
+            old_q + self.neighborhood_lr * (reward + df * next_max_q - old_q)
+        
+        self.neighborhood_reward_window.append(reward)
+        self._adapt_neighborhood_parameters()
+    
+    def _get_neighborhood_state(self, coop_ratio):
+        """Get state representation for neighborhood game"""
+        if coop_ratio is None:
+            return 'start'
+        if coop_ratio <= 0.33:
+            return 'low'
+        elif coop_ratio <= 0.67:
+            return 'medium'
+        else:
+            return 'high'
+    
+    def _adapt_neighborhood_parameters(self):
+        """Adapt learning parameters for neighborhood game"""
+        win_size = self.params.get('reward_window_size')
+        if not win_size or len(self.neighborhood_reward_window) < win_size:
+            return
+            
+        window = self.neighborhood_reward_window
+        half = win_size // 2
+        adapt_factor = self.params.get('adaptation_factor', 1.05)
+        min_lr = self.params.get('min_lr', 0.05)
+        max_lr = self.params.get('max_lr', 0.5)
+        min_eps = self.params.get('min_eps', 0.01)
+        max_eps = self.params.get('max_eps', 0.5)
+        
+        if np.mean(list(window)[half:]) > np.mean(list(window)[:half]):
+            self.neighborhood_lr = max(min_lr, self.neighborhood_lr / adapt_factor)
+            self.neighborhood_epsilon = max(min_eps, self.neighborhood_epsilon / adapt_factor)
+        else:
+            self.neighborhood_lr = min(max_lr, self.neighborhood_lr * adapt_factor)
+            self.neighborhood_epsilon = min(max_eps, self.neighborhood_epsilon * adapt_factor)
+
     def reset(self):
         super().reset()
         self.q_tables = defaultdict(lambda: defaultdict(lambda: {'cooperate': 0.0, 'defect': 0.0}))
@@ -146,6 +215,13 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         self.learning_rates = defaultdict(lambda: self.params.get('initial_lr', self.params.get('lr', 0.1)))
         self.epsilons = defaultdict(lambda: self.params.get('initial_eps', self.params.get('eps', 0.1)))
         self.last_contexts = {}
+        # Reset neighborhood-specific attributes
+        if hasattr(self, 'neighborhood_q_table'):
+            self.neighborhood_q_table = defaultdict(lambda: {'cooperate': 0.0, 'defect': 0.0})
+            self.neighborhood_lr = self.params.get('initial_lr', self.params.get('lr', 0.1))
+            self.neighborhood_epsilon = self.params.get('initial_eps', self.params.get('eps', 0.1))
+            self.neighborhood_reward_window = deque(maxlen=self.params.get('reward_window_size', 20))
+            self.last_neighborhood_context = None
 
 
 class NeighborhoodAdaptiveQLearner(BaseAgent):

@@ -645,9 +645,9 @@ def main():
                 StaticAgent("TFT_2", "TFT", 0.0)
             ]
         },
-        "1_Vanilla_DF06_vs_2_TFT-E": {
+        "1_Vanilla_DF04_vs_2_TFT-E": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Vanilla_QL_DF06", VANILLA_DF_06),
+                PairwiseAdaptiveQLearner("Vanilla_QL_DF04", VANILLA_DF_04),
                 StaticAgent("TFT-E_1", "TFT-E", 0.1),
                 StaticAgent("TFT-E_2", "TFT-E", 0.1)
             ]
@@ -659,9 +659,9 @@ def main():
                 StaticAgent("TFT-E_2", "TFT-E", 0.1)
             ]
         },
-        "1_Adaptive_DF06_vs_2_TFT-E": {
+        "1_Adaptive_DF04_vs_2_TFT-E": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Adaptive_QL_DF06", ADAPTIVE_DF_06),
+                PairwiseAdaptiveQLearner("Adaptive_QL_DF04", ADAPTIVE_DF_04),
                 StaticAgent("TFT-E_1", "TFT-E", 0.1),
                 StaticAgent("TFT-E_2", "TFT-E", 0.1)
             ]
@@ -673,10 +673,10 @@ def main():
                 StaticAgent("TFT-E_2", "TFT-E", 0.1)
             ]
         },
-        "2_Vanilla_DF06_vs_1_TFT": {
+        "2_Vanilla_DF04_vs_1_TFT": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Vanilla_QL1_DF06", VANILLA_DF_06),
-                PairwiseAdaptiveQLearner("Vanilla_QL2_DF06", VANILLA_DF_06),
+                PairwiseAdaptiveQLearner("Vanilla_QL1_DF04", VANILLA_DF_04),
+                PairwiseAdaptiveQLearner("Vanilla_QL2_DF04", VANILLA_DF_04),
                 StaticAgent("TFT", "TFT", 0.0)
             ]
         },
@@ -687,10 +687,10 @@ def main():
                 StaticAgent("TFT", "TFT", 0.0)
             ]
         },
-        "2_Adaptive_DF06_vs_1_TFT": {
+        "2_Adaptive_DF04_vs_1_TFT": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Adaptive_QL1_DF06", ADAPTIVE_DF_06),
-                PairwiseAdaptiveQLearner("Adaptive_QL2_DF06", ADAPTIVE_DF_06),
+                PairwiseAdaptiveQLearner("Adaptive_QL1_DF04", ADAPTIVE_DF_04),
+                PairwiseAdaptiveQLearner("Adaptive_QL2_DF04", ADAPTIVE_DF_04),
                 StaticAgent("TFT", "TFT", 0.0)
             ]
         },
@@ -701,10 +701,10 @@ def main():
                 StaticAgent("TFT", "TFT", 0.0)
             ]
         },
-        "2_Vanilla_DF06_vs_1_TFT-E": {
+        "2_Vanilla_DF04_vs_1_TFT-E": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Vanilla_QL1_DF06", VANILLA_DF_06),
-                PairwiseAdaptiveQLearner("Vanilla_QL2_DF06", VANILLA_DF_06),
+                PairwiseAdaptiveQLearner("Vanilla_QL1_DF04", VANILLA_DF_04),
+                PairwiseAdaptiveQLearner("Vanilla_QL2_DF04", VANILLA_DF_04),
                 StaticAgent("TFT-E", "TFT-E", 0.1)
             ]
         },
@@ -715,10 +715,10 @@ def main():
                 StaticAgent("TFT-E", "TFT-E", 0.1)
             ]
         },
-        "2_Adaptive_DF06_vs_1_TFT-E": {
+        "2_Adaptive_DF04_vs_1_TFT-E": {
             "agents": lambda: [
-                PairwiseAdaptiveQLearner("Adaptive_QL1_DF06", ADAPTIVE_DF_06),
-                PairwiseAdaptiveQLearner("Adaptive_QL2_DF06", ADAPTIVE_DF_06),
+                PairwiseAdaptiveQLearner("Adaptive_QL1_DF04", ADAPTIVE_DF_04),
+                PairwiseAdaptiveQLearner("Adaptive_QL2_DF04", ADAPTIVE_DF_04),
                 StaticAgent("TFT-E", "TFT-E", 0.1)
             ]
         },

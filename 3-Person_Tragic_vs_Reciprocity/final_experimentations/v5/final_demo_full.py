@@ -337,6 +337,8 @@ if __name__ == "__main__":
                     "params": VANILLA_PARAMS},
         "Adaptive": {"class": PairwiseAdaptiveQLearner,  # Using PairwiseAdaptiveQLearner for both modes
                      "params": ADAPTIVE_PARAMS},
+        "Hysteretic": {"class": HystereticQLearner,      # New Hysteretic Q-learner
+                       "params": HYSTERETIC_PARAMS},
     }
     
     all_scenario_results = {}

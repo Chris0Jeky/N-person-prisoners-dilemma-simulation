@@ -173,6 +173,7 @@ def plot_scenario(p_data, n_data, scenario_name, save_path):
     colors = {
         'Vanilla': '#1f77b4',
         'EQL': '#ff7f0e',
+        'Legacy': '#9467bd',
         'TFT': '#2ca02c',
         'TFT-E': '#d62728',
     }

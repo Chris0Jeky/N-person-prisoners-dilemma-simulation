@@ -35,8 +35,8 @@ PAYOFFS_2P = {(0, 0): (3, 3), (0, 1): (0, 5), (1, 0): (5, 0), (1, 1): (1, 1)}
 T, R, P, S = 5, 3, 1, 0
 
 # Simulation parameters
-NUM_ROUNDS = 10000
-NUM_RUNS = 25
+NUM_ROUNDS = 50000
+NUM_RUNS = 10
 OUTPUT_DIR = "tft_experiment_results"
 
 # Q-learner configurations with different discount factors
@@ -480,6 +480,20 @@ def create_df_comparison_plots(all_results):
     fig, axes = plt.subplots(2, 2, figsize=(16, 12))
     fig.suptitle('Effect of Discount Factor on Q-Learning Performance', fontsize=16)
     
+    # Define distinct colors for each combination
+    color_scheme = {
+        ('DF04', 'TFT'): '#1f77b4',     # Blue
+        ('DF04', 'TFT-E'): '#ff7f0e',   # Orange  
+        ('DF095', 'TFT'): '#2ca02c',    # Green
+        ('DF095', 'TFT-E'): '#d62728',  # Red
+    }
+    
+    # Define line styles for better distinction
+    line_styles = {
+        'DF04': ':',      # Dotted for short-term
+        'DF095': '-'      # Solid for long-term
+    }
+    
     # Vanilla QL comparison
     scenarios_vanilla = ["1_Vanilla_DF04_vs_2_TFT", "1_Vanilla_DF095_vs_2_TFT",
                         "1_Vanilla_DF04_vs_2_TFT-E", "1_Vanilla_DF095_vs_2_TFT-E"]
@@ -498,30 +512,33 @@ def create_df_comparison_plots(all_results):
                 # Find QL agent
                 ql_agent = [aid for aid in p_data.keys() if 'QL' in aid][0]
                 
-                # Determine line style and label
+                # Determine discount factor and opponent
                 if 'DF04' in scenario:
-                    ls = '--'
+                    df_key = 'DF04'
                     df_label = 'DF=0.4'
                 else:
-                    ls = '-'
+                    df_key = 'DF095'
                     df_label = 'DF=0.95'
                 
                 if 'TFT-E' in scenario:
-                    color = '#d62728'
-                    opponent = 'vs TFT-E'
+                    opponent_key = 'TFT-E'
+                    opponent = 'vs TFT-E (10% error)'
                 else:
-                    color = '#2ca02c'
+                    opponent_key = 'TFT'
                     opponent = 'vs TFT'
                 
+                # Get color and line style
+                color = color_scheme[(df_key, opponent_key)]
+                ls = line_styles[df_key]
                 label = f"{df_label} {opponent}"
                 
                 # Smooth data
                 p_coop_smooth = smooth_data(p_data[ql_agent]['coop_rate'], 100)
                 n_coop_smooth = smooth_data(n_data[ql_agent]['coop_rate'], 100)
                 
-                # Plot
-                axes[0, ax_idx].plot(p_coop_smooth, ls=ls, color=color, label=label, linewidth=2)
-                axes[1, ax_idx].plot(n_coop_smooth, ls=ls, color=color, label=label, linewidth=2)
+                # Plot with distinct styling
+                axes[0, ax_idx].plot(p_coop_smooth, ls=ls, color=color, label=label, linewidth=2.5)
+                axes[1, ax_idx].plot(n_coop_smooth, ls=ls, color=color, label=label, linewidth=2.5)
     
     # Configure axes
     axes[0, 0].set_title('Vanilla QL - Pairwise')

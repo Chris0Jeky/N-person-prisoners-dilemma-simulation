@@ -19,33 +19,32 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 
 from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner
 from final_simulation import run_pairwise_tournament, run_nperson_simulation
-from config import VanillaQLearningConfig
+from config import VANILLA_PARAMS
 
 
 def create_vanilla_qlearning_agent(agent_id, game_type):
     """Create a vanilla Q-learning agent with standard parameters"""
-    config = VanillaQLearningConfig()
     
     if game_type == "pairwise":
         # For pairwise, use the adaptive learner but with fixed parameters (no adaptation)
         agent = PairwiseAdaptiveQLearner(
             agent_id=agent_id,
-            initial_lr=config.LEARNING_RATE,
-            initial_epsilon=config.EPSILON,
-            discount_factor=config.DISCOUNT_FACTOR,
+            initial_lr=VANILLA_PARAMS['lr'],
+            initial_epsilon=VANILLA_PARAMS['eps'],
+            discount_factor=VANILLA_PARAMS['df'],
             adaptation_rate=0.0,  # No adaptation for vanilla
             epsilon_decay=0.0,    # No epsilon decay for vanilla
-            min_epsilon=config.EPSILON  # Keep epsilon constant
+            min_epsilon=VANILLA_PARAMS['eps']  # Keep epsilon constant
         )
     else:  # neighborhood
         agent = NeighborhoodAdaptiveQLearner(
             agent_id=agent_id,
-            initial_lr=config.LEARNING_RATE,
-            initial_epsilon=config.EPSILON,
-            discount_factor=config.DISCOUNT_FACTOR,
+            initial_lr=VANILLA_PARAMS['lr'],
+            initial_epsilon=VANILLA_PARAMS['eps'],
+            discount_factor=VANILLA_PARAMS['df'],
             adaptation_rate=0.0,  # No adaptation for vanilla
             epsilon_decay=0.0,    # No epsilon decay for vanilla
-            min_epsilon=config.EPSILON  # Keep epsilon constant
+            min_epsilon=VANILLA_PARAMS['eps']  # Keep epsilon constant
         )
     
     return agent

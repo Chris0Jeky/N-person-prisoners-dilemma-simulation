@@ -267,7 +267,7 @@ if __name__ == "__main__":
         
         all_scenario_results[scenario_name] = scenario_results
         plot_path = os.path.join(OUTPUT_DIR, f"{scenario_name}.png")
-        plot_scenario_comparison(scenario_results, scenario_name, plot_path)
+        plot_scenario_comparison(scenario_results, scenario_name, plot_path, NUM_ROUNDS)
         print(f"  Saved plot: {plot_path}")
     
     # --- Scenario 2: 1 QL vs. 2 Opponents ---
@@ -290,7 +290,7 @@ if __name__ == "__main__":
         
         all_scenario_results[scenario_name] = scenario_results
         plot_path = os.path.join(OUTPUT_DIR, f"{scenario_name}.png")
-        plot_scenario_comparison(scenario_results, scenario_name, plot_path)
+        plot_scenario_comparison(scenario_results, scenario_name, plot_path, NUM_ROUNDS)
         print(f"  Saved plot: {plot_path}")
     
     # --- Generate Summary Heatmap ---

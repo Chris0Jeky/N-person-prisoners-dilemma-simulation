@@ -22,11 +22,23 @@ class StaticAgent(BaseAgent):
         super().__init__(agent_id, strategy_name)
         self.strategy_name = strategy_name
         self.error_rate = error_rate
+        self.initial_error_rate = error_rate  # Store initial error rate
         self.opponent_last_moves = {}
         self.last_neighborhood_move = COOPERATE
+        self.round_count = 0  # Track rounds for decay
+        self.decay_rate = 0.9995  # Decay factor per round (reaches ~0.01 after 10000 rounds)
 
     def _apply_error(self, intended_move):
         """Apply error rate to the intended move"""
+        # Update error rate for TFT-E with decay
+        if self.strategy_name == "TFT-E" and self.initial_error_rate > 0:
+            self.round_count += 1
+            # Exponential decay: error_rate = initial_rate * decay_rate^round
+            self.error_rate = self.initial_error_rate * (self.decay_rate ** self.round_count)
+            # Stop decaying when we get very close to 0
+            if self.error_rate < 0.001:
+                self.error_rate = 0.0
+        
         if random.random() < self.error_rate:
             return random.choice([COOPERATE, DEFECT])
         return intended_move
@@ -77,6 +89,8 @@ class StaticAgent(BaseAgent):
         super().reset()
         self.opponent_last_moves.clear()
         self.last_neighborhood_move = COOPERATE
+        self.round_count = 0
+        self.error_rate = self.initial_error_rate  # Reset error rate to initial value
 
 
 # --- Vanilla Q-Learning Agent (Simple 8-state for neighborhood) ---
@@ -287,15 +301,15 @@ class EnhancedQLearner(BaseAgent):
             return "high"
 
     def _get_neighborhood_state(self):
-        """Get state as tuple of last 4 cooperation ratio categories"""
+        """Get state as tuple of last 2 cooperation ratio categories"""
         if len(self.coop_ratio_history) == 0:
             return "start"
-        elif len(self.coop_ratio_history) < 4:
-            # Pad with 'start' if we don't have 4 rounds yet
-            padding = ['start'] * (4 - len(self.coop_ratio_history))
+        elif len(self.coop_ratio_history) < 2:
+            # Pad with 'start' if we don't have 2 rounds yet
+            padding = ['start'] * (2 - len(self.coop_ratio_history))
             return str(tuple(padding + list(self.coop_ratio_history)))
         else:
-            # Return tuple of last 4 categories
+            # Return tuple of last 2 categories
             return str(tuple(self.coop_ratio_history))
 
     def _update_q_value(self, opponent_id, state, action, reward, next_state):
@@ -335,7 +349,7 @@ class EnhancedQLearner(BaseAgent):
             
         self.reward_history.append(reward)
         
-        window_size = self.params.get('reward_window_size', 75)
+        window_size = self.params.get('reward_window_size', 2)
         if len(self.reward_history) < window_size:
             return
         
@@ -370,7 +384,7 @@ class EnhancedQLearner(BaseAgent):
         self.n_q_table = defaultdict(lambda: defaultdict(float))
         self.histories = {}
         self.last_coop_ratio = None
-        self.coop_ratio_history = deque(maxlen=4)  # Store last 4 cooperation ratio categories
+        self.coop_ratio_history = deque(maxlen=2)  # Store last 2 cooperation ratio categories
         self.reward_history = deque(maxlen=1000)
         
         # Set initial parameters

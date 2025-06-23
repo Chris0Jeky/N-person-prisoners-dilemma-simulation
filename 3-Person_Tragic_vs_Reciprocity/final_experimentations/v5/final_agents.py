@@ -187,6 +187,11 @@ class PairwiseAdaptiveQLearner(BaseAgent):
             return
             
         next_state = self._get_neighborhood_state(coop_ratio)
+        
+        # Initialize next state if needed
+        if next_state not in self.neighborhood_q_table:
+            self.neighborhood_q_table[next_state] = self._make_q_dict()
+            
         old_q = self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']]
         next_max_q = max(self.neighborhood_q_table[next_state].values())
         df = self.params.get('df', 0.9)

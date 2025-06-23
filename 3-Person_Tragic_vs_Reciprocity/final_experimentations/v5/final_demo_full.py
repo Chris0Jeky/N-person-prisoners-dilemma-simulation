@@ -368,7 +368,8 @@ if __name__ == "__main__":
         scenario_results = {}
         
         for ql_name, ql_config in ql_configs.items():
-            print(f"  Testing {ql_name} Q-learner...")
+            print(f"  Testing {ql_name} Q-learner...", end='', flush=True)
+            start_time = time.time()
             agents = [
                 ql_config["class"](agent_id=f"{ql_name}_QL_1", params=ql_config["params"]),
                 StaticAgent(agent_id=f"{opp_name}_1", strategy_name=opp_config["strategy"],

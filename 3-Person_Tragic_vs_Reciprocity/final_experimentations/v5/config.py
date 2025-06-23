@@ -6,8 +6,8 @@ Centralized configuration for Q-learning agent parameters and simulation setting
 
 # Simulation parameters
 SIMULATION_CONFIG = {
-    'num_rounds': 1000,  # Number of rounds per simulation
-    'num_runs': 20,      # Number of runs to average over
+    'num_rounds': 5000,  # Number of rounds per simulation
+    'num_runs': 50,      # Number of runs to average over
 }
 
 # Parameters for a standard, non-adaptive Q-learning agent.

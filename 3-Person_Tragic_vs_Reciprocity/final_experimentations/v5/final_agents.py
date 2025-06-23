@@ -292,9 +292,12 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
             self.lr = min(max_lr, self.lr * adapt_factor)
             self.epsilon = min(max_eps, self.epsilon * adapt_factor)
 
+    def _make_q_dict(self):
+        return {'cooperate': 0.0, 'defect': 0.0}
+    
     def reset(self):
         super().reset()
-        self.q_table = defaultdict(lambda: {'cooperate': 0.0, 'defect': 0.0})
+        self.q_table = defaultdict(self._make_q_dict)
         self.lr = self.params.get('initial_lr', self.params.get('lr', 0.1))
         self.epsilon = self.params.get('initial_eps', self.params.get('eps', 0.1))
         self.reward_window = deque(maxlen=self.params.get('reward_window_size', 20))

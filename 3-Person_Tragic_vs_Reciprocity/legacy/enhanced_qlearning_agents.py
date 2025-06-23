@@ -147,9 +147,10 @@ class CorrectedEnhancedQLearningAgent(SimpleQLearningAgent):
             next_state = self._get_state_neighborhood(new_coop_ratio)
             self.update_q_value(self.last_state, self.last_action, payoff, next_state)
 
-    def choose_action_pairwise(self, opponent_id, current_round_in_episode):
+    def choose_action_pairwise(self, opponent_id, current_round_in_episode=None):
         """
         Choose action for pairwise mode - now with proper per-opponent Q-tables.
+        Note: current_round_in_episode is accepted for compatibility but not used.
         """
         state = self._get_state_pairwise(opponent_id)
         

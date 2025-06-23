@@ -320,9 +320,11 @@ def save_summary_stats(all_results):
     summary['_explanation'] = {
         'Vanilla_QL': 'Simple 8-state neighborhood representation (cooperation_category + last_action)',
         'EQL': 'Enhanced QL with 2-round history tuple and adaptive parameters',
+        'Legacy_QL': '2-round history with trend detection (up/down/stable) and epsilon decay',
         'State_Examples': {
             'Vanilla': ['start', 'low_0', 'low_1', 'medium_0', 'medium_1', 'high_0', 'high_1'],
-            'EQL': "Tuples like ('start', 'high') or ('medium', 'low') - tracks 2-round cooperation trend"
+            'EQL': "Tuples like ('start', 'high') or ('medium', 'low') - tracks 2-round cooperation trend",
+            'Legacy': "States like 'medium_up_MCC' (medium coop, trending up, my moves: CC) or 'low_stable'"
         }
     }
     
@@ -514,6 +516,36 @@ def main():
             "agents": lambda: [
                 EnhancedQLearner("EQL_QL1_DF095", EQL_DF_095),
                 EnhancedQLearner("EQL_QL2_DF095", EQL_DF_095),
+                StaticAgent("TFT", "TFT", 0.0)
+            ]
+        },
+        
+        # Legacy QL scenarios (only with TFT for comparison)
+        "1_Legacy_DF04_vs_2_TFT": {
+            "agents": lambda: [
+                LegacyQLearner("Legacy_QL_DF04", LEGACY_DF_04),
+                StaticAgent("TFT_1", "TFT", 0.0),
+                StaticAgent("TFT_2", "TFT", 0.0)
+            ]
+        },
+        "1_Legacy_DF095_vs_2_TFT": {
+            "agents": lambda: [
+                LegacyQLearner("Legacy_QL_DF095", LEGACY_DF_095),
+                StaticAgent("TFT_1", "TFT", 0.0),
+                StaticAgent("TFT_2", "TFT", 0.0)
+            ]
+        },
+        "2_Legacy_DF04_vs_1_TFT": {
+            "agents": lambda: [
+                LegacyQLearner("Legacy_QL1_DF04", LEGACY_DF_04),
+                LegacyQLearner("Legacy_QL2_DF04", LEGACY_DF_04),
+                StaticAgent("TFT", "TFT", 0.0)
+            ]
+        },
+        "2_Legacy_DF095_vs_1_TFT": {
+            "agents": lambda: [
+                LegacyQLearner("Legacy_QL1_DF095", LEGACY_DF_095),
+                LegacyQLearner("Legacy_QL2_DF095", LEGACY_DF_095),
                 StaticAgent("TFT", "TFT", 0.0)
             ]
         },

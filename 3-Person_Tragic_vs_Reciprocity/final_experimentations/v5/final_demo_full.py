@@ -316,6 +316,9 @@ if __name__ == "__main__":
     # Save configuration to file
     save_detailed_config(OUTPUT_DIR, scenario_descriptions)
     
+    # Start total timer
+    total_start_time = time.time()
+    
     # Define opponent strategies
     opponent_configs = {
         "AllC": {"strategy": "AllC", "error_rate": 0.0},

@@ -623,8 +623,9 @@ if __name__ == "__main__":
                     all_results[scenario_name] = (p_agg, n_agg)
                     print(f"  Completed in {elapsed:.1f}s")
                     
-                    # Save CSV for this scenario
+                    # Save CSV and plot for this scenario
                     save_scenario_csv(scenario_name, p_agg, n_agg, OUTPUT_DIR)
+                    plot_individual_scenario(scenario_name, p_agg, n_agg, OUTPUT_DIR)
     
     # --- Special scenario 1: All same type of QL ---
     print("\n=== Running All Same QL Type Scenarios ===")
@@ -651,8 +652,9 @@ if __name__ == "__main__":
             all_results[scenario_name] = (p_agg, n_agg)
             print(f"  Completed in {elapsed:.1f}s")
             
-            # Save CSV for this scenario
+            # Save CSV and plot for this scenario
             save_scenario_csv(scenario_name, p_agg, n_agg, OUTPUT_DIR)
+            plot_individual_scenario(scenario_name, p_agg, n_agg, OUTPUT_DIR)
     
     # --- Special scenario 2: Mixed QL types ---
     print("\n=== Running Mixed QL Type Scenarios ===")

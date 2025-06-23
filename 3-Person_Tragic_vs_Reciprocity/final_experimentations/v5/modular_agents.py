@@ -433,3 +433,67 @@ def create_hysteretic_statistical_qlearner(agent_id, **kwargs):
         EpsilonGreedyStrategy(epsilon=0.1),
         HystereticQLearning(lr_positive=0.1, lr_negative=0.01, discount_factor=0.9)
     )
+
+
+# === Factory functions for Adaptive agents with strategies ===
+
+def create_adaptive_baseline(agent_id, params, **kwargs):
+    """Create baseline adaptive Q-learner (original implementation)"""
+    from final_agents import PairwiseAdaptiveQLearner
+    return PairwiseAdaptiveQLearner(agent_id, params)
+
+
+def create_adaptive_statistical(agent_id, params, **kwargs):
+    """Create adaptive Q-learner with statistical state representation"""
+    return ModularAdaptiveQLearner(
+        agent_id,
+        StatisticalSummaryStrategy(),
+        EpsilonGreedyStrategy(epsilon=params.get('initial_eps', 0.1)),
+        StandardQLearning(learning_rate=params.get('initial_lr', 0.1), 
+                         discount_factor=params.get('df', 0.9)),
+        params=params
+    )
+
+
+def create_adaptive_softmax(agent_id, params, **kwargs):
+    """Create adaptive Q-learner with softmax action selection"""
+    # Convert epsilon parameters to temperature
+    initial_temp = 2.0 * params.get('initial_eps', 0.1) / 0.1  # Scale based on epsilon
+    return ModularAdaptiveQLearner(
+        agent_id,
+        SimpleStateStrategy(),
+        SoftmaxStrategy(temperature=initial_temp, 
+                       min_temperature=0.5,
+                       decay_rate=0.998),
+        StandardQLearning(learning_rate=params.get('initial_lr', 0.1),
+                         discount_factor=params.get('df', 0.9)),
+        params=params
+    )
+
+
+def create_adaptive_statistical_softmax(agent_id, params, **kwargs):
+    """Create adaptive Q-learner with both statistical state and softmax action"""
+    initial_temp = 2.0 * params.get('initial_eps', 0.1) / 0.1
+    return ModularAdaptiveQLearner(
+        agent_id,
+        StatisticalSummaryStrategy(),
+        SoftmaxStrategy(temperature=initial_temp,
+                       min_temperature=0.5,
+                       decay_rate=0.998),
+        StandardQLearning(learning_rate=params.get('initial_lr', 0.1),
+                         discount_factor=params.get('df', 0.9)),
+        params=params
+    )
+
+
+def create_adaptive_hysteretic_statistical(agent_id, params, **kwargs):
+    """Create adaptive Q-learner with hysteretic learning and statistical state"""
+    return ModularAdaptiveQLearner(
+        agent_id,
+        StatisticalSummaryStrategy(),
+        EpsilonGreedyStrategy(epsilon=params.get('initial_eps', 0.1)),
+        HystereticQLearning(lr_positive=params.get('initial_lr', 0.1),
+                           lr_negative=params.get('beta', 0.01),
+                           discount_factor=params.get('df', 0.9)),
+        params=params
+    )

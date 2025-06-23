@@ -17,31 +17,64 @@ class BaseAgent:
 
 
 class StaticAgent(BaseAgent):
-    def __init__(self, agent_id, strategy_name="TFT", **kwargs):
+    def __init__(self, agent_id, strategy_name="TFT", error_rate=0.0, **kwargs):
         super().__init__(agent_id, strategy_name)
+        self.strategy_name = strategy_name
+        self.error_rate = error_rate
         self.opponent_last_moves = {}
         self.last_neighborhood_move = COOPERATE
 
+    def _apply_error(self, intended_move):
+        """Apply error rate to the intended move"""
+        if random.random() < self.error_rate:
+            return random.choice([COOPERATE, DEFECT])
+        return intended_move
+
     def choose_pairwise_action(self, opponent_id):
-        return self.opponent_last_moves.get(opponent_id, COOPERATE)
+        if self.strategy_name == "AllC":
+            intended = COOPERATE
+        elif self.strategy_name == "AllD":
+            intended = DEFECT
+        elif self.strategy_name == "Random":
+            intended = random.choice([COOPERATE, DEFECT])
+        elif self.strategy_name == "TFT" or self.strategy_name == "TFT-E":
+            intended = self.opponent_last_moves.get(opponent_id, COOPERATE)
+        else:  # Default TFT
+            intended = self.opponent_last_moves.get(opponent_id, COOPERATE)
+        
+        return self._apply_error(intended)
 
     def choose_neighborhood_action(self, coop_ratio):
-        # TFT in neighborhood: cooperate if majority cooperated last round
-        if coop_ratio is None:
-            return COOPERATE
-        return COOPERATE if coop_ratio >= 0.5 else DEFECT
+        if self.strategy_name == "AllC":
+            intended = COOPERATE
+        elif self.strategy_name == "AllD":
+            intended = DEFECT
+        elif self.strategy_name == "Random":
+            intended = random.choice([COOPERATE, DEFECT])
+        elif self.strategy_name == "TFT" or self.strategy_name == "TFT-E":
+            # TFT in neighborhood: cooperate if majority cooperated last round
+            if coop_ratio is None:
+                intended = COOPERATE
+            else:
+                intended = COOPERATE if coop_ratio >= 0.5 else DEFECT
+        else:  # Default TFT
+            if coop_ratio is None:
+                intended = COOPERATE
+            else:
+                intended = COOPERATE if coop_ratio >= 0.5 else DEFECT
+        
+        return self._apply_error(intended)
 
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
-        # Accepts my_move and reward to match the API, but only uses opponent_move.
         self.total_score += reward
         self.opponent_last_moves[opponent_id] = opponent_move
 
     def record_neighborhood_outcome(self, coop_ratio, reward):
         self.total_score += reward
-        self.last_neighborhood_move = COOPERATE if coop_ratio >= 0.5 else DEFECT
+        self.last_neighborhood_move = COOPERATE if coop_ratio and coop_ratio >= 0.5 else DEFECT
 
     def reset(self):
-        super().reset();
+        super().reset()
         self.opponent_last_moves.clear()
         self.last_neighborhood_move = COOPERATE
 

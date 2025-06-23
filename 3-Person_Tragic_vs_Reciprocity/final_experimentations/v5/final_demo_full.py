@@ -290,7 +290,13 @@ if __name__ == "__main__":
     OUTPUT_DIR = "final_comparison_charts"
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
+    # Detect parallelization capability
+    USE_PARALLEL = True  # Set to False to disable parallelization
+    n_cores = cpu_count()
+    n_processes = max(1, n_cores - 1) if USE_PARALLEL else 1
+    
     print(f"Running simulations with {NUM_ROUNDS} rounds and {NUM_RUNS} runs per scenario")
+    print(f"Using {n_processes} processes on {n_cores} available CPU cores")
     
     # Define scenario descriptions for documentation
     scenario_descriptions = {

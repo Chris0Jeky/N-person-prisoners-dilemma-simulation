@@ -189,78 +189,95 @@ def plot_scenario_comparison(results, title, save_path, num_rounds=None):
 
 
 def create_heatmap(all_results, save_path):
-    """Generates a heatmap comparing performance across all scenarios."""
-    heatmap_data = []
-    scenario_names = []
-    
-    # Get all agent types present in results
+    """Generates a heatmap comparing all agent types against Vanilla baseline."""
+    # Get all unique agent types
     all_agent_types = set()
     for results in all_results.values():
         all_agent_types.update(results.keys())
     
-    # Use Vanilla as baseline if available, otherwise skip heatmap
+    # Remove Vanilla from comparison list (it's the baseline)
+    agent_types_to_compare = sorted([a for a in all_agent_types if a != 'Vanilla'])
+    
     if 'Vanilla' not in all_agent_types:
         print("No Vanilla baseline found for heatmap comparison")
         return
     
-    for scenario_name, results in sorted(all_results.items()):
-        if 'Vanilla' not in results:
-            continue
+    # Create heatmap data for each agent type
+    fig, ax = plt.subplots(figsize=(12, 8))
+    
+    # Prepare data structure
+    comparison_data = {}
+    
+    for agent_type in agent_types_to_compare:
+        comparison_data[agent_type] = []
+        
+        for scenario_name in sorted(all_results.keys()):
+            results = all_results[scenario_name]
             
-        v_p, v_n = results['Vanilla']
-        a_p, a_n = results['Adaptive']
-        
-        # Find QL agents
-        v_ql = [aid for aid in v_p.keys() if 'Vanilla' in aid and 'QL' in aid]
-        a_ql = [aid for aid in a_p.keys() if 'Adaptive' in aid and 'QL' in aid]
-        
-        if not v_ql or not a_ql:
-            continue
-        
-        # Calculate average metrics
-        v_p_coop = np.mean([np.mean(v_p[aid]['coop_rate']) for aid in v_ql])
-        a_p_coop = np.mean([np.mean(a_p[aid]['coop_rate']) for aid in a_ql])
-        v_p_score = np.mean([v_p[aid]['score'][-1] for aid in v_ql])
-        a_p_score = np.mean([a_p[aid]['score'][-1] for aid in a_ql])
-        
-        v_n_coop = np.mean([np.mean(v_n[aid]['coop_rate']) for aid in v_ql])
-        a_n_coop = np.mean([np.mean(a_n[aid]['coop_rate']) for aid in a_ql])
-        v_n_score = np.mean([v_n[aid]['score'][-1] for aid in v_ql])
-        a_n_score = np.mean([a_n[aid]['score'][-1] for aid in a_ql])
-        
-        # Calculate percentage improvements
-        metrics = [
-            (v_p_coop, a_p_coop),
-            (v_p_score, a_p_score),
-            (v_n_coop, a_n_coop),
-            (v_n_score, a_n_score)
-        ]
-        
-        row = []
-        for v, a in metrics:
-            if v != 0:
-                improvement = ((a - v) / abs(v)) * 100
-            else:
-                improvement = 100 if a > 0 else 0
-            row.append(improvement)
-        
-        heatmap_data.append(row)
-        scenario_names.append(scenario_name)
+            if 'Vanilla' not in results or agent_type not in results:
+                comparison_data[agent_type].append([0, 0, 0, 0])  # No data
+                continue
+            
+            v_p, v_n = results['Vanilla']
+            a_p, a_n = results[agent_type]
+            
+            # Find QL agents
+            v_ql = [aid for aid in v_p.keys() if 'Vanilla' in aid and 'QL' in aid]
+            a_ql = [aid for aid in a_p.keys() if agent_type in aid and 'QL' in aid]
+            
+            if not v_ql or not a_ql:
+                comparison_data[agent_type].append([0, 0, 0, 0])
+                continue
+            
+            # Calculate metrics
+            v_metrics = [
+                np.mean([np.mean(v_p[aid]['coop_rate']) for aid in v_ql]),
+                np.mean([v_p[aid]['score'][-1] for aid in v_ql]),
+                np.mean([np.mean(v_n[aid]['coop_rate']) for aid in v_ql]),
+                np.mean([v_n[aid]['score'][-1] for aid in v_ql])
+            ]
+            
+            a_metrics = [
+                np.mean([np.mean(a_p[aid]['coop_rate']) for aid in a_ql]),
+                np.mean([a_p[aid]['score'][-1] for aid in a_ql]),
+                np.mean([np.mean(a_n[aid]['coop_rate']) for aid in a_ql]),
+                np.mean([a_n[aid]['score'][-1] for aid in a_ql])
+            ]
+            
+            # Calculate percentage improvements
+            improvements = []
+            for v, a in zip(v_metrics, a_metrics):
+                if v != 0:
+                    improvement = ((a - v) / abs(v)) * 100
+                else:
+                    improvement = 100 if a > 0 else 0
+                improvements.append(improvement)
+            
+            comparison_data[agent_type].append(improvements)
     
-    if not heatmap_data:
-        print("No data for heatmap")
-        return
+    # Create combined heatmap
+    scenario_names = sorted(all_results.keys())
+    n_scenarios = len(scenario_names)
+    n_agents = len(agent_types_to_compare)
     
-    df = pd.DataFrame(heatmap_data, 
-                      index=scenario_names,
-                      columns=['Pairwise\nCooperation', 'Pairwise\nScore', 
-                               'Neighborhood\nCooperation', 'Neighborhood\nScore'])
+    # Reshape data for heatmap
+    heatmap_data = []
+    row_labels = []
     
-    plt.figure(figsize=(10, len(scenario_names) * 0.5 + 2))
-    sns.heatmap(df, annot=True, fmt=".1f", cmap="RdYlGn", center=0, cbar_kws={'label': '% Improvement'})
-    plt.title("Performance Improvement: Adaptive vs. Vanilla Q-Learning\n(Positive = Adaptive Better)", fontsize=16)
+    for i, agent_type in enumerate(agent_types_to_compare):
+        for j, scenario in enumerate(scenario_names):
+            heatmap_data.append(comparison_data[agent_type][j])
+            row_labels.append(f"{agent_type} - {scenario}")
+    
+    df = pd.DataFrame(heatmap_data,
+                      index=row_labels,
+                      columns=['PW Coop %', 'PW Score %', 'NH Coop %', 'NH Score %'])
+    
+    plt.figure(figsize=(8, max(8, len(row_labels) * 0.3)))
+    sns.heatmap(df, annot=True, fmt=".1f", cmap="RdYlGn", center=0, 
+                cbar_kws={'label': '% Improvement over Vanilla'})
+    plt.title("Performance Comparison: All Agents vs. Vanilla Baseline", fontsize=14)
     plt.xlabel("Metrics", fontsize=12)
-    plt.ylabel("Scenarios", fontsize=12)
     plt.tight_layout()
     plt.savefig(save_path, dpi=150)
     plt.close()
@@ -360,7 +377,7 @@ if __name__ == "__main__":
                        "params": HYSTERETIC_PARAMS},
     }
     
-    # Optional: Add enhanced adaptive agents (uncomment to include)
+    # Optional: Add enhanced adaptive agents (uncomment to include -- comment to exclude)
     from modular_agents import create_adaptive_statistical, create_adaptive_softmax
     ql_configs["Adaptive+Stat"] = {"class": create_adaptive_statistical, "params": ADAPTIVE_PARAMS}
     ql_configs["Adaptive+Soft"] = {"class": create_adaptive_softmax, "params": ADAPTIVE_PARAMS}

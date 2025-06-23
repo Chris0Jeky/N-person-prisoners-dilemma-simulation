@@ -158,17 +158,20 @@ def plot_scenario_comparison(results, title, save_path, num_rounds=None):
         p_coop_smooth = smooth_data(p_coop, smooth_window)
         n_coop_smooth = smooth_data(n_coop, smooth_window)
         
+        # Get color for this agent type
+        color = colors.get(agent_type, "#808080")  # Default to gray if not found
+        
         # Plot raw data with low alpha and smoothed data with high alpha
         # Cooperation rates
-        axes[0, 0].plot(p_coop, color=colors[agent_type], alpha=0.2, linewidth=0.5)
-        axes[0, 0].plot(p_coop_smooth, label=agent_type, color=colors[agent_type], linewidth=2.5)
+        axes[0, 0].plot(p_coop, color=color, alpha=0.2, linewidth=0.5)
+        axes[0, 0].plot(p_coop_smooth, label=agent_type, color=color, linewidth=2.5)
         
-        axes[1, 0].plot(n_coop, color=colors[agent_type], alpha=0.2, linewidth=0.5)
-        axes[1, 0].plot(n_coop_smooth, label=agent_type, color=colors[agent_type], linewidth=2.5)
+        axes[1, 0].plot(n_coop, color=color, alpha=0.2, linewidth=0.5)
+        axes[1, 0].plot(n_coop_smooth, label=agent_type, color=color, linewidth=2.5)
         
         # Scores (no smoothing needed as they're cumulative)
-        axes[0, 1].plot(p_score, label=agent_type, color=colors[agent_type], linewidth=2)
-        axes[1, 1].plot(n_score, label=agent_type, color=colors[agent_type], linewidth=2)
+        axes[0, 1].plot(p_score, label=agent_type, color=color, linewidth=2)
+        axes[1, 1].plot(n_score, label=agent_type, color=color, linewidth=2)
     
     axes[0, 0].set_title('Pairwise Cooperation Rate'); axes[0, 0].set_ylabel('Cooperation Rate')
     axes[0, 1].set_title('Pairwise Cumulative Score'); axes[0, 1].set_ylabel('Cumulative Score')

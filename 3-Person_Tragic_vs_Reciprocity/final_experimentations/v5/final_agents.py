@@ -168,12 +168,9 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         state = self._get_neighborhood_state(coop_ratio)
         epsilon = self.params.get('initial_eps', self.params.get('eps', 0.1))
         
-        # Use a special neighborhood Q-table
-        if not hasattr(self, 'neighborhood_q_table'):
-            self.neighborhood_q_table = defaultdict(self._make_q_dict)
-            self.neighborhood_lr = self._get_initial_lr()
-            self.neighborhood_epsilon = epsilon
-            self.neighborhood_reward_window = self._make_reward_window()
+        # Initialize neighborhood state if needed
+        if state not in self.neighborhood_q_table:
+            self.neighborhood_q_table[state] = self._make_q_dict()
         
         if random.random() < self.neighborhood_epsilon:
             action = random.choice(['cooperate', 'defect'])

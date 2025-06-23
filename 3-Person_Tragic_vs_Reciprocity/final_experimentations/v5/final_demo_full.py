@@ -377,6 +377,16 @@ if __name__ == "__main__":
                      "params": ADAPTIVE_PARAMS},
         "Hysteretic": {"class": HystereticQLearner,      # New Hysteretic Q-learner
                        "params": HYSTERETIC_PARAMS},
+        "Enhanced": {"class": EnhancedQLearningAgent,     # Enhanced with epsilon decay
+                     "params": {
+                         "learning_rate": 0.1,
+                         "discount_factor": 0.9,
+                         "epsilon": 0.3,  # Start with higher exploration
+                         "epsilon_decay": 0.999,
+                         "epsilon_min": 0.01,
+                         "state_type": "basic",  # Use basic state by default
+                         "exploration_rate": 0.0  # No additional exploration noise
+                     }},
     }
     
     # Optional: Add enhanced adaptive agents (uncomment to include -- comment to exclude)

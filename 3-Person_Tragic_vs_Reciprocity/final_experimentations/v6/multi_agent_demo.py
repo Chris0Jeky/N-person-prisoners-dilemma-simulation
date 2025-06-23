@@ -5,7 +5,7 @@ Multi-agent experiments testing the effect of group size on Q-learning agents.
 Tests:
 - 5, 7, 19, and 25 total agents
 - 1 or 3 Q-learning agents per scenario
-- Vanilla QL and Enhanced QL only
+- Vanilla QL and Hysteretic QL only
 - Special scenarios: all same QL type, and mixed QL types
 """
 
@@ -18,9 +18,8 @@ from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 import time
 
-from final_agents import StaticAgent, PairwiseAdaptiveQLearner
-from enhanced_qlearning import create_enhanced_qlearning
-from config import VANILLA_PARAMS, ENHANCED_PARAMS, SIMULATION_CONFIG
+from final_agents import StaticAgent, PairwiseAdaptiveQLearner, HystereticQLearner
+from config import VANILLA_PARAMS, HYSTERETIC_PARAMS, SIMULATION_CONFIG
 from save_config import save_detailed_config
 
 # --- Payoff Logic ---
@@ -260,10 +259,10 @@ if __name__ == "__main__":
         "TFT": {"strategy": "TFT", "error_rate": 0.0},
     }
     
-    # Q-learner configurations (only Vanilla and Enhanced)
+    # Q-learner configurations (Vanilla and Hysteretic)
     QL_CONFIGS = {
         "Vanilla": {"class": PairwiseAdaptiveQLearner, "params": VANILLA_PARAMS},
-        "Enhanced": {"class": create_enhanced_qlearning, "params": ENHANCED_PARAMS},
+        "Hysteretic": {"class": HystereticQLearner, "params": HYSTERETIC_PARAMS},
     }
     
     USE_PARALLEL = True
@@ -290,9 +289,9 @@ if __name__ == "__main__":
         scenario_descriptions[f"{n_agents}_agents_AllQL"] = f"All {n_agents} agents are the same type of QL"
         if n_agents >= 4:  # Need at least 4 agents for mixed
             n_vanilla = n_agents // 2
-            n_enhanced = n_agents - n_vanilla
-            scenario_descriptions[f"{n_agents}_agents_Mixed_{n_vanilla}v{n_enhanced}e"] = \
-                f"{n_vanilla} Vanilla QL vs {n_enhanced} Enhanced QL"
+            n_hysteretic = n_agents - n_vanilla
+            scenario_descriptions[f"{n_agents}_agents_Mixed_{n_vanilla}v{n_hysteretic}h"] = \
+                f"{n_vanilla} Vanilla QL vs {n_hysteretic} Hysteretic QL"
     
     save_detailed_config(OUTPUT_DIR, scenario_descriptions)
     
@@ -374,12 +373,12 @@ if __name__ == "__main__":
         if n_agents < 4:  # Need at least 4 agents for meaningful mixed scenario
             continue
             
-        # Split roughly in half, with Enhanced having equal or more agents
+        # Split roughly in half, with Hysteretic having equal or more agents
         n_vanilla = n_agents // 2
-        n_enhanced = n_agents - n_vanilla
+        n_hysteretic = n_agents - n_vanilla
         
-        scenario_name = f"{n_agents}_MixedQL_{n_vanilla}v{n_enhanced}e"
-        print(f"\nScenario: {scenario_name} ({n_vanilla} Vanilla vs {n_enhanced} Enhanced)")
+        scenario_name = f"{n_agents}_MixedQL_{n_vanilla}v{n_hysteretic}h"
+        print(f"\nScenario: {scenario_name} ({n_vanilla} Vanilla vs {n_hysteretic} Hysteretic)")
         
         agents = []
         
@@ -391,11 +390,11 @@ if __name__ == "__main__":
             )
             agents.append(agent)
         
-        # Create Enhanced agents
-        for i in range(n_enhanced):
-            agent = QL_CONFIGS["Enhanced"]["class"](
-                agent_id=f"Enhanced_QL_{i+1}",
-                params=QL_CONFIGS["Enhanced"]["params"]
+        # Create Hysteretic agents
+        for i in range(n_hysteretic):
+            agent = QL_CONFIGS["Hysteretic"]["class"](
+                agent_id=f"Hysteretic_QL_{i+1}",
+                params=QL_CONFIGS["Hysteretic"]["params"]
             )
             agents.append(agent)
         

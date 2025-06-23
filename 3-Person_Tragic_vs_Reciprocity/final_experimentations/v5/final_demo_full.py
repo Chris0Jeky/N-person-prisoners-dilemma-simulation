@@ -88,11 +88,27 @@ def run_experiment_set(agents, num_rounds, num_runs):
     return p_agg, n_agg
 
 
-def plot_scenario_comparison(results, title, save_path):
+def smooth_data(data, window_size=50):
+    """Apply rolling average to smooth data"""
+    if len(data) < window_size:
+        window_size = max(1, len(data) // 10)
+    
+    # Use pandas for efficient rolling average
+    import pandas as pd
+    series = pd.Series(data)
+    smoothed = series.rolling(window=window_size, center=True, min_periods=1).mean()
+    return smoothed.values
+
+def plot_scenario_comparison(results, title, save_path, num_rounds=None):
     """Generates a 4-panel plot comparing Vanilla vs. Adaptive for one scenario."""
     fig, axes = plt.subplots(2, 2, figsize=(20, 15))
     fig.suptitle(f"Comparison: {title}", fontsize=22)
     colors = {"Vanilla": "#1f77b4", "Adaptive": "#ff7f0e"}
+    
+    # Determine smoothing window based on number of rounds
+    if num_rounds is None:
+        num_rounds = SIMULATION_CONFIG['num_rounds']
+    smooth_window = max(50, num_rounds // 100)  # At least 50, or 1% of total rounds
     
     for agent_type, (p_data, n_data) in results.items():
         # Find the QL agents in the results
@@ -106,9 +122,20 @@ def plot_scenario_comparison(results, title, save_path):
         n_coop = np.mean([n_data[aid]['coop_rate'] for aid in ql_agents], axis=0)
         n_score = np.mean([n_data[aid]['score'] for aid in ql_agents], axis=0)
         
-        axes[0, 0].plot(p_coop, label=agent_type, color=colors[agent_type], linewidth=2)
+        # Apply smoothing
+        p_coop_smooth = smooth_data(p_coop, smooth_window)
+        n_coop_smooth = smooth_data(n_coop, smooth_window)
+        
+        # Plot raw data with low alpha and smoothed data with high alpha
+        # Cooperation rates
+        axes[0, 0].plot(p_coop, color=colors[agent_type], alpha=0.2, linewidth=0.5)
+        axes[0, 0].plot(p_coop_smooth, label=agent_type, color=colors[agent_type], linewidth=2.5)
+        
+        axes[1, 0].plot(n_coop, color=colors[agent_type], alpha=0.2, linewidth=0.5)
+        axes[1, 0].plot(n_coop_smooth, label=agent_type, color=colors[agent_type], linewidth=2.5)
+        
+        # Scores (no smoothing needed as they're cumulative)
         axes[0, 1].plot(p_score, label=agent_type, color=colors[agent_type], linewidth=2)
-        axes[1, 0].plot(n_coop, label=agent_type, color=colors[agent_type], linewidth=2)
         axes[1, 1].plot(n_score, label=agent_type, color=colors[agent_type], linewidth=2)
     
     axes[0, 0].set_title('Pairwise Cooperation Rate'); axes[0, 0].set_ylabel('Cooperation Rate')

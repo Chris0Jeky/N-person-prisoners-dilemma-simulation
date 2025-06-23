@@ -139,9 +139,12 @@ def create_heatmap(all_results, save_path):
 
 
 if __name__ == "__main__":
-    NUM_ROUNDS, NUM_RUNS = 1000, 20
+    NUM_ROUNDS = SIMULATION_CONFIG['num_rounds']
+    NUM_RUNS = SIMULATION_CONFIG['num_runs']
     OUTPUT_DIR = "all_scenarios_comparison"
     os.makedirs(OUTPUT_DIR, exist_ok=True)
+    
+    print(f"Running simulations with {NUM_ROUNDS} rounds and {NUM_RUNS} runs per scenario")
 
     # --- Define Scenarios ---
     scenario_opponents = {

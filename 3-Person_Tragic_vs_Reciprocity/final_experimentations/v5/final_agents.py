@@ -279,6 +279,11 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
 
     def choose_neighborhood_action(self, coop_ratio):
         state = self._get_state(coop_ratio)
+        
+        # Initialize state if needed
+        if state not in self.q_table:
+            self.q_table[state] = self._make_q_dict()
+            
         if random.random() < self.epsilon:
             action = random.choice(['cooperate', 'defect'])
         else:

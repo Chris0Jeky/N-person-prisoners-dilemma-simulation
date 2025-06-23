@@ -14,7 +14,7 @@ SIMULATION_CONFIG = {
 # Serves as the stable baseline for comparison.
 VANILLA_PARAMS = {
     'lr': 0.1,  # Learning Rate (alpha)
-    'df': 0.95,  # Discount Factor (gamma)
+    'df': 0.9,  # Discount Factor (gamma)
     'eps': 0.1,  # Epsilon (fixed exploration rate)
 }
 
@@ -37,7 +37,7 @@ ADAPTIVE_PARAMS = {
     'reward_window_size': 500,
 
     # Discount factor
-    'df': 0.95,
+    'df': 0.9,
 }
 
 # Parameters for Hysteretic Q-learning agent
@@ -45,14 +45,14 @@ ADAPTIVE_PARAMS = {
 HYSTERETIC_PARAMS = {
     'lr': 0.1,      # Learning rate for positive updates (good news)
     'beta': 0.005,   # Learning rate for negative updates (bad news)
-    'df': 0.95,      # Discount factor
+    'df': 0.9,      # Discount factor
     'eps': 0.08,     # Exploration rate
 }
 
 # Parameters for Modular Q-learning agents
 MODULAR_BASE_PARAMS = {
     'lr': 0.1,      # Learning rate
-    'df': 0.95,      # Discount factor
+    'df': 0.9,      # Discount factor
     'eps': 0.2,     # Epsilon for epsilon-greedy
 }
 
@@ -62,7 +62,7 @@ SOFTMAX_PARAMS = {
     'min_temperature': 0.01,      # Minimum temperature
     'decay_rate': 0.98,         # Temperature decay rate
     'lr': 0.1,                   # Learning rate
-    'df': 0.95,                   # Discount factor
+    'df': 0.9,                   # Discount factor
 }
 
 # Enhanced Q-Learning parameters (with epsilon decay)

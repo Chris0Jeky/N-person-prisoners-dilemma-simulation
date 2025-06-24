@@ -6,6 +6,8 @@ import pandas as pd
 from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 import time
+import csv
+from datetime import datetime
 
 from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner, HystereticQLearner, LegacyQLearner, Legacy3RoundQLearner
 from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, LEGACY_PARAMS, LEGACY_3ROUND_PARAMS, SIMULATION_CONFIG
@@ -369,10 +371,10 @@ if __name__ == "__main__":
     
     # Define Q-learner configurations
     ql_configs = {
-        "Vanilla": {"class": PairwiseAdaptiveQLearner,  # Using PairwiseAdaptiveQLearner for both modes
-                    "params": VANILLA_PARAMS},
-        "Adaptive": {"class": PairwiseAdaptiveQLearner,  # Using PairwiseAdaptiveQLearner for both modes
-                     "params": ADAPTIVE_PARAMS},
+        # "Vanilla": {"class": PairwiseAdaptiveQLearner,  # Using PairwiseAdaptiveQLearner for both modes
+        #             "params": VANILLA_PARAMS},
+        # "Adaptive": {"class": PairwiseAdaptiveQLearner,  # Using PairwiseAdaptiveQLearner for both modes
+        #              "params": ADAPTIVE_PARAMS},
         "Hysteretic": {"class": HystereticQLearner,      # New Hysteretic Q-learner
                        "params": HYSTERETIC_PARAMS},
         "Legacy": {"class": LegacyQLearner,              # Legacy Q-learner with sophisticated state

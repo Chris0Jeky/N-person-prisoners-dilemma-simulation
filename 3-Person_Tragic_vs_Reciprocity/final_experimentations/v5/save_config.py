@@ -3,7 +3,7 @@
 
 import json
 from datetime import datetime
-from config import SIMULATION_CONFIG, VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, LEGACY_PARAMS
+from config import SIMULATION_CONFIG, VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, LEGACY_PARAMS, LEGACY_3ROUND_PARAMS
 
 def save_detailed_config(output_dir, scenario_descriptions=None):
     """

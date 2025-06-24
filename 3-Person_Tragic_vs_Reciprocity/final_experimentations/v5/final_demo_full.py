@@ -522,6 +522,11 @@ if __name__ == "__main__":
     create_heatmap(all_scenario_results, heatmap_path)
     print(f"Heatmap saved: {heatmap_path}")
     
+    # --- Save Results to CSV ---
+    print("\n=== Saving Results to CSV ===")
+    csv_dir = save_results_to_csv(all_scenario_results, OUTPUT_DIR, ql_configs)
+    print(f"CSV results saved to: {csv_dir}")
+    
     # Calculate total time
     total_elapsed = time.time() - total_start_time
     print(f"\nAll experiments complete! Results saved to '{OUTPUT_DIR}'")

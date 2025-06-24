@@ -1,0 +1,58 @@
+================================================================================
+                    SIMULATION CONFIGURATION REPORT
+================================================================================
+
+Generated: 2025-01-23 10:30:45
+Output Directory: final_comparison_charts
+
+SIMULATION PARAMETERS
+----------------------------------------
+Number of rounds per simulation: 10,000
+Number of runs to average: 15
+Total simulations per scenario: 150,000
+
+VANILLA Q-LEARNER (Fixed Parameters)
+----------------------------------------
+Learning Rate (α): 0.1
+Discount Factor (γ): 0.9
+Exploration Rate (ε): 0.1
+
+ADAPTIVE Q-LEARNER (Dynamic Parameters)
+----------------------------------------
+Initial Learning Rate: 0.4
+Initial Exploration Rate: 0.2
+Learning Rate Range: [0.05, 0.5]
+Exploration Rate Range: [0.01, 0.4]
+Adaptation Factor: 1.05
+Reward Window Size: 10
+Discount Factor (γ): 0.9
+
+SCENARIO DESCRIPTIONS
+----------------------------------------
+2QL_vs_1AllC: Two Q-learners compete against one Always Cooperate agent
+2QL_vs_1AllD: Two Q-learners compete against one Always Defect agent
+2QL_vs_1Random: Two Q-learners compete against one Random agent
+2QL_vs_1TFT: Two Q-learners compete against one Tit-for-Tat agent
+2QL_vs_1TFT-E: Two Q-learners compete against one TFT with 10% error rate
+1QL_vs_2AllC: One Q-learner competes against two Always Cooperate agents
+1QL_vs_2AllD: One Q-learner competes against two Always Defect agents
+1QL_vs_2Random: One Q-learner competes against two Random agents
+1QL_vs_2TFT: One Q-learner competes against two Tit-for-Tat agents
+1QL_vs_2TFT-E: One Q-learner competes against two TFT with 10% error rate
+
+GAME PARAMETERS
+----------------------------------------
+Prisoner's Dilemma Payoffs:
+  T (Temptation): 5
+  R (Reward): 3
+  P (Punishment): 1
+  S (Sucker): 0
+
+Agent Strategies:
+  AllC: Always Cooperate
+  AllD: Always Defect
+  Random: 50/50 random choice
+  TFT: Tit-for-Tat (copy opponent's last move)
+  TFT-E: TFT with 10% error rate
+
+================================================================================

@@ -3,7 +3,7 @@
 
 import json
 from datetime import datetime
-from config import SIMULATION_CONFIG, VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS
+from config import SIMULATION_CONFIG, VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, LEGACY_PARAMS
 
 def save_detailed_config(output_dir, scenario_descriptions=None):
     """
@@ -59,6 +59,16 @@ def save_detailed_config(output_dir, scenario_descriptions=None):
         f.write(f"Discount Factor (γ): {HYSTERETIC_PARAMS['df']}\n")
         f.write(f"Exploration Rate (ε): {HYSTERETIC_PARAMS['eps']}\n\n")
         
+        # Legacy Q-learner
+        f.write("LEGACY Q-LEARNER (Sophisticated State Representation)\n")
+        f.write("-"*40 + "\n")
+        f.write(f"Learning Rate (α): {LEGACY_PARAMS['lr']}\n")
+        f.write(f"Discount Factor (γ): {LEGACY_PARAMS['df']}\n")
+        f.write(f"Initial Exploration Rate (ε): {LEGACY_PARAMS['eps']}\n")
+        f.write(f"Epsilon Decay Rate: {LEGACY_PARAMS['epsilon_decay']}\n")
+        f.write(f"Minimum Epsilon: {LEGACY_PARAMS['epsilon_min']}\n")
+        f.write("Features: 2-round history, cooperation trends, optimistic initialization\n\n")
+        
         # Scenario descriptions if provided
         if scenario_descriptions:
             f.write("SCENARIO DESCRIPTIONS\n")
@@ -96,6 +106,7 @@ def save_detailed_config(output_dir, scenario_descriptions=None):
         "vanilla_params": VANILLA_PARAMS,
         "adaptive_params": ADAPTIVE_PARAMS,
         "hysteretic_params": HYSTERETIC_PARAMS,
+        "legacy_params": LEGACY_PARAMS,
         "game_params": {
             "payoffs": {"T": 5, "R": 3, "P": 1, "S": 0},
             "strategies": {

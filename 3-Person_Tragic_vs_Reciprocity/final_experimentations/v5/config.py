@@ -79,12 +79,12 @@ ENHANCED_PARAMS = {
 
 # Legacy Q-Learning parameters (with sophisticated state representation)
 LEGACY_PARAMS = {
-    'lr': 0.12,                  # Learning rate
-    'df': 0.97,                  # Discount factor (slightly lower for 2-round)
-    'eps': 0.25,                 # Starting epsilon (higher for better exploration)
-    'epsilon_decay': 0.998,      # Epsilon decay rate (slower decay)
-    'epsilon_min': 0.01,         # Minimum epsilon (higher floor)
-    'optimistic_init': -0.3       # Changed from 0.1 to 0.0 (pessimistic)
+    'lr': 0.15,                  # Learning rate
+    'df': 0.95,                  # Discount factor (slightly lower for 2-round)
+    'eps': 0.3,                 # Starting epsilon (higher for better exploration)
+    'epsilon_decay': 0.995,      # Epsilon decay rate (slower decay)
+    'epsilon_min': 0.05,         # Minimum epsilon (higher floor)
+    'optimistic_init': 0.0
 }
 
 # Legacy 3-Round Q-Learning parameters (3-round history tracking)
@@ -94,6 +94,6 @@ LEGACY_3ROUND_PARAMS = {
     'eps': 0.25,                 # Much more exploration needed
     'epsilon_decay': 0.998,     # Very slow decay for larger state space
     'epsilon_min': 0.01,         # Higher minimum
-    'optimistic_init': -0.3,     # Pessimistic initialization
+    'optimistic_init': -0.3,
     'history_length': 3          # Track 3 rounds instead of 2
 }

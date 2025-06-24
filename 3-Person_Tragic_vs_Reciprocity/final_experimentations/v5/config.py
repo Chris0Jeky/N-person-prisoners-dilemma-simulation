@@ -79,9 +79,9 @@ ENHANCED_PARAMS = {
 
 # Legacy Q-Learning parameters (with sophisticated state representation)
 LEGACY_PARAMS = {
-    'lr': 0.15,                  # Learning rate
+    'lr': 0.1,                  # Learning rate
     'df': 0.95,                  # Discount factor
-    'eps': 0.2,                  # Starting epsilon
+    'eps': 0.15,                # Starting epsilon
     'epsilon_decay': 0.995,      # Epsilon decay rate
-    'epsilon_min': 0.05,         # Minimum epsilon
+    'epsilon_min': 0.01        # Minimum epsilon
 }

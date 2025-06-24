@@ -285,7 +285,7 @@ def create_heatmap(all_results, save_path):
     plt.close()
 
 
-def save_results_to_csv(all_scenario_results, output_dir):
+def save_results_to_csv(all_scenario_results, output_dir, ql_configs):
     """Save detailed results to CSV files in a subfolder"""
     csv_dir = os.path.join(output_dir, "csv_results")
     os.makedirs(csv_dir, exist_ok=True)

@@ -76,3 +76,12 @@ ENHANCED_PARAMS = {
     'memory_length': 100,         # Number of past actions to remember
     'exploration_rate': 0.0,     # Additional random exploration
 }
+
+# Legacy Q-Learning parameters (with sophisticated state representation)
+LEGACY_PARAMS = {
+    'lr': 0.15,                  # Learning rate
+    'df': 0.95,                  # Discount factor
+    'eps': 0.2,                  # Starting epsilon
+    'epsilon_decay': 0.995,      # Epsilon decay rate
+    'epsilon_min': 0.05,         # Minimum epsilon
+}

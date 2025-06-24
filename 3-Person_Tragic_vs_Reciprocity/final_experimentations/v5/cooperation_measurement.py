@@ -180,54 +180,49 @@ def run_multiple_simulations(agents, num_rounds, num_runs):
 
 
 def plot_cooperation_comparison(results, title, save_path):
-    """Plot cooperation rates for QL vs TFT groups"""
-    fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(16, 12))
+    """Plot cooperation rates for QL vs TFT groups with smoothing"""
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
     fig.suptitle(title, fontsize=16)
     
     pairwise, nperson = results
     rounds = np.arange(len(pairwise['ql_coop_rate']))
     
+    # Determine smoothing window based on number of rounds
+    smooth_window = max(50, len(rounds) // 100)
+    
+    # Smooth the data
+    pairwise_ql_smooth = smooth_data(pairwise['ql_coop_rate'], smooth_window)
+    pairwise_tft_smooth = smooth_data(pairwise['tft_coop_rate'], smooth_window)
+    nperson_ql_smooth = smooth_data(nperson['ql_coop_rate'], smooth_window)
+    nperson_tft_smooth = smooth_data(nperson['tft_coop_rate'], smooth_window)
+    
     # Pairwise cooperation rates
-    ax1.plot(rounds, pairwise['ql_coop_rate'], label='QL Group', color='blue', linewidth=2)
-    ax1.plot(rounds, pairwise['tft_coop_rate'], label='TFT Group', color='green', linewidth=2)
-    ax1.set_title('Pairwise Cooperation Rates')
+    # Plot raw data with low alpha
+    ax1.plot(rounds, pairwise['ql_coop_rate'], color='blue', alpha=0.2, linewidth=0.5)
+    ax1.plot(rounds, pairwise['tft_coop_rate'], color='green', alpha=0.2, linewidth=0.5)
+    # Plot smoothed data with high alpha
+    ax1.plot(rounds, pairwise_ql_smooth, label='QL Group', color='blue', linewidth=2.5)
+    ax1.plot(rounds, pairwise_tft_smooth, label='TFT Group', color='green', linewidth=2.5)
+    ax1.set_title('Pairwise Cooperation Rates', fontsize=14)
     ax1.set_xlabel('Round')
     ax1.set_ylabel('Cooperation Rate')
     ax1.legend()
     ax1.grid(True, alpha=0.3)
-    ax1.set_ylim(0, 1.05)
+    ax1.set_ylim(-0.05, 1.05)
     
     # Neighborhood cooperation rates
-    ax2.plot(rounds, nperson['ql_coop_rate'], label='QL Group', color='blue', linewidth=2)
-    ax2.plot(rounds, nperson['tft_coop_rate'], label='TFT Group', color='green', linewidth=2)
-    ax2.set_title('Neighborhood Cooperation Rates')
+    # Plot raw data with low alpha
+    ax2.plot(rounds, nperson['ql_coop_rate'], color='blue', alpha=0.2, linewidth=0.5)
+    ax2.plot(rounds, nperson['tft_coop_rate'], color='green', alpha=0.2, linewidth=0.5)
+    # Plot smoothed data with high alpha
+    ax2.plot(rounds, nperson_ql_smooth, label='QL Group', color='blue', linewidth=2.5)
+    ax2.plot(rounds, nperson_tft_smooth, label='TFT Group', color='green', linewidth=2.5)
+    ax2.set_title('Neighborhood Cooperation Rates', fontsize=14)
     ax2.set_xlabel('Round')
     ax2.set_ylabel('Cooperation Rate')
     ax2.legend()
     ax2.grid(True, alpha=0.3)
-    ax2.set_ylim(0, 1.05)
-    
-    # Pairwise scores
-    if len(pairwise['ql_avg_score']) > 0:
-        ax3.plot(rounds, pairwise['ql_avg_score'], label='QL Group', color='blue', linewidth=2)
-    if len(pairwise['tft_avg_score']) > 0:
-        ax3.plot(rounds, pairwise['tft_avg_score'], label='TFT Group', color='green', linewidth=2)
-    ax3.set_title('Pairwise Average Scores')
-    ax3.set_xlabel('Round')
-    ax3.set_ylabel('Cumulative Score')
-    ax3.legend()
-    ax3.grid(True, alpha=0.3)
-    
-    # Neighborhood scores
-    if len(nperson['ql_avg_score']) > 0:
-        ax4.plot(rounds, nperson['ql_avg_score'], label='QL Group', color='blue', linewidth=2)
-    if len(nperson['tft_avg_score']) > 0:
-        ax4.plot(rounds, nperson['tft_avg_score'], label='TFT Group', color='green', linewidth=2)
-    ax4.set_title('Neighborhood Average Scores')
-    ax4.set_xlabel('Round')
-    ax4.set_ylabel('Cumulative Score')
-    ax4.legend()
-    ax4.grid(True, alpha=0.3)
+    ax2.set_ylim(-0.05, 1.05)
     
     plt.tight_layout()
     plt.savefig(save_path, dpi=150)

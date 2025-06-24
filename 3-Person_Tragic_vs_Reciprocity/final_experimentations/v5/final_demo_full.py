@@ -7,7 +7,7 @@ from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 import time
 
-from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner, HystereticQLearner
+from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner, HystereticQLearner, LegacyQLearner
 from enhanced_qlearning import create_enhanced_qlearning
 from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, ENHANCED_PARAMS, SIMULATION_CONFIG
 from save_config import save_detailed_config

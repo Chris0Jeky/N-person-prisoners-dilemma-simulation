@@ -9,7 +9,7 @@ import time
 
 from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner, HystereticQLearner, LegacyQLearner
 from enhanced_qlearning import create_enhanced_qlearning
-from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, ENHANCED_PARAMS, SIMULATION_CONFIG
+from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, ENHANCED_PARAMS, LEGACY_PARAMS, SIMULATION_CONFIG
 from save_config import save_detailed_config
 
 # --- Payoff Logic ---
@@ -135,6 +135,7 @@ def plot_scenario_comparison(results, title, save_path, num_rounds=None):
         "Adaptive": "#ff7f0e", 
         "Hysteretic": "#2ca02c",
         "Enhanced": "#e377c2",
+        "Legacy": "#17becf",
         "Adaptive+Stat": "#d62728",
         "Adaptive+Soft": "#9467bd",
         "Adaptive+StatSoft": "#8c564b"
@@ -380,6 +381,8 @@ if __name__ == "__main__":
                        "params": HYSTERETIC_PARAMS},
         "Enhanced": {"class": create_enhanced_qlearning,     # Enhanced with epsilon decay
                      "params": ENHANCED_PARAMS},
+        "Legacy": {"class": LegacyQLearner,              # Legacy Q-learner with sophisticated state
+                   "params": LEGACY_PARAMS},
     }
     
     # Optional: Add enhanced adaptive agents (uncomment to include -- comment to exclude)

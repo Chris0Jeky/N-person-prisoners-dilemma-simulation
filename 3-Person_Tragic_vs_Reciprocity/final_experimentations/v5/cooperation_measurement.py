@@ -231,72 +231,72 @@ def plot_cooperation_comparison(results, title, save_path):
 
 def plot_combined_4lines(all_results, save_path):
     """Plot all 4 lines (pairwise QL, pairwise TFT, neighborhood QL, neighborhood TFT) on one graph"""
-    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(16, 6))
-    fig.suptitle('Combined Cooperation Rates: All Scenarios', fontsize=16)
+    fig = plt.figure(figsize=(14, 8))
+    ax = plt.subplot(111)
     
-    colors = ['blue', 'green', 'red', 'orange', 'purple', 'brown']
-    linestyles = ['-', '--', '-.', ':']
+    colors = {'Legacy': 'blue', 'Legacy3Round': 'purple', 'TFT': 'green'}
+    base_colors = ['blue', 'purple']
     
-    # Plot cooperation rates
-    for idx, (scenario_name, (pairwise, nperson)) in enumerate(all_results.items()):
-        color = colors[idx % len(colors)]
+    # Determine smoothing window
+    first_scenario = list(all_results.values())[0]
+    num_rounds = len(first_scenario[0]['ql_coop_rate'])
+    smooth_window = max(50, num_rounds // 100)
+    
+    # Plot cooperation rates with smoothing
+    color_idx = 0
+    for scenario_name, (pairwise, nperson) in all_results.items():
+        # Determine if this is Legacy or Legacy3Round
+        if 'Legacy3Round' in scenario_name:
+            base_color = colors['Legacy3Round']
+        else:
+            base_color = colors['Legacy']
         
         rounds = np.arange(len(pairwise['ql_coop_rate']))
         
-        # Cooperation rates
-        ax1.plot(rounds, pairwise['ql_coop_rate'], 
-                label=f'{scenario_name} - Pairwise QL', 
-                color=color, linestyle='-', linewidth=2, alpha=0.8)
-        ax1.plot(rounds, pairwise['tft_coop_rate'], 
-                label=f'{scenario_name} - Pairwise TFT', 
-                color=color, linestyle='--', linewidth=2, alpha=0.8)
-        ax1.plot(rounds, nperson['ql_coop_rate'], 
-                label=f'{scenario_name} - Neighborhood QL', 
-                color=color, linestyle='-.', linewidth=2, alpha=0.8)
-        ax1.plot(rounds, nperson['tft_coop_rate'], 
-                label=f'{scenario_name} - Neighborhood TFT', 
-                color=color, linestyle=':', linewidth=2, alpha=0.8)
+        # Smooth the data
+        pairwise_ql_smooth = smooth_data(pairwise['ql_coop_rate'], smooth_window)
+        pairwise_tft_smooth = smooth_data(pairwise['tft_coop_rate'], smooth_window)
+        nperson_ql_smooth = smooth_data(nperson['ql_coop_rate'], smooth_window)
+        nperson_tft_smooth = smooth_data(nperson['tft_coop_rate'], smooth_window)
+        
+        # Determine line styles based on scenario type
+        if '2QL_vs_1TFT' in scenario_name:
+            ql_style = '-'
+            tft_style = '--'
+            alpha = 1.0
+        else:  # 1QL_vs_2TFT
+            ql_style = '-.'
+            tft_style = ':'
+            alpha = 0.8
+        
+        # Plot smoothed lines with labels
+        label_suffix = ' (2v1)' if '2QL_vs_1TFT' in scenario_name else ' (1v2)'
+        ql_type = 'Legacy3Round' if 'Legacy3Round' in scenario_name else 'Legacy'
+        
+        ax.plot(rounds, pairwise_ql_smooth, 
+                label=f'{ql_type} QL - Pairwise{label_suffix}', 
+                color=base_color, linestyle=ql_style, linewidth=2.5, alpha=alpha)
+        ax.plot(rounds, pairwise_tft_smooth, 
+                label=f'TFT - Pairwise{label_suffix}', 
+                color=colors['TFT'], linestyle=ql_style, linewidth=2.5, alpha=alpha)
+        ax.plot(rounds, nperson_ql_smooth, 
+                label=f'{ql_type} QL - Neighborhood{label_suffix}', 
+                color=base_color, linestyle=tft_style, linewidth=2.5, alpha=alpha*0.8)
+        ax.plot(rounds, nperson_tft_smooth, 
+                label=f'TFT - Neighborhood{label_suffix}', 
+                color=colors['TFT'], linestyle=tft_style, linewidth=2.5, alpha=alpha*0.8)
     
-    ax1.set_xlabel('Round')
-    ax1.set_ylabel('Cooperation Rate')
-    ax1.set_title('Cooperation Rates Across All Scenarios')
-    ax1.legend(bbox_to_anchor=(1.05, 1), loc='upper left')
-    ax1.grid(True, alpha=0.3)
-    ax1.set_ylim(0, 1.05)
+    ax.set_xlabel('Round', fontsize=12)
+    ax.set_ylabel('Cooperation Rate', fontsize=12)
+    ax.set_title('Cooperation Rates: All Scenarios Combined', fontsize=16)
     
-    # Plot final cooperation rates as bar chart
-    scenario_names = []
-    pairwise_ql_final = []
-    pairwise_tft_final = []
-    nperson_ql_final = []
-    nperson_tft_final = []
-    
-    for scenario_name, (pairwise, nperson) in all_results.items():
-        scenario_names.append(scenario_name)
-        # Average last 100 rounds
-        pairwise_ql_final.append(np.mean(pairwise['ql_coop_rate'][-100:]))
-        pairwise_tft_final.append(np.mean(pairwise['tft_coop_rate'][-100:]))
-        nperson_ql_final.append(np.mean(nperson['ql_coop_rate'][-100:]))
-        nperson_tft_final.append(np.mean(nperson['tft_coop_rate'][-100:]))
-    
-    x = np.arange(len(scenario_names))
-    width = 0.2
-    
-    ax2.bar(x - 1.5*width, pairwise_ql_final, width, label='Pairwise QL', color='blue', alpha=0.8)
-    ax2.bar(x - 0.5*width, pairwise_tft_final, width, label='Pairwise TFT', color='green', alpha=0.8)
-    ax2.bar(x + 0.5*width, nperson_ql_final, width, label='Neighborhood QL', color='red', alpha=0.8)
-    ax2.bar(x + 1.5*width, nperson_tft_final, width, label='Neighborhood TFT', color='orange', alpha=0.8)
-    
-    ax2.set_xlabel('Scenario')
-    ax2.set_ylabel('Final Cooperation Rate')
-    ax2.set_title('Final Cooperation Rates (Last 100 Rounds)')
-    ax2.set_xticks(x)
-    ax2.set_xticklabels(scenario_names, rotation=45, ha='right')
-    ax2.legend()
-    ax2.grid(True, alpha=0.3, axis='y')
+    # Move legend outside plot area
+    ax.legend(bbox_to_anchor=(1.05, 1), loc='upper left', fontsize=10)
+    ax.grid(True, alpha=0.3)
+    ax.set_ylim(-0.05, 1.05)
     
     plt.tight_layout()
-    plt.savefig(save_path, dpi=150)
+    plt.savefig(save_path, dpi=150, bbox_inches='tight')
     plt.close()
 
 
@@ -315,11 +315,7 @@ def save_results_to_csv(all_results, output_dir):
                 'pairwise_ql_coop': pairwise['ql_coop_rate'][i],
                 'pairwise_tft_coop': pairwise['tft_coop_rate'][i],
                 'nperson_ql_coop': nperson['ql_coop_rate'][i],
-                'nperson_tft_coop': nperson['tft_coop_rate'][i],
-                'pairwise_ql_score': pairwise['ql_avg_score'][i] if i < len(pairwise['ql_avg_score']) else None,
-                'pairwise_tft_score': pairwise['tft_avg_score'][i] if i < len(pairwise['tft_avg_score']) else None,
-                'nperson_ql_score': nperson['ql_avg_score'][i] if i < len(nperson['ql_avg_score']) else None,
-                'nperson_tft_score': nperson['tft_avg_score'][i] if i < len(nperson['tft_avg_score']) else None
+                'nperson_tft_coop': nperson['tft_coop_rate'][i]
             })
         
         df = pd.DataFrame(data)
@@ -336,11 +332,7 @@ def save_results_to_csv(all_results, output_dir):
             'pairwise_ql_final_coop': np.mean(pairwise['ql_coop_rate'][-100:]),
             'pairwise_tft_final_coop': np.mean(pairwise['tft_coop_rate'][-100:]),
             'nperson_ql_final_coop': np.mean(nperson['ql_coop_rate'][-100:]),
-            'nperson_tft_final_coop': np.mean(nperson['tft_coop_rate'][-100:]),
-            'pairwise_ql_total_score': pairwise['ql_avg_score'][-1] if len(pairwise['ql_avg_score']) > 0 else 0,
-            'pairwise_tft_total_score': pairwise['tft_avg_score'][-1] if len(pairwise['tft_avg_score']) > 0 else 0,
-            'nperson_ql_total_score': nperson['ql_avg_score'][-1] if len(nperson['ql_avg_score']) > 0 else 0,
-            'nperson_tft_total_score': nperson['tft_avg_score'][-1] if len(nperson['tft_avg_score']) > 0 else 0
+            'nperson_tft_final_coop': np.mean(nperson['tft_coop_rate'][-100:])
         })
     
     summary_df = pd.DataFrame(summary_data)

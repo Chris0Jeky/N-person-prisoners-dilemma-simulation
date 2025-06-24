@@ -7,8 +7,8 @@ from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 import time
 
-from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner, HystereticQLearner, LegacyQLearner
-from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, LEGACY_PARAMS, SIMULATION_CONFIG
+from final_agents import StaticAgent, PairwiseAdaptiveQLearner, NeighborhoodAdaptiveQLearner, HystereticQLearner, LegacyQLearner, Legacy3RoundQLearner
+from config import VANILLA_PARAMS, ADAPTIVE_PARAMS, HYSTERETIC_PARAMS, LEGACY_PARAMS, LEGACY_3ROUND_PARAMS, SIMULATION_CONFIG
 from save_config import save_detailed_config
 
 # --- Payoff Logic ---
@@ -134,9 +134,7 @@ def plot_scenario_comparison(results, title, save_path, num_rounds=None):
         "Adaptive": "#ff7f0e", 
         "Hysteretic": "#2ca02c",
         "Legacy": "#17becf",
-        "Adaptive+Stat": "#d62728",
-        "Adaptive+Soft": "#9467bd",
-        "Adaptive+StatSoft": "#8c564b"
+        "Legacy3Round": "#d62728"
     }
     
     # Determine smoothing window based on number of rounds
@@ -379,11 +377,9 @@ if __name__ == "__main__":
                        "params": HYSTERETIC_PARAMS},
         "Legacy": {"class": LegacyQLearner,              # Legacy Q-learner with sophisticated state
                    "params": LEGACY_PARAMS},
+        "Legacy3Round": {"class": Legacy3RoundQLearner,  # Legacy Q-learner with 3-round history
+                         "params": LEGACY_3ROUND_PARAMS},
     }
-    
-    # Optional: Add enhanced adaptive agents (uncomment to include -- comment to exclude)
-    from modular_agents import create_adaptive_statistical, create_adaptive_softmax, create_adaptive_statistical_softmax
-    ql_configs["Adaptive+Stat"] = {"class": create_adaptive_statistical, "params": ADAPTIVE_PARAMS}
     # Removed Adaptive+Soft and Adaptive+StatSoft as requested
     
     all_scenario_results = {}

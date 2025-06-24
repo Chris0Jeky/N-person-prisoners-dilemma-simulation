@@ -168,20 +168,12 @@ def run_multiple_simulations(agents, num_rounds, num_runs):
     # Average the results
     avg_pairwise = {
         'ql_coop_rate': np.mean([run['ql_coop_rate'] for run in pairwise_runs], axis=0),
-        'tft_coop_rate': np.mean([run['tft_coop_rate'] for run in pairwise_runs], axis=0),
-        'ql_avg_score': np.mean([np.mean([run['ql_scores'][aid] for aid in run['ql_scores']], axis=0) 
-                                 for run in pairwise_runs], axis=0) if pairwise_runs[0]['ql_scores'] else [],
-        'tft_avg_score': np.mean([np.mean([run['tft_scores'][aid] for aid in run['tft_scores']], axis=0) 
-                                  for run in pairwise_runs], axis=0) if pairwise_runs[0]['tft_scores'] else []
+        'tft_coop_rate': np.mean([run['tft_coop_rate'] for run in pairwise_runs], axis=0)
     }
     
     avg_nperson = {
         'ql_coop_rate': np.mean([run['ql_coop_rate'] for run in nperson_runs], axis=0),
-        'tft_coop_rate': np.mean([run['tft_coop_rate'] for run in nperson_runs], axis=0),
-        'ql_avg_score': np.mean([np.mean([run['ql_scores'][aid] for aid in run['ql_scores']], axis=0) 
-                                for run in nperson_runs], axis=0) if nperson_runs[0]['ql_scores'] else [],
-        'tft_avg_score': np.mean([np.mean([run['tft_scores'][aid] for aid in run['tft_scores']], axis=0) 
-                                 for run in nperson_runs], axis=0) if nperson_runs[0]['tft_scores'] else []
+        'tft_coop_rate': np.mean([run['tft_coop_rate'] for run in nperson_runs], axis=0)
     }
     
     return avg_pairwise, avg_nperson

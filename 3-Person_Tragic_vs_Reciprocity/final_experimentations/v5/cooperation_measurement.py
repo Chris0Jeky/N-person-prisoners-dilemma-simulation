@@ -55,9 +55,7 @@ def run_pairwise_tournament_with_groups(agents, num_rounds):
     # Initialize history tracking
     history = {
         'ql_coop_rate': [],
-        'tft_coop_rate': [],
-        'ql_scores': {a.agent_id: [] for a in ql_agents},
-        'tft_scores': {a.agent_id: [] for a in tft_agents}
+        'tft_coop_rate': []
     }
     
     agent_map = {a.agent_id: a for a in agents}
@@ -98,12 +96,6 @@ def run_pairwise_tournament_with_groups(agents, num_rounds):
         
         history['ql_coop_rate'].append(ql_coop_rate)
         history['tft_coop_rate'].append(tft_coop_rate)
-        
-        # Track scores
-        for agent in ql_agents:
-            history['ql_scores'][agent.agent_id].append(agent.total_score)
-        for agent in tft_agents:
-            history['tft_scores'][agent.agent_id].append(agent.total_score)
     
     return history
 
@@ -120,9 +112,7 @@ def run_nperson_simulation_with_groups(agents, num_rounds):
     # Initialize history tracking
     history = {
         'ql_coop_rate': [],
-        'tft_coop_rate': [],
-        'ql_scores': {a.agent_id: [] for a in ql_agents},
-        'tft_scores': {a.agent_id: [] for a in tft_agents}
+        'tft_coop_rate': []
     }
     
     coop_ratio = None
@@ -150,12 +140,6 @@ def run_nperson_simulation_with_groups(agents, num_rounds):
         
         history['ql_coop_rate'].append(ql_coop_rate)
         history['tft_coop_rate'].append(tft_coop_rate)
-        
-        # Track scores
-        for agent in ql_agents:
-            history['ql_scores'][agent.agent_id].append(agent.total_score)
-        for agent in tft_agents:
-            history['tft_scores'][agent.agent_id].append(agent.total_score)
         
         coop_ratio = current_coop_ratio
     

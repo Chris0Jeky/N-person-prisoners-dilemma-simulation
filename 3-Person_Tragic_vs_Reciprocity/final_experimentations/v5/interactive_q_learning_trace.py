@@ -252,8 +252,8 @@ if q_evolution['rounds']:
                 ha='center', bbox=dict(boxstyle='round', facecolor='yellow', alpha=0.5))
     
     plt.tight_layout()
-    plt.savefig('q_value_evolution_trace.png', dpi=150)
-    print("Saved Q-value evolution as: q_value_evolution_trace.png")
+    plt.savefig('q_value_evolution_trace.png', dpi=150, bbox_inches='tight')
+    print("\nSaved Q-value evolution as: q_value_evolution_trace.png")
 
 print("\n" + "="*80)
 print("KEY INSIGHTS FROM THIS TRACE:")
@@ -263,5 +263,128 @@ print("2. Each experience updates exactly one Q-value")
 print("3. The discount factor (γ) determines how much future matters")
 print("4. Against AllC, Q(defect) grows faster than Q(cooperate)")
 print("5. Eventually, the agent learns to exploit the cooperator")
+
+# Create a second plot showing Q-value comparison across different opponents
+print("\n" + "="*80)
+print("SCENARIO 2: Q-LEARNER vs DIFFERENT OPPONENTS")
+print("="*80)
+
+# Test against different opponents
+opponents = {
+    'AllC': StaticAgent("AllC", "AllC"),
+    'AllD': StaticAgent("AllD", "AllD"),
+    'TFT': StaticAgent("TFT", "TFT")
+}
+
+fig, axes = plt.subplots(2, 2, figsize=(12, 10))
+fig.suptitle(f'Q-Value Evolution Against Different Opponents\n(γ={test_params["df"]}, α={test_params["lr"]}, ε={test_params["eps"]})', fontsize=14)
+
+for idx, (opp_name, opponent) in enumerate(opponents.items()):
+    ax = axes[idx // 2, idx % 2]
+    
+    # Create fresh Q-learner
+    ql = PairwiseAdaptiveQLearner(f"QL_vs_{opp_name}", test_params)
+    q_history = {'rounds': [], 'Q_coop': [], 'Q_defect': []}
+    
+    # Run simulation
+    for round in range(300):
+        ql_move = ql.choose_pairwise_action(opp_name)
+        opp_move = opponent.choose_pairwise_action(ql.agent_id)
+        
+        # Calculate payoffs
+        if ql_move == 0 and opp_move == 0:
+            ql_payoff = R
+        elif ql_move == 0 and opp_move == 1:
+            ql_payoff = S
+        elif ql_move == 1 and opp_move == 0:
+            ql_payoff = T
+        else:
+            ql_payoff = P
+        
+        ql.record_pairwise_outcome(opp_name, ql_move, opp_move, ql_payoff)
+        opponent.record_pairwise_outcome(ql.agent_id, opp_move, ql_move, 0)
+        
+        # Track Q-values
+        if round % 5 == 0:
+            q_table = ql.q_tables.get(opp_name, {})
+            # Get the most relevant state (after opponent cooperates)
+            relevant_state = None
+            for state in q_table:
+                if 'cooperate' in state and state in q_table:
+                    relevant_state = state
+                    break
+            
+            if relevant_state:
+                q_history['rounds'].append(round)
+                q_history['Q_coop'].append(q_table[relevant_state].get('cooperate', 0))
+                q_history['Q_defect'].append(q_table[relevant_state].get('defect', 0))
+    
+    # Plot
+    if q_history['rounds']:
+        ax.plot(q_history['rounds'], q_history['Q_coop'], 'g-', label='Q(cooperate)', linewidth=2)
+        ax.plot(q_history['rounds'], q_history['Q_defect'], 'r-', label='Q(defect)', linewidth=2)
+        ax.set_title(f'vs {opp_name}')
+        ax.set_xlabel('Round')
+        ax.set_ylabel('Q-Value')
+        ax.legend()
+        ax.grid(True, alpha=0.3)
+
+# Clear the last subplot if we have an odd number
+if len(opponents) % 2 != 0:
+    fig.delaxes(axes.flatten()[-1])
+
+plt.tight_layout()
+plt.savefig('q_value_evolution_by_opponent.png', dpi=150, bbox_inches='tight')
+print("\nSaved opponent comparison as: q_value_evolution_by_opponent.png")
+
+# Create a third plot showing discount factor comparison
+print("\n" + "="*80)
+print("SCENARIO 3: DISCOUNT FACTOR COMPARISON")
+print("="*80)
+
+discount_factors = [0.0, 0.5, 0.9, 0.99]
+fig3, ax3 = plt.subplots(figsize=(10, 6))
+
+for df in discount_factors:
+    params = {'lr': 0.08, 'df': df, 'eps': 0.1}
+    ql = PairwiseAdaptiveQLearner(f"QL_df_{df}", params)
+    allc = StaticAgent("AllC_test", "AllC")
+    
+    coop_rates = []
+    for round in range(200):
+        ql_move = ql.choose_pairwise_action("AllC_test")
+        allc_move = 0  # Always cooperates
+        
+        if ql_move == 0:
+            ql_payoff = R
+        else:
+            ql_payoff = T
+        
+        ql.record_pairwise_outcome("AllC_test", ql_move, allc_move, ql_payoff)
+        coop_rates.append(1 - ql_move)
+    
+    # Smooth the cooperation rates
+    window = 20
+    smoothed = np.convolve(coop_rates, np.ones(window)/window, mode='valid')
+    ax3.plot(smoothed, label=f'γ={df}', linewidth=2)
+
+ax3.set_xlabel('Round')
+ax3.set_ylabel('Cooperation Rate')
+ax3.set_title('Effect of Discount Factor on Learning to Exploit AllC')
+ax3.legend()
+ax3.grid(True, alpha=0.3)
+ax3.set_ylim(-0.05, 1.05)
+
+plt.tight_layout()
+plt.savefig('discount_factor_comparison.png', dpi=150, bbox_inches='tight')
+print("\nSaved discount factor comparison as: discount_factor_comparison.png")
+
+print("\n" + "="*80)
+print("ALL PLOTS SAVED SUCCESSFULLY!")
+print("="*80)
+print("Generated files:")
+print("1. q_value_evolution_trace.png - Detailed Q-value evolution vs AllC")
+print("2. q_value_evolution_by_opponent.png - Q-values against different opponents")
+print("3. discount_factor_comparison.png - How discount factor affects exploitation")
 
 plt.show()

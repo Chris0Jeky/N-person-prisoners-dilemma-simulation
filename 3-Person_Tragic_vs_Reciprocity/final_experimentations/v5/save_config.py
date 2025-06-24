@@ -67,7 +67,20 @@ def save_detailed_config(output_dir, scenario_descriptions=None):
         f.write(f"Initial Exploration Rate (ε): {LEGACY_PARAMS['eps']}\n")
         f.write(f"Epsilon Decay Rate: {LEGACY_PARAMS['epsilon_decay']}\n")
         f.write(f"Minimum Epsilon: {LEGACY_PARAMS['epsilon_min']}\n")
-        f.write("Features: 2-round history, cooperation trends, optimistic initialization\n\n")
+        f.write(f"Initial Q-values: {LEGACY_PARAMS['optimistic_init']}\n")
+        f.write("Features: 2-round history, cooperation trends\n\n")
+        
+        # Legacy 3-Round Q-learner
+        f.write("LEGACY 3-ROUND Q-LEARNER (Extended History)\n")
+        f.write("-"*40 + "\n")
+        f.write(f"Learning Rate (α): {LEGACY_3ROUND_PARAMS['lr']}\n")
+        f.write(f"Discount Factor (γ): {LEGACY_3ROUND_PARAMS['df']}\n")
+        f.write(f"Initial Exploration Rate (ε): {LEGACY_3ROUND_PARAMS['eps']}\n")
+        f.write(f"Epsilon Decay Rate: {LEGACY_3ROUND_PARAMS['epsilon_decay']}\n")
+        f.write(f"Minimum Epsilon: {LEGACY_3ROUND_PARAMS['epsilon_min']}\n")
+        f.write(f"Initial Q-values: {LEGACY_3ROUND_PARAMS['optimistic_init']}\n")
+        f.write(f"History Length: {LEGACY_3ROUND_PARAMS['history_length']} rounds\n")
+        f.write("Features: 3-round history, complex trend analysis, pessimistic initialization\n\n")
         
         # Scenario descriptions if provided
         if scenario_descriptions:
@@ -107,6 +120,7 @@ def save_detailed_config(output_dir, scenario_descriptions=None):
         "adaptive_params": ADAPTIVE_PARAMS,
         "hysteretic_params": HYSTERETIC_PARAMS,
         "legacy_params": LEGACY_PARAMS,
+        "legacy_3round_params": LEGACY_3ROUND_PARAMS,
         "game_params": {
             "payoffs": {"T": 5, "R": 3, "P": 1, "S": 0},
             "strategies": {

@@ -237,7 +237,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
             self.neighborhood_epsilon = min(max_eps, self.neighborhood_epsilon * adapt_factor)
 
     def _make_q_dict(self):
-        return {'cooperate': 0.0, 'defect': 0.0}
+        return {COOPERATE: 0.0, DEFECT: 0.0}
     
     def _make_history_deque(self):
         return deque(maxlen=2)
@@ -287,7 +287,7 @@ class HystereticQLearner(BaseAgent):
         return str(tuple(history))
 
     def _make_q_dict(self):
-        return {'cooperate': 0.0, 'defect': 0.0}
+        return {COOPERATE: 0.0, DEFECT: 0.0}
     
     def _make_history_deque(self):
         return deque(maxlen=2)
@@ -478,7 +478,7 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
             self.epsilon = min(max_eps, self.epsilon * adapt_factor)
 
     def _make_q_dict(self):
-        return {'cooperate': 0.0, 'defect': 0.0}
+        return {COOPERATE: 0.0, DEFECT: 0.0}
     
     def reset(self):
         super().reset()

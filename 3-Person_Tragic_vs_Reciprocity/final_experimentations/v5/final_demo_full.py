@@ -285,6 +285,85 @@ def create_heatmap(all_results, save_path):
     plt.close()
 
 
+def save_results_to_csv(all_scenario_results, output_dir):
+    """Save detailed results to CSV files in a subfolder"""
+    csv_dir = os.path.join(output_dir, "csv_results")
+    os.makedirs(csv_dir, exist_ok=True)
+    
+    # Create timestamp for filenames
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+    
+    # Save summary statistics
+    summary_data = []
+    for scenario_name, scenario_results in all_scenario_results.items():
+        for agent_type, (p_data, n_data) in scenario_results.items():
+            # Find QL agents
+            ql_agents = [aid for aid in p_data.keys() if agent_type in aid and 'QL' in aid]
+            if not ql_agents:
+                continue
+            
+            # Calculate final metrics
+            for aid in ql_agents:
+                summary_data.append({
+                    'scenario': scenario_name,
+                    'agent_type': agent_type,
+                    'agent_id': aid,
+                    'pairwise_final_coop': np.mean(p_data[aid]['coop_rate'][-100:]),  # Last 100 rounds
+                    'pairwise_total_score': p_data[aid]['score'][-1],
+                    'neighborhood_final_coop': np.mean(n_data[aid]['coop_rate'][-100:]),
+                    'neighborhood_total_score': n_data[aid]['score'][-1]
+                })
+    
+    # Save summary to CSV
+    summary_df = pd.DataFrame(summary_data)
+    summary_path = os.path.join(csv_dir, f"summary_results_{timestamp}.csv")
+    summary_df.to_csv(summary_path, index=False)
+    print(f"Summary results saved to: {summary_path}")
+    
+    # Save detailed time series for each scenario
+    for scenario_name, scenario_results in all_scenario_results.items():
+        scenario_data = []
+        
+        for agent_type, (p_data, n_data) in scenario_results.items():
+            ql_agents = [aid for aid in p_data.keys() if agent_type in aid and 'QL' in aid]
+            if not ql_agents:
+                continue
+            
+            # Average across QL agents of this type
+            p_coop = np.mean([p_data[aid]['coop_rate'] for aid in ql_agents], axis=0)
+            p_score = np.mean([p_data[aid]['score'] for aid in ql_agents], axis=0)
+            n_coop = np.mean([n_data[aid]['coop_rate'] for aid in ql_agents], axis=0)
+            n_score = np.mean([n_data[aid]['score'] for aid in ql_agents], axis=0)
+            
+            # Create time series data
+            for round_num in range(len(p_coop)):
+                scenario_data.append({
+                    'round': round_num,
+                    'agent_type': agent_type,
+                    'pairwise_coop_rate': p_coop[round_num],
+                    'pairwise_score': p_score[round_num],
+                    'neighborhood_coop_rate': n_coop[round_num],
+                    'neighborhood_score': n_score[round_num]
+                })
+        
+        # Save scenario data to CSV
+        if scenario_data:
+            scenario_df = pd.DataFrame(scenario_data)
+            scenario_path = os.path.join(csv_dir, f"{scenario_name}_{timestamp}.csv")
+            scenario_df.to_csv(scenario_path, index=False)
+            print(f"Detailed results for {scenario_name} saved to: {scenario_path}")
+    
+    # Save configuration information
+    config_info_path = os.path.join(csv_dir, f"config_info_{timestamp}.txt")
+    with open(config_info_path, 'w') as f:
+        f.write(f"Timestamp: {timestamp}\n")
+        f.write(f"Number of rounds: {SIMULATION_CONFIG['num_rounds']}\n")
+        f.write(f"Number of runs: {SIMULATION_CONFIG['num_runs']}\n")
+        f.write(f"Agents tested: {', '.join(ql_configs.keys())}\n")
+    
+    return csv_dir
+
+
 def save_config_to_file(output_dir):
     """Save all configuration parameters to a text file"""
     config_path = os.path.join(output_dir, "simulation_config.txt")

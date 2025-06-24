@@ -24,6 +24,16 @@ T, R, P, S = 5, 3, 1, 0
 COOPERATE, DEFECT = 0, 1
 
 
+def smooth_data(data, window_size=50):
+    """Apply rolling average to smooth data"""
+    if len(data) < window_size:
+        window_size = max(1, len(data) // 10)
+    
+    series = pd.Series(data)
+    smoothed = series.rolling(window=window_size, center=True, min_periods=1).mean()
+    return smoothed.values
+
+
 def nperson_payoff(my_move, num_cooperators, total_agents):
     """Calculate payoff for n-person game"""
     others_coop = num_cooperators - (1 - my_move)

@@ -557,8 +557,9 @@ class LegacyQLearner(BaseAgent):
     def _ensure_state_exists(self, state, q_table):
         """Initialize Q-values for new states with optimistic values"""
         if state not in q_table:
-            # Optimistic initialization to encourage exploration
-            q_table[state] = {COOPERATE: 0.1, DEFECT: 0.1}
+            # Use optimistic_init parameter (default to 0.0)
+            init_val = self.params.get('optimistic_init', 0.0)
+            q_table[state] = {COOPERATE: init_val, DEFECT: init_val}
     
     def choose_pairwise_action(self, opponent_id):
         """Choose action for pairwise interaction"""

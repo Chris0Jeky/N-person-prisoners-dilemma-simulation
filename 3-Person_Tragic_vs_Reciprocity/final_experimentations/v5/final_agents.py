@@ -306,11 +306,11 @@ class HystereticQLearner(BaseAgent):
             q_table[state] = self._make_q_dict()
             
         if random.random() < epsilon:
-            action = random.choice(['cooperate', 'defect'])
+            action = random.choice([COOPERATE, DEFECT])
         else:
-            action = 'cooperate' if q_table[state]['cooperate'] >= q_table[state]['defect'] else 'defect'
+            action = COOPERATE if q_table[state][COOPERATE] >= q_table[state][DEFECT] else DEFECT
         self.last_contexts[opponent_id] = {'state': state, 'action': action}
-        return COOPERATE if action == 'cooperate' else DEFECT
+        return action
 
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
         self.total_score += reward
@@ -356,12 +356,12 @@ class HystereticQLearner(BaseAgent):
         
         epsilon = self.params.get('eps', 0.1)
         if random.random() < epsilon:
-            action = random.choice(['cooperate', 'defect'])
+            action = random.choice([COOPERATE, DEFECT])
         else:
-            action = 'cooperate' if self.neighborhood_q_table[state]['cooperate'] >= self.neighborhood_q_table[state]['defect'] else 'defect'
+            action = COOPERATE if self.neighborhood_q_table[state][COOPERATE] >= self.neighborhood_q_table[state][DEFECT] else DEFECT
         
         self.last_neighborhood_context = {'state': state, 'action': action}
-        return COOPERATE if action == 'cooperate' else DEFECT
+        return action
 
     def record_neighborhood_outcome(self, coop_ratio, reward):
         """Record outcome for neighborhood game with hysteretic learning"""

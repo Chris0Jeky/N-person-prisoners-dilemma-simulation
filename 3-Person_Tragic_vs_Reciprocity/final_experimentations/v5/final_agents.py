@@ -433,11 +433,11 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
             self.q_table[state] = self._make_q_dict()
             
         if random.random() < self.epsilon:
-            action = random.choice(['cooperate', 'defect'])
+            action = random.choice([COOPERATE, DEFECT])
         else:
-            action = 'cooperate' if self.q_table[state]['cooperate'] >= self.q_table[state]['defect'] else 'defect'
+            action = COOPERATE if self.q_table[state][COOPERATE] >= self.q_table[state][DEFECT] else DEFECT
         self.last_context = {'state': state, 'action': action}
-        return COOPERATE if action == 'cooperate' else DEFECT
+        return action
 
     def record_neighborhood_outcome(self, coop_ratio, reward):
         self.total_score += reward

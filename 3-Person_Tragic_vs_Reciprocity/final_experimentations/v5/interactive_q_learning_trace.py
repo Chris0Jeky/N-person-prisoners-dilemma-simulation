@@ -32,6 +32,10 @@ class VerboseQLearner(PairwiseAdaptiveQLearner):
         self.round_num += 1
         state = self._get_state(opponent_id)
         
+        # Initialize Q-table for opponent if not exists
+        if opponent_id not in self.q_tables:
+            self.q_tables[opponent_id] = {}
+        
         if state not in self.q_tables[opponent_id]:
             self.q_tables[opponent_id][state] = self._make_q_dict()
         

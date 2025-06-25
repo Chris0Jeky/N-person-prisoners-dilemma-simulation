@@ -6,7 +6,7 @@ FIXED VERSION: Handles the strategy_name issue in parallel processing.
 Tests:
 - Group sizes: 3, 5, 7, 10, 15, 20, 25 total agents
 - Uses Legacy3RoundQLearner with LEGACY_3ROUND_PARAMS
-- Uses a modified QL without epsilon decay as comparison
+- Uses LegacyQLearner with LEGACY_PARAMS as comparison
 - Tests the combinations from v6/multi_agent_demo.py
 """
 
@@ -22,8 +22,8 @@ import time
 from datetime import datetime
 import pickle
 
-from final_agents import StaticAgent, Legacy3RoundQLearner
-from config import LEGACY_3ROUND_PARAMS, SIMULATION_CONFIG
+from final_agents import StaticAgent, Legacy3RoundQLearner, LegacyQLearner
+from config import LEGACY_3ROUND_PARAMS, LEGACY_PARAMS, SIMULATION_CONFIG
 from save_config import save_detailed_config
 
 # --- Payoff Logic ---
@@ -40,24 +40,8 @@ def nperson_payoff(my_move, num_cooperators, total_agents):
         return P + (T - P) * (others_coop / (total_agents - 1))
 
 
-# --- Custom QL Agent without epsilon decay ---
-class QLNoDecay(Legacy3RoundQLearner):
-    """Q-learner without epsilon decay - fixed exploration rate"""
-    def __init__(self, agent_id, params=None, **kwargs):
-        # Create modified params without decay
-        modified_params = {
-            'lr': 0.1,
-            'df': 0.95,
-            'eps': 0.1,
-            'epsilon_decay': 1.0,  # No decay
-            'epsilon_min': 0.1,    # Same as initial
-            'optimistic_init': 1.0,  # Cooperative initialization
-            'history_length': 3
-        }
-        # Don't pass strategy_name to parent
-        filtered_kwargs = {k: v for k, v in kwargs.items() if k != 'strategy_name'}
-        super().__init__(agent_id, modified_params, **filtered_kwargs)
-        self.strategy_name = "QLNoDecay"
+# Note: We're now using LegacyQLearner instead of a custom QLNoDecay
+# LegacyQLearner uses 2-round history with sophisticated state representation
 
 
 # --- Helper function to recreate agents safely ---
@@ -78,10 +62,10 @@ def recreate_agent(agent):
     agent_id = agent.agent_id
     
     # Special handling for our custom classes
-    if isinstance(agent, QLNoDecay):
-        return QLNoDecay(agent_id)
-    elif isinstance(agent, Legacy3RoundQLearner):
+    if isinstance(agent, Legacy3RoundQLearner):
         return Legacy3RoundQLearner(agent_id, agent.params)
+    elif isinstance(agent, LegacyQLearner):
+        return LegacyQLearner(agent_id, agent.params)
     elif isinstance(agent, StaticAgent):
         return StaticAgent(agent_id, strategy_name=agent.strategy_name, error_rate=agent.error_rate)
     else:
@@ -151,7 +135,51 @@ def run_single_nperson(args):
     return run_nperson_simulation([recreate_agent(a) for a in agents], num_rounds)
 
 
-def run_experiment_set(agents, num_rounds, num_runs, use_parallel=True):
+def save_individual_runs_csv(scenario_name, p_runs, n_runs, output_dir):
+    """Save individual run data to CSV files"""
+    runs_dir = os.path.join(output_dir, "individual_runs", scenario_name)
+    os.makedirs(runs_dir, exist_ok=True)
+    
+    # Save pairwise runs
+    for run_idx, run_data in enumerate(p_runs):
+        run_df_data = []
+        for round_idx in range(len(next(iter(run_data.values()))['coop_rate'])):
+            for agent_id, agent_data in run_data.items():
+                run_df_data.append({
+                    'run': run_idx + 1,
+                    'round': round_idx + 1,
+                    'agent_id': agent_id,
+                    'agent_type': agent_id.split('_')[0],
+                    'cooperation_rate': agent_data['coop_rate'][round_idx],
+                    'cumulative_score': agent_data['score'][round_idx]
+                })
+        
+        df = pd.DataFrame(run_df_data)
+        csv_path = os.path.join(runs_dir, f"pairwise_run_{run_idx+1}.csv")
+        df.to_csv(csv_path, index=False)
+    
+    # Save neighborhood runs
+    for run_idx, run_data in enumerate(n_runs):
+        run_df_data = []
+        for round_idx in range(len(next(iter(run_data.values()))['coop_rate'])):
+            for agent_id, agent_data in run_data.items():
+                run_df_data.append({
+                    'run': run_idx + 1,
+                    'round': round_idx + 1,
+                    'agent_id': agent_id,
+                    'agent_type': agent_id.split('_')[0],
+                    'cooperation_rate': agent_data['coop_rate'][round_idx],
+                    'cumulative_score': agent_data['score'][round_idx]
+                })
+        
+        df = pd.DataFrame(run_df_data)
+        csv_path = os.path.join(runs_dir, f"neighborhood_run_{run_idx+1}.csv")
+        df.to_csv(csv_path, index=False)
+    
+    print(f"  Saved individual run CSVs to: {runs_dir}")
+
+
+def run_experiment_set(agents, num_rounds, num_runs, use_parallel=True, save_runs=True, scenario_name=None, output_dir=None):
     """Runs both pairwise and neighborhood simulations for a given agent configuration."""
     if use_parallel:
         n_processes = max(1, cpu_count() - 1)
@@ -165,6 +193,10 @@ def run_experiment_set(agents, num_rounds, num_runs, use_parallel=True):
     else:
         p_runs = [run_pairwise_tournament([recreate_agent(a) for a in agents], num_rounds) for _ in range(num_runs)]
         n_runs = [run_nperson_simulation([recreate_agent(a) for a in agents], num_rounds) for _ in range(num_runs)]
+    
+    # Save individual runs if requested
+    if save_runs and scenario_name and output_dir:
+        save_individual_runs_csv(scenario_name, p_runs, n_runs, output_dir)
     
     # Aggregate results
     p_agg = {aid: {m: np.mean([r[aid][m] for r in p_runs if aid in r], axis=0) for m in ['coop_rate', 'score']} 

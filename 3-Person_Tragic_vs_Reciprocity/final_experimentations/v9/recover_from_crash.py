@@ -8,6 +8,8 @@ import os
 import glob
 import re
 from multi_agent_scaling_demo import *
+from final_agents import LegacyQLearner
+from config import LEGACY_PARAMS
 
 def find_completed_scenarios(output_dir):
     """Find which scenarios have already been completed by looking at saved plots"""

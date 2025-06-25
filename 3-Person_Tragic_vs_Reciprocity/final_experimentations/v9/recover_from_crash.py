@@ -148,8 +148,8 @@ if __name__ == "__main__":
         else:
             print(f"\nScenario: {scenario_name} (already completed, skipping)")
         
-        # All QLNoDecay
-        scenario_name = f"{group_size}agents_AllQLNoDecay"
+        # All LegacyQL
+        scenario_name = f"{group_size}agents_AllLegacyQL"
         
         if scenario_name not in completed_scenarios:
             print(f"\nScenario: {scenario_name}")
@@ -157,7 +157,7 @@ if __name__ == "__main__":
             
             agents = []
             for i in range(group_size):
-                agents.append(QLNoDecay(agent_id=f"QLNoDecay_{i+1}"))
+                agents.append(LegacyQLearner(agent_id=f"LegacyQL_{i+1}", params=LEGACY_PARAMS))
             
             start_time = time.time()
             p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)

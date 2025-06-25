@@ -515,7 +515,8 @@ if __name__ == "__main__":
             
             # Run experiment
             start_time = time.time()
-            p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
+            p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL, 
+                                               save_runs=True, scenario_name=scenario_name, output_dir=OUTPUT_DIR)
             elapsed = time.time() - start_time
             print(f"  Completed in {elapsed:.1f}s")
             
@@ -568,7 +569,8 @@ if __name__ == "__main__":
         
         # Run experiment
         start_time = time.time()
-        p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
+        p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL,
+                                           save_runs=True, scenario_name=scenario_name, output_dir=OUTPUT_DIR)
         elapsed = time.time() - start_time
         print(f"  Completed in {elapsed:.1f}s")
         
@@ -614,15 +616,15 @@ if __name__ == "__main__":
         else:
             print(f"\nScenario: {scenario_name} (already completed, skipping)")
         
-        # All QLNoDecay
-        scenario_name = f"{group_size}agents_AllQLNoDecay"
+        # All LegacyQL
+        scenario_name = f"{group_size}agents_AllLegacyQL"
         
         if scenario_name not in all_scenario_results:
             print(f"\nScenario: {scenario_name}")
             
             agents = []
             for i in range(group_size):
-                agents.append(QLNoDecay(agent_id=f"QLNoDecay_{i+1}"))
+                agents.append(LegacyQLearner(agent_id=f"LegacyQL_{i+1}", params=LEGACY_PARAMS))
             
             start_time = time.time()
             p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
@@ -660,10 +662,10 @@ if __name__ == "__main__":
         f.write(f"Total scenarios tested: {len(all_scenario_results)}\n")
         f.write("\nQL Agent Types:\n")
         f.write("- Legacy3Round: Uses LEGACY_3ROUND_PARAMS with 3-round history\n")
-        f.write("- QLNoDecay: No epsilon decay, fixed exploration rate of 0.1\n")
+        f.write("- LegacyQL: 2-round history with sophisticated state representation (LEGACY_PARAMS)\n")
         f.write("\nExperiment Types:\n")
         f.write("1. 2 QL agents vs varying numbers of opponents (AllC, AllD, Random, TFT)\n")
-        f.write("2. Mixed QL types (half Legacy3Round, half QLNoDecay)\n")
+        f.write("2. Mixed QL types (half Legacy3Round, half LegacyQL)\n")
         f.write("3. All same QL type scenarios\n")
     
     # Calculate total time

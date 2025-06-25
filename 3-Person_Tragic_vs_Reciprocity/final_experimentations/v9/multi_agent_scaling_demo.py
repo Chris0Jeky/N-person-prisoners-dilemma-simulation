@@ -243,13 +243,13 @@ def plot_scaling_results(scaling_results, output_dir):
     # Data structures for different metrics
     legacy3_pairwise_coop = []
     legacy3_neighborhood_coop = []
-    nodecay_pairwise_coop = []
-    nodecay_neighborhood_coop = []
+    legacy_pairwise_coop = []
+    legacy_neighborhood_coop = []
     
     legacy3_pairwise_score = []
     legacy3_neighborhood_score = []
-    nodecay_pairwise_score = []
-    nodecay_neighborhood_score = []
+    legacy_pairwise_score = []
+    legacy_neighborhood_score = []
     
     for size in group_sizes:
         if size not in scaling_results:
@@ -259,7 +259,7 @@ def plot_scaling_results(scaling_results, output_dir):
         
         # Find QL agents
         legacy3_agents = [aid for aid in p_data.keys() if 'Legacy3Round' in aid]
-        nodecay_agents = [aid for aid in p_data.keys() if 'QLNoDecay' in aid]
+        legacy_agents = [aid for aid in p_data.keys() if 'LegacyQL' in aid and 'Legacy3Round' not in aid]
         
         if legacy3_agents:
             # Average final cooperation rates (last 1000 rounds)
@@ -268,19 +268,19 @@ def plot_scaling_results(scaling_results, output_dir):
             legacy3_pairwise_score.append(np.mean([p_data[aid]['score'][-1] for aid in legacy3_agents]))
             legacy3_neighborhood_score.append(np.mean([n_data[aid]['score'][-1] for aid in legacy3_agents]))
         
-        if nodecay_agents:
-            nodecay_pairwise_coop.append(np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in nodecay_agents]))
-            nodecay_neighborhood_coop.append(np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in nodecay_agents]))
-            nodecay_pairwise_score.append(np.mean([p_data[aid]['score'][-1] for aid in nodecay_agents]))
-            nodecay_neighborhood_score.append(np.mean([n_data[aid]['score'][-1] for aid in nodecay_agents]))
+        if legacy_agents:
+            legacy_pairwise_coop.append(np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in legacy_agents]))
+            legacy_neighborhood_coop.append(np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in legacy_agents]))
+            legacy_pairwise_score.append(np.mean([p_data[aid]['score'][-1] for aid in legacy_agents]))
+            legacy_neighborhood_score.append(np.mean([n_data[aid]['score'][-1] for aid in legacy_agents]))
     
     # Create figure with 2x2 subplots
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     fig.suptitle('Q-Learning Performance Scaling with Group Size', fontsize=16)
     
     # Plot cooperation rates
-    axes[0, 0].plot(group_sizes[:len(legacy3_pairwise_coop)], legacy3_pairwise_coop, 'o-', label='Legacy3Round', linewidth=2, markersize=8)
-    axes[0, 0].plot(group_sizes[:len(nodecay_pairwise_coop)], nodecay_pairwise_coop, 's-', label='QL No Decay', linewidth=2, markersize=8)
+    axes[0, 0].plot(group_sizes[:len(legacy3_pairwise_coop)], legacy3_pairwise_coop, 'o-', label='Legacy3Round (3-round)', linewidth=2, markersize=8)
+    axes[0, 0].plot(group_sizes[:len(legacy_pairwise_coop)], legacy_pairwise_coop, 's-', label='LegacyQL (2-round)', linewidth=2, markersize=8)
     axes[0, 0].set_title('Pairwise Final Cooperation Rate')
     axes[0, 0].set_xlabel('Group Size')
     axes[0, 0].set_ylabel('Cooperation Rate')
@@ -288,8 +288,8 @@ def plot_scaling_results(scaling_results, output_dir):
     axes[0, 0].grid(True, alpha=0.3)
     axes[0, 0].set_ylim(0, 1.05)
     
-    axes[1, 0].plot(group_sizes[:len(legacy3_neighborhood_coop)], legacy3_neighborhood_coop, 'o-', label='Legacy3Round', linewidth=2, markersize=8)
-    axes[1, 0].plot(group_sizes[:len(nodecay_neighborhood_coop)], nodecay_neighborhood_coop, 's-', label='QL No Decay', linewidth=2, markersize=8)
+    axes[1, 0].plot(group_sizes[:len(legacy3_neighborhood_coop)], legacy3_neighborhood_coop, 'o-', label='Legacy3Round (3-round)', linewidth=2, markersize=8)
+    axes[1, 0].plot(group_sizes[:len(legacy_neighborhood_coop)], legacy_neighborhood_coop, 's-', label='LegacyQL (2-round)', linewidth=2, markersize=8)
     axes[1, 0].set_title('Neighborhood Final Cooperation Rate')
     axes[1, 0].set_xlabel('Group Size')
     axes[1, 0].set_ylabel('Cooperation Rate')
@@ -298,16 +298,16 @@ def plot_scaling_results(scaling_results, output_dir):
     axes[1, 0].set_ylim(0, 1.05)
     
     # Plot final scores
-    axes[0, 1].plot(group_sizes[:len(legacy3_pairwise_score)], legacy3_pairwise_score, 'o-', label='Legacy3Round', linewidth=2, markersize=8)
-    axes[0, 1].plot(group_sizes[:len(nodecay_pairwise_score)], nodecay_pairwise_score, 's-', label='QL No Decay', linewidth=2, markersize=8)
+    axes[0, 1].plot(group_sizes[:len(legacy3_pairwise_score)], legacy3_pairwise_score, 'o-', label='Legacy3Round (3-round)', linewidth=2, markersize=8)
+    axes[0, 1].plot(group_sizes[:len(legacy_pairwise_score)], legacy_pairwise_score, 's-', label='LegacyQL (2-round)', linewidth=2, markersize=8)
     axes[0, 1].set_title('Pairwise Final Score')
     axes[0, 1].set_xlabel('Group Size')
     axes[0, 1].set_ylabel('Total Score')
     axes[0, 1].legend()
     axes[0, 1].grid(True, alpha=0.3)
     
-    axes[1, 1].plot(group_sizes[:len(legacy3_neighborhood_score)], legacy3_neighborhood_score, 'o-', label='Legacy3Round', linewidth=2, markersize=8)
-    axes[1, 1].plot(group_sizes[:len(nodecay_neighborhood_score)], nodecay_neighborhood_score, 's-', label='QL No Decay', linewidth=2, markersize=8)
+    axes[1, 1].plot(group_sizes[:len(legacy3_neighborhood_score)], legacy3_neighborhood_score, 'o-', label='Legacy3Round (3-round)', linewidth=2, markersize=8)
+    axes[1, 1].plot(group_sizes[:len(legacy_neighborhood_score)], legacy_neighborhood_score, 's-', label='LegacyQL (2-round)', linewidth=2, markersize=8)
     axes[1, 1].set_title('Neighborhood Final Score')
     axes[1, 1].set_xlabel('Group Size')
     axes[1, 1].set_ylabel('Total Score')

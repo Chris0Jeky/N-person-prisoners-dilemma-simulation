@@ -1,4 +1,0 @@
-Timestamp: 20250624_101423
-Number of rounds: 100
-Number of runs: 200
-Agents tested: Hysteretic, Legacy, Legacy3Round

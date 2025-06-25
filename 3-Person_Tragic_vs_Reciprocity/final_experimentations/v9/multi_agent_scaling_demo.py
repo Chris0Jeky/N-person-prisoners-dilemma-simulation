@@ -418,22 +418,22 @@ def save_scaling_results_csv(scaling_results, output_dir):
                 score_per_round = final_score / len(n_data[legacy3_agents[0]]['score'])
                 writer.writerow([size, 'Legacy3Round', 'neighborhood', avg_coop, final_coop, final_score, score_per_round])
             
-            # QLNoDecay agents
-            nodecay_agents = [aid for aid in p_data.keys() if 'QLNoDecay' in aid]
-            if nodecay_agents:
+            # LegacyQL agents
+            legacy_agents = [aid for aid in p_data.keys() if 'LegacyQL' in aid and 'Legacy3Round' not in aid]
+            if legacy_agents:
                 # Pairwise
-                avg_coop = np.mean([np.mean(p_data[aid]['coop_rate']) for aid in nodecay_agents])
-                final_coop = np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in nodecay_agents])
-                final_score = np.mean([p_data[aid]['score'][-1] for aid in nodecay_agents])
-                score_per_round = final_score / len(p_data[nodecay_agents[0]]['score'])
-                writer.writerow([size, 'QLNoDecay', 'pairwise', avg_coop, final_coop, final_score, score_per_round])
+                avg_coop = np.mean([np.mean(p_data[aid]['coop_rate']) for aid in legacy_agents])
+                final_coop = np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in legacy_agents])
+                final_score = np.mean([p_data[aid]['score'][-1] for aid in legacy_agents])
+                score_per_round = final_score / len(p_data[legacy_agents[0]]['score'])
+                writer.writerow([size, 'LegacyQL', 'pairwise', avg_coop, final_coop, final_score, score_per_round])
                 
                 # Neighborhood
-                avg_coop = np.mean([np.mean(n_data[aid]['coop_rate']) for aid in nodecay_agents])
-                final_coop = np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in nodecay_agents])
-                final_score = np.mean([n_data[aid]['score'][-1] for aid in nodecay_agents])
-                score_per_round = final_score / len(n_data[nodecay_agents[0]]['score'])
-                writer.writerow([size, 'QLNoDecay', 'neighborhood', avg_coop, final_coop, final_score, score_per_round])
+                avg_coop = np.mean([np.mean(n_data[aid]['coop_rate']) for aid in legacy_agents])
+                final_coop = np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in legacy_agents])
+                final_score = np.mean([n_data[aid]['score'][-1] for aid in legacy_agents])
+                score_per_round = final_score / len(n_data[legacy_agents[0]]['score'])
+                writer.writerow([size, 'LegacyQL', 'neighborhood', avg_coop, final_coop, final_score, score_per_round])
     
     print(f"Scaling results saved to: {csv_path}")
 

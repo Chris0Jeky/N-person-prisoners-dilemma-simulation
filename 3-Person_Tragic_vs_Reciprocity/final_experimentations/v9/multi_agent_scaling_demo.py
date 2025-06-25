@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """
 Multi-agent scaling experiments to understand the effect of group size on Q-learning agents.
+FIXED VERSION: Handles the strategy_name issue in parallel processing.
 
 Tests:
 - Group sizes: 3, 5, 7, 10, 15, 20, 25 total agents
@@ -19,6 +20,7 @@ from collections import defaultdict
 from multiprocessing import Pool, cpu_count
 import time
 from datetime import datetime
+import pickle
 
 from final_agents import StaticAgent, Legacy3RoundQLearner
 from config import LEGACY_3ROUND_PARAMS, SIMULATION_CONFIG
@@ -41,7 +43,7 @@ def nperson_payoff(my_move, num_cooperators, total_agents):
 # --- Custom QL Agent without epsilon decay ---
 class QLNoDecay(Legacy3RoundQLearner):
     """Q-learner without epsilon decay - fixed exploration rate"""
-    def __init__(self, agent_id, params=None):
+    def __init__(self, agent_id, params=None, **kwargs):
         # Create modified params without decay
         modified_params = {
             'lr': 0.1,
@@ -52,8 +54,39 @@ class QLNoDecay(Legacy3RoundQLearner):
             'optimistic_init': 1.0,  # Cooperative initialization
             'history_length': 3
         }
-        super().__init__(agent_id, modified_params)
+        # Don't pass strategy_name to parent
+        filtered_kwargs = {k: v for k, v in kwargs.items() if k != 'strategy_name'}
+        super().__init__(agent_id, modified_params, **filtered_kwargs)
         self.strategy_name = "QLNoDecay"
+
+
+# --- Helper function to recreate agents safely ---
+def recreate_agent(agent):
+    """Safely recreate an agent for parallel processing"""
+    agent_dict = agent.__dict__.copy()
+    
+    # Remove attributes that shouldn't be passed to __init__
+    attributes_to_remove = ['strategy_name', 'agent_id', 'total_score', 'pairwise_history', 
+                           'pairwise_q_tables', 'neighborhood_q_table', 'neighborhood_history',
+                           'last_neighborhood_action', 'epsilon', 'interactions_count']
+    
+    for attr in attributes_to_remove:
+        agent_dict.pop(attr, None)
+    
+    # Get the agent class and ID
+    agent_class = type(agent)
+    agent_id = agent.agent_id
+    
+    # Special handling for our custom classes
+    if isinstance(agent, QLNoDecay):
+        return QLNoDecay(agent_id)
+    elif isinstance(agent, Legacy3RoundQLearner):
+        return Legacy3RoundQLearner(agent_id, agent.params)
+    elif isinstance(agent, StaticAgent):
+        return StaticAgent(agent_id, strategy_name=agent.strategy_name, error_rate=agent.error_rate)
+    else:
+        # Generic recreation
+        return agent_class(agent_id, **agent_dict)
 
 
 # --- Simulation Runners ---
@@ -109,13 +142,13 @@ def run_nperson_simulation(agents, num_rounds):
 def run_single_pairwise(args):
     """Helper function for parallel pairwise simulation"""
     agents, num_rounds = args
-    return run_pairwise_tournament([type(a)(**a.__dict__) for a in agents], num_rounds)
+    return run_pairwise_tournament([recreate_agent(a) for a in agents], num_rounds)
 
 
 def run_single_nperson(args):
     """Helper function for parallel n-person simulation"""
     agents, num_rounds = args
-    return run_nperson_simulation([type(a)(**a.__dict__) for a in agents], num_rounds)
+    return run_nperson_simulation([recreate_agent(a) for a in agents], num_rounds)
 
 
 def run_experiment_set(agents, num_rounds, num_runs, use_parallel=True):
@@ -130,8 +163,8 @@ def run_experiment_set(agents, num_rounds, num_runs, use_parallel=True):
             n_args = [(agents, num_rounds) for _ in range(num_runs)]
             n_runs = pool.map(run_single_nperson, n_args)
     else:
-        p_runs = [run_pairwise_tournament([type(a)(**a.__dict__) for a in agents], num_rounds) for _ in range(num_runs)]
-        n_runs = [run_nperson_simulation([type(a)(**a.__dict__) for a in agents], num_rounds) for _ in range(num_runs)]
+        p_runs = [run_pairwise_tournament([recreate_agent(a) for a in agents], num_rounds) for _ in range(num_runs)]
+        n_runs = [run_nperson_simulation([recreate_agent(a) for a in agents], num_rounds) for _ in range(num_runs)]
     
     # Aggregate results
     p_agg = {aid: {m: np.mean([r[aid][m] for r in p_runs if aid in r], axis=0) for m in ['coop_rate', 'score']} 
@@ -150,6 +183,23 @@ def smooth_data(data, window_size=50):
     series = pd.Series(data)
     smoothed = series.rolling(window=window_size, center=True, min_periods=1).mean()
     return smoothed.values
+
+
+def save_checkpoint(data, filename):
+    """Save checkpoint data to file"""
+    with open(filename, 'wb') as f:
+        pickle.dump(data, f)
+    print(f"Checkpoint saved to {filename}")
+
+
+def load_checkpoint(filename):
+    """Load checkpoint data from file"""
+    if os.path.exists(filename):
+        with open(filename, 'rb') as f:
+            data = pickle.load(f)
+        print(f"Checkpoint loaded from {filename}")
+        return data
+    return None
 
 
 def plot_scaling_results(scaling_results, output_dir):
@@ -386,6 +436,15 @@ if __name__ == "__main__":
     all_scenario_results = {}
     scaling_results = {}  # For plotting scaling behavior
     
+    # Check for checkpoint
+    checkpoint_file = os.path.join(OUTPUT_DIR, "checkpoint.pkl")
+    checkpoint_data = load_checkpoint(checkpoint_file)
+    
+    if checkpoint_data:
+        all_scenario_results = checkpoint_data.get('all_scenario_results', {})
+        scaling_results = checkpoint_data.get('scaling_results', {})
+        print(f"Resuming from checkpoint with {len(all_scenario_results)} completed scenarios")
+    
     total_start_time = time.time()
     
     # --- Test 1: 2 QL agents vs varying numbers of opponents ---
@@ -399,6 +458,12 @@ if __name__ == "__main__":
         
         for opp_name, opp_config in OPPONENT_TYPES.items():
             scenario_name = f"{group_size}agents_2QL_vs_{n_opponents}{opp_name}"
+            
+            # Skip if already completed
+            if scenario_name in all_scenario_results:
+                print(f"\nScenario: {scenario_name} (already completed, skipping)")
+                continue
+                
             print(f"\nScenario: {scenario_name}")
             
             # Create agents
@@ -430,6 +495,12 @@ if __name__ == "__main__":
             
             # Plot individual scenario
             plot_scenario_results((p_data, n_data), scenario_name, OUTPUT_DIR)
+            
+            # Save checkpoint after each scenario
+            save_checkpoint({
+                'all_scenario_results': all_scenario_results,
+                'scaling_results': scaling_results
+            }, checkpoint_file)
     
     # --- Test 2: Mixed QL types ---
     print("\n=== Testing mixed QL types with varying group sizes ===")
@@ -439,6 +510,12 @@ if __name__ == "__main__":
             continue  # Need at least 4 agents for meaningful comparison
         
         scenario_name = f"{group_size}agents_MixedQL"
+        
+        # Skip if already completed
+        if scenario_name in all_scenario_results:
+            print(f"\nScenario: {scenario_name} (already completed, skipping)")
+            continue
+            
         print(f"\nScenario: {scenario_name}")
         
         # Create mixed QL agents
@@ -465,6 +542,12 @@ if __name__ == "__main__":
         
         all_scenario_results[scenario_name] = (p_data, n_data)
         plot_scenario_results((p_data, n_data), scenario_name, OUTPUT_DIR)
+        
+        # Save checkpoint
+        save_checkpoint({
+            'all_scenario_results': all_scenario_results,
+            'scaling_results': scaling_results
+        }, checkpoint_file)
     
     # --- Test 3: All same QL type ---
     print("\n=== Testing all same QL type with varying group sizes ===")
@@ -472,38 +555,58 @@ if __name__ == "__main__":
     for group_size in GROUP_SIZES:
         # All Legacy3Round
         scenario_name = f"{group_size}agents_AllLegacy3Round"
-        print(f"\nScenario: {scenario_name}")
         
-        agents = []
-        for i in range(group_size):
-            agents.append(Legacy3RoundQLearner(
-                agent_id=f"Legacy3Round_QL_{i+1}",
-                params=LEGACY_3ROUND_PARAMS
-            ))
-        
-        start_time = time.time()
-        p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
-        elapsed = time.time() - start_time
-        print(f"  Completed in {elapsed:.1f}s")
-        
-        all_scenario_results[scenario_name] = (p_data, n_data)
-        plot_scenario_results((p_data, n_data), scenario_name, OUTPUT_DIR)
+        if scenario_name not in all_scenario_results:
+            print(f"\nScenario: {scenario_name}")
+            
+            agents = []
+            for i in range(group_size):
+                agents.append(Legacy3RoundQLearner(
+                    agent_id=f"Legacy3Round_QL_{i+1}",
+                    params=LEGACY_3ROUND_PARAMS
+                ))
+            
+            start_time = time.time()
+            p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
+            elapsed = time.time() - start_time
+            print(f"  Completed in {elapsed:.1f}s")
+            
+            all_scenario_results[scenario_name] = (p_data, n_data)
+            plot_scenario_results((p_data, n_data), scenario_name, OUTPUT_DIR)
+            
+            # Save checkpoint
+            save_checkpoint({
+                'all_scenario_results': all_scenario_results,
+                'scaling_results': scaling_results
+            }, checkpoint_file)
+        else:
+            print(f"\nScenario: {scenario_name} (already completed, skipping)")
         
         # All QLNoDecay
         scenario_name = f"{group_size}agents_AllQLNoDecay"
-        print(f"\nScenario: {scenario_name}")
         
-        agents = []
-        for i in range(group_size):
-            agents.append(QLNoDecay(agent_id=f"QLNoDecay_{i+1}"))
-        
-        start_time = time.time()
-        p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
-        elapsed = time.time() - start_time
-        print(f"  Completed in {elapsed:.1f}s")
-        
-        all_scenario_results[scenario_name] = (p_data, n_data)
-        plot_scenario_results((p_data, n_data), scenario_name, OUTPUT_DIR)
+        if scenario_name not in all_scenario_results:
+            print(f"\nScenario: {scenario_name}")
+            
+            agents = []
+            for i in range(group_size):
+                agents.append(QLNoDecay(agent_id=f"QLNoDecay_{i+1}"))
+            
+            start_time = time.time()
+            p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
+            elapsed = time.time() - start_time
+            print(f"  Completed in {elapsed:.1f}s")
+            
+            all_scenario_results[scenario_name] = (p_data, n_data)
+            plot_scenario_results((p_data, n_data), scenario_name, OUTPUT_DIR)
+            
+            # Save checkpoint
+            save_checkpoint({
+                'all_scenario_results': all_scenario_results,
+                'scaling_results': scaling_results
+            }, checkpoint_file)
+        else:
+            print(f"\nScenario: {scenario_name} (already completed, skipping)")
     
     # --- Create scaling comparison plot ---
     print("\n=== Creating scaling analysis plots ===")
@@ -535,3 +638,8 @@ if __name__ == "__main__":
     total_elapsed = time.time() - total_start_time
     print(f"\nAll experiments complete! Results saved to '{OUTPUT_DIR}'")
     print(f"Total time: {total_elapsed:.1f}s ({total_elapsed/60:.1f} minutes)")
+    
+    # Clean up checkpoint file
+    if os.path.exists(checkpoint_file):
+        os.remove(checkpoint_file)
+        print("Checkpoint file removed.")

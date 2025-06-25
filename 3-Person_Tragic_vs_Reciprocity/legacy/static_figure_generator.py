@@ -589,7 +589,7 @@ def plot_all_agent_cooperation(coop_data, title, save_path=None):
 # --- Part 3: Main Execution ---
 
 if __name__ == "__main__":
-    NUM_ROUNDS = 200
+    NUM_ROUNDS = 500
     NUM_RUNS = 50
     experiments = setup_experiments()
 

@@ -328,18 +328,18 @@ def plot_scenario_results(scenario_results, scenario_name, output_dir):
     
     # Separate QL types
     legacy3_agents = sorted([aid for aid in p_data.keys() if 'Legacy3Round' in aid])
-    nodecay_agents = sorted([aid for aid in p_data.keys() if 'QLNoDecay' in aid])
-    other_agents = sorted([aid for aid in p_data.keys() if aid not in legacy3_agents + nodecay_agents])
+    legacy_agents = sorted([aid for aid in p_data.keys() if 'LegacyQL' in aid and 'Legacy3Round' not in aid])
+    other_agents = sorted([aid for aid in p_data.keys() if aid not in legacy3_agents + legacy_agents])
     
     # Define colors
     colors_legacy3 = plt.cm.Blues(np.linspace(0.5, 0.9, len(legacy3_agents)))
-    colors_nodecay = plt.cm.Reds(np.linspace(0.5, 0.9, len(nodecay_agents)))
+    colors_legacy = plt.cm.Reds(np.linspace(0.5, 0.9, len(legacy_agents)))
     colors_other = plt.cm.Greys(np.linspace(0.3, 0.7, len(other_agents)))
     
     # Plot cooperation rates and scores
     for i, (agents, colors, label_prefix) in enumerate([
         (legacy3_agents, colors_legacy3, 'L3R'),
-        (nodecay_agents, colors_nodecay, 'ND'),
+        (legacy_agents, colors_legacy, 'LQL'),
         (other_agents, colors_other, '')
     ]):
         for j, aid in enumerate(agents):

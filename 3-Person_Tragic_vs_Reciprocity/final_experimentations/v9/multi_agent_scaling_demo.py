@@ -1,13 +1,13 @@
 #!/usr/bin/env python3
 """
 Multi-agent scaling experiments to understand the effect of group size on Q-learning agents.
-FIXED VERSION: Handles the strategy_name issue in parallel processing.
+V2: Includes 1QL, 2QL, and 3QL variations with SimpleQL and advanced QL learners.
 
 Tests:
 - Group sizes: 3, 5, 7, 10, 15, 20, 25 total agents
-- Uses Legacy3RoundQLearner with LEGACY_3ROUND_PARAMS
-- Uses LegacyQLearner with LEGACY_PARAMS as comparison
-- Tests the combinations from v6/multi_agent_demo.py
+- QL counts: 1, 2, or 3 Q-learners per scenario
+- Uses Legacy3RoundQLearner, LegacyQLearner, and SimpleQLearner
+- Tests the combinations similar to v6/multi_agent_demo.py
 """
 
 import numpy as np
@@ -21,8 +21,9 @@ from multiprocessing import Pool, cpu_count
 import time
 from datetime import datetime
 import pickle
+import random
 
-from final_agents import StaticAgent, Legacy3RoundQLearner, LegacyQLearner
+from final_agents import StaticAgent, Legacy3RoundQLearner, LegacyQLearner, BaseAgent
 from config import LEGACY_3ROUND_PARAMS, LEGACY_PARAMS, SIMULATION_CONFIG
 from save_config import save_detailed_config
 
@@ -40,8 +41,128 @@ def nperson_payoff(my_move, num_cooperators, total_agents):
         return P + (T - P) * (others_coop / (total_agents - 1))
 
 
-# Note: We're now using LegacyQLearner instead of a custom QLNoDecay
-# LegacyQLearner uses 2-round history with sophisticated state representation
+# --- Simple QL Agent ---
+class SimpleQLearner(BaseAgent):
+    """Simple Q-Learning agent with fixed parameters and no decay"""
+    def __init__(self, agent_id, params=None):
+        super().__init__(agent_id, "SimpleQL")
+        # Simple fixed parameters
+        self.lr = 0.1
+        self.df = 0.95
+        self.eps = 0.1
+        
+        # Q-tables
+        self.q_tables = {}  # opponent_id -> Q-table for pairwise
+        self.n_q_table = {}  # Q-table for neighborhood
+        
+        # State tracking
+        self.opponent_last_moves = {}
+        self.last_coop_ratio = None
+    
+    def reset(self):
+        super().reset()
+        self.q_tables = {}
+        self.n_q_table = {}
+        self.opponent_last_moves = {}
+        self.last_coop_ratio = None
+    
+    def _get_pairwise_state(self, opponent_id):
+        """Simple state: opponent's last move"""
+        if opponent_id not in self.opponent_last_moves:
+            return 'initial'
+        return 'C' if self.opponent_last_moves[opponent_id] == 0 else 'D'
+    
+    def _get_neighborhood_state(self):
+        """Simple state: cooperation ratio category"""
+        if self.last_coop_ratio is None:
+            return 'initial'
+        if self.last_coop_ratio <= 0.33:
+            return 'low'
+        elif self.last_coop_ratio <= 0.67:
+            return 'medium'
+        else:
+            return 'high'
+    
+    def _ensure_state_exists(self, state, q_table):
+        """Initialize Q-values for new states"""
+        if state not in q_table:
+            q_table[state] = {0: 0.0, 1: 0.0}  # C: 0, D: 1
+    
+    def choose_pairwise_action(self, opponent_id):
+        """Choose action for pairwise interaction"""
+        # Initialize Q-table for new opponent
+        if opponent_id not in self.q_tables:
+            self.q_tables[opponent_id] = {}
+        
+        state = self._get_pairwise_state(opponent_id)
+        self._ensure_state_exists(state, self.q_tables[opponent_id])
+        
+        # Epsilon-greedy action selection
+        if random.random() < self.eps:
+            return random.choice([0, 1])
+        else:
+            q_values = self.q_tables[opponent_id][state]
+            if q_values[0] >= q_values[1]:
+                return 0  # Cooperate
+            else:
+                return 1  # Defect
+    
+    def choose_neighborhood_action(self, coop_ratio):
+        """Choose action for neighborhood interaction"""
+        self.last_coop_ratio = coop_ratio
+        state = self._get_neighborhood_state()
+        self._ensure_state_exists(state, self.n_q_table)
+        
+        # Epsilon-greedy action selection
+        if random.random() < self.eps:
+            action = random.choice([0, 1])
+        else:
+            q_values = self.n_q_table[state]
+            if q_values[0] >= q_values[1]:
+                action = 0
+            else:
+                action = 1
+        
+        self.last_n_action = action
+        self.last_n_state = state
+        return action
+    
+    def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
+        """Record outcome and update Q-values"""
+        self.total_score += reward
+        
+        # Update opponent's last move
+        self.opponent_last_moves[opponent_id] = opponent_move
+        
+        # Q-learning update
+        if opponent_id in self.q_tables:
+            state = self._get_pairwise_state(opponent_id)
+            self._ensure_state_exists(state, self.q_tables[opponent_id])
+            
+            # Get next state value
+            next_state = 'C' if opponent_move == 0 else 'D'
+            self._ensure_state_exists(next_state, self.q_tables[opponent_id])
+            max_next_q = max(self.q_tables[opponent_id][next_state].values())
+            
+            # Update Q-value
+            current_q = self.q_tables[opponent_id][state][my_move]
+            self.q_tables[opponent_id][state][my_move] = current_q + self.lr * (reward + self.df * max_next_q - current_q)
+    
+    def record_neighborhood_outcome(self, coop_ratio, reward):
+        """Record outcome and update Q-values"""
+        self.total_score += reward
+        
+        # Q-learning update
+        if hasattr(self, 'last_n_state') and hasattr(self, 'last_n_action'):
+            # Get next state
+            self.last_coop_ratio = coop_ratio
+            next_state = self._get_neighborhood_state()
+            self._ensure_state_exists(next_state, self.n_q_table)
+            max_next_q = max(self.n_q_table[next_state].values())
+            
+            # Update Q-value
+            current_q = self.n_q_table[self.last_n_state][self.last_n_action]
+            self.n_q_table[self.last_n_state][self.last_n_action] = current_q + self.lr * (reward + self.df * max_next_q - current_q)
 
 
 # --- Helper function to recreate agents safely ---
@@ -52,7 +173,9 @@ def recreate_agent(agent):
     # Remove attributes that shouldn't be passed to __init__
     attributes_to_remove = ['strategy_name', 'agent_id', 'total_score', 'pairwise_history', 
                            'pairwise_q_tables', 'neighborhood_q_table', 'neighborhood_history',
-                           'last_neighborhood_action', 'epsilon', 'interactions_count']
+                           'last_neighborhood_action', 'epsilon', 'interactions_count',
+                           'q_tables', 'n_q_table', 'opponent_last_moves', 'last_coop_ratio',
+                           'last_n_state', 'last_n_action']
     
     for attr in attributes_to_remove:
         agent_dict.pop(attr, None)
@@ -66,6 +189,8 @@ def recreate_agent(agent):
         return Legacy3RoundQLearner(agent_id, agent.params)
     elif isinstance(agent, LegacyQLearner):
         return LegacyQLearner(agent_id, agent.params)
+    elif isinstance(agent, SimpleQLearner):
+        return SimpleQLearner(agent_id)
     elif isinstance(agent, StaticAgent):
         return StaticAgent(agent_id, strategy_name=agent.strategy_name, error_rate=agent.error_rate)
     else:
@@ -135,51 +260,7 @@ def run_single_nperson(args):
     return run_nperson_simulation([recreate_agent(a) for a in agents], num_rounds)
 
 
-def save_individual_runs_csv(scenario_name, p_runs, n_runs, output_dir):
-    """Save individual run data to CSV files"""
-    runs_dir = os.path.join(output_dir, "individual_runs", scenario_name)
-    os.makedirs(runs_dir, exist_ok=True)
-    
-    # Save pairwise runs
-    for run_idx, run_data in enumerate(p_runs):
-        run_df_data = []
-        for round_idx in range(len(next(iter(run_data.values()))['coop_rate'])):
-            for agent_id, agent_data in run_data.items():
-                run_df_data.append({
-                    'run': run_idx + 1,
-                    'round': round_idx + 1,
-                    'agent_id': agent_id,
-                    'agent_type': agent_id.split('_')[0],
-                    'cooperation_rate': agent_data['coop_rate'][round_idx],
-                    'cumulative_score': agent_data['score'][round_idx]
-                })
-        
-        df = pd.DataFrame(run_df_data)
-        csv_path = os.path.join(runs_dir, f"pairwise_run_{run_idx+1}.csv")
-        df.to_csv(csv_path, index=False)
-    
-    # Save neighborhood runs
-    for run_idx, run_data in enumerate(n_runs):
-        run_df_data = []
-        for round_idx in range(len(next(iter(run_data.values()))['coop_rate'])):
-            for agent_id, agent_data in run_data.items():
-                run_df_data.append({
-                    'run': run_idx + 1,
-                    'round': round_idx + 1,
-                    'agent_id': agent_id,
-                    'agent_type': agent_id.split('_')[0],
-                    'cooperation_rate': agent_data['coop_rate'][round_idx],
-                    'cumulative_score': agent_data['score'][round_idx]
-                })
-        
-        df = pd.DataFrame(run_df_data)
-        csv_path = os.path.join(runs_dir, f"neighborhood_run_{run_idx+1}.csv")
-        df.to_csv(csv_path, index=False)
-    
-    print(f"  Saved individual run CSVs to: {runs_dir}")
-
-
-def run_experiment_set(agents, num_rounds, num_runs, use_parallel=True, save_runs=True, scenario_name=None, output_dir=None):
+def run_experiment_set(agents, num_rounds, num_runs, use_parallel=True):
     """Runs both pairwise and neighborhood simulations for a given agent configuration."""
     if use_parallel:
         n_processes = max(1, cpu_count() - 1)
@@ -193,10 +274,6 @@ def run_experiment_set(agents, num_rounds, num_runs, use_parallel=True, save_run
     else:
         p_runs = [run_pairwise_tournament([recreate_agent(a) for a in agents], num_rounds) for _ in range(num_runs)]
         n_runs = [run_nperson_simulation([recreate_agent(a) for a in agents], num_rounds) for _ in range(num_runs)]
-    
-    # Save individual runs if requested
-    if save_runs and scenario_name and output_dir:
-        save_individual_runs_csv(scenario_name, p_runs, n_runs, output_dir)
     
     # Aggregate results
     p_agg = {aid: {m: np.mean([r[aid][m] for r in p_runs if aid in r], axis=0) for m in ['coop_rate', 'score']} 
@@ -217,167 +294,77 @@ def smooth_data(data, window_size=50):
     return smoothed.values
 
 
-def save_checkpoint(data, filename):
-    """Save checkpoint data to file"""
-    with open(filename, 'wb') as f:
-        pickle.dump(data, f)
-    print(f"Checkpoint saved to {filename}")
-
-
-def load_checkpoint(filename):
-    """Load checkpoint data from file"""
-    if os.path.exists(filename):
-        with open(filename, 'rb') as f:
-            data = pickle.load(f)
-        print(f"Checkpoint loaded from {filename}")
-        return data
-    return None
-
-
-def plot_scaling_results(scaling_results, output_dir):
-    """Create plots showing how cooperation scales with group size"""
-    
-    # Extract data for plotting
-    group_sizes = sorted(scaling_results.keys())
-    
-    # Data structures for different metrics
-    legacy3_pairwise_coop = []
-    legacy3_neighborhood_coop = []
-    legacy_pairwise_coop = []
-    legacy_neighborhood_coop = []
-    
-    legacy3_pairwise_score = []
-    legacy3_neighborhood_score = []
-    legacy_pairwise_score = []
-    legacy_neighborhood_score = []
-    
-    for size in group_sizes:
-        if size not in scaling_results:
-            continue
-            
-        p_data, n_data = scaling_results[size]
-        
-        # Find QL agents
-        legacy3_agents = [aid for aid in p_data.keys() if 'Legacy3Round' in aid]
-        legacy_agents = [aid for aid in p_data.keys() if 'LegacyQL' in aid and 'Legacy3Round' not in aid]
-        
-        if legacy3_agents:
-            # Average final cooperation rates (last 1000 rounds)
-            legacy3_pairwise_coop.append(np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in legacy3_agents]))
-            legacy3_neighborhood_coop.append(np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in legacy3_agents]))
-            legacy3_pairwise_score.append(np.mean([p_data[aid]['score'][-1] for aid in legacy3_agents]))
-            legacy3_neighborhood_score.append(np.mean([n_data[aid]['score'][-1] for aid in legacy3_agents]))
-        
-        if legacy_agents:
-            legacy_pairwise_coop.append(np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in legacy_agents]))
-            legacy_neighborhood_coop.append(np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in legacy_agents]))
-            legacy_pairwise_score.append(np.mean([p_data[aid]['score'][-1] for aid in legacy_agents]))
-            legacy_neighborhood_score.append(np.mean([n_data[aid]['score'][-1] for aid in legacy_agents]))
-    
-    # Create figure with 2x2 subplots
-    fig, axes = plt.subplots(2, 2, figsize=(15, 12))
-    fig.suptitle('Q-Learning Performance Scaling with Group Size', fontsize=16)
-    
-    # Plot cooperation rates
-    axes[0, 0].plot(group_sizes[:len(legacy3_pairwise_coop)], legacy3_pairwise_coop, 'o-', label='Legacy3Round (3-round)', linewidth=2, markersize=8)
-    axes[0, 0].plot(group_sizes[:len(legacy_pairwise_coop)], legacy_pairwise_coop, 's-', label='LegacyQL (2-round)', linewidth=2, markersize=8)
-    axes[0, 0].set_title('Pairwise Final Cooperation Rate')
-    axes[0, 0].set_xlabel('Group Size')
-    axes[0, 0].set_ylabel('Cooperation Rate')
-    axes[0, 0].legend()
-    axes[0, 0].grid(True, alpha=0.3)
-    axes[0, 0].set_ylim(0, 1.05)
-    
-    axes[1, 0].plot(group_sizes[:len(legacy3_neighborhood_coop)], legacy3_neighborhood_coop, 'o-', label='Legacy3Round (3-round)', linewidth=2, markersize=8)
-    axes[1, 0].plot(group_sizes[:len(legacy_neighborhood_coop)], legacy_neighborhood_coop, 's-', label='LegacyQL (2-round)', linewidth=2, markersize=8)
-    axes[1, 0].set_title('Neighborhood Final Cooperation Rate')
-    axes[1, 0].set_xlabel('Group Size')
-    axes[1, 0].set_ylabel('Cooperation Rate')
-    axes[1, 0].legend()
-    axes[1, 0].grid(True, alpha=0.3)
-    axes[1, 0].set_ylim(0, 1.05)
-    
-    # Plot final scores
-    axes[0, 1].plot(group_sizes[:len(legacy3_pairwise_score)], legacy3_pairwise_score, 'o-', label='Legacy3Round (3-round)', linewidth=2, markersize=8)
-    axes[0, 1].plot(group_sizes[:len(legacy_pairwise_score)], legacy_pairwise_score, 's-', label='LegacyQL (2-round)', linewidth=2, markersize=8)
-    axes[0, 1].set_title('Pairwise Final Score')
-    axes[0, 1].set_xlabel('Group Size')
-    axes[0, 1].set_ylabel('Total Score')
-    axes[0, 1].legend()
-    axes[0, 1].grid(True, alpha=0.3)
-    
-    axes[1, 1].plot(group_sizes[:len(legacy3_neighborhood_score)], legacy3_neighborhood_score, 'o-', label='Legacy3Round (3-round)', linewidth=2, markersize=8)
-    axes[1, 1].plot(group_sizes[:len(legacy_neighborhood_score)], legacy_neighborhood_score, 's-', label='LegacyQL (2-round)', linewidth=2, markersize=8)
-    axes[1, 1].set_title('Neighborhood Final Score')
-    axes[1, 1].set_xlabel('Group Size')
-    axes[1, 1].set_ylabel('Total Score')
-    axes[1, 1].legend()
-    axes[1, 1].grid(True, alpha=0.3)
-    
-    plt.tight_layout()
-    plt.savefig(os.path.join(output_dir, 'scaling_comparison.png'), dpi=150)
-    plt.close()
-
-
-def plot_scenario_results(scenario_results, scenario_name, output_dir):
-    """Create detailed plots for a specific scenario"""
+def plot_scenario_comparison(results, scenario_name, output_dir):
+    """Create comparison plots for different QL types in a scenario"""
     fig, axes = plt.subplots(2, 2, figsize=(15, 12))
     fig.suptitle(f'{scenario_name}', fontsize=16)
     
-    p_data, n_data = scenario_results
+    p_data_by_type = defaultdict(list)
+    n_data_by_type = defaultdict(list)
     
-    # Separate QL types
-    legacy3_agents = sorted([aid for aid in p_data.keys() if 'Legacy3Round' in aid])
-    legacy_agents = sorted([aid for aid in p_data.keys() if 'LegacyQL' in aid and 'Legacy3Round' not in aid])
-    other_agents = sorted([aid for aid in p_data.keys() if aid not in legacy3_agents + legacy_agents])
-    
-    # Define colors
-    colors_legacy3 = plt.cm.Blues(np.linspace(0.5, 0.9, len(legacy3_agents)))
-    colors_legacy = plt.cm.Reds(np.linspace(0.5, 0.9, len(legacy_agents)))
-    colors_other = plt.cm.Greys(np.linspace(0.3, 0.7, len(other_agents)))
-    
-    # Plot cooperation rates and scores
-    for i, (agents, colors, label_prefix) in enumerate([
-        (legacy3_agents, colors_legacy3, 'L3R'),
-        (legacy_agents, colors_legacy, 'LQL'),
-        (other_agents, colors_other, '')
-    ]):
-        for j, aid in enumerate(agents):
-            label = f"{label_prefix} {aid}" if label_prefix else aid
-            linewidth = 2 if 'QL' in aid else 1
-            alpha = 1.0 if 'QL' in aid else 0.5
+    # Group data by QL type
+    for ql_type, (p_data, n_data) in results.items():
+        # Find QL agents
+        ql_agents = [aid for aid in p_data.keys() if 'QL' in aid]
+        
+        if ql_agents:
+            # Average across QL agents of this type
+            avg_p_coop = np.mean([p_data[aid]['coop_rate'] for aid in ql_agents], axis=0)
+            avg_p_score = np.mean([p_data[aid]['score'] for aid in ql_agents], axis=0)
+            avg_n_coop = np.mean([n_data[aid]['coop_rate'] for aid in ql_agents], axis=0)
+            avg_n_score = np.mean([n_data[aid]['score'] for aid in ql_agents], axis=0)
             
-            # Smooth cooperation rates
-            p_coop_smooth = smooth_data(p_data[aid]['coop_rate'], 100)
-            n_coop_smooth = smooth_data(n_data[aid]['coop_rate'], 100)
+            p_data_by_type[ql_type] = {'coop': avg_p_coop, 'score': avg_p_score}
+            n_data_by_type[ql_type] = {'coop': avg_n_coop, 'score': avg_n_score}
+    
+    # Colors for different QL types
+    colors = {
+        'SimpleQL': '#1f77b4',
+        'LegacyQL': '#ff7f0e', 
+        'Legacy3Round': '#2ca02c'
+    }
+    
+    # Plot results
+    for ql_type in ['SimpleQL', 'LegacyQL', 'Legacy3Round']:
+        if ql_type in p_data_by_type:
+            color = colors.get(ql_type, '#808080')
             
-            axes[0, 0].plot(p_coop_smooth, label=label, color=colors[j], linewidth=linewidth, alpha=alpha)
-            axes[1, 0].plot(n_coop_smooth, label=label, color=colors[j], linewidth=linewidth, alpha=alpha)
-            axes[0, 1].plot(p_data[aid]['score'], label=label, color=colors[j], linewidth=linewidth, alpha=alpha)
-            axes[1, 1].plot(n_data[aid]['score'], label=label, color=colors[j], linewidth=linewidth, alpha=alpha)
+            # Apply smoothing to cooperation rates
+            p_coop_smooth = smooth_data(p_data_by_type[ql_type]['coop'], 100)
+            n_coop_smooth = smooth_data(n_data_by_type[ql_type]['coop'], 100)
+            
+            # Plot with raw data in background (low alpha) and smoothed in foreground
+            axes[0, 0].plot(p_data_by_type[ql_type]['coop'], color=color, alpha=0.2, linewidth=0.5)
+            axes[0, 0].plot(p_coop_smooth, label=ql_type, color=color, linewidth=2.5)
+            
+            axes[1, 0].plot(n_data_by_type[ql_type]['coop'], color=color, alpha=0.2, linewidth=0.5)
+            axes[1, 0].plot(n_coop_smooth, label=ql_type, color=color, linewidth=2.5)
+            
+            axes[0, 1].plot(p_data_by_type[ql_type]['score'], label=ql_type, color=color, linewidth=2)
+            axes[1, 1].plot(n_data_by_type[ql_type]['score'], label=ql_type, color=color, linewidth=2)
     
     axes[0, 0].set_title('Pairwise Cooperation Rate')
     axes[0, 0].set_ylabel('Cooperation Rate')
     axes[0, 0].set_ylim(-0.05, 1.05)
-    axes[0, 0].legend(fontsize=8, loc='best')
+    axes[0, 0].legend()
     axes[0, 0].grid(True, alpha=0.3)
     
     axes[0, 1].set_title('Pairwise Cumulative Score')
     axes[0, 1].set_ylabel('Cumulative Score')
-    axes[0, 1].legend(fontsize=8, loc='best')
+    axes[0, 1].legend()
     axes[0, 1].grid(True, alpha=0.3)
     
     axes[1, 0].set_title('Neighborhood Cooperation Rate')
     axes[1, 0].set_ylabel('Cooperation Rate')
     axes[1, 0].set_xlabel('Round')
     axes[1, 0].set_ylim(-0.05, 1.05)
-    axes[1, 0].legend(fontsize=8, loc='best')
+    axes[1, 0].legend()
     axes[1, 0].grid(True, alpha=0.3)
     
     axes[1, 1].set_title('Neighborhood Cumulative Score')
     axes[1, 1].set_ylabel('Cumulative Score')
     axes[1, 1].set_xlabel('Round')
-    axes[1, 1].legend(fontsize=8, loc='best')
+    axes[1, 1].legend()
     axes[1, 1].grid(True, alpha=0.3)
     
     plt.tight_layout()
@@ -389,65 +376,92 @@ def plot_scenario_results(scenario_results, scenario_name, output_dir):
     plt.close()
 
 
-def save_scaling_results_csv(scaling_results, output_dir):
-    """Save scaling results to CSV"""
-    csv_path = os.path.join(output_dir, "scaling_results.csv")
+def save_summary_results_csv(all_results, output_dir):
+    """Save summary results to CSV files"""
+    timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
-    with open(csv_path, 'w', newline='') as f:
-        writer = csv.writer(f)
-        writer.writerow([
-            'group_size', 'agent_type', 'mode',
-            'avg_coop_rate', 'final_coop_rate', 'final_score', 'score_per_round'
-        ])
-        
-        for size, (p_data, n_data) in scaling_results.items():
-            # Legacy3Round agents
-            legacy3_agents = [aid for aid in p_data.keys() if 'Legacy3Round' in aid]
-            if legacy3_agents:
-                # Pairwise
-                avg_coop = np.mean([np.mean(p_data[aid]['coop_rate']) for aid in legacy3_agents])
-                final_coop = np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in legacy3_agents])
-                final_score = np.mean([p_data[aid]['score'][-1] for aid in legacy3_agents])
-                score_per_round = final_score / len(p_data[legacy3_agents[0]]['score'])
-                writer.writerow([size, 'Legacy3Round', 'pairwise', avg_coop, final_coop, final_score, score_per_round])
-                
-                # Neighborhood
-                avg_coop = np.mean([np.mean(n_data[aid]['coop_rate']) for aid in legacy3_agents])
-                final_coop = np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in legacy3_agents])
-                final_score = np.mean([n_data[aid]['score'][-1] for aid in legacy3_agents])
-                score_per_round = final_score / len(n_data[legacy3_agents[0]]['score'])
-                writer.writerow([size, 'Legacy3Round', 'neighborhood', avg_coop, final_coop, final_score, score_per_round])
+    # Summary data
+    summary_data = []
+    
+    for scenario_name, scenario_results in all_results.items():
+        for ql_type, (p_data, n_data) in scenario_results.items():
+            # Find QL agents
+            ql_agents = [aid for aid in p_data.keys() if 'QL' in aid]
             
-            # LegacyQL agents
-            legacy_agents = [aid for aid in p_data.keys() if 'LegacyQL' in aid and 'Legacy3Round' not in aid]
-            if legacy_agents:
-                # Pairwise
-                avg_coop = np.mean([np.mean(p_data[aid]['coop_rate']) for aid in legacy_agents])
-                final_coop = np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in legacy_agents])
-                final_score = np.mean([p_data[aid]['score'][-1] for aid in legacy_agents])
-                score_per_round = final_score / len(p_data[legacy_agents[0]]['score'])
-                writer.writerow([size, 'LegacyQL', 'pairwise', avg_coop, final_coop, final_score, score_per_round])
+            if ql_agents:
+                # Calculate metrics
+                p_avg_coop = np.mean([np.mean(p_data[aid]['coop_rate']) for aid in ql_agents])
+                p_final_coop = np.mean([np.mean(p_data[aid]['coop_rate'][-1000:]) for aid in ql_agents])
+                p_final_score = np.mean([p_data[aid]['score'][-1] for aid in ql_agents])
                 
-                # Neighborhood
-                avg_coop = np.mean([np.mean(n_data[aid]['coop_rate']) for aid in legacy_agents])
-                final_coop = np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in legacy_agents])
-                final_score = np.mean([n_data[aid]['score'][-1] for aid in legacy_agents])
-                score_per_round = final_score / len(n_data[legacy_agents[0]]['score'])
-                writer.writerow([size, 'LegacyQL', 'neighborhood', avg_coop, final_coop, final_score, score_per_round])
+                n_avg_coop = np.mean([np.mean(n_data[aid]['coop_rate']) for aid in ql_agents])
+                n_final_coop = np.mean([np.mean(n_data[aid]['coop_rate'][-1000:]) for aid in ql_agents])
+                n_final_score = np.mean([n_data[aid]['score'][-1] for aid in ql_agents])
+                
+                summary_data.append({
+                    'scenario': scenario_name,
+                    'ql_type': ql_type,
+                    'pairwise_avg_coop': p_avg_coop,
+                    'pairwise_final_coop': p_final_coop,
+                    'pairwise_final_score': p_final_score,
+                    'neighborhood_avg_coop': n_avg_coop,
+                    'neighborhood_final_coop': n_final_coop,
+                    'neighborhood_final_score': n_final_score
+                })
     
-    print(f"Scaling results saved to: {csv_path}")
+    # Save summary
+    summary_df = pd.DataFrame(summary_data)
+    summary_path = os.path.join(output_dir, f"summary_results_{timestamp}.csv")
+    summary_df.to_csv(summary_path, index=False)
+    print(f"Summary results saved to: {summary_path}")
+    
+    # Create detailed time series for select scenarios
+    detailed_scenarios = [s for s in all_results.keys() if '2QL' in s and 'AllC' in s]
+    
+    for scenario_name in detailed_scenarios:
+        if scenario_name not in all_results:
+            continue
+            
+        scenario_data = []
+        for ql_type, (p_data, n_data) in all_results[scenario_name].items():
+            ql_agents = [aid for aid in p_data.keys() if 'QL' in aid]
+            
+            if ql_agents:
+                # Average across QL agents
+                p_coop = np.mean([p_data[aid]['coop_rate'] for aid in ql_agents], axis=0)
+                p_score = np.mean([p_data[aid]['score'] for aid in ql_agents], axis=0)
+                n_coop = np.mean([n_data[aid]['coop_rate'] for aid in ql_agents], axis=0)
+                n_score = np.mean([n_data[aid]['score'] for aid in ql_agents], axis=0)
+                
+                for round_num in range(len(p_coop)):
+                    scenario_data.append({
+                        'round': round_num + 1,
+                        'ql_type': ql_type,
+                        'pairwise_coop': p_coop[round_num],
+                        'pairwise_score': p_score[round_num],
+                        'neighborhood_coop': n_coop[round_num],
+                        'neighborhood_score': n_score[round_num]
+                    })
+        
+        if scenario_data:
+            detailed_df = pd.DataFrame(scenario_data)
+            detailed_path = os.path.join(output_dir, f"{scenario_name}_timeseries_{timestamp}.csv")
+            detailed_df.to_csv(detailed_path, index=False)
 
 
 if __name__ == "__main__":
     NUM_ROUNDS = SIMULATION_CONFIG['num_rounds']
     NUM_RUNS = SIMULATION_CONFIG['num_runs']
-    OUTPUT_DIR = "scaling_experiment_results"
+    OUTPUT_DIR = "scaling_experiment_results_v2"
     os.makedirs(OUTPUT_DIR, exist_ok=True)
     
     # Group sizes to test
     GROUP_SIZES = [3, 5, 7, 10, 15, 20, 25]
     
-    # Opponent types from v6
+    # QL counts to test
+    QL_COUNTS = [1, 2, 3]
+    
+    # Opponent types
     OPPONENT_TYPES = {
         "AllC": {"strategy": "AllC", "error_rate": 0.0},
         "AllD": {"strategy": "AllD", "error_rate": 0.0},
@@ -455,225 +469,162 @@ if __name__ == "__main__":
         "TFT": {"strategy": "TFT", "error_rate": 0.0},
     }
     
+    # Q-learner configurations
+    QL_CONFIGS = {
+        "SimpleQL": {"class": SimpleQLearner, "params": None},
+        "LegacyQL": {"class": LegacyQLearner, "params": LEGACY_PARAMS},
+        "Legacy3Round": {"class": Legacy3RoundQLearner, "params": LEGACY_3ROUND_PARAMS},
+    }
+    
     USE_PARALLEL = True
     n_cores = cpu_count()
     n_processes = max(1, n_cores - 1) if USE_PARALLEL else 1
     
     print(f"Running scaling experiments with group sizes: {GROUP_SIZES}")
+    print(f"QL counts per scenario: {QL_COUNTS}")
     print(f"Using {NUM_ROUNDS} rounds and {NUM_RUNS} runs per scenario")
     if USE_PARALLEL:
         print(f"Using {n_processes} processes on {n_cores} available CPU cores")
     
-    # Track all results
-    all_scenario_results = {}
-    scaling_results = {}  # For plotting scaling behavior
-    
-    # Check for checkpoint
-    checkpoint_file = os.path.join(OUTPUT_DIR, "checkpoint.pkl")
-    checkpoint_data = load_checkpoint(checkpoint_file)
-    
-    if checkpoint_data:
-        all_scenario_results = checkpoint_data.get('all_scenario_results', {})
-        scaling_results = checkpoint_data.get('scaling_results', {})
-        print(f"Resuming from checkpoint with {len(all_scenario_results)} completed scenarios")
-    
+    all_results = {}
     total_start_time = time.time()
     
-    # --- Test 1: 2 QL agents vs varying numbers of opponents ---
-    print("\n=== Testing 2 QL agents with varying group sizes ===")
+    # --- Test 1: N QL agents vs varying numbers of opponents ---
+    print("\n=== Testing N QL agents vs opponents ===")
     
     for group_size in GROUP_SIZES:
-        if group_size < 3:
-            continue  # Need at least 3 agents
-        
-        n_opponents = group_size - 2  # 2 QL agents, rest are opponents
-        
-        for opp_name, opp_config in OPPONENT_TYPES.items():
-            scenario_name = f"{group_size}agents_2QL_vs_{n_opponents}{opp_name}"
+        for n_ql in QL_COUNTS:
+            if n_ql >= group_size:
+                continue  # Skip if not enough room for opponents
             
-            # Skip if already completed
-            if scenario_name in all_scenario_results:
-                print(f"\nScenario: {scenario_name} (already completed, skipping)")
-                continue
+            n_opponents = group_size - n_ql
+            
+            for opp_name, opp_config in OPPONENT_TYPES.items():
+                scenario_name = f"{group_size}agents_{n_ql}QL_vs_{n_opponents}{opp_name}"
+                print(f"\nScenario: {scenario_name}")
                 
-            print(f"\nScenario: {scenario_name}")
-            
-            # Create agents
-            agents = []
-            
-            # Add 2 Legacy3Round QL agents
-            agents.append(Legacy3RoundQLearner(agent_id="Legacy3Round_QL_1", params=LEGACY_3ROUND_PARAMS))
-            agents.append(Legacy3RoundQLearner(agent_id="Legacy3Round_QL_2", params=LEGACY_3ROUND_PARAMS))
-            
-            # Add opponents
-            for i in range(n_opponents):
-                agents.append(StaticAgent(
-                    agent_id=f"{opp_name}_{i+1}",
-                    strategy_name=opp_config["strategy"],
-                    error_rate=opp_config["error_rate"]
-                ))
-            
-            # Run experiment
-            start_time = time.time()
-            p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL, 
-                                               save_runs=True, scenario_name=scenario_name, output_dir=OUTPUT_DIR)
-            elapsed = time.time() - start_time
-            print(f"  Completed in {elapsed:.1f}s")
-            
-            all_scenario_results[scenario_name] = (p_data, n_data)
-            
-            # Save for scaling analysis (only for AllC opponent)
-            if opp_name == "AllC":
-                scaling_results[group_size] = (p_data, n_data)
-            
-            # Plot individual scenario
-            plot_scenario_results((p_data, n_data), scenario_name, OUTPUT_DIR)
-            
-            # Save checkpoint after each scenario
-            save_checkpoint({
-                'all_scenario_results': all_scenario_results,
-                'scaling_results': scaling_results
-            }, checkpoint_file)
+                scenario_results = {}
+                
+                for ql_name, ql_config in QL_CONFIGS.items():
+                    print(f"  Testing {ql_name}...", end='', flush=True)
+                    agents = []
+                    
+                    # Add QL agents
+                    for i in range(n_ql):
+                        if ql_config["params"]:
+                            agents.append(ql_config["class"](
+                                agent_id=f"{ql_name}_{i+1}",
+                                params=ql_config["params"]
+                            ))
+                        else:
+                            agents.append(ql_config["class"](
+                                agent_id=f"{ql_name}_{i+1}"
+                            ))
+                    
+                    # Add opponents
+                    for i in range(n_opponents):
+                        agents.append(StaticAgent(
+                            agent_id=f"{opp_name}_{i+1}",
+                            strategy_name=opp_config["strategy"],
+                            error_rate=opp_config["error_rate"]
+                        ))
+                    
+                    # Run experiment
+                    start_time = time.time()
+                    p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
+                    elapsed = time.time() - start_time
+                    print(f" done in {elapsed:.1f}s")
+                    
+                    scenario_results[ql_name] = (p_data, n_data)
+                
+                all_results[scenario_name] = scenario_results
+                plot_scenario_comparison(scenario_results, scenario_name, OUTPUT_DIR)
     
-    # --- Test 2: Mixed QL types ---
-    print("\n=== Testing mixed QL types with varying group sizes ===")
+    # --- Test 2: All QL scenarios (different types) ---
+    print("\n=== Testing all-QL scenarios ===")
     
     for group_size in GROUP_SIZES:
-        if group_size < 4:
-            continue  # Need at least 4 agents for meaningful comparison
-        
-        scenario_name = f"{group_size}agents_MixedQL"
-        
-        # Skip if already completed
-        if scenario_name in all_scenario_results:
-            print(f"\nScenario: {scenario_name} (already completed, skipping)")
-            continue
-            
-        print(f"\nScenario: {scenario_name}")
-        
-        # Create mixed QL agents
-        agents = []
-        n_legacy3 = group_size // 2
-        n_nodecay = group_size - n_legacy3
-        
-        # Add Legacy3Round agents
-        for i in range(n_legacy3):
-            agents.append(Legacy3RoundQLearner(
-                agent_id=f"Legacy3Round_QL_{i+1}",
-                params=LEGACY_3ROUND_PARAMS
-            ))
-        
-        # Add LegacyQL agents
-        for i in range(n_nodecay):
-            agents.append(LegacyQLearner(agent_id=f"LegacyQL_{i+1}", params=LEGACY_PARAMS))
-        
-        # Run experiment
-        start_time = time.time()
-        p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL,
-                                           save_runs=True, scenario_name=scenario_name, output_dir=OUTPUT_DIR)
-        elapsed = time.time() - start_time
-        print(f"  Completed in {elapsed:.1f}s")
-        
-        all_scenario_results[scenario_name] = (p_data, n_data)
-        plot_scenario_results((p_data, n_data), scenario_name, OUTPUT_DIR)
-        
-        # Save checkpoint
-        save_checkpoint({
-            'all_scenario_results': all_scenario_results,
-            'scaling_results': scaling_results
-        }, checkpoint_file)
-    
-    # --- Test 3: All same QL type ---
-    print("\n=== Testing all same QL type with varying group sizes ===")
-    
-    for group_size in GROUP_SIZES:
-        # All Legacy3Round
-        scenario_name = f"{group_size}agents_AllLegacy3Round"
-        
-        if scenario_name not in all_scenario_results:
+        # Test each QL type separately
+        for ql_name, ql_config in QL_CONFIGS.items():
+            scenario_name = f"{group_size}agents_All{ql_name}"
             print(f"\nScenario: {scenario_name}")
             
             agents = []
             for i in range(group_size):
-                agents.append(Legacy3RoundQLearner(
-                    agent_id=f"Legacy3Round_QL_{i+1}",
-                    params=LEGACY_3ROUND_PARAMS
-                ))
+                if ql_config["params"]:
+                    agents.append(ql_config["class"](
+                        agent_id=f"{ql_name}_{i+1}",
+                        params=ql_config["params"]
+                    ))
+                else:
+                    agents.append(ql_config["class"](
+                        agent_id=f"{ql_name}_{i+1}"
+                    ))
             
             start_time = time.time()
             p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
             elapsed = time.time() - start_time
             print(f"  Completed in {elapsed:.1f}s")
             
-            all_scenario_results[scenario_name] = (p_data, n_data)
-            plot_scenario_results((p_data, n_data), scenario_name, OUTPUT_DIR)
-            
-            # Save checkpoint
-            save_checkpoint({
-                'all_scenario_results': all_scenario_results,
-                'scaling_results': scaling_results
-            }, checkpoint_file)
-        else:
-            print(f"\nScenario: {scenario_name} (already completed, skipping)")
+            # Store as single result type for all-QL scenario
+            all_results[scenario_name] = {ql_name: (p_data, n_data)}
         
-        # All LegacyQL
-        scenario_name = f"{group_size}agents_AllLegacyQL"
-        
-        if scenario_name not in all_scenario_results:
+        # Mixed QL types scenario
+        if group_size >= 3:  # Need at least 3 for meaningful mix
+            scenario_name = f"{group_size}agents_MixedQL"
             print(f"\nScenario: {scenario_name}")
             
             agents = []
+            ql_types = list(QL_CONFIGS.keys())
+            
+            # Distribute agents roughly evenly among QL types
             for i in range(group_size):
-                agents.append(LegacyQLearner(agent_id=f"LegacyQL_{i+1}", params=LEGACY_PARAMS))
+                ql_type = ql_types[i % len(ql_types)]
+                ql_config = QL_CONFIGS[ql_type]
+                
+                if ql_config["params"]:
+                    agents.append(ql_config["class"](
+                        agent_id=f"{ql_type}_{(i // len(ql_types)) + 1}",
+                        params=ql_config["params"]
+                    ))
+                else:
+                    agents.append(ql_config["class"](
+                        agent_id=f"{ql_type}_{(i // len(ql_types)) + 1}"
+                    ))
             
             start_time = time.time()
             p_data, n_data = run_experiment_set(agents, NUM_ROUNDS, NUM_RUNS, USE_PARALLEL)
             elapsed = time.time() - start_time
             print(f"  Completed in {elapsed:.1f}s")
             
-            all_scenario_results[scenario_name] = (p_data, n_data)
-            plot_scenario_results((p_data, n_data), scenario_name, OUTPUT_DIR)
-            
-            # Save checkpoint
-            save_checkpoint({
-                'all_scenario_results': all_scenario_results,
-                'scaling_results': scaling_results
-            }, checkpoint_file)
-        else:
-            print(f"\nScenario: {scenario_name} (already completed, skipping)")
+            # Store mixed results
+            all_results[scenario_name] = {"Mixed": (p_data, n_data)}
     
-    # --- Create scaling comparison plot ---
-    print("\n=== Creating scaling analysis plots ===")
-    plot_scaling_results(scaling_results, OUTPUT_DIR)
-    
-    # --- Save results to CSV ---
-    print("\n=== Saving results to CSV ===")
-    save_scaling_results_csv(scaling_results, OUTPUT_DIR)
+    # --- Save Results ---
+    print("\n=== Saving results ===")
+    save_summary_results_csv(all_results, OUTPUT_DIR)
     
     # --- Create summary ---
     summary_path = os.path.join(OUTPUT_DIR, "experiment_summary.txt")
     with open(summary_path, 'w') as f:
         f.write("="*80 + "\n")
-        f.write("MULTI-AGENT SCALING EXPERIMENT SUMMARY\n")
+        f.write("MULTI-AGENT SCALING EXPERIMENT SUMMARY V2\n")
         f.write("="*80 + "\n\n")
         f.write(f"Group sizes tested: {GROUP_SIZES}\n")
+        f.write(f"QL counts tested: {QL_COUNTS}\n")
         f.write(f"Number of rounds: {NUM_ROUNDS}\n")
         f.write(f"Number of runs per scenario: {NUM_RUNS}\n")
-        f.write(f"Total scenarios tested: {len(all_scenario_results)}\n")
+        f.write(f"Total scenarios tested: {len(all_results)}\n")
         f.write("\nQL Agent Types:\n")
-        f.write("- Legacy3Round: Uses LEGACY_3ROUND_PARAMS with 3-round history\n")
-        f.write("- LegacyQL: 2-round history with sophisticated state representation (LEGACY_PARAMS)\n")
+        f.write("- SimpleQL: Basic Q-learning with fixed parameters (lr=0.1, df=0.95, eps=0.1)\n")
+        f.write("- LegacyQL: 2-round history with sophisticated state representation\n")
+        f.write("- Legacy3Round: 3-round history with sophisticated state representation\n")
         f.write("\nExperiment Types:\n")
-        f.write("1. 2 QL agents vs varying numbers of opponents (AllC, AllD, Random, TFT)\n")
-        f.write("2. Mixed QL types (half Legacy3Round, half LegacyQL)\n")
-        f.write("3. All same QL type scenarios\n")
+        f.write("1. N QL agents (1, 2, or 3) vs varying numbers of opponents\n")
+        f.write("2. All same QL type scenarios\n")
+        f.write("3. Mixed QL type scenarios\n")
     
     # Calculate total time
     total_elapsed = time.time() - total_start_time
     print(f"\nAll experiments complete! Results saved to '{OUTPUT_DIR}'")
     print(f"Total time: {total_elapsed:.1f}s ({total_elapsed/60:.1f} minutes)")
-    
-    # Clean up checkpoint file
-    if os.path.exists(checkpoint_file):
-        os.remove(checkpoint_file)
-        print("Checkpoint file removed.")

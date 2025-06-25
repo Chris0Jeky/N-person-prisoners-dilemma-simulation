@@ -107,9 +107,9 @@ if __name__ == "__main__":
                 params=LEGACY_3ROUND_PARAMS
             ))
         
-        # Add QLNoDecay agents
+        # Add LegacyQL agents
         for i in range(n_nodecay):
-            agents.append(QLNoDecay(agent_id=f"QLNoDecay_{i+1}"))
+            agents.append(LegacyQLearner(agent_id=f"LegacyQL_{i+1}", params=LEGACY_PARAMS))
         
         # Run experiment
         start_time = time.time()

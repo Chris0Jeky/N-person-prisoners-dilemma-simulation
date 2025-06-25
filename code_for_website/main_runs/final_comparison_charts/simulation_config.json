@@ -1,0 +1,74 @@
+{
+  "timestamp": "2025-06-24T10:13:12.732801",
+  "output_directory": "final_comparison_charts",
+  "simulation": {
+    "num_rounds": 100,
+    "num_runs": 200
+  },
+  "vanilla_params": {
+    "lr": 0.1,
+    "df": 0.95,
+    "eps": 0.1
+  },
+  "adaptive_params": {
+    "initial_lr": 0.1,
+    "initial_eps": 0.15,
+    "min_lr": 0.03,
+    "max_lr": 0.15,
+    "min_eps": 0.02,
+    "max_eps": 0.15,
+    "adaptation_factor": 1.08,
+    "reward_window_size": 75,
+    "df": 0.95
+  },
+  "hysteretic_params": {
+    "lr": 0.12,
+    "beta": 0.002,
+    "df": 0.95,
+    "eps": 0.05
+  },
+  "legacy_params": {
+    "lr": 0.15,
+    "df": 0.95,
+    "eps": 0.3,
+    "epsilon_decay": 0.995,
+    "epsilon_min": 0.05,
+    "optimistic_init": 0.0
+  },
+  "legacy_3round_params": {
+    "lr": 0.15,
+    "df": 0.99,
+    "eps": 0.25,
+    "epsilon_decay": 0.998,
+    "epsilon_min": 0.01,
+    "optimistic_init": -0.3,
+    "history_length": 3
+  },
+  "game_params": {
+    "payoffs": {
+      "T": 5,
+      "R": 3,
+      "P": 1,
+      "S": 0
+    },
+    "strategies": {
+      "AllC": "Always Cooperate",
+      "AllD": "Always Defect",
+      "Random": "50/50 random",
+      "TFT": "Tit-for-Tat",
+      "TFT-E": "TFT with 10% error"
+    }
+  },
+  "scenarios": {
+    "2QL_vs_1AllC": "Two Q-learners compete against one Always Cooperate agent",
+    "2QL_vs_1AllD": "Two Q-learners compete against one Always Defect agent",
+    "2QL_vs_1Random": "Two Q-learners compete against one Random agent",
+    "2QL_vs_1TFT": "Two Q-learners compete against one Tit-for-Tat agent",
+    "2QL_vs_1TFT-E": "Two Q-learners compete against one TFT with 10% error rate",
+    "1QL_vs_2AllC": "One Q-learner competes against two Always Cooperate agents",
+    "1QL_vs_2AllD": "One Q-learner competes against two Always Defect agents",
+    "1QL_vs_2Random": "One Q-learner competes against two Random agents",
+    "1QL_vs_2TFT": "One Q-learner competes against two Tit-for-Tat agents",
+    "1QL_vs_2TFT-E": "One Q-learner competes against two TFT with 10% error rate"
+  }
+}

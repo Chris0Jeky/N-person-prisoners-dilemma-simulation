@@ -7,7 +7,7 @@ This script looks for existing results and continues from the next uncompleted s
 import os
 import glob
 import re
-from multi_agent_scaling_demo_fixed import *
+from multi_agent_scaling_demo import *
 
 def find_completed_scenarios(output_dir):
     """Find which scenarios have already been completed by looking at saved plots"""

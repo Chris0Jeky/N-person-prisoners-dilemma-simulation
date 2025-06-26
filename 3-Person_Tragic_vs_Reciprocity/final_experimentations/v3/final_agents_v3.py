@@ -16,6 +16,7 @@ class BaseAgent:
         self.total_score, self.num_cooperations, self.num_defections = 0, 0, 0
 
     def choose_action(self, context):
+        """Choose an action for the given context."""
         raise NotImplementedError
 
     def record_outcome(self, context):

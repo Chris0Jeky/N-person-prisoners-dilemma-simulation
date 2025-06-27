@@ -371,3 +371,24 @@ class TestDailyT037PairwiseAllCooperate:
         )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT047PairwiseSuckerPayoff:
+    """Daily check: a lone cooperator earns the sucker payoff."""
+
+    def test_pairwise_sucker_payoff(self):
+        agents = [
+            Agent(agent_id=0, strategy="always_cooperate"),
+            Agent(agent_id=1, strategy="always_defect"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        moves, payoffs = env.run_round()
+        assert moves[0] == "cooperate"
+        assert payoffs[0] == 0
+        assert payoffs[1] == 5

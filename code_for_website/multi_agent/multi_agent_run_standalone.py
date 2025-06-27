@@ -6,7 +6,10 @@ This script runs simulations to observe the behavior of a single Q-Learning agen
 within a "swarm" of Tit-for-Tat (TFT) agents. It is designed to be a single,
 self-contained file for easy distribution and testing.
 
-Three scenarios are tested, varying the total number of agents:
+The script is highly configurable, allowing for changes to the number of runs,
+agent parameters, and enabling/disabling exploration for TFT agents.
+
+Three scenarios are tested by default, varying the total number of agents:
 1.  5 Agents:  1 Q-Learner vs. 4 TFT agents
 2.  7 Agents:  1 Q-Learner vs. 6 TFT agents
 3.  25 Agents: 1 Q-Learner vs. 24 TFT agents
@@ -17,7 +20,6 @@ simulations, generating plots and raw data CSV files as output.
 
 import random
 import os
-from datetime import datetime
 from collections import defaultdict
 
 # --- Optional Library Imports and Fallbacks ---
@@ -116,23 +118,32 @@ def nperson_payoff(my_move, num_other_cooperators, total_agents):
 # --- Agent Classes ---
 
 class StaticTFTAgent:
-    """A standard Tit-for-Tat agent."""
+    """A standard Tit-for-Tat agent, with an option for exploration (TFT-E)."""
 
-    def __init__(self, agent_id):
+    def __init__(self, agent_id, exploration_rate=0.0):
         self.agent_id = agent_id
-        self.strategy_name = "TFT"
+        self.strategy_name = "TFT-E" if exploration_rate > 0 else "TFT"
+        self.exploration_rate = exploration_rate
         self.opponent_last_moves = {}
 
     def choose_pairwise_action(self, opponent_id):
         """In pairwise, copy the opponent's last move (or cooperate first)."""
-        return self.opponent_last_moves.get(opponent_id, COOPERATE)
+        intended_move = self.opponent_last_moves.get(opponent_id, COOPERATE)
+        # Apply exploration
+        if random.random() < self.exploration_rate:
+            return 1 - intended_move
+        return intended_move
 
     def choose_nperson_action(self, prev_round_group_coop_ratio):
         """In N-person, probabilistically copy the group's cooperation."""
         if prev_round_group_coop_ratio is None:  # First round
-            return COOPERATE
+            intended_move = COOPERATE
         else:
-            return COOPERATE if random.random() < prev_round_group_coop_ratio else DEFECT
+            intended_move = COOPERATE if random.random() < prev_round_group_coop_ratio else DEFECT
+        # Apply exploration
+        if random.random() < self.exploration_rate:
+            return 1 - intended_move
+        return intended_move
 
     def reset(self):
         """Resets agent state for a new simulation run."""
@@ -404,19 +415,21 @@ def aggregate_results(all_runs):
 
 # --- Plotting and Saving ---
 
-def plot_and_save_results(agg_data, scenario_name, num_rounds, save_dir):
+def plot_and_save_results(agg_data, scenario_name, num_rounds, tft_exploration_rate, save_dir):
     """Generates and saves a 2x2 plot comparing QL and TFT performance."""
     if not HAS_PLOTTING: return
 
+    # Correctly access the number of runs from the nested dictionary
+    num_runs = len(agg_data['pairwise']['QLearner_Coop']['raw'])
     fig, axes = plt.subplots(2, 2, figsize=(16, 12), constrained_layout=True)
-    fig.suptitle(
-        f"Performance in {scenario_name}: Q-Learner vs. TFT Swarm (Avg of {len(agg_data['QLearner_Coop']['raw'])} runs)",
-        fontsize=16)
+    fig.suptitle(f"Performance in {scenario_name}: Q-Learner vs. TFT Swarm (Avg of {num_runs} runs)", fontsize=16)
     rounds = range(1, num_rounds + 1)
+
+    tft_label = f"TFT-E (Avg, ε={tft_exploration_rate})" if tft_exploration_rate > 0 else "TFT (Avg)"
 
     # Plot 1: Pairwise Cooperation
     ax = axes[0, 0]
-    for key, color, label in [('QLearner_Coop', 'blue', 'QLearner'), ('TFT_Coop', 'red', 'TFT (Avg)')]:
+    for key, color, label in [('QLearner_Coop', 'blue', 'QLearner'), ('TFT_Coop', 'red', tft_label)]:
         data = agg_data['pairwise'].get(key)
         if data:
             ax.plot(rounds, data['mean'], label=label, color=color, lw=2)
@@ -430,7 +443,7 @@ def plot_and_save_results(agg_data, scenario_name, num_rounds, save_dir):
 
     # Plot 2: N-Person Cooperation
     ax = axes[0, 1]
-    for key, color, label in [('QLearner_Coop', 'blue', 'QLearner'), ('TFT_Coop', 'red', 'TFT (Avg)')]:
+    for key, color, label in [('QLearner_Coop', 'blue', 'QLearner'), ('TFT_Coop', 'red', tft_label)]:
         data = agg_data['nperson'].get(key)
         if data:
             ax.plot(rounds, data['mean'], label=label, color=color, lw=2)
@@ -444,7 +457,7 @@ def plot_and_save_results(agg_data, scenario_name, num_rounds, save_dir):
 
     # Plot 3: Pairwise Score
     ax = axes[1, 0]
-    for key, color, label in [('QLearner_Score', 'blue', 'QLearner'), ('TFT_Score', 'red', 'TFT (Avg)')]:
+    for key, color, label in [('QLearner_Score', 'blue', 'QLearner'), ('TFT_Score', 'red', tft_label)]:
         data = agg_data['pairwise'].get(key)
         if data:
             ax.plot(rounds, data['mean'], label=label, color=color, lw=2)
@@ -456,7 +469,7 @@ def plot_and_save_results(agg_data, scenario_name, num_rounds, save_dir):
 
     # Plot 4: N-Person Score
     ax = axes[1, 1]
-    for key, color, label in [('QLearner_Score', 'blue', 'QLearner'), ('TFT_Score', 'red', 'TFT (Avg)')]:
+    for key, color, label in [('QLearner_Score', 'blue', 'QLearner'), ('TFT_Score', 'red', tft_label)]:
         data = agg_data['nperson'].get(key)
         if data:
             ax.plot(rounds, data['mean'], label=label, color=color, lw=2)
@@ -483,7 +496,7 @@ def save_data_to_csv(agg_data, scenario_name, num_rounds, save_dir):
         for metric_type in ['Coop', 'Score']:
             for agent_type in ['QLearner', 'TFT']:
                 key = f"{agent_type}_{metric_type}"
-                if key in agg_data[game_mode]:
+                if key in agg_data[game_mode] and agg_data[game_mode][key]:
                     data = agg_data[game_mode][key]['mean']
                     df = pd.DataFrame(data, columns=[f'{game_mode}_{key}_mean'])
                     dfs.append(df)
@@ -499,19 +512,31 @@ def save_data_to_csv(agg_data, scenario_name, num_rounds, save_dir):
 # --- Main Execution ---
 
 if __name__ == "__main__":
-    # --- Experiment Parameters ---
-    NUM_ROUNDS = 500
-    NUM_RUNS = 50
+    # --------------------------------------------------------------------
+    # --- Experiment Configuration ---
+    #
+    # Modify the parameters below to configure the simulation.
+    # --------------------------------------------------------------------
+
+    # --- Simulation Settings ---
+    NUM_ROUNDS = 5000  # Rounds per simulation
+    NUM_RUNS = 10  # Number of simulations to average for each experiment
     SCENARIOS = [5, 7, 25]  # Total number of agents in each scenario
 
-    # Q-Learning parameters for the LegacyQLearner
+    # --- TFT Agent Settings ---
+    # Set to 0.0 for standard TFT, or > 0.0 for TFT with exploration (TFT-E).
+    # A value of 0.1 means a 10% chance to explore (flip move).
+    TFT_EXPLORATION_RATE = 0.1
+
+    # --- Q-Learning Agent Parameters ---
     LEGACY_PARAMS = {
         'lr': 0.15,  # Learning rate
         'df': 0.95,  # Discount factor
-        'eps': 0.3,  # Starting epsilon
-        'epsilon_decay': 0.995,  # Epsilon decay rate
-        'epsilon_min': 0.05,  # Minimum epsilon
+        'eps': 0.3,  # Starting epsilon (exploration chance)
+        'epsilon_decay': 0.995,  # Rate at which epsilon decreases
+        'epsilon_min': 0.05,  # Minimum epsilon value
     }
+    # --------------------------------------------------------------------
 
     # --- Setup ---
     main_results_dir = "results_ql_vs_tft_swarm"
@@ -527,14 +552,13 @@ if __name__ == "__main__":
         os.makedirs(scenario_dir, exist_ok=True)
         print(f"--- Running Scenario: {scenario_name} ({1} QL vs. {n_agents - 1} TFT) ---")
 
-        # Use a closure to create fresh agents for each run, including a Q-Learner
-        # that correctly decays its epsilon across runs.
+        # Use a closure to create fresh agents for each run.
         ql_agent = LegacyQLearner(agent_id="QLearner_1", **LEGACY_PARAMS)
 
 
         def create_agents_for_run():
-            tft_agents = [StaticTFTAgent(f"TFT_{i + 1}") for i in range(n_agents - 1)]
-            # QL agent resets internally, which also handles epsilon decay for a new run
+            tft_agents = [StaticTFTAgent(f"TFT_{i + 1}", exploration_rate=TFT_EXPLORATION_RATE) for i in
+                          range(n_agents - 1)]
             ql_agent.reset()
             return [ql_agent] + tft_agents
 
@@ -558,7 +582,7 @@ if __name__ == "__main__":
             'nperson': aggregate_results((np_coop, np_score))
         }
 
-        plot_and_save_results(aggregated_data, scenario_name, NUM_ROUNDS, scenario_dir)
+        plot_and_save_results(aggregated_data, scenario_name, NUM_ROUNDS, TFT_EXPLORATION_RATE, scenario_dir)
         save_data_to_csv(aggregated_data, scenario_name, NUM_ROUNDS, scenario_dir)
         print("-" * 50 + "\n")
 

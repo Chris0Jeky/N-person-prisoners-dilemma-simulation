@@ -120,6 +120,7 @@ class VanillaQLearningAgent(QLearningAgentBase):
         return COOPERATE if action == 'cooperate' else DEFECT
 
     def record_outcome(self, context):
+        """Update Q-values from the stored round context."""
         super().record_outcome(context)
         context_key = context['opponent_id'] if context['mode'] == 'pairwise' else 'n_person'
         last_ctx = self.last_contexts.get(context_key)

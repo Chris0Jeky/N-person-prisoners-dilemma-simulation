@@ -270,3 +270,15 @@ class TestDailyT038TftRetaliatesLoneDefector:
         assert first_moves[0] == "cooperate"
         second_moves, _ = env.run_round()
         assert second_moves[0] == "defect"
+
+
+class TestDailyT048TftMemoryRecordsMove:
+    """Daily check: TFT memory records its own opening move."""
+
+    def test_tft_memory_records_opening_move(self):
+        tft_agent = Agent(agent_id=0, strategy="tit_for_tat")
+        agents = [tft_agent, Agent(agent_id=1, strategy="always_cooperate")]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert moves[0] == "cooperate"
+        assert tft_agent.memory[-1]['my_move'] == "cooperate"

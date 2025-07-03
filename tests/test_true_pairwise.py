@@ -389,3 +389,11 @@ class TestDailyT039AllCooperateRate:
         assert memory.total_interactions == 3
         assert memory.cooperation_count == 3
         assert memory.get_cooperation_rate() == 1.0
+
+
+class TestDailyT049TrueTftFirstMove:
+    """Daily check: pairwise TFT cooperates with unknown opponents."""
+
+    def test_true_tft_first_move(self):
+        agent = TruePairwiseTFT("newcomer")
+        assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"

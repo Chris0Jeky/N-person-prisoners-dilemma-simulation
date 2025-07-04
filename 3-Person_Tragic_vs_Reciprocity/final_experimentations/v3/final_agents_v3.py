@@ -129,6 +129,7 @@ class VanillaQLearningAgent(QLearningAgentBase):
             self._update_q_value(last_ctx['state'], last_ctx['action'], context['reward'], next_state)
 
     def reset(self):
+        """Clear Q-table and stored round contexts."""
         super().reset()
         self.q_table.clear()
         self.last_contexts.clear()

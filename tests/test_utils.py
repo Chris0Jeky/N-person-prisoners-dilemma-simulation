@@ -150,3 +150,12 @@ class TestDailyT040LinearDefectBounds:
     def test_linear_defect_bounds(self):
         assert linear_payoff_D(0, 10, T=5, P=1) == pytest.approx(1.0)
         assert linear_payoff_D(9, 10, T=5, P=1) == pytest.approx(5.0)
+
+
+class TestDailyT050PairwiseDefaultPayoffs:
+    """Daily check: default pairwise payoffs match the classic table."""
+
+    def test_pairwise_default_payoffs(self):
+        assert get_pairwise_payoffs("cooperate", "cooperate") == (3, 3)
+        assert get_pairwise_payoffs("cooperate", "defect") == (0, 5)
+        assert get_pairwise_payoffs("defect", "defect") == (1, 1)

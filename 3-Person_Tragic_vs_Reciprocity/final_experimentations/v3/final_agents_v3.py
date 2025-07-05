@@ -153,6 +153,7 @@ class AdaptiveAgent(VanillaQLearningAgent):
         self.eps_adaptation_factor = 1.02
 
     def adapt_parameters(self):
+        """Adapt learning parameters from the recent reward trend."""
         if len(self.reward_window) < self.reward_window.maxlen:
             return  # Don't adapt until the window is full
 

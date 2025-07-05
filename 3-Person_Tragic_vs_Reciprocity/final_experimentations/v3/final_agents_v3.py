@@ -171,6 +171,7 @@ class AdaptiveAgent(VanillaQLearningAgent):
             self.epsilon = min(self.max_eps, self.epsilon * self.eps_adaptation_factor)
 
     def record_outcome(self, context):
+        """Record the reward and adapt parameters."""
         super().record_outcome(context)
         # Record reward and adapt
         self.reward_window.append(context['reward'])

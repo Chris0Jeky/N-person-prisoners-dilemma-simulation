@@ -500,3 +500,12 @@ class TestDailyT041LraQDiscount:
         agent = Agent(agent_id=4, strategy="lra_q")
         assert agent.strategy_type == "lra_q"
         assert agent.strategy.discount_factor == 0.9
+
+
+class TestDailyT051HystereticBeta:
+    """Daily check: hysteretic Q-learning keeps its default beta."""
+
+    def test_hysteretic_default_beta(self):
+        agent = Agent(agent_id=5, strategy="hysteretic_q")
+        assert agent.strategy_type == "hysteretic_q"
+        assert agent.strategy.beta == 0.01

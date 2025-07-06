@@ -283,3 +283,10 @@ class TestDailyT042AlwaysCooperateMove:
         agent = Agent(agent_id=3, strategy="always_cooperate")
         for _ in range(5):
             assert agent.choose_move([1, 2]) == "cooperate"
+
+
+class TestDailyT052PavlovFactory:
+    """Daily check: the strategy factory builds Pavlov agents."""
+
+    def test_pavlov_factory(self):
+        assert isinstance(create_strategy("pavlov"), PavlovStrategy)

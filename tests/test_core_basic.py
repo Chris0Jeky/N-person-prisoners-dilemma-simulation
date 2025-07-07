@@ -196,3 +196,11 @@ class TestDailyT043QLearningRate:
     def test_q_learning_default_learning_rate(self):
         agent = Agent(agent_id=9, strategy="q_learning")
         assert agent.strategy.learning_rate == 0.1
+
+
+class TestDailyT053DefaultStrategy:
+    """Daily check: new agents default to the random strategy."""
+
+    def test_default_strategy_is_random(self):
+        agent = Agent(agent_id=0)
+        assert agent.strategy_type == "random"

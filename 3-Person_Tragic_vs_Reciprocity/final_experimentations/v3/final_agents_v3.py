@@ -178,6 +178,7 @@ class AdaptiveAgent(VanillaQLearningAgent):
         self.adapt_parameters()
 
     def reset(self):
+        """Reset adaptive state and clear the reward window."""
         super().reset()
         self.reward_window.clear()
         # Reset to default parameters for the next run

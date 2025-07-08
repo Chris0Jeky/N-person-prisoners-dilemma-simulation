@@ -403,3 +403,13 @@ class TestDailyT044TftMirrorsCooperator:
         env.run_round()
         moves, _ = env.run_round()
         assert moves[0] == "cooperate"
+
+
+class TestDailyT054SoloCooperator:
+    """Daily check: a lone cooperator still produces a valid round."""
+
+    def test_solo_cooperator_round(self):
+        agents = [Agent(agent_id=0, strategy="always_cooperate")]
+        env = Environment(agents, create_payoff_matrix(1), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert moves == {0: "cooperate"}

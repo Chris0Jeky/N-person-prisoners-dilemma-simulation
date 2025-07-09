@@ -480,3 +480,14 @@ class TestDailyT045ConsoleHandlerPresent:
             and not isinstance(h, logging.FileHandler)
             for h in logger.handlers
         )
+
+
+class TestDailyT055LogFileTruncated:
+    """Daily check: file logging starts each run with a fresh file."""
+
+    def test_log_file_truncated(self, tmp_path):
+        log_file = str(tmp_path / "daily6.log")
+        with open(log_file, "w") as fh:
+            fh.write("stale-content")
+        setup_logging(log_file=log_file, console=False)
+        assert open(log_file).read() == ""

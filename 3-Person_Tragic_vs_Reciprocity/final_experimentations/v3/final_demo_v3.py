@@ -9,6 +9,7 @@ from final_simulation_v3 import run_pairwise_tournament, run_nperson_simulation
 
 
 def run_experiment_set(agent_templates, num_rounds, num_runs):
+    """Run pairwise and N-person tournaments across repeated runs."""
     pairwise_runs, nperson_runs = [], []
     for i in range(num_runs):
         print(f"    Run {i + 1}/{num_runs}...", end='\r')

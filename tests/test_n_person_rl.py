@@ -455,3 +455,27 @@ class TestDailyT046NPersonStateFive:
         state = mixin._get_n_person_state(agent, N=5)
         assert isinstance(state, tuple)
         assert state[2] == 5
+
+
+class TestDailyT056NeighborhoodEvenSplit:
+    """Daily check: neighborhood features track an even split."""
+
+    def test_neighborhood_even_split(self):
+        mixin = NPersonStateMixin()
+        agent = type('MockAgent', (), {})()
+        agent.memory = deque(maxlen=10)
+        agent.memory.append({
+            'my_move': 'cooperate',
+            'neighbor_moves': {
+                1: 'cooperate',
+                2: 'cooperate',
+                3: 'defect',
+                4: 'defect'
+            },
+            'reward': 3
+        })
+        context = {1: 'cooperate', 2: 'cooperate', 3: 'defect', 4: 'defect'}
+        features = mixin._extract_group_features(agent, context)
+        assert features['cooperation_rate'] == 0.5
+        assert features['mode'] == 'neighborhood'
+        assert features['group_size'] == 4

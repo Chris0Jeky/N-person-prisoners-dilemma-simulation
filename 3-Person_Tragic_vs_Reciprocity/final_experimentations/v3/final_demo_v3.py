@@ -20,6 +20,7 @@ def run_experiment_set(agent_templates, num_rounds, num_runs):
     print("\n    Done.")
 
     def aggregate(runs):
+        """Aggregate per-run histories into mean cooperation and score."""
         agg = {aid: {m: [] for m in ['coop_rate', 'score']} for aid in runs[0]}
         for aid in agg:
             for m in agg[aid]:

@@ -32,6 +32,7 @@ def run_experiment_set(agent_templates, num_rounds, num_runs):
 
 
 def plot_comparison(results, title, save_path):
+    """Plot the 2x2 cooperation and score comparison figure."""
     fig, axes = plt.subplots(2, 2, figsize=(20, 15), dpi=100)
     fig.suptitle(f"Agent Comparison: {title}", fontsize=22, weight='bold')
     sns.set_style("whitegrid")

@@ -282,3 +282,17 @@ class TestDailyT048TftMemoryRecordsMove:
         moves, _ = env.run_round()
         assert moves[0] == "cooperate"
         assert tft_agent.memory[-1]['my_move'] == "cooperate"
+
+
+class TestDailyT058MutualTftStable:
+    """Daily check: mutual TFT pair cooperates for three rounds."""
+
+    def test_mutual_tft_stable(self):
+        agents = [
+            Agent(agent_id=0, strategy="tit_for_tat"),
+            Agent(agent_id=1, strategy="tit_for_tat"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        for _ in range(3):
+            moves, _ = env.run_round()
+            assert set(moves.values()) == {"cooperate"}

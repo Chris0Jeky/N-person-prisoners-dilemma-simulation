@@ -8,6 +8,7 @@ COOPERATE, DEFECT = 0, 1
 
 # --- Base Classes (Simplified for clarity) ---
 class BaseAgent:
+    """Simplified base class defining the unified agent API."""
     def __init__(self, agent_id, strategy_name):
         self.agent_id, self.strategy_name = agent_id, strategy_name
         self.total_score, self.num_cooperations, self.num_defections = 0, 0, 0

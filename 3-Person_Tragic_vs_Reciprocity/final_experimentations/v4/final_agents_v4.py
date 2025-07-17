@@ -18,6 +18,7 @@ class BaseAgent:
         raise NotImplementedError
 
     def record_outcome(self, context):
+        """Tally the round reward into score and cooperation counters."""
         self.total_score += context['reward']
         if context['my_move'] == COOPERATE:
             self.num_cooperations += 1

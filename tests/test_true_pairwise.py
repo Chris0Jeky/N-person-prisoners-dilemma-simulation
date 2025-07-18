@@ -397,3 +397,16 @@ class TestDailyT049TrueTftFirstMove:
     def test_true_tft_first_move(self):
         agent = TruePairwiseTFT("newcomer")
         assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"
+
+
+class TestDailyT059AllDefectRate:
+    """Daily check: all-defect memory reads a zero cooperation rate."""
+
+    def test_all_defect_rate(self):
+        memory = OpponentSpecificMemory("rival", memory_length=5)
+        memory.add_interaction("defect", "defect", 1)
+        memory.add_interaction("defect", "defect", 1)
+        memory.add_interaction("defect", "defect", 1)
+        assert memory.total_interactions == 3
+        assert memory.defection_count == 3
+        assert memory.get_cooperation_rate() == 0.0

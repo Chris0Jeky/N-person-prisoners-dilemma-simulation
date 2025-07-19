@@ -31,6 +31,7 @@ class BaseAgent:
 
 
 class StaticAgent(BaseAgent):
+    """Static strategy agent tracking per-opponent moves."""
     def __init__(self, agent_id, strategy_name, **kwargs):
         super().__init__(agent_id, strategy_name)
         self.opponent_last_moves = {}

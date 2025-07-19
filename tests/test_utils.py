@@ -159,3 +159,11 @@ class TestDailyT050PairwiseDefaultPayoffs:
         assert get_pairwise_payoffs("cooperate", "cooperate") == (3, 3)
         assert get_pairwise_payoffs("cooperate", "defect") == (0, 5)
         assert get_pairwise_payoffs("defect", "defect") == (1, 1)
+
+
+class TestDailyT060ExponentialBottomBounds:
+    """Daily check: exponential payoffs start from their bottom endpoints."""
+
+    def test_exponential_bottom_bounds(self):
+        assert exponential_payoff_C(0, 10, R=3, S=0, exponent=2) == pytest.approx(0.0)
+        assert exponential_payoff_D(0, 10, T=5, P=1, exponent=2) == pytest.approx(1.0)

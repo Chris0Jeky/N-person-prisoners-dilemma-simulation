@@ -37,6 +37,7 @@ class StaticAgent(BaseAgent):
         self.opponent_last_moves = {}
 
     def choose_action(self, context):
+        """Play tracked moves pairwise, sampling the mix otherwise."""
         if context['mode'] == 'pairwise':
             return self.opponent_last_moves.get(context['opponent_id'], COOPERATE)
         coop_ratio = context.get('coop_ratio')

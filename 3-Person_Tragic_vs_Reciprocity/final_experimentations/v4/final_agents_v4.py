@@ -56,6 +56,7 @@ class StaticAgent(BaseAgent):
 
 # --- Q-Learning Implementations ---
 class VanillaQLearningAgent(BaseAgent):
+    """Vanilla Q-learning agent with default update rules."""
     def __init__(self, agent_id, lr=0.1, df=0.9, eps=0.1, **kwargs):
         super().__init__(agent_id, "VanillaQLearning")
         self.lr, self.df, self.epsilon = lr, df, eps

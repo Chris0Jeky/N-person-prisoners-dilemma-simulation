@@ -83,6 +83,7 @@ class VanillaQLearningAgent(BaseAgent):
         self.q_table[state][action] = old_q + lr * (reward + df * next_max_q - old_q)
 
     def choose_action(self, context):
+        """Map context to a Q-learning action choice."""
         state = self._get_state(context)
         action = self._get_action(state, self.epsilon)
         key = context.get('opponent_id', 'n_person')

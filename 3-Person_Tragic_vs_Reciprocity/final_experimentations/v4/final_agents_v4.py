@@ -91,6 +91,7 @@ class VanillaQLearningAgent(BaseAgent):
         return COOPERATE if action == 'cooperate' else DEFECT
 
     def record_outcome(self, context):
+        """Apply the Q-learning update for the recorded context."""
         super().record_outcome(context)
         key = context.get('opponent_id', 'n_person')
         if key in self.last_contexts:

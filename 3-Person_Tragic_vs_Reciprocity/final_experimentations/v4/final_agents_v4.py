@@ -100,6 +100,7 @@ class VanillaQLearningAgent(BaseAgent):
             self._update_q(last_ctx['state'], last_ctx['action'], context['reward'], next_state, self.lr, self.df)
 
     def reset(self):
+        """Clear Q-table and stored contexts for a new run."""
         super().reset();
         self.q_table.clear();
         self.last_contexts.clear()

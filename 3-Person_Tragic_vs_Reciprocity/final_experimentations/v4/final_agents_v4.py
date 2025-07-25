@@ -141,6 +141,7 @@ class TrulyAdaptiveAgent(VanillaQLearningAgent):
             self.epsilons[key] = min(self.max_eps, self.epsilons[key] * self.adapt_factor)
 
     def choose_action(self, context):
+        """Pick the adaptive per-opponent action for this context."""
         key = context.get('opponent_id', 'n_person')
         state = self._get_state(context)
         # Use the specific epsilon for this opponent

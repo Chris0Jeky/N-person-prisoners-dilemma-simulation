@@ -150,6 +150,7 @@ class TrulyAdaptiveAgent(VanillaQLearningAgent):
         return COOPERATE if action == 'cooperate' else DEFECT
 
     def record_outcome(self, context):
+        """File the reward into this opponent's adaptive window."""
         super(VanillaQLearningAgent, self).record_outcome(context)
         key = context.get('opponent_id', 'n_person')
 

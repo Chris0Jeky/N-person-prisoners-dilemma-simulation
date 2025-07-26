@@ -168,6 +168,7 @@ class TrulyAdaptiveAgent(VanillaQLearningAgent):
         self._adapt(key)
 
     def reset(self):
+        """Clear adaptive rates and epsilons for a new run."""
         super().reset()
         self.learning_rates.clear()
         self.epsilons.clear()

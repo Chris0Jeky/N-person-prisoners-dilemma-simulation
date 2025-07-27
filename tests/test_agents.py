@@ -290,3 +290,10 @@ class TestDailyT052PavlovFactory:
 
     def test_pavlov_factory(self):
         assert isinstance(create_strategy("pavlov"), PavlovStrategy)
+
+
+class TestDailyT062RandomFactory:
+    """Daily check: the strategy factory builds Random agents."""
+
+    def test_random_factory(self):
+        assert isinstance(create_strategy("random"), RandomStrategy)

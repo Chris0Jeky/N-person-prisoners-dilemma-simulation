@@ -20,6 +20,7 @@ class BaseAgent:
 
 
 class StaticAgent(BaseAgent):
+    """Static strategy agent with execution error."""
     def __init__(self, agent_id, strategy_name="TFT", error_rate=0.0, **kwargs):
         super().__init__(agent_id, strategy_name)
         self.strategy_name = strategy_name

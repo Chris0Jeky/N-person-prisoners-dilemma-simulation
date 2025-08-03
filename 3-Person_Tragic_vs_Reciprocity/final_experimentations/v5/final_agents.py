@@ -50,6 +50,7 @@ class StaticAgent(BaseAgent):
         return self._apply_error(intended)
 
     def choose_neighborhood_action(self, coop_ratio):
+        """Choose a neighborhood move for the configured static strategy."""
         if self.strategy_name == "AllC":
             intended = COOPERATE
         elif self.strategy_name == "AllD":

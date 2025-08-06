@@ -204,3 +204,12 @@ class TestDailyT053DefaultStrategy:
     def test_default_strategy_is_random(self):
         agent = Agent(agent_id=0)
         assert agent.strategy_type == "random"
+
+
+class TestDailyT063PayoffMatrixEndpoints:
+    """Daily check: the payoff matrix hits its classic endpoints."""
+
+    def test_payoff_matrix_endpoints(self):
+        matrix = create_payoff_matrix(3)
+        assert matrix["C"][-1] == 3.0
+        assert matrix["D"][0] == 1.0

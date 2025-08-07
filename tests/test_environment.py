@@ -413,3 +413,18 @@ class TestDailyT054SoloCooperator:
         env = Environment(agents, create_payoff_matrix(1), network_type="fully_connected")
         moves, _ = env.run_round()
         assert moves == {0: "cooperate"}
+
+
+class TestDailyT064MixedFirstRound:
+    """Daily check: a mixed group shows both moves in round one."""
+
+    def test_mixed_first_round(self):
+        agents = [
+            Agent(agent_id=0, strategy="tit_for_tat"),
+            Agent(agent_id=1, strategy="tit_for_tat"),
+            Agent(agent_id=2, strategy="always_defect"),
+            Agent(agent_id=3, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(4), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate", "defect"}

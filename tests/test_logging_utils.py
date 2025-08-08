@@ -491,3 +491,12 @@ class TestDailyT055LogFileTruncated:
             fh.write("stale-content")
         setup_logging(log_file=log_file, console=False)
         assert open(log_file).read() == ""
+
+
+class TestDailyT065ChartAxisLabels:
+    """Daily check: ASCII charts label their value axis."""
+
+    def test_chart_axis_labels(self):
+        chart = generate_ascii_chart([1, 2, 3])
+        assert "3.00" in chart
+        assert "1.00" in chart

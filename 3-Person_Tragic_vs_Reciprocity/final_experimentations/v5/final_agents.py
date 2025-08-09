@@ -92,6 +92,7 @@ class StaticAgent(BaseAgent):
 
 # --- Specialized Q-Learning Agents ---
 class PairwiseAdaptiveQLearner(BaseAgent):
+    """Pairwise Q-learning agent with per-opponent tables."""
     def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "PairwiseAdaptive")
         self.params = params

@@ -106,6 +106,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         return str(tuple(history))
 
     def choose_pairwise_action(self, opponent_id):
+        """Choose an epsilon-greedy move from the pairwise Q-table."""
         state = self._get_state(opponent_id)
         # Initialize if needed
         if opponent_id not in self.q_tables:

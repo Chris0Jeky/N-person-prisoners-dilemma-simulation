@@ -479,3 +479,21 @@ class TestDailyT056NeighborhoodEvenSplit:
         assert features['cooperation_rate'] == 0.5
         assert features['mode'] == 'neighborhood'
         assert features['group_size'] == 4
+
+
+class TestDailyT066DecreasingTrend:
+    """Daily check: falling cooperation reads a negative trend."""
+
+    def test_decreasing_trend(self):
+        mixin = NPersonStateMixin()
+        agent = type('MockAgent', (), {})()
+        agent.memory = deque(maxlen=10)
+        for coop_rate in [0.8, 0.6, 0.4, 0.2]:
+            agent.memory.append({
+                'my_move': 'cooperate',
+                'neighbor_moves': {'opponent_coop_proportion': coop_rate},
+                'reward': 3
+            })
+        context = {'opponent_coop_proportion': 0.1}
+        features = mixin._extract_group_features(agent, context)
+        assert features['cooperation_trend'] == -1

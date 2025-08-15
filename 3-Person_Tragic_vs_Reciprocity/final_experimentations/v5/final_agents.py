@@ -431,6 +431,7 @@ class HystereticQLearner(BaseAgent):
 
 
 class NeighborhoodAdaptiveQLearner(BaseAgent):
+    """Neighborhood Q-learning agent with group cooperation tracking."""
     def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "NeighborhoodAdaptive")
         self.params = params

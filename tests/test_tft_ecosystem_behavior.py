@@ -296,3 +296,18 @@ class TestDailyT058MutualTftStable:
         for _ in range(3):
             moves, _ = env.run_round()
             assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT068RetaliationPersists:
+    """Daily check: TFT keeps defecting against a chronic defector."""
+
+    def test_retaliation_persists(self):
+        agents = [
+            Agent(agent_id=0, strategy="tit_for_tat"),
+            Agent(agent_id=1, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env.run_round()
+        for _ in range(2):
+            moves, _ = env.run_round()
+            assert moves[0] == "defect"

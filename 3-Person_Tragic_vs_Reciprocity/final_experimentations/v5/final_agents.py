@@ -458,6 +458,7 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
         return action
 
     def record_neighborhood_outcome(self, coop_ratio, reward):
+        """Bank the reward and refresh the neighborhood learning state."""
         self.total_score += reward
         if not self.last_context: return
         next_state = self._get_state(coop_ratio)

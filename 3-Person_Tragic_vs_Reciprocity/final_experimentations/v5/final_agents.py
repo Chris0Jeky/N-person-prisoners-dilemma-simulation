@@ -500,6 +500,7 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
         return {COOPERATE: 0.0, DEFECT: 0.0}
     
     def reset(self):
+        """Clear the single Q-table for a new run."""
         super().reset()
         self.q_table = {}
         self.lr = self.params.get('initial_lr', self.params.get('lr', 0.1))

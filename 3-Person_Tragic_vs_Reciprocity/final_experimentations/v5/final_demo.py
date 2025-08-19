@@ -14,6 +14,7 @@ T, R, P, S = 5, 3, 1, 0
 
 
 def nperson_payoff(my_move, num_cooperators, total_agents):
+    """N-person payoff from the cooperator count including self."""
     others_coop = num_cooperators - (1 - my_move)
     if my_move == 0:
         return S + (R - S) * (others_coop / (total_agents - 1))

@@ -410,3 +410,11 @@ class TestDailyT059AllDefectRate:
         assert memory.total_interactions == 3
         assert memory.defection_count == 3
         assert memory.get_cooperation_rate() == 0.0
+
+
+class TestDailyT069GenerousFirstMove:
+    """Daily check: generous TFT cooperates with unknown opponents."""
+
+    def test_generous_first_move(self):
+        agent = TruePairwiseGTFT("newcomer")
+        assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"

@@ -518,3 +518,12 @@ class TestDailyT061WolfPhcEpsilon:
         agent = Agent(agent_id=6, strategy="wolf_phc")
         assert agent.strategy_type == "wolf_phc"
         assert agent.strategy.epsilon == 0.1
+
+
+class TestDailyT071HystereticEpsilon:
+    """Daily check: hysteretic Q-learning keeps its default exploration rate."""
+
+    def test_hysteretic_default_epsilon(self):
+        agent = Agent(agent_id=7, strategy="hysteretic_q")
+        assert agent.strategy_type == "hysteretic_q"
+        assert agent.strategy.epsilon == 0.1

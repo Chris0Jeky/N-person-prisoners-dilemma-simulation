@@ -8,6 +8,7 @@ T, R, P, S = 5, 3, 1, 0
 
 
 def nperson_payoff(my_move, num_other_cooperators, total_agents):
+    """N-person payoff scaling with the share of other cooperators."""
     if my_move == 0:
         return S + (R - S) * (num_other_cooperators / (total_agents - 1))
     else:

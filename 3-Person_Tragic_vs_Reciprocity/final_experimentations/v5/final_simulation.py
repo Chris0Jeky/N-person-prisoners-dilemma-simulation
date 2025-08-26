@@ -47,6 +47,7 @@ def run_pairwise_tournament(agents, num_rounds):
 
 
 def run_nperson_simulation(agents, num_rounds):
+    """Run a neighborhood simulation tracking the cooperation ratio."""
     for agent in agents: agent.reset()
     history = {a.agent_id: {'coop_rate': [], 'score': []} for a in agents}
     coop_ratio = None

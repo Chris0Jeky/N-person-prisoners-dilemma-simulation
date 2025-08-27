@@ -23,6 +23,7 @@ print("=" * 80)
 
 # Create a modified Q-learner that prints everything
 class VerboseQLearner(PairwiseAdaptiveQLearner):
+    """Q-learner that prints every learning step for tracing."""
     def __init__(self, agent_id, params):
         super().__init__(agent_id, params)
         self.round_num = 0

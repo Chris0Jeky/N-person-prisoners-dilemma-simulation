@@ -297,3 +297,10 @@ class TestDailyT062RandomFactory:
 
     def test_random_factory(self):
         assert isinstance(create_strategy("random"), RandomStrategy)
+
+
+class TestDailyT072QLearningFactory:
+    """Daily check: the strategy factory builds Q-learning agents."""
+
+    def test_q_learning_factory(self):
+        assert isinstance(create_strategy("q_learning"), QLearningStrategy)

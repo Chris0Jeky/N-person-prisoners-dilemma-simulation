@@ -213,3 +213,12 @@ class TestDailyT063PayoffMatrixEndpoints:
         matrix = create_payoff_matrix(3)
         assert matrix["C"][-1] == 3.0
         assert matrix["D"][0] == 1.0
+
+
+class TestDailyT073EmptyMemory:
+    """Daily check: new agents start with empty move memory."""
+
+    def test_fresh_agent_empty_memory(self):
+        agent = Agent(agent_id=1)
+        assert len(agent.memory) == 0
+        assert list(agent.memory) == []

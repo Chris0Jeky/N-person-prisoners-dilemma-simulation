@@ -500,3 +500,10 @@ class TestDailyT065ChartAxisLabels:
         chart = generate_ascii_chart([1, 2, 3])
         assert "3.00" in chart
         assert "1.00" in chart
+
+
+class TestDailyT075NoDataChart:
+    """Daily check: empty input reports no data to plot."""
+
+    def test_empty_chart_no_data(self):
+        assert generate_ascii_chart([]) == "No data to plot"

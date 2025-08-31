@@ -29,6 +29,7 @@ colors = {
 
 # Helper function to add a box with text
 def add_box(x, y, width, height, text, color, ax, fontsize=11):
+    """Draw a labeled rounded box onto the axes."""
     box = FancyBboxPatch((x-width/2, y-height/2), width, height,
                         boxstyle="round,pad=0.1",
                         facecolor=color,

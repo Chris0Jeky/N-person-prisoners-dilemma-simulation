@@ -38,6 +38,7 @@ def add_box(x, y, width, height, text, color, ax, fontsize=11):
 
 # Helper function to add an arrow
 def add_arrow(x1, y1, x2, y2, ax, style='->', color='black', connectionstyle='arc3,rad=0'):
+    """Draw a styled arrow patch onto the axes."""
     arrow = FancyArrowPatch((x1, y1), (x2, y2),
                            arrowstyle=style,
                            connectionstyle=connectionstyle,

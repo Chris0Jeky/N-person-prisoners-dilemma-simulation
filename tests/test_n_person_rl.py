@@ -497,3 +497,13 @@ class TestDailyT066DecreasingTrend:
         context = {'opponent_coop_proportion': 0.1}
         features = mixin._extract_group_features(agent, context)
         assert features['cooperation_trend'] == -1
+
+
+class TestDailyT076NPersonSix:
+    """Daily check: N-person Q-learning handles a six-agent group."""
+
+    def test_n_person_q_learning_six(self):
+        strategy = NPersonQLearning(N=6, state_type="n_person_basic")
+        assert strategy.N == 6
+        assert strategy.state_type == "n_person_basic"
+        assert strategy.scale_learning == True

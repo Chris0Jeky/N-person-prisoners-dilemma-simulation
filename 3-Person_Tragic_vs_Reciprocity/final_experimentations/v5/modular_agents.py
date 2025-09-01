@@ -48,6 +48,7 @@ class ModularAdaptiveQLearner(BaseAgent):
         return self.params.get('initial_eps', self.params.get('eps', 0.1))
     
     def choose_pairwise_action(self, opponent_id):
+        """Choose a pairwise move from modular state and Q-table."""
         # Get state from state strategy
         state = self.state_strategy.get_state(self, opponent_id)
         

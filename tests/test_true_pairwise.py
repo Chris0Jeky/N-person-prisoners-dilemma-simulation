@@ -418,3 +418,11 @@ class TestDailyT069GenerousFirstMove:
     def test_generous_first_move(self):
         agent = TruePairwiseGTFT("newcomer")
         assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"
+
+
+class TestDailyT079PavlovFirstMove:
+    """Daily check: pairwise Pavlov cooperates with unknown opponents."""
+
+    def test_pavlov_first_move(self):
+        agent = TruePairwisePavlov("newcomer")
+        assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"

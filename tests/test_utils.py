@@ -177,3 +177,11 @@ class TestDailyT070PayoffMatrixShape:
         assert set(matrix) == {"C", "D"}
         assert len(matrix["C"]) == 5
         assert len(matrix["D"]) == 5
+
+
+class TestDailyT080ThresholdBottomBounds:
+    """Daily check: threshold payoffs start from their bottom endpoints."""
+
+    def test_threshold_bottom_bounds(self):
+        assert threshold_payoff_C(0, 10, R=3, S=0, threshold=0.6) == pytest.approx(0.0)
+        assert threshold_payoff_D(0, 10, T=5, P=1, threshold=0.6) == pytest.approx(1.0)

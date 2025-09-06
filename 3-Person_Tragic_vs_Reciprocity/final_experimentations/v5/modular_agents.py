@@ -379,6 +379,7 @@ class ModularQLearner(BaseAgent):
             return 'high'
     
     def reset(self):
+        """Clear modular tables and neighborhood trackers."""
         super().reset()
         self.q_tables = {}
         self.last_contexts = {}

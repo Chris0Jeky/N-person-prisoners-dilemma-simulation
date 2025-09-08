@@ -304,3 +304,10 @@ class TestDailyT072QLearningFactory:
 
     def test_q_learning_factory(self):
         assert isinstance(create_strategy("q_learning"), QLearningStrategy)
+
+
+class TestDailyT082AlwaysCooperateFactory:
+    """Daily check: the strategy factory builds AlwaysCooperate agents."""
+
+    def test_always_cooperate_factory(self):
+        assert isinstance(create_strategy("always_cooperate"), AlwaysCooperateStrategy)

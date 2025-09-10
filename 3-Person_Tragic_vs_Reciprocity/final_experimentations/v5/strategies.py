@@ -44,6 +44,7 @@ class SimpleStateStrategy(StateStrategy):
         return str(tuple(history))
     
     def update_history(self, opponent_id, my_move, opponent_move):
+        """Append the latest moves to this opponent's history."""
         if opponent_id not in self.histories:
             self.histories[opponent_id] = deque(maxlen=2)
         self.histories[opponent_id].append((my_move, opponent_move))

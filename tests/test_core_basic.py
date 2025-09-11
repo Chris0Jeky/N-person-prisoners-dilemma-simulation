@@ -222,3 +222,16 @@ class TestDailyT073EmptyMemory:
         agent = Agent(agent_id=1)
         assert len(agent.memory) == 0
         assert list(agent.memory) == []
+
+
+class TestDailyT083TwoCooperators:
+    """Daily check: two cooperators open unanimously."""
+
+    def test_two_cooperators_unanimous(self):
+        agents = [
+            Agent(agent_id=0, strategy="always_cooperate"),
+            Agent(agent_id=1, strategy="always_cooperate"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}

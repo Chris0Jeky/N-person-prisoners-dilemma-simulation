@@ -442,3 +442,13 @@ class TestDailyT074TftPairStable:
         env.run_round()
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT084SoloDefector:
+    """Daily check: a lone defector still produces a valid round."""
+
+    def test_solo_defector_round(self):
+        agents = [Agent(agent_id=0, strategy="always_defect")]
+        env = Environment(agents, create_payoff_matrix(1), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert moves == {0: "defect"}

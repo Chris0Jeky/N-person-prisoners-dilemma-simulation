@@ -86,6 +86,7 @@ class StatisticalSummaryStrategy(StateStrategy):
             return "Opponent_Disposition_VeryHigh"
     
     def update_stats(self, opponent_id, opponent_move):
+        """Tally this opponent's latest move into the summary stats."""
         if opponent_id not in self.opponent_stats:
             self.opponent_stats[opponent_id] = {'cooperated': 0, 'defected': 0}
         

@@ -507,3 +507,12 @@ class TestDailyT075NoDataChart:
 
     def test_empty_chart_no_data(self):
         assert generate_ascii_chart([]) == "No data to plot"
+
+
+class TestDailyT085RangeChart:
+    """Daily check: a simple range renders min and max labels."""
+
+    def test_range_chart_labels(self):
+        chart = generate_ascii_chart([1, 2, 3])
+        assert "3.00" in chart
+        assert "1.00" in chart

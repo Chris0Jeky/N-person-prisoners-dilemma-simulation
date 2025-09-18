@@ -137,6 +137,7 @@ class EpsilonGreedyStrategy(ActionStrategy):
                 return 'defect'
     
     def set_epsilon(self, epsilon):
+        """Update the exploration rate for action selection."""
         self.epsilon = epsilon
     
     def reset(self):

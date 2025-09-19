@@ -156,6 +156,7 @@ class SoftmaxStrategy(ActionStrategy):
         self.step_count = 0
     
     def choose_action(self, q_values, **kwargs):
+        """Choose the softmax action from the Q-values."""
         # Get Q-values
         q_c = q_values['cooperate']
         q_d = q_values['defect']

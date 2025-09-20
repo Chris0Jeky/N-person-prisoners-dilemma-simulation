@@ -187,6 +187,7 @@ class SoftmaxStrategy(ActionStrategy):
         return 'cooperate' if random.random() < p_cooperate else 'defect'
     
     def reset(self):
+        """Restore the initial temperature for a new run."""
         self.temperature = self.initial_temperature
         self.step_count = 0
 

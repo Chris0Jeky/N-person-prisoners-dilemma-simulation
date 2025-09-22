@@ -455,3 +455,24 @@ class TestDailyT077MutualCooperationPayoff:
         assert set(moves.values()) == {"cooperate"}
         assert payoffs[0] == 3
         assert payoffs[1] == 3
+
+
+class TestDailyT087MutualDefectionPayoff:
+    """Daily check: mutual defectors earn the punishment payoff."""
+
+    def test_mutual_defection_payoff(self):
+        agents = [
+            Agent(agent_id=0, strategy="always_defect"),
+            Agent(agent_id=1, strategy="always_defect"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        moves, payoffs = env.run_round()
+        assert set(moves.values()) == {"defect"}
+        assert payoffs[0] == 1
+        assert payoffs[1] == 1

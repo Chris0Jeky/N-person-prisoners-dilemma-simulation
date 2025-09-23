@@ -20,7 +20,8 @@ class BaseAgent:
         self.agent_id, self.strategy_name = agent_id, strategy_name
         self.total_score = 0
 
-    def reset(self): 
+    def reset(self):
+        """Clear the accumulated score for a new run."""
         self.total_score = 0
 
 

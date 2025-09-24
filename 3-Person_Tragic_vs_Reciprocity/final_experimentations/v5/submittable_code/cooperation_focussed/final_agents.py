@@ -16,6 +16,7 @@ COOPERATE, DEFECT = 0, 1
 
 # Base Agent Classes
 class BaseAgent:
+    """Base agent holding identity and accumulated score."""
     def __init__(self, agent_id, strategy_name):
         self.agent_id, self.strategy_name = agent_id, strategy_name
         self.total_score = 0

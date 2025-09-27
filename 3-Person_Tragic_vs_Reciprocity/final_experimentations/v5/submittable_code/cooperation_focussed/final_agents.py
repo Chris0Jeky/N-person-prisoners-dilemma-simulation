@@ -92,6 +92,7 @@ class StaticAgent(BaseAgent):
         self.last_neighborhood_move = COOPERATE if coop_ratio and coop_ratio >= 0.5 else DEFECT
 
     def reset(self):
+        """Reset score and tracked opponent moves for a new run."""
         super().reset()
         self.opponent_last_moves.clear()
         self.last_neighborhood_move = COOPERATE

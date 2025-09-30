@@ -185,3 +185,13 @@ class TestDailyT080ThresholdBottomBounds:
     def test_threshold_bottom_bounds(self):
         assert threshold_payoff_C(0, 10, R=3, S=0, threshold=0.6) == pytest.approx(0.0)
         assert threshold_payoff_D(0, 10, T=5, P=1, threshold=0.6) == pytest.approx(1.0)
+
+
+class TestDailyT090ThreePlayerMatrix:
+    """Daily check: a three-player matrix has C and D rows of length three."""
+
+    def test_three_player_matrix_shape(self):
+        matrix = create_payoff_matrix(3)
+        assert set(matrix) == {"C", "D"}
+        assert len(matrix["C"]) == 3
+        assert len(matrix["D"]) == 3

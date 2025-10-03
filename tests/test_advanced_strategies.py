@@ -536,3 +536,12 @@ class TestDailyT081HystereticLearningRate:
         agent = Agent(agent_id=8, strategy="hysteretic_q")
         assert agent.strategy_type == "hysteretic_q"
         assert agent.strategy.learning_rate == 0.1
+
+
+class TestDailyT091CustomLearningRate:
+    """Daily check: a custom learning rate is honored by lra_q."""
+
+    def test_custom_learning_rate_honored(self):
+        agent = Agent(agent_id=9, strategy="lra_q", learning_rate=0.5)
+        assert agent.strategy_type == "lra_q"
+        assert agent.strategy.learning_rate == 0.5

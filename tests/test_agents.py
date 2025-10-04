@@ -311,3 +311,10 @@ class TestDailyT082AlwaysCooperateFactory:
 
     def test_always_cooperate_factory(self):
         assert isinstance(create_strategy("always_cooperate"), AlwaysCooperateStrategy)
+
+
+class TestDailyT092AlwaysDefectFactory:
+    """Daily check: the strategy factory builds AlwaysDefect agents."""
+
+    def test_always_defect_factory(self):
+        assert isinstance(create_strategy("always_defect"), AlwaysDefectStrategy)

@@ -235,3 +235,16 @@ class TestDailyT083TwoCooperators:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT093TwoDefectors:
+    """Daily check: two defectors open unanimously."""
+
+    def test_two_defectors_unanimous(self):
+        agents = [
+            Agent(agent_id=0, strategy="always_defect"),
+            Agent(agent_id=1, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"defect"}

@@ -516,3 +516,12 @@ class TestDailyT085RangeChart:
         chart = generate_ascii_chart([1, 2, 3])
         assert "3.00" in chart
         assert "1.00" in chart
+
+
+class TestDailyT095PairChart:
+    """Daily check: a two-value chart renders both endpoint labels."""
+
+    def test_pair_chart_labels(self):
+        chart = generate_ascii_chart([2.0, 4.0])
+        assert "4.00" in chart
+        assert "2.00" in chart

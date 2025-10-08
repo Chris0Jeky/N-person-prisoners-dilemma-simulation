@@ -415,6 +415,7 @@ class HystereticQLearner(BaseAgent):
             return 'high'
 
     def reset(self):
+        """Reset tables and trackers for a new picklable run."""
         super().reset()
         # Use regular dicts instead of defaultdicts for picklability
         self.q_tables = {}

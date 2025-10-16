@@ -434,3 +434,11 @@ class TestDailyT089TftFirstMove:
     def test_tft_first_move(self):
         agent = TruePairwiseTFT("newcomer")
         assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"
+
+
+class TestDailyT099GtftFirstMove:
+    """Daily check: pairwise GTFT cooperates with unknown opponents."""
+
+    def test_gtft_first_move(self):
+        agent = TruePairwiseGTFT("newcomer")
+        assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"

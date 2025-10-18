@@ -545,3 +545,11 @@ class TestDailyT091CustomLearningRate:
         agent = Agent(agent_id=9, strategy="lra_q", learning_rate=0.5)
         assert agent.strategy_type == "lra_q"
         assert agent.strategy.learning_rate == 0.5
+
+
+class TestDailyT101WolfPhcType:
+    """Daily check: wolf_phc agents report their strategy type."""
+
+    def test_wolf_phc_strategy_type(self):
+        agent = Agent(agent_id=10, strategy="wolf_phc")
+        assert agent.strategy_type == "wolf_phc"

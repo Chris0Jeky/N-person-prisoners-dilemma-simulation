@@ -525,3 +525,12 @@ class TestDailyT095PairChart:
         chart = generate_ascii_chart([2.0, 4.0])
         assert "4.00" in chart
         assert "2.00" in chart
+
+
+class TestDailyT105WideRangeChart:
+    """Daily check: a wide range renders both endpoint labels."""
+
+    def test_wide_range_chart_labels(self):
+        chart = generate_ascii_chart([1.0, 9.0])
+        assert "9.00" in chart
+        assert "1.00" in chart

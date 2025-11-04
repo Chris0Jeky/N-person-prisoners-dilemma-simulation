@@ -348,3 +348,17 @@ class TestDailyT098TftPairOpensClean:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT108TftRetaliates:
+    """Daily check: TFT retaliates after facing a defection."""
+
+    def test_tft_retaliation_second_round(self):
+        agents = [
+            Agent(agent_id=0, strategy="tit_for_tat"),
+            Agent(agent_id=1, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env.run_round()
+        moves, _ = env.run_round()
+        assert moves == {0: "defect", 1: "defect"}

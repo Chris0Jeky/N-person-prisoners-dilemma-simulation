@@ -442,3 +442,12 @@ class TestDailyT099GtftFirstMove:
     def test_gtft_first_move(self):
         agent = TruePairwiseGTFT("newcomer")
         assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"
+
+
+class TestDailyT109PavlovWinStay:
+    """Daily check: pairwise Pavlov repeats cooperation after a win."""
+
+    def test_pavlov_win_stay(self):
+        agent = TruePairwisePavlov("newcomer")
+        agent.choose_action_for_opponent("stranger", 0)
+        assert agent.choose_action_for_opponent("stranger", 1) == "cooperate"

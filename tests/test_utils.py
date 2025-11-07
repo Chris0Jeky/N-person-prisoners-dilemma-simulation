@@ -205,3 +205,11 @@ class TestDailyT100FourPlayerMatrix:
         assert set(matrix) == {"C", "D"}
         assert len(matrix["C"]) == 4
         assert len(matrix["D"]) == 4
+
+
+class TestDailyT110TwoPlayerValues:
+    """Daily check: the two-player matrix holds classic dilemma values."""
+
+    def test_two_player_matrix_values(self):
+        matrix = create_payoff_matrix(2)
+        assert matrix == {"C": [0.0, 3.0], "D": [1.0, 5.0]}

@@ -240,6 +240,7 @@ class ModularAdaptiveQLearner(BaseAgent):
             return 'high'
     
     def reset(self):
+        """Clear modular tables and adaptive trackers."""
         super().reset()
         self.q_tables = {}
         self.last_contexts = {}

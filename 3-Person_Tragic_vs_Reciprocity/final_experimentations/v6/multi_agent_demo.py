@@ -29,6 +29,7 @@ T, R, P, S = 5, 3, 1, 0
 
 
 def nperson_payoff(my_move, num_cooperators, total_agents):
+    """Scale the move payoff by the share of cooperating others."""
     # num_cooperators includes all agents who cooperated (including self if applicable)
     # Calculate the number of OTHER agents who cooperated
     others_coop = num_cooperators - (1 - my_move)  # subtract 1 if I cooperated

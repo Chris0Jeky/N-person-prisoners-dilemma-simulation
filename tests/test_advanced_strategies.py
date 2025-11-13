@@ -553,3 +553,12 @@ class TestDailyT101WolfPhcType:
     def test_wolf_phc_strategy_type(self):
         agent = Agent(agent_id=10, strategy="wolf_phc")
         assert agent.strategy_type == "wolf_phc"
+
+
+class TestDailyT111CustomExploration:
+    """Daily check: a custom exploration constant is honored by ucb1_q."""
+
+    def test_custom_exploration_constant_honored(self):
+        agent = Agent(agent_id=11, strategy="ucb1_q", exploration_constant=2.0)
+        assert agent.strategy_type == "ucb1_q"
+        assert agent.strategy.exploration_constant == 2.0

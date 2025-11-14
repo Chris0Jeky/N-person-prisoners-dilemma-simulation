@@ -47,6 +47,7 @@ class SimpleStateStrategy(StateStrategy):
         self.histories[opponent_id].append((my_move, opponent_move))
     
     def reset(self):
+        """Forget per-opponent histories for a new run."""
         self.histories = {}
 
 

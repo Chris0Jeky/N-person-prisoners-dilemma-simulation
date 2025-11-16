@@ -261,3 +261,17 @@ class TestDailyT103MixedPair:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate", "defect"}
+
+
+class TestDailyT113MixedTrio:
+    """Daily check: a mixed trio shows both moves in round one."""
+
+    def test_mixed_trio_first_round(self):
+        agents = [
+            Agent(agent_id=0, strategy="always_cooperate"),
+            Agent(agent_id=1, strategy="always_cooperate"),
+            Agent(agent_id=2, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate", "defect"}

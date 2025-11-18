@@ -19,6 +19,7 @@ class StateStrategy(ABC):
     
     @abstractmethod
     def get_state(self, agent, opponent_id):
+        """Return the state representation for this opponent."""
         pass
     
     @abstractmethod

@@ -115,6 +115,7 @@ class ActionStrategy(ABC):
     
     @abstractmethod
     def reset(self):
+        """Reset action-selection state for a new run."""
         pass
 
 

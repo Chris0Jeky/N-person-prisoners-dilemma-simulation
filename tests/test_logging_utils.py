@@ -534,3 +534,12 @@ class TestDailyT105WideRangeChart:
         chart = generate_ascii_chart([1.0, 9.0])
         assert "9.00" in chart
         assert "1.00" in chart
+
+
+class TestDailyT115FullSpanChart:
+    """Daily check: a full-span chart renders both endpoint labels."""
+
+    def test_full_span_chart_labels(self):
+        chart = generate_ascii_chart([0.0, 5.0, 10.0])
+        assert "10.00" in chart
+        assert "0.00" in chart

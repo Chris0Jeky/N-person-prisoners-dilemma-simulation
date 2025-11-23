@@ -537,3 +537,13 @@ class TestDailyT106NPersonEight:
         assert strategy.N == 8
         assert strategy.state_type == "n_person_basic"
         assert strategy.scale_learning == True
+
+
+class TestDailyT116NPersonTwelve:
+    """Daily check: N-person Q-learning handles a twelve-agent group."""
+
+    def test_n_person_q_learning_twelve(self):
+        strategy = NPersonQLearning(N=12, state_type="n_person_basic")
+        assert strategy.N == 12
+        assert strategy.state_type == "n_person_basic"
+        assert strategy.scale_learning == True

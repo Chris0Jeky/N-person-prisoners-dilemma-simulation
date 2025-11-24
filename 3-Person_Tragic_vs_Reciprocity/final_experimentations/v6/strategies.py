@@ -141,6 +141,7 @@ class EpsilonGreedyStrategy(ActionStrategy):
         self.epsilon = epsilon
     
     def reset(self):
+        """No-op reset: epsilon-greedy keeps no per-run state."""
         pass  # Epsilon-greedy has no state to reset
 
 

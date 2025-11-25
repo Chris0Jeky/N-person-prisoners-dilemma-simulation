@@ -156,6 +156,7 @@ class SoftmaxStrategy(ActionStrategy):
         self.step_count = 0
     
     def choose_action(self, q_values, **kwargs):
+        """Pick the higher Q-value move with a uniform tie-break."""
         # Get Q-values
         q_c = q_values['cooperate']
         q_d = q_values['defect']

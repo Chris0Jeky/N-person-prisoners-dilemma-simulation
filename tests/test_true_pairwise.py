@@ -451,3 +451,11 @@ class TestDailyT109PavlovWinStay:
         agent = TruePairwisePavlov("newcomer")
         agent.choose_action_for_opponent("stranger", 0)
         assert agent.choose_action_for_opponent("stranger", 1) == "cooperate"
+
+
+class TestDailyT119AdaptiveFirstMove:
+    """Daily check: the adaptive pairwise agent opens cooperatively."""
+
+    def test_adaptive_first_move(self):
+        agent = TruePairwiseAdaptive("newcomer")
+        assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"

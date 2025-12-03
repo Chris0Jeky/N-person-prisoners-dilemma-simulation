@@ -213,3 +213,13 @@ class TestDailyT110TwoPlayerValues:
     def test_two_player_matrix_values(self):
         matrix = create_payoff_matrix(2)
         assert matrix == {"C": [0.0, 3.0], "D": [1.0, 5.0]}
+
+
+class TestDailyT120FivePlayerMatrix:
+    """Daily check: a five-player matrix has C and D rows of length five."""
+
+    def test_five_player_matrix_shape(self):
+        matrix = create_payoff_matrix(5)
+        assert set(matrix) == {"C", "D"}
+        assert len(matrix["C"]) == 5
+        assert len(matrix["D"]) == 5

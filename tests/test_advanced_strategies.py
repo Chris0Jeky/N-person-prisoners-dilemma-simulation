@@ -562,3 +562,11 @@ class TestDailyT111CustomExploration:
         agent = Agent(agent_id=11, strategy="ucb1_q", exploration_constant=2.0)
         assert agent.strategy_type == "ucb1_q"
         assert agent.strategy.exploration_constant == 2.0
+
+
+class TestDailyT121QLearningType:
+    """Daily check: q_learning agents report their strategy type."""
+
+    def test_q_learning_strategy_type(self):
+        agent = Agent(agent_id=12, strategy="q_learning")
+        assert agent.strategy_type == "q_learning"

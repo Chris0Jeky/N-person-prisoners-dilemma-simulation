@@ -332,3 +332,12 @@ class TestDailyT112PavlovFactory:
 
     def test_pavlov_factory(self):
         assert isinstance(create_strategy("pavlov"), PavlovStrategy)
+
+
+class TestDailyT122TftOpensCooperatively:
+    """Daily check: TFT cooperates with no history."""
+
+    def test_tft_no_history_cooperates(self):
+        strategy = TitForTatStrategy()
+        agent = Agent(agent_id=0, strategy="tit_for_tat")
+        assert strategy.choose_move(agent, []) == "cooperate"

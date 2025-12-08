@@ -104,6 +104,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         return str(tuple(history))
 
     def choose_pairwise_action(self, opponent_id):
+        """Choose an adaptive Q-learning move for a pairwise encounter."""
         state = self._get_state(opponent_id)
         # Initialize if needed
         if opponent_id not in self.q_tables:

@@ -543,3 +543,12 @@ class TestDailyT115FullSpanChart:
         chart = generate_ascii_chart([0.0, 5.0, 10.0])
         assert "10.00" in chart
         assert "0.00" in chart
+
+
+class TestDailyT125SignedSpanChart:
+    """Daily check: a signed-span chart renders both endpoint labels."""
+
+    def test_signed_span_chart_labels(self):
+        chart = generate_ascii_chart([-5.0, 5.0])
+        assert "5.00" in chart
+        assert "-5.00" in chart

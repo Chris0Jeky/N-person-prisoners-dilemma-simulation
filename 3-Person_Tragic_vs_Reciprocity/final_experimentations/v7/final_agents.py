@@ -495,6 +495,7 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
         return {'cooperate': 0.0, 'defect': 0.0}
     
     def reset(self):
+        """Reset Q-table, learning schedule, and reward window."""
         super().reset()
         self.q_table = {}
         self.lr = self.params.get('initial_lr', self.params.get('lr', 0.1))

@@ -376,3 +376,17 @@ class TestDailyT118TftTrioOpensClean:
         env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT128TftMirrorsCooperator:
+    """Daily check: TFT mirrors a lone cooperator for two rounds."""
+
+    def test_tft_mirrors_cooperator(self):
+        agents = [
+            Agent(agent_id=0, strategy="tit_for_tat"),
+            Agent(agent_id=1, strategy="always_cooperate"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env.run_round()
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}

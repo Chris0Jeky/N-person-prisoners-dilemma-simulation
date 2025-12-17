@@ -441,6 +441,7 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
         return 'medium' if coop_ratio <= 0.67 else 'high'
 
     def choose_neighborhood_action(self, coop_ratio):
+        """Choose a Q-learning move for the neighborhood cooperation ratio."""
         state = self._get_state(coop_ratio)
         
         # Initialize state if needed

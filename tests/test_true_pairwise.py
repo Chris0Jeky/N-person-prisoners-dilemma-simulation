@@ -459,3 +459,13 @@ class TestDailyT119AdaptiveFirstMove:
     def test_adaptive_first_move(self):
         agent = TruePairwiseAdaptive("newcomer")
         assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"
+
+
+class TestDailyT129TftRetaliatesPairwise:
+    """Daily check: pairwise TFT defects after a recorded defection."""
+
+    def test_tft_pairwise_retaliation(self):
+        agent = TruePairwiseTFT("newcomer")
+        agent.choose_action_for_opponent("stranger", 0)
+        agent.update_memory("stranger", "cooperate", "defect", 0.0)
+        assert agent.choose_action_for_opponent("stranger", 1) == "defect"

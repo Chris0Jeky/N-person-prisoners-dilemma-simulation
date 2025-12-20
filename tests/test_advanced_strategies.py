@@ -570,3 +570,12 @@ class TestDailyT121QLearningType:
     def test_q_learning_strategy_type(self):
         agent = Agent(agent_id=12, strategy="q_learning")
         assert agent.strategy_type == "q_learning"
+
+
+class TestDailyT131DefaultLearningRate:
+    """Daily check: lra_q keeps its default learning rate."""
+
+    def test_lra_q_default_learning_rate(self):
+        agent = Agent(agent_id=13, strategy="lra_q")
+        assert agent.strategy_type == "lra_q"
+        assert agent.strategy.learning_rate == 0.1

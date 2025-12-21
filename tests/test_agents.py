@@ -341,3 +341,11 @@ class TestDailyT122TftOpensCooperatively:
         strategy = TitForTatStrategy()
         agent = Agent(agent_id=0, strategy="tit_for_tat")
         assert strategy.choose_move(agent, []) == "cooperate"
+
+
+class TestDailyT132PavlovInitialMove:
+    """Daily check: Pavlov starts with its configured initial move."""
+
+    def test_pavlov_initial_move(self):
+        agent = Agent(agent_id=14, strategy="pavlov")
+        assert agent.strategy.initial_move == "cooperate"

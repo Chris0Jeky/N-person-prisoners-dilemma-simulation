@@ -29,6 +29,7 @@ def nperson_payoff(my_move, num_cooperators, total_agents):
 
 # --- Simulation Runners ---
 def run_pairwise_tournament(agents, num_rounds):
+    """Run a round-robin pairwise tournament and track histories."""
     for agent in agents: agent.reset()
     history = {a.agent_id: {'coop_rate': [], 'score': []} for a in agents}
     agent_map = {a.agent_id: a for a in agents}

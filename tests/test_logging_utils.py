@@ -552,3 +552,11 @@ class TestDailyT125SignedSpanChart:
         chart = generate_ascii_chart([-5.0, 5.0])
         assert "5.00" in chart
         assert "-5.00" in chart
+
+
+class TestDailyT135SingleValueChart:
+    """Daily check: a single value renders its own label."""
+
+    def test_single_value_chart_label(self):
+        chart = generate_ascii_chart([7.0])
+        assert "7.00" in chart

@@ -90,6 +90,7 @@ class StatisticalSummaryStrategy(StateStrategy):
             self.opponent_stats[opponent_id]['defected'] += 1
     
     def reset(self):
+        """Clear the accumulated opponent stats for a new run."""
         self.opponent_stats = {}
 
 

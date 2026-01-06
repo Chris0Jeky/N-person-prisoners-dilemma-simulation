@@ -23,6 +23,7 @@ class StateStrategy(ABC):
     
     @abstractmethod
     def reset(self):
+        """Reset strategy state for a new run."""
         pass
 
 

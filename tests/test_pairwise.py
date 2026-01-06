@@ -560,3 +560,25 @@ class TestDailyT127PavlovPairPayoff:
         assert set(moves.values()) == {"cooperate"}
         assert payoffs[0] == 3
         assert payoffs[1] == 3
+
+
+class TestDailyT137PavlovPairStable:
+    """Daily check: a Pavlov pair keeps sharing the reward payoff."""
+
+    def test_pavlov_pair_second_round(self):
+        agents = [
+            Agent(agent_id=0, strategy="pavlov"),
+            Agent(agent_id=1, strategy="pavlov"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        env.run_round()
+        moves, payoffs = env.run_round()
+        assert set(moves.values()) == {"cooperate"}
+        assert payoffs[0] == 3
+        assert payoffs[1] == 3

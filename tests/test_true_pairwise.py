@@ -469,3 +469,13 @@ class TestDailyT129TftRetaliatesPairwise:
         agent.choose_action_for_opponent("stranger", 0)
         agent.update_memory("stranger", "cooperate", "defect", 0.0)
         assert agent.choose_action_for_opponent("stranger", 1) == "defect"
+
+
+class TestDailyT139PavlovLoseShift:
+    """Daily check: pairwise Pavlov switches after a losing round."""
+
+    def test_pavlov_lose_shift(self):
+        agent = TruePairwisePavlov("newcomer")
+        agent.choose_action_for_opponent("stranger", 0)
+        agent.update_memory("stranger", "cooperate", "defect", 0.0)
+        assert agent.choose_action_for_opponent("stranger", 1) == "defect"

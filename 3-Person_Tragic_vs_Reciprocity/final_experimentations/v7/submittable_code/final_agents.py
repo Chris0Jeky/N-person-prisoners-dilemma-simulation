@@ -77,6 +77,7 @@ class StaticAgent(BaseAgent):
         self.last_neighborhood_move = COOPERATE if coop_ratio and coop_ratio >= 0.5 else DEFECT
 
     def reset(self):
+        """Clear tracked opponent moves and restore the default neighborhood move."""
         super().reset()
         self.opponent_last_moves.clear()
         self.last_neighborhood_move = COOPERATE

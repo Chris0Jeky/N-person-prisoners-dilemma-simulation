@@ -579,3 +579,12 @@ class TestDailyT131DefaultLearningRate:
         agent = Agent(agent_id=13, strategy="lra_q")
         assert agent.strategy_type == "lra_q"
         assert agent.strategy.learning_rate == 0.1
+
+
+class TestDailyT141HystereticEpsilon:
+    """Daily check: hysteretic_q keeps its default exploration rate."""
+
+    def test_hysteretic_default_epsilon(self):
+        agent = Agent(agent_id=14, strategy="hysteretic_q")
+        assert agent.strategy_type == "hysteretic_q"
+        assert agent.strategy.epsilon == 0.1

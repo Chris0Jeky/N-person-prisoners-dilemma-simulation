@@ -349,3 +349,12 @@ class TestDailyT132PavlovInitialMove:
     def test_pavlov_initial_move(self):
         agent = Agent(agent_id=14, strategy="pavlov")
         assert agent.strategy.initial_move == "cooperate"
+
+
+class TestDailyT142QLearningDefaultRate:
+    """Daily check: q_learning keeps its default learning rate."""
+
+    def test_q_learning_default_learning_rate(self):
+        agent = Agent(agent_id=15, strategy="q_learning")
+        assert agent.strategy_type == "q_learning"
+        assert agent.strategy.learning_rate == 0.1

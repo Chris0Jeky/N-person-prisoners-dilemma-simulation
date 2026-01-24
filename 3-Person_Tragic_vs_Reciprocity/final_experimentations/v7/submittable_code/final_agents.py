@@ -258,6 +258,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         return deque(maxlen=2)
 
     def reset(self):
+        """Reset Q-tables, trackers, and histories for a new run."""
         super().reset()
         self.q_tables = {}
         self.n_q_table = defaultdict(lambda: defaultdict(float))

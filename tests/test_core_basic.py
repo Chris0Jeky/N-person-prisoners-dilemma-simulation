@@ -301,3 +301,16 @@ class TestDailyT133TftPairRound:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT143DefectorPairRound:
+    """Daily check: an always-defect pair opens with mutual defection."""
+
+    def test_defector_pair_first_round(self):
+        agents = [
+            Agent(agent_id=2, strategy="always_defect"),
+            Agent(agent_id=3, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"defect"}

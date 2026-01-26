@@ -132,6 +132,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         self._adapt_parameters(reward)
 
     def choose_neighborhood_action(self, coop_ratio):
+        """Choose a neighborhood move from the current cooperation state."""
         # First, we need to get the current state (before this round's ratio is added)
         state = self._get_neighborhood_state()
         

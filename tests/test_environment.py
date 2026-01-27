@@ -519,3 +519,16 @@ class TestDailyT134PavlovPairRound:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT144PairMoveKeys:
+    """Daily check: a pair round returns one move per agent id."""
+
+    def test_pair_round_move_keys(self):
+        agents = [
+            Agent(agent_id=4, strategy="tit_for_tat"),
+            Agent(agent_id=5, strategy="tit_for_tat"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves) == {4, 5}

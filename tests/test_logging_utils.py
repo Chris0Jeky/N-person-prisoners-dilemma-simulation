@@ -560,3 +560,11 @@ class TestDailyT135SingleValueChart:
     def test_single_value_chart_label(self):
         chart = generate_ascii_chart([7.0])
         assert "7.00" in chart
+
+
+class TestDailyT145ConstantChart:
+    """Daily check: a constant series renders its shared label."""
+
+    def test_constant_chart_label(self):
+        chart = generate_ascii_chart([3.0, 3.0])
+        assert "3.00" in chart

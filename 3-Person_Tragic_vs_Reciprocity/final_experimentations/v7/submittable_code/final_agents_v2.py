@@ -213,6 +213,7 @@ class VanillaQLearner(BaseAgent):
         return deque(maxlen=2)
 
     def reset(self):
+        """Reset Q-tables, trackers, and coop categories for a new run."""
         super().reset()
         self.q_tables = {}
         self.n_q_table = defaultdict(lambda: defaultdict(float))

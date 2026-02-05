@@ -102,6 +102,7 @@ class StaticAgent(BaseAgent):
 
 # --- Vanilla Q-Learning Agent (Simple 8-state for neighborhood) ---
 class VanillaQLearner(BaseAgent):
+    """Vanilla Q-learner with a simple neighborhood state representation."""
     def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "VanillaQL")
         self.params = params

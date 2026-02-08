@@ -229,6 +229,7 @@ class VanillaQLearner(BaseAgent):
 
 # --- Enhanced Q-Learning Agent (EQL with 4-round history) ---
 class EnhancedQLearner(BaseAgent):
+    """Enhanced Q-learner with adaptive parameters and lengthy histories."""
     def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "EQL")
         self.params = params

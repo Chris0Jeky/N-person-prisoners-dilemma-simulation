@@ -258,6 +258,7 @@ class EnhancedQLearner(BaseAgent):
             return max(q_values, key=q_values.get)
 
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
+        """Bank the reward and apply the enhanced Q-learning update."""
         self.total_score += reward
         state = self._get_state(opponent_id)
         

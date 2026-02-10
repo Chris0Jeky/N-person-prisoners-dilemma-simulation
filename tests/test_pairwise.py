@@ -582,3 +582,24 @@ class TestDailyT137PavlovPairStable:
         assert set(moves.values()) == {"cooperate"}
         assert payoffs[0] == 3
         assert payoffs[1] == 3
+
+
+class TestDailyT147DefectorPairPunishment:
+    """Daily check: a defector pair shares the punishment payoff."""
+
+    def test_defector_pair_punishment(self):
+        agents = [
+            Agent(agent_id=2, strategy="always_defect"),
+            Agent(agent_id=3, strategy="always_defect"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        moves, payoffs = env.run_round()
+        assert set(moves.values()) == {"defect"}
+        assert payoffs[2] == 1
+        assert payoffs[3] == 1

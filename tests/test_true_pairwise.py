@@ -479,3 +479,11 @@ class TestDailyT139PavlovLoseShift:
         agent.choose_action_for_opponent("stranger", 0)
         agent.update_memory("stranger", "cooperate", "defect", 0.0)
         assert agent.choose_action_for_opponent("stranger", 1) == "defect"
+
+
+class TestDailyT149PavlovOpensCooperative:
+    """Daily check: pairwise Pavlov opens with cooperation."""
+
+    def test_pavlov_opens_cooperative(self):
+        agent = TruePairwisePavlov("founder")
+        assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"

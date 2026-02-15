@@ -243,6 +243,7 @@ def save_summary_csv(all_results):
             writer.writerow([scenario_name, 'Neighborhood', 'TFT', np.mean(n_tft), n_tft[-1]])
 
 def main():
+    """Build dataframe comparison plots across experiment conditions."""
     print("=" * 70)
     print("DISCOUNT FACTOR COMPARISON EXPERIMENT")
     print("2 QL vs 1 TFT with different discount factors")

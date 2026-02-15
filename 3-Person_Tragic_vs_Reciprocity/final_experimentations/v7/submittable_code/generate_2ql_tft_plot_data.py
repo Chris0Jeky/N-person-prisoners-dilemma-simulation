@@ -193,6 +193,7 @@ def create_visualization(p_data, n_data):
     plt.close()
 
 def main():
+    """Generate 2QL-vs-TFT plot data and print progress banners."""
     print("=" * 80)
     print("2 QL vs 1 TFT EXPERIMENT")
     print("Pairwise: DF=0.4 (short-term focus)")

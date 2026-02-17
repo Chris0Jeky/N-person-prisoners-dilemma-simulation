@@ -588,3 +588,13 @@ class TestDailyT141HystereticEpsilon:
         agent = Agent(agent_id=14, strategy="hysteretic_q")
         assert agent.strategy_type == "hysteretic_q"
         assert agent.strategy.epsilon == 0.1
+
+
+class TestDailyT151LraQAgent:
+    """Daily check: a fresh lra_q agent keeps its id and learning rate."""
+
+    def test_lra_q_agent_identity(self):
+        agent = Agent(agent_id=16, strategy="lra_q")
+        assert agent.agent_id == 16
+        assert agent.strategy_type == "lra_q"
+        assert agent.strategy.learning_rate == 0.1

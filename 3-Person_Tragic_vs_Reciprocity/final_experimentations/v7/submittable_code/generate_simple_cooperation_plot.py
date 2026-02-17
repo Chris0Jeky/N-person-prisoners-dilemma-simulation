@@ -125,6 +125,7 @@ def save_to_csv(p_ql, p_tft, n_ql, n_tft):
     print(f"Neighborhood - TFT: {np.mean(n_tft):.3f}")
 
 def main():
+    """Generate the simple cooperation plot with progress banners."""
     print("=" * 60)
     print("2 QL vs 1 TFT Cooperation Data Generator")
     print(f"Discount Factor: 0.95")

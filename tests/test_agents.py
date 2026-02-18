@@ -358,3 +358,12 @@ class TestDailyT142QLearningDefaultRate:
         agent = Agent(agent_id=15, strategy="q_learning")
         assert agent.strategy_type == "q_learning"
         assert agent.strategy.learning_rate == 0.1
+
+
+class TestDailyT152TftAgent:
+    """Daily check: a fresh tit_for_tat agent keeps its id and type."""
+
+    def test_tft_agent_identity(self):
+        agent = Agent(agent_id=16, strategy="tit_for_tat")
+        assert agent.agent_id == 16
+        assert agent.strategy_type == "tit_for_tat"

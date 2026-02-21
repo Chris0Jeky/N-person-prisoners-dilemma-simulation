@@ -568,3 +568,11 @@ class TestDailyT145ConstantChart:
     def test_constant_chart_label(self):
         chart = generate_ascii_chart([3.0, 3.0])
         assert "3.00" in chart
+
+
+class TestDailyT155ZeroChart:
+    """Daily check: a zero value renders its own label."""
+
+    def test_zero_chart_label(self):
+        chart = generate_ascii_chart([0.0])
+        assert "0.00" in chart

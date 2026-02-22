@@ -92,6 +92,7 @@ class StaticAgent(BaseAgent):
         return intended_move
 
     def choose_pairwise_action(self, opponent_id):
+        """Choose the fixed-strategy move for a pairwise encounter."""
         if self.strategy_name == "AllC":
             intended = COOPERATE
         elif self.strategy_name == "AllD":

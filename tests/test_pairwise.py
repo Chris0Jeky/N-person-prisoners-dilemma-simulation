@@ -603,3 +603,25 @@ class TestDailyT147DefectorPairPunishment:
         assert set(moves.values()) == {"defect"}
         assert payoffs[2] == 1
         assert payoffs[3] == 1
+
+
+class TestDailyT157TftPairPayoff:
+    """Daily check: a TFT pair keeps sharing the reward payoff."""
+
+    def test_tft_pair_second_round(self):
+        agents = [
+            Agent(agent_id=4, strategy="tit_for_tat"),
+            Agent(agent_id=5, strategy="tit_for_tat"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        env.run_round()
+        moves, payoffs = env.run_round()
+        assert set(moves.values()) == {"cooperate"}
+        assert payoffs[4] == 3
+        assert payoffs[5] == 3

@@ -198,6 +198,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
             return max(q_values, key=q_values.get)
 
     def record_neighborhood_outcome(self, coop_ratio, reward):
+        """Bank the reward and refresh the neighborhood history state."""
         self.total_score += reward
         
         # Get current state before updating history

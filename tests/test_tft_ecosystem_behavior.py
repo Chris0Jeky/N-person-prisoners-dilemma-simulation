@@ -418,3 +418,17 @@ class TestDailyT148TftTrio:
         env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT158CooperatorTrio:
+    """Daily check: a cooperator trio opens with mutual cooperation."""
+
+    def test_cooperator_trio_first_round(self):
+        agents = [
+            Agent(agent_id=6, strategy="always_cooperate"),
+            Agent(agent_id=7, strategy="always_cooperate"),
+            Agent(agent_id=8, strategy="always_cooperate"),
+        ]
+        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}

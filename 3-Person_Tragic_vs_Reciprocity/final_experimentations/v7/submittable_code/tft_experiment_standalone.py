@@ -324,6 +324,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
 
 # --- Simulation Functions ---
 def nperson_payoff(my_move, num_cooperators, total_agents):
+    """Compute the n-person payoff from the cooperators count."""
     others_coop = num_cooperators - (1 - my_move)
     if my_move == 0:  # cooperate
         return S + (R - S) * (others_coop / (total_agents - 1))

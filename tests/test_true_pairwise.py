@@ -487,3 +487,13 @@ class TestDailyT149PavlovOpensCooperative:
     def test_pavlov_opens_cooperative(self):
         agent = TruePairwisePavlov("founder")
         assert agent.choose_action_for_opponent("stranger", 0) == "cooperate"
+
+
+class TestDailyT159PavlovWinStay:
+    """Daily check: pairwise Pavlov repeats a winning cooperation."""
+
+    def test_pavlov_win_stay(self):
+        agent = TruePairwisePavlov("settler")
+        agent.choose_action_for_opponent("stranger", 0)
+        agent.update_memory("stranger", "cooperate", "cooperate", 3.0)
+        assert agent.choose_action_for_opponent("stranger", 1) == "cooperate"

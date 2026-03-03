@@ -598,3 +598,13 @@ class TestDailyT151LraQAgent:
         assert agent.agent_id == 16
         assert agent.strategy_type == "lra_q"
         assert agent.strategy.learning_rate == 0.1
+
+
+class TestDailyT161QLearningAgent:
+    """Daily check: a fresh q_learning agent keeps its id and rate."""
+
+    def test_q_learning_agent_identity(self):
+        agent = Agent(agent_id=17, strategy="q_learning")
+        assert agent.agent_id == 17
+        assert agent.strategy_type == "q_learning"
+        assert agent.strategy.learning_rate == 0.1

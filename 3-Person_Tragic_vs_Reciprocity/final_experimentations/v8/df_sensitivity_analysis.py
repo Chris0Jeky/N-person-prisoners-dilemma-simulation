@@ -337,6 +337,7 @@ def save_df_results_to_csv(all_df_results, output_dir):
 
 
 def main():
+    """Run discount-factor sensitivity analysis and save figures."""
     # Configuration
     NUM_ROUNDS = SIMULATION_CONFIG['num_rounds']
     NUM_RUNS = SIMULATION_CONFIG['num_runs']

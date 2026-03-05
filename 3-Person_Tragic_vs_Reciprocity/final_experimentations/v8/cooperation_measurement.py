@@ -342,6 +342,7 @@ def save_results_to_csv(all_results, output_dir):
 
 
 def main():
+    """Measure cooperation rates across experiment conditions."""
     # Configuration
     NUM_ROUNDS = SIMULATION_CONFIG['num_rounds']
     NUM_RUNS = SIMULATION_CONFIG['num_runs']

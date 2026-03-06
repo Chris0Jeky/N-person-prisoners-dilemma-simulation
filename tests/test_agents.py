@@ -367,3 +367,13 @@ class TestDailyT152TftAgent:
         agent = Agent(agent_id=16, strategy="tit_for_tat")
         assert agent.agent_id == 16
         assert agent.strategy_type == "tit_for_tat"
+
+
+class TestDailyT162PavlovAgent:
+    """Daily check: a fresh pavlov agent keeps its id and opening move."""
+
+    def test_pavlov_agent_identity(self):
+        agent = Agent(agent_id=18, strategy="pavlov")
+        assert agent.agent_id == 18
+        assert agent.strategy_type == "pavlov"
+        assert agent.strategy.initial_move == "cooperate"

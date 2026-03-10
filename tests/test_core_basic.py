@@ -327,3 +327,17 @@ class TestDailyT153CooperatorPairRound:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT163TftTrioRound:
+    """Daily check: a TFT trio opens with mutual cooperation."""
+
+    def test_tft_trio_first_round(self):
+        agents = [
+            Agent(agent_id=6, strategy="tit_for_tat"),
+            Agent(agent_id=7, strategy="tit_for_tat"),
+            Agent(agent_id=8, strategy="tit_for_tat"),
+        ]
+        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}

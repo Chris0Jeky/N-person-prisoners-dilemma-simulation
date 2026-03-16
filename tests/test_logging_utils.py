@@ -576,3 +576,11 @@ class TestDailyT155ZeroChart:
     def test_zero_chart_label(self):
         chart = generate_ascii_chart([0.0])
         assert "0.00" in chart
+
+
+class TestDailyT165NegativeChart:
+    """Daily check: a negative value renders its own label."""
+
+    def test_negative_chart_label(self):
+        chart = generate_ascii_chart([-2.0])
+        assert "-2.00" in chart

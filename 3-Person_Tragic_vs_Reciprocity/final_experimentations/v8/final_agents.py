@@ -14,7 +14,9 @@ class BaseAgent:
         self.agent_id, self.strategy_name = agent_id, strategy_name
         self.total_score = 0
 
-    def reset(self): self.total_score = 0
+    def reset(self):
+        """Reset the cumulative score for a new run."""
+        self.total_score = 0
 
 
 class StaticAgent(BaseAgent):

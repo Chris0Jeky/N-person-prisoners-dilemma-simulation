@@ -263,3 +263,13 @@ class TestDailyT160NinePlayerMatrix:
         assert set(matrix) == {"C", "D"}
         assert len(matrix["C"]) == 9
         assert len(matrix["D"]) == 9
+
+
+class TestDailyT170TenPlayerMatrix:
+    """Daily check: a ten-player matrix has C and D rows of length ten."""
+
+    def test_ten_player_matrix_shape(self):
+        matrix = create_payoff_matrix(10)
+        assert set(matrix) == {"C", "D"}
+        assert len(matrix["C"]) == 10
+        assert len(matrix["D"]) == 10

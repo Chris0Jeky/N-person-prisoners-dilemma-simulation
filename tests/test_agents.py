@@ -377,3 +377,12 @@ class TestDailyT162PavlovAgent:
         assert agent.agent_id == 18
         assert agent.strategy_type == "pavlov"
         assert agent.strategy.initial_move == "cooperate"
+
+
+class TestDailyT172DefectorMove:
+    """Daily check: AlwaysDefect agents defect on every move."""
+
+    def test_always_defect_move(self):
+        agent = Agent(agent_id=20, strategy="always_defect")
+        for _ in range(5):
+            assert agent.choose_move([1, 2]) == "defect"

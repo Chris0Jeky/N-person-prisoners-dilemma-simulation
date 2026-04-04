@@ -30,6 +30,7 @@ class VerboseQLearner(PairwiseAdaptiveQLearner):
         self.verbose = True
     
     def choose_pairwise_action(self, opponent_id):
+        """Advance the trace round counter for a pairwise encounter."""
         self.round_num += 1
         state = self._get_state(opponent_id)
         

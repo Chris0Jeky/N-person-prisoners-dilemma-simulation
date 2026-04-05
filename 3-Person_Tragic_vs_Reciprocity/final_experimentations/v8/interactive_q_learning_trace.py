@@ -76,6 +76,7 @@ class VerboseQLearner(PairwiseAdaptiveQLearner):
         return 0 if action == 'cooperate' else 1
     
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
+        """Trace the pairwise outcome then delegate to the parent update."""
         super().record_pairwise_outcome(opponent_id, my_move, opponent_move, reward)
         
         if self.verbose and self.round_num <= 10:

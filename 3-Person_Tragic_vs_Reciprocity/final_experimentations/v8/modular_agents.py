@@ -82,6 +82,7 @@ class ModularAdaptiveQLearner(BaseAgent):
         return COOPERATE if action == 'cooperate' else DEFECT
     
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
+        """Bank the reward and refresh the modular tracking structures."""
         self.total_score += reward
         
         context = self.last_contexts.get(opponent_id)

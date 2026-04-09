@@ -341,3 +341,17 @@ class TestDailyT163TftTrioRound:
         env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT173DefectorTrioRound:
+    """Daily check: a defector trio opens with mutual defection."""
+
+    def test_defector_trio_first_round(self):
+        agents = [
+            Agent(agent_id=9, strategy="always_defect"),
+            Agent(agent_id=10, strategy="always_defect"),
+            Agent(agent_id=11, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"defect"}

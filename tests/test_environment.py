@@ -558,3 +558,16 @@ class TestDailyT164CooperatorMoveKeys:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves) == {8, 9}
+
+
+class TestDailyT174TftMoveKeys:
+    """Daily check: a TFT pair round returns one move per agent id."""
+
+    def test_tft_round_move_keys(self):
+        agents = [
+            Agent(agent_id=10, strategy="tit_for_tat"),
+            Agent(agent_id=11, strategy="tit_for_tat"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves) == {10, 11}

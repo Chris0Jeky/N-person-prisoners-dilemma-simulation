@@ -584,3 +584,12 @@ class TestDailyT165NegativeChart:
     def test_negative_chart_label(self):
         chart = generate_ascii_chart([-2.0])
         assert "-2.00" in chart
+
+
+class TestDailyT175DescendingChart:
+    """Daily check: a descending series renders both endpoint labels."""
+
+    def test_descending_chart_labels(self):
+        chart = generate_ascii_chart([5.0, 1.0])
+        assert "5.00" in chart
+        assert "1.00" in chart

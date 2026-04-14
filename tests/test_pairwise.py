@@ -647,3 +647,25 @@ class TestDailyT167DefectorPairStable:
         assert set(moves.values()) == {"defect"}
         assert payoffs[6] == 1
         assert payoffs[7] == 1
+
+
+class TestDailyT177CooperatorPairReward:
+    """Daily check: a cooperator pair keeps sharing the reward payoff."""
+
+    def test_cooperator_pair_second_round(self):
+        agents = [
+            Agent(agent_id=8, strategy="always_cooperate"),
+            Agent(agent_id=9, strategy="always_cooperate"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        env.run_round()
+        moves, payoffs = env.run_round()
+        assert set(moves.values()) == {"cooperate"}
+        assert payoffs[8] == 3
+        assert payoffs[9] == 3

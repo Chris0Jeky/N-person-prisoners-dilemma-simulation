@@ -445,3 +445,16 @@ class TestDailyT168DefectorPair:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"defect"}
+
+
+class TestDailyT178CooperatorPair:
+    """Daily check: a cooperator pair opens with mutual cooperation."""
+
+    def test_cooperator_pair_first_round(self):
+        agents = [
+            Agent(agent_id=11, strategy="always_cooperate"),
+            Agent(agent_id=12, strategy="always_cooperate"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}

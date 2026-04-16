@@ -505,3 +505,13 @@ class TestDailyT169PavlovFreshOpponent:
     def test_pavlov_fresh_opponent(self):
         agent = TruePairwisePavlov("greeter")
         assert agent.choose_action_for_opponent("newcomer", 0) == "cooperate"
+
+
+class TestDailyT179EmptyMemory:
+    """Daily check: a fresh opponent memory starts with zero interactions."""
+
+    def test_empty_memory_counts(self):
+        memory = OpponentSpecificMemory("solo", memory_length=5)
+        assert memory.total_interactions == 0
+        assert memory.cooperation_count == 0
+        assert memory.defection_count == 0

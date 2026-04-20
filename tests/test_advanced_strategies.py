@@ -618,3 +618,13 @@ class TestDailyT171HystereticAgent:
         assert agent.agent_id == 19
         assert agent.strategy_type == "hysteretic_q"
         assert agent.strategy.epsilon == 0.1
+
+
+class TestDailyT181PavlovAgent:
+    """Daily check: a fresh pavlov agent keeps its id and opening move."""
+
+    def test_pavlov_agent_identity(self):
+        agent = Agent(agent_id=21, strategy="pavlov")
+        assert agent.agent_id == 21
+        assert agent.strategy_type == "pavlov"
+        assert agent.strategy.initial_move == "cooperate"

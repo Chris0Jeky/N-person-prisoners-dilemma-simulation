@@ -386,3 +386,12 @@ class TestDailyT172DefectorMove:
         agent = Agent(agent_id=20, strategy="always_defect")
         for _ in range(5):
             assert agent.choose_move([1, 2]) == "defect"
+
+
+class TestDailyT182CooperatorMove:
+    """Daily check: AlwaysCooperate agents cooperate on every move."""
+
+    def test_always_cooperate_move(self):
+        agent = Agent(agent_id=22, strategy="always_cooperate")
+        for _ in range(5):
+            assert agent.choose_move([1, 2]) == "cooperate"

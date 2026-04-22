@@ -355,3 +355,17 @@ class TestDailyT173DefectorTrioRound:
         env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"defect"}
+
+
+class TestDailyT183PavlovTrioRound:
+    """Daily check: a Pavlov trio opens with mutual cooperation."""
+
+    def test_pavlov_trio_first_round(self):
+        agents = [
+            Agent(agent_id=12, strategy="pavlov"),
+            Agent(agent_id=13, strategy="pavlov"),
+            Agent(agent_id=14, strategy="pavlov"),
+        ]
+        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}

@@ -213,6 +213,7 @@ class StandardQLearning(LearningStrategy):
         self.df = discount_factor
     
     def update_q_value(self, current_q, reward, next_max_q, **kwargs):
+        """Apply the standard Q-learning update rule."""
         target_q = reward + self.df * next_max_q
         return current_q + self.lr * (target_q - current_q)
 

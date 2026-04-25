@@ -571,3 +571,16 @@ class TestDailyT174TftMoveKeys:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves) == {10, 11}
+
+
+class TestDailyT184DefectorMoveKeys:
+    """Daily check: a defector pair round returns one move per agent id."""
+
+    def test_defector_round_move_keys(self):
+        agents = [
+            Agent(agent_id=12, strategy="always_defect"),
+            Agent(agent_id=13, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves) == {12, 13}

@@ -669,3 +669,24 @@ class TestDailyT177CooperatorPairReward:
         assert set(moves.values()) == {"cooperate"}
         assert payoffs[8] == 3
         assert payoffs[9] == 3
+
+
+class TestDailyT187CooperatorPairPayoff:
+    """Daily check: a cooperator pair opens sharing the reward payoff."""
+
+    def test_cooperator_pair_first_payoff(self):
+        agents = [
+            Agent(agent_id=10, strategy="always_cooperate"),
+            Agent(agent_id=11, strategy="always_cooperate"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        moves, payoffs = env.run_round()
+        assert set(moves.values()) == {"cooperate"}
+        assert payoffs[10] == 3
+        assert payoffs[11] == 3

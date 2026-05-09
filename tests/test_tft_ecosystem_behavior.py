@@ -458,3 +458,16 @@ class TestDailyT178CooperatorPair:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT188TftPair:
+    """Daily check: a TFT pair opens with mutual cooperation."""
+
+    def test_tft_pair_first_round(self):
+        agents = [
+            Agent(agent_id=13, strategy="tit_for_tat"),
+            Agent(agent_id=14, strategy="tit_for_tat"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}

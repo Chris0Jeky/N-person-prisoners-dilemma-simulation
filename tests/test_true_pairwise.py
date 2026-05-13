@@ -515,3 +515,14 @@ class TestDailyT179EmptyMemory:
         assert memory.total_interactions == 0
         assert memory.cooperation_count == 0
         assert memory.defection_count == 0
+
+
+class TestDailyT189SingleInteraction:
+    """Daily check: one cooperation counts exactly once in memory."""
+
+    def test_single_interaction_counts(self):
+        memory = OpponentSpecificMemory("duo", memory_length=5)
+        memory.add_interaction("cooperate", "cooperate", 3)
+        assert memory.total_interactions == 1
+        assert memory.cooperation_count == 1
+        assert memory.defection_count == 0

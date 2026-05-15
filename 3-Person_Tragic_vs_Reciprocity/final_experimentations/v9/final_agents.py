@@ -413,6 +413,7 @@ class HystereticQLearner(BaseAgent):
             return 'high'
 
     def reset(self):
+        """Reset Q-tables and histories with picklable dicts."""
         super().reset()
         # Use regular dicts instead of defaultdicts for picklability
         self.q_tables = {}

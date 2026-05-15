@@ -125,6 +125,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         return action
 
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
+        """Record the reward from a pairwise encounter."""
         self.total_score += reward
         context = self.last_contexts.get(opponent_id)
         if not context: return

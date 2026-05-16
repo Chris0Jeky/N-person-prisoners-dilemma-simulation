@@ -628,3 +628,12 @@ class TestDailyT181PavlovAgent:
         assert agent.agent_id == 21
         assert agent.strategy_type == "pavlov"
         assert agent.strategy.initial_move == "cooperate"
+
+
+class TestDailyT191DefectorAgent:
+    """Daily check: a fresh always_defect agent keeps its id and type."""
+
+    def test_defector_agent_identity(self):
+        agent = Agent(agent_id=23, strategy="always_defect")
+        assert agent.agent_id == 23
+        assert agent.strategy_type == "always_defect"

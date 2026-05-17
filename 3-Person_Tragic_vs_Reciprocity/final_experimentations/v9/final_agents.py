@@ -303,6 +303,7 @@ class HystereticQLearner(BaseAgent):
         return deque(maxlen=2)
 
     def choose_pairwise_action(self, opponent_id):
+        """Choose the pairwise move from the hysteretic Q-table."""
         state = self._get_state(opponent_id)
         # Initialize if needed
         if opponent_id not in self.q_tables:

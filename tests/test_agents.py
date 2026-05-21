@@ -395,3 +395,10 @@ class TestDailyT182CooperatorMove:
         agent = Agent(agent_id=22, strategy="always_cooperate")
         for _ in range(5):
             assert agent.choose_move([1, 2]) == "cooperate"
+
+
+class TestDailyT192TftFactory:
+    """Daily check: the strategy factory builds tit_for_tat agents."""
+
+    def test_tft_factory(self):
+        assert isinstance(create_strategy("tit_for_tat"), TitForTatStrategy)

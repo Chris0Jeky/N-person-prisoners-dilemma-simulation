@@ -584,3 +584,17 @@ class TestDailyT184DefectorMoveKeys:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves) == {12, 13}
+
+
+class TestDailyT194CooperatorTrioKeys:
+    """Daily check: a cooperator trio round returns one move per agent id."""
+
+    def test_cooperator_trio_move_keys(self):
+        agents = [
+            Agent(agent_id=14, strategy="always_cooperate"),
+            Agent(agent_id=15, strategy="always_cooperate"),
+            Agent(agent_id=16, strategy="always_cooperate"),
+        ]
+        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves) == {14, 15, 16}

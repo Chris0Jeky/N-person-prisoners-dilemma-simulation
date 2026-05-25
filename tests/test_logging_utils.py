@@ -602,3 +602,12 @@ class TestDailyT185AscendingChart:
         chart = generate_ascii_chart([1.0, 5.0])
         assert "1.00" in chart
         assert "5.00" in chart
+
+
+class TestDailyT195ThreeValueChart:
+    """Daily check: a three-value series renders its endpoint labels."""
+
+    def test_three_value_chart_labels(self):
+        chart = generate_ascii_chart([1.0, 2.0, 3.0])
+        assert "1.00" in chart
+        assert "3.00" in chart

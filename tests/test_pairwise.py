@@ -690,3 +690,24 @@ class TestDailyT187CooperatorPairPayoff:
         assert set(moves.values()) == {"cooperate"}
         assert payoffs[10] == 3
         assert payoffs[11] == 3
+
+
+class TestDailyT197TftPairFirstPayoff:
+    """Daily check: a TFT pair opens sharing the reward payoff."""
+
+    def test_tft_pair_first_payoff(self):
+        agents = [
+            Agent(agent_id=12, strategy="tit_for_tat"),
+            Agent(agent_id=13, strategy="tit_for_tat"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        moves, payoffs = env.run_round()
+        assert set(moves.values()) == {"cooperate"}
+        assert payoffs[12] == 3
+        assert payoffs[13] == 3

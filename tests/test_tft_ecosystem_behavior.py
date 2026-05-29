@@ -471,3 +471,16 @@ class TestDailyT188TftPair:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT198PavlovPair:
+    """Daily check: a Pavlov pair opens with mutual cooperation."""
+
+    def test_pavlov_pair_first_round(self):
+        agents = [
+            Agent(agent_id=15, strategy="pavlov"),
+            Agent(agent_id=16, strategy="pavlov"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate"}

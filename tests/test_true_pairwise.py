@@ -526,3 +526,14 @@ class TestDailyT189SingleInteraction:
         assert memory.total_interactions == 1
         assert memory.cooperation_count == 1
         assert memory.defection_count == 0
+
+
+class TestDailyT199DefectMemory:
+    """Daily check: one defection counts exactly once in memory."""
+
+    def test_defect_memory_counts(self):
+        memory = OpponentSpecificMemory("trio", memory_length=5)
+        memory.add_interaction("defect", "defect", 1)
+        assert memory.total_interactions == 1
+        assert memory.cooperation_count == 0
+        assert memory.defection_count == 1

@@ -637,3 +637,12 @@ class TestDailyT191DefectorAgent:
         agent = Agent(agent_id=23, strategy="always_defect")
         assert agent.agent_id == 23
         assert agent.strategy_type == "always_defect"
+
+
+class TestDailyT201CooperatorAgent:
+    """Daily check: a fresh always_cooperate agent keeps its id and type."""
+
+    def test_cooperator_agent_identity(self):
+        agent = Agent(agent_id=25, strategy="always_cooperate")
+        assert agent.agent_id == 25
+        assert agent.strategy_type == "always_cooperate"

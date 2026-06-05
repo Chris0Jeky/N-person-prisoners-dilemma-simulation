@@ -402,3 +402,10 @@ class TestDailyT192TftFactory:
 
     def test_tft_factory(self):
         assert isinstance(create_strategy("tit_for_tat"), TitForTatStrategy)
+
+
+class TestDailyT202PavlovFactory:
+    """Daily check: the strategy factory builds pavlov agents."""
+
+    def test_pavlov_factory(self):
+        assert isinstance(create_strategy("pavlov"), PavlovStrategy)

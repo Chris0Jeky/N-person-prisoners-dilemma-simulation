@@ -240,6 +240,7 @@ class ModularAdaptiveQLearner(BaseAgent):
             return 'high'
     
     def reset(self):
+        """Clear all per-neighborhood tables and learning schedules."""
         super().reset()
         self.q_tables = {}
         self.last_contexts = {}

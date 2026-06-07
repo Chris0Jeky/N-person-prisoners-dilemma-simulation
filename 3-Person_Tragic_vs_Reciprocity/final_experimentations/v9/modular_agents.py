@@ -283,6 +283,7 @@ class ModularQLearner(BaseAgent):
         return {'cooperate': 0.0, 'defect': 0.0}
     
     def choose_pairwise_action(self, opponent_id):
+        """Choose the pairwise move using the configured strategies."""
         # Get state from state strategy
         state = self.state_strategy.get_state(self, opponent_id)
         

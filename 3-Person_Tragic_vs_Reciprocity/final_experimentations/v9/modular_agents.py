@@ -379,6 +379,7 @@ class ModularQLearner(BaseAgent):
             return 'high'
     
     def reset(self):
+        """Clear modular Q-tables and neighborhood state for a new run."""
         super().reset()
         self.q_tables = {}
         self.last_contexts = {}

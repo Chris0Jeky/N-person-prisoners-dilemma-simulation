@@ -60,6 +60,7 @@ class SimpleQLearner(BaseAgent):
         self.last_coop_ratio = None
     
     def reset(self):
+        """Reset Q-tables and opponent trackers for a new run."""
         super().reset()
         self.q_tables = {}
         self.n_q_table = {}

@@ -35,6 +35,7 @@ class SimpleStateStrategy(StateStrategy):
         self.histories = {}
     
     def get_state(self, agent, opponent_id):
+        """Return the two-round history state for an opponent."""
         if opponent_id not in self.histories:
             self.histories[opponent_id] = deque(maxlen=2)
         history = self.histories[opponent_id]

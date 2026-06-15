@@ -60,6 +60,7 @@ class StatisticalSummaryStrategy(StateStrategy):
         self.opponent_stats = {}
     
     def get_state(self, agent, opponent_id):
+        """Return the cooperation-disposition state for an opponent."""
         if opponent_id not in self.opponent_stats:
             return "Opponent_Disposition_Unknown"
         

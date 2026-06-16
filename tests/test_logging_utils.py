@@ -611,3 +611,12 @@ class TestDailyT195ThreeValueChart:
         chart = generate_ascii_chart([1.0, 2.0, 3.0])
         assert "1.00" in chart
         assert "3.00" in chart
+
+
+class TestDailyT205WideSpanChart:
+    """Daily check: a wide-span series renders both endpoint labels."""
+
+    def test_wide_span_chart_labels(self):
+        chart = generate_ascii_chart([-10.0, 10.0])
+        assert "-10.00" in chart
+        assert "10.00" in chart

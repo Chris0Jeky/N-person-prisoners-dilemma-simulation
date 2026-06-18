@@ -115,6 +115,7 @@ class ActionStrategy(ABC):
     
     @abstractmethod
     def reset(self):
+        """Reset any per-run strategy state."""
         pass
 
 

@@ -126,6 +126,7 @@ class EpsilonGreedyStrategy(ActionStrategy):
         self.epsilon = epsilon
     
     def choose_action(self, q_values, **kwargs):
+        """Explore with probability epsilon, otherwise exploit."""
         if random.random() < self.epsilon:
             return random.choice(['cooperate', 'defect'])
         else:

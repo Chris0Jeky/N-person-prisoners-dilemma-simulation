@@ -227,6 +227,7 @@ class HystereticQLearning(LearningStrategy):
         self.df = discount_factor
     
     def update_q_value(self, current_q, reward, next_max_q, **kwargs):
+        """Apply the hysteretic Q-learning update rule."""
         target_q = reward + self.df * next_max_q
         delta = target_q - current_q
         

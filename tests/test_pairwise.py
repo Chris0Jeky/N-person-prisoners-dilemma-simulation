@@ -711,3 +711,24 @@ class TestDailyT197TftPairFirstPayoff:
         assert set(moves.values()) == {"cooperate"}
         assert payoffs[12] == 3
         assert payoffs[13] == 3
+
+
+class TestDailyT207PavlovPairFirstPayoff:
+    """Daily check: a Pavlov pair opens sharing the reward payoff."""
+
+    def test_pavlov_pair_first_payoff(self):
+        agents = [
+            Agent(agent_id=14, strategy="pavlov"),
+            Agent(agent_id=15, strategy="pavlov"),
+        ]
+        env = Environment(
+            agents,
+            create_payoff_matrix(len(agents)),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+            R=3, S=0, T=5, P=1,
+        )
+        moves, payoffs = env.run_round()
+        assert set(moves.values()) == {"cooperate"}
+        assert payoffs[14] == 3
+        assert payoffs[15] == 3

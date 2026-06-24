@@ -81,6 +81,7 @@ class StaticAgent:
         return intended_move
 
     def reset(self):
+        """Forget tracked opponent moves for a new run."""
         self.opponent_last_moves = {}
 
 

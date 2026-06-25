@@ -7,6 +7,7 @@ NPERSON_DEFECT = 1
 NPERSON_R_REWARD, NPERSON_S_SUCKER, NPERSON_T_TEMPTATION, NPERSON_P_PUNISHMENT = 3, 0, 5, 1
 
 def nperson_move_to_str(move):
+    """Format an n-person move as a display string."""
     return "Cooperate" if move == NPERSON_COOPERATE else "Defect"
 
 def nperson_linear_payoff_cooperator(n_others_coop, total_agents, R=NPERSON_R_REWARD, S=NPERSON_S_SUCKER):

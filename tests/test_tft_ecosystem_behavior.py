@@ -484,3 +484,16 @@ class TestDailyT198PavlovPair:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
+
+
+class TestDailyT208MixedPairOpens:
+    """Daily check: a TFT/defector pair opens with one cooperator and one defector."""
+
+    def test_mixed_pair_opening_moves(self):
+        agents = [
+            Agent(agent_id=17, strategy="tit_for_tat"),
+            Agent(agent_id=18, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"cooperate", "defect"}

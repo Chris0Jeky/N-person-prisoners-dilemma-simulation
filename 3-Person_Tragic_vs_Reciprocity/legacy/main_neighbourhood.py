@@ -11,6 +11,7 @@ def nperson_move_to_str(move):
     return "Cooperate" if move == NPERSON_COOPERATE else "Defect"
 
 def nperson_linear_payoff_cooperator(n_others_coop, total_agents, R=NPERSON_R_REWARD, S=NPERSON_S_SUCKER):
+    """Compute the linear cooperator payoff for the observed cooperation."""
     if total_agents <= 1: return R
     # total_agents-1 could be 0 if total_agents is 1. Handled by the line above.
     # For N > 1, N-1 is the correct divisor.

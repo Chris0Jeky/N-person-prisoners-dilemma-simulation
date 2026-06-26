@@ -18,6 +18,7 @@ def nperson_linear_payoff_cooperator(n_others_coop, total_agents, R=NPERSON_R_RE
     return S + (R - S) * (n_others_coop / (total_agents - 1))
 
 def nperson_linear_payoff_defector(n_others_coop, total_agents, T=NPERSON_T_TEMPTATION, P=NPERSON_P_PUNISHMENT):
+    """Compute the linear defector payoff for the observed cooperation."""
     if total_agents <= 1: return P
     return P + (T - P) * (n_others_coop / (total_agents - 1))
 

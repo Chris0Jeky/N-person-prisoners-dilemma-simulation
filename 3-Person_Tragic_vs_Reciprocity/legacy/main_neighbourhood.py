@@ -23,6 +23,7 @@ def nperson_linear_payoff_defector(n_others_coop, total_agents, T=NPERSON_T_TEMP
     return P + (T - P) * (n_others_coop / (total_agents - 1))
 
 class NPersonAgent:
+    """N-person agent playing pTFT, pTFT-Threshold, or AllD."""
     def __init__(self, agent_id, strategy_name, exploration_rate): # strategy_name can be pTFT, pTFT-Threshold, AllD
         self.agent_id = agent_id
         self.strategy_name = strategy_name 

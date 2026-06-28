@@ -33,6 +33,7 @@ class NPersonAgent:
         self.num_defections = 0
 
     def choose_action(self, prev_round_overall_coop_ratio, current_round_num):
+        """Choose the move for the current round."""
         intended_move = None
         if self.strategy_name == "pTFT":
             if current_round_num == 0 or prev_round_overall_coop_ratio is None:

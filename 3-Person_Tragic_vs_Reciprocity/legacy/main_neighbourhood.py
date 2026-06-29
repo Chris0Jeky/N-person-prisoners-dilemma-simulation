@@ -59,6 +59,7 @@ class NPersonAgent:
         return intended_move, actual_move
 
     def record_round_outcome(self, my_actual_move, payoff):
+        """Record the round outcome and bank the payoff."""
         self.total_score += payoff
         if my_actual_move == NPERSON_COOPERATE: self.num_cooperations += 1
         else: self.num_defections += 1

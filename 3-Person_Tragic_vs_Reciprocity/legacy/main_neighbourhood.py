@@ -70,6 +70,7 @@ class NPersonAgent:
         return self.num_cooperations / total_moves if total_moves > 0 else 0.0
 
     def reset(self): # Full reset for a new simulation run
+        """Reset the agent for a new simulation run."""
         self.total_score = 0
         self.num_cooperations = 0
         self.num_defections = 0

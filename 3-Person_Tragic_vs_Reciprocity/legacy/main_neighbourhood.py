@@ -65,6 +65,7 @@ class NPersonAgent:
         else: self.num_defections += 1
 
     def get_cooperation_rate(self):
+        """Compute the overall cooperation rate."""
         total_moves = self.num_cooperations + self.num_defections
         return self.num_cooperations / total_moves if total_moves > 0 else 0.0
 

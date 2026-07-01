@@ -76,6 +76,7 @@ class NPersonAgent:
         self.num_defections = 0
 
 class NPersonPrisonersDilemma:
+    """N-person tournament over a fixed number of rounds."""
     def __init__(self, agents, num_rounds, R=NPERSON_R_REWARD, S=NPERSON_S_SUCKER, T=NPERSON_T_TEMPTATION, P=NPERSON_P_PUNISHMENT):
         self.agents = agents
         self.num_rounds = num_rounds

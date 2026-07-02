@@ -83,6 +83,7 @@ class NPersonPrisonersDilemma:
         self.R, self.S, self.T, self.P = R, S, T, P
 
     def run_simulation(self):
+        """Reset the agents and run the full simulation."""
         for agent in self.agents: agent.reset()
         prev_overall_coop_ratio = None
         N_total_agents = len(self.agents)

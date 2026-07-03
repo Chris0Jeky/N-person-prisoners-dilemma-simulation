@@ -537,3 +537,15 @@ class TestDailyT199DefectMemory:
         assert memory.total_interactions == 1
         assert memory.cooperation_count == 0
         assert memory.defection_count == 1
+
+
+class TestDailyT209MixedMemoryCounts:
+    """Daily check: one cooperation and one defection count once each."""
+
+    def test_mixed_memory_counts(self):
+        memory = OpponentSpecificMemory("trio", memory_length=5)
+        memory.add_interaction("cooperate", "cooperate", 3)
+        memory.add_interaction("defect", "defect", 1)
+        assert memory.total_interactions == 2
+        assert memory.cooperation_count == 1
+        assert memory.defection_count == 1

@@ -115,6 +115,7 @@ class NPersonPrisonersDilemma:
         self.print_simulation_results()
 
     def print_simulation_results(self):
+        """Print the N-person simulation results."""
         # Determine the pTFT variant if applicable for display
         tft_variant_in_use = "N/A"
         for ag in self.agents:

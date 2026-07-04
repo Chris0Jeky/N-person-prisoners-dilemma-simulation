@@ -10,6 +10,7 @@ PAIRWISE_PAYOFFS = {
 }
 
 def pairwise_move_to_str(move):
+    """Format a pairwise move as a display string."""
     return "Cooperate" if move == PAIRWISE_COOPERATE else "Defect"
 
 class PairwiseAgent:

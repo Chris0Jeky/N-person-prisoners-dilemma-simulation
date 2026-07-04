@@ -140,6 +140,7 @@ class NPersonPrisonersDilemma:
             print(f"Overall N-Person Cooperation Rate: {total_coops_all/total_moves_all:.2f}")
 
 def run_n_person_experiment(agent_configurations, num_rounds_total, tft_variant_for_tft_agents="pTFT"):
+    """Build agents and run the N-person experiment."""
     agents_for_experiment = []
     for config in agent_configurations:
         strategy_to_use = config['strategy']

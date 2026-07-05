@@ -13,6 +13,8 @@ This directory contains documentation for the N-Person Prisoner's Dilemma Learni
   - Test suite overview and coverage reports
   
 - **[SCENARIO_GENERATION.md](SCENARIO_GENERATION.md)** - Guide to scenario generation and analysis tools
+- **[WEB_DASHBOARD_PLAN.md](WEB_DASHBOARD_PLAN.md)** - Web dashboard design and visualization plan
+- **[N_PERSON_RL_ANALYSIS.md](N_PERSON_RL_ANALYSIS.md)** - Analysis of N-person RL experiments
 
 ## Key Concepts
 

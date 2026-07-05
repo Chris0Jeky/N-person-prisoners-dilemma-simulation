@@ -14,6 +14,7 @@ def pairwise_move_to_str(move):
     return "Cooperate" if move == PAIRWISE_COOPERATE else "Defect"
 
 class PairwiseAgent:
+    """Pairwise agent with a configurable strategy and exploration rate."""
     def __init__(self, agent_id, strategy_name, exploration_rate):
         self.agent_id = agent_id
         self.strategy_name = strategy_name

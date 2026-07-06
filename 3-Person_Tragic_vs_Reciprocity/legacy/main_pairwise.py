@@ -25,6 +25,7 @@ class PairwiseAgent:
         self.num_defections = 0
 
     def choose_action(self, opponent_id, current_round_in_episode): # Changed param name
+        """Choose the pairwise move for the current round."""
         intended_move = None
         if self.strategy_name == "TFT":
             # Cooperate on the first move of an episode or if no history with this opponent for current episode context

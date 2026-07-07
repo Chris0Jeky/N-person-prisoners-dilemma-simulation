@@ -45,6 +45,7 @@ class PairwiseAgent:
 
     def record_interaction(self, opponent_id, opponent_actual_move, my_payoff,
                            my_intended_move, my_actual_move, round_num_in_episode):
+        """Record the outcome of a pairwise interaction."""
         self.total_score += my_payoff
         self.opponent_last_moves[opponent_id] = opponent_actual_move # Store for next round in *this* episode
         if my_actual_move == PAIRWISE_COOPERATE:

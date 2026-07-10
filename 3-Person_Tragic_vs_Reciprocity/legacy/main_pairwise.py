@@ -64,6 +64,7 @@ class PairwiseAgent:
         return self.num_cooperations / total_moves if total_moves > 0 else 0.0
 
     def reset_for_new_tournament(self): # Full reset for a new tournament run by the runner
+        """Reset all tracked state for a new tournament."""
         self.total_score = 0
         self.opponent_last_moves = {}
         self.num_cooperations = 0

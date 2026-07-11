@@ -71,6 +71,7 @@ class PairwiseAgent:
         self.num_defections = 0
 
 class PairwiseIteratedPrisonersDilemma:
+    """Iterated pairwise tournament over multiple episodes."""
     def __init__(self, agents, num_episodes, rounds_per_episode):
         self.agents = agents
         self.num_episodes = num_episodes

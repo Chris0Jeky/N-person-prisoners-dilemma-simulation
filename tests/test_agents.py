@@ -409,3 +409,13 @@ class TestDailyT202PavlovFactory:
 
     def test_pavlov_factory(self):
         assert isinstance(create_strategy("pavlov"), PavlovStrategy)
+
+
+class TestDailyT212TftRetaliates:
+    """Daily check: TFT defects after observing a defection."""
+
+    def test_tft_retaliation(self):
+        strategy = TitForTatStrategy()
+        agent = Agent(agent_id=30, strategy="tit_for_tat")
+        agent.update_memory("cooperate", {31: "defect"}, 0)
+        assert strategy.choose_move(agent, [31]) == "defect"

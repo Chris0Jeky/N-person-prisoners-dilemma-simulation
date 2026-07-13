@@ -86,6 +86,7 @@ class PairwiseIteratedPrisonersDilemma:
         agent2.record_interaction(agent1.agent_id, actual_move1, payoff2, intended_move2, actual_move2, current_round_in_episode)
 
     def run_pairwise_interaction(self, agent1, agent2):
+        """Run all episodes of one pairwise interaction."""
         for episode_num in range(self.num_episodes):
             for round_num_in_episode in range(self.rounds_per_episode):
                 self._play_single_round(agent1, agent2, round_num_in_episode)

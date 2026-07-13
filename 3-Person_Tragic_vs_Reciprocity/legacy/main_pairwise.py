@@ -97,6 +97,7 @@ class PairwiseIteratedPrisonersDilemma:
 
 
     def run_tournament(self):
+        """Reset the agents and run the full tournament."""
         for agent in self.agents: # Full reset before tournament starts
             agent.reset_for_new_tournament()
         for i in range(len(self.agents)):

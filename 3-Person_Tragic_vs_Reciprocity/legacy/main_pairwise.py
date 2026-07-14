@@ -107,6 +107,7 @@ class PairwiseIteratedPrisonersDilemma:
         self.print_tournament_results()
 
     def print_tournament_results(self):
+        """Print the pairwise tournament results."""
         print("\n--- Pairwise Tournament Results ---")
         print(f"(Episodes: {self.num_episodes}, Rounds/Episode: {self.rounds_per_episode})")
         total_coops_all, total_moves_all = 0, 0

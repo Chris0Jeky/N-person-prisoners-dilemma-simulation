@@ -485,6 +485,14 @@ Planned enhancements include:
 - Reinforcement learning for automatic scenario optimization
 - Integration with external machine learning frameworks
 
+## Documentation
+
+Detailed guides live in [docs/](docs/):
+
+- [docs/README.md](docs/README.md) - Documentation index and key concepts
+- [docs/SCENARIO_GENERATION.md](docs/SCENARIO_GENERATION.md) - Scenario generation and analysis
+- [docs/WEB_DASHBOARD_PLAN.md](docs/WEB_DASHBOARD_PLAN.md) - Web dashboard plan
+
 ## License
 
 This project is available under the MIT License.

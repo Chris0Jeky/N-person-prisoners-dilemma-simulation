@@ -125,6 +125,7 @@ class PairwiseIteratedPrisonersDilemma:
 
 def run_pairwise_experiment(agent_configurations, total_rounds_per_pair, 
                             episodic_mode, num_episodes_if_episodic):
+    """Build the agents and run one pairwise experiment."""
     agents_for_experiment = []
     for config in agent_configurations:
         agents_for_experiment.append(

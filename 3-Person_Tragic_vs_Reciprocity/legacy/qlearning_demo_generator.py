@@ -49,6 +49,7 @@ except ImportError:
 # Helper functions for when numpy is not available
 if not HAS_NUMPY:
     def np_mean(data, axis=None):
+        """Compute the arithmetic mean without requiring numpy."""
         if axis is None:
             return sum(data) / len(data)
         elif axis == 0:

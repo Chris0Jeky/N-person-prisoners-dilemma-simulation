@@ -39,6 +39,8 @@ For more control over the process:
 python scripts/runners/run_sweep_analysis.py --num_generate 50 --eval_runs 3 --save_runs 15 --top_n 8 --results_dir "results/my_scenario_sweep" --analysis_dir "my_analysis_results"
 ```
 
+Ready-made examples live in [scenarios/](../scenarios/) (e.g. `scenarios.json`, `enhanced_scenarios.json`, `pairwise_scenarios.json`). For the generated-results workflow, see the main [README](../README.md).
+
 ## Components
 
 ### 1. Scenario Generator (`scripts/runners/run_scenario_generator.py`)

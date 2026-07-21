@@ -3,6 +3,11 @@
 Runner script for N-Person Prisoner's Dilemma simulation.
 
 This script provides a simple entry point to the CLI interface.
+
+Examples:
+    python run.py simulate --help      # simulation options
+    python run.py visualize             # launch results dashboard
+    python run.py interactive           # play against AI agents
 """
 
 import sys

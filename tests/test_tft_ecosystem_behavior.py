@@ -497,3 +497,16 @@ class TestDailyT208MixedPairOpens:
         env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate", "defect"}
+
+
+class TestDailyT218DefectorPairOpens:
+    """Daily check: a defector pair opens with mutual defection."""
+
+    def test_defector_pair_opening_moves(self):
+        agents = [
+            Agent(agent_id=19, strategy="always_defect"),
+            Agent(agent_id=20, strategy="always_defect"),
+        ]
+        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        moves, _ = env.run_round()
+        assert set(moves.values()) == {"defect"}

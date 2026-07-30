@@ -549,3 +549,15 @@ class TestDailyT209MixedMemoryCounts:
         assert memory.total_interactions == 2
         assert memory.cooperation_count == 1
         assert memory.defection_count == 1
+
+
+class TestDailyT219CoopMemory:
+    """Daily check: two cooperations count twice in memory."""
+
+    def test_coop_memory_counts(self):
+        memory = OpponentSpecificMemory("trio", memory_length=5)
+        memory.add_interaction("cooperate", "cooperate", 3)
+        memory.add_interaction("cooperate", "cooperate", 3)
+        assert memory.total_interactions == 2
+        assert memory.cooperation_count == 2
+        assert memory.defection_count == 0

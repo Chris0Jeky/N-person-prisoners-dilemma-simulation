@@ -655,3 +655,12 @@ class TestDailyT211DefectorAgent:
         agent = Agent(agent_id=26, strategy="always_defect")
         assert agent.agent_id == 26
         assert agent.strategy_type == "always_defect"
+
+
+class TestDailyT221PavlovAgent:
+    """Daily check: a fresh pavlov agent keeps its id and type."""
+
+    def test_pavlov_agent_construction(self):
+        agent = Agent(agent_id=27, strategy="pavlov")
+        assert agent.agent_id == 27
+        assert agent.strategy_type == "pavlov"

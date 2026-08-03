@@ -86,6 +86,7 @@ if not HAS_NUMPY:
         
         @staticmethod
         def array(data):
+            """Return the data unchanged as a mock array."""
             return data
     
     np = MockNumpy()

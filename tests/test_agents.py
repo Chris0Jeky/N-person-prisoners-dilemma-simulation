@@ -419,3 +419,11 @@ class TestDailyT212TftRetaliates:
         agent = Agent(agent_id=30, strategy="tit_for_tat")
         agent.update_memory("cooperate", {31: "defect"}, 0)
         assert strategy.choose_move(agent, [31]) == "defect"
+
+
+class TestDailyT222PavlovDirect:
+    """Daily check: Pavlov can be built directly with a defecting start."""
+
+    def test_pavlov_direct_initial_move(self):
+        assert PavlovStrategy().initial_move == "cooperate"
+        assert PavlovStrategy(initial_move="defect").initial_move == "defect"

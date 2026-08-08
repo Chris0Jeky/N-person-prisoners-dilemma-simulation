@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src import run_pairwise_experiment, run_nperson_experiment
 
 def main():
+    """Run the basic prisoner's dilemma experiment."""
     print("=== Basic Prisoner's Dilemma Experiment ===\n")
     
     # Define agent configurations

@@ -68,6 +68,7 @@ def run_qlearning_comparison():
     print(f"  Cooperation: {((avg_npdl_coop - avg_simple_coop) / avg_simple_coop * 100):.1f}%")
 
 def test_different_environments():
+    """Test the learners across different environments."""
     print("\n\n=== Testing in Different Environments ===\n")
     
     # Test against different opponent compositions

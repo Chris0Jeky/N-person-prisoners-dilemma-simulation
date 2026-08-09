@@ -10,6 +10,7 @@ sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from src import create_agent, NPersonGame, PairwiseGame
 
 def run_qlearning_comparison():
+    """Run the Q-learning algorithm comparison."""
     print("=== Q-Learning Algorithm Comparison ===\n")
     
     # Test parameters

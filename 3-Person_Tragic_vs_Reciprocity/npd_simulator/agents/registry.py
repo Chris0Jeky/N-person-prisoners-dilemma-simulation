@@ -53,6 +53,7 @@ class AgentRegistry:
                 pass
         """
         def decorator(agent_class: Type[Agent]) -> Type[Agent]:
+            """Register the decorated agent class in the registry."""
             # Determine registration name
             reg_name = name
             if reg_name is None:

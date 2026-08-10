@@ -8,6 +8,7 @@ import sys
 from src import ExperimentRunner, run_qlearning_experiments
 
 def main():
+    """Parse arguments and run the selected experiment."""
     parser = argparse.ArgumentParser(
         description="N-Person Prisoner's Dilemma Simulation Framework"
     )

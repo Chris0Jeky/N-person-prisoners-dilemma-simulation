@@ -150,4 +150,6 @@ All dependencies are loaded from CDN for easy deployment:
 
 ## License
 
-Part of the N-Person Prisoner's Dilemma Learning (NPDL) project.
+Owner-authored dashboard code is licensed under GNU GPL version 3 only
+(`GPL-3.0-only`), subject to the repository-root exclusions and third-party
+notices. See the root `LICENSE`, `RELICENSING.md`, and `THIRD_PARTY_NOTICES.md`.

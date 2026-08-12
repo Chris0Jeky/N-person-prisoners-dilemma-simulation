@@ -264,4 +264,6 @@ If you use this simulator in your research, please cite:
 
 ## License
 
-[License information]
+Owner-authored software in this repository is licensed under GNU GPL version 3
+only (`GPL-3.0-only`), subject to the exclusions recorded in the repository-root
+`THIRD_PARTY_NOTICES.md`. See the root `LICENSE` and `RELICENSING.md`.

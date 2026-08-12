@@ -447,7 +447,9 @@ npm run benchmark
 
 ## License
 
-This project is part of the N-Person Prisoner's Dilemma research framework.
+Owner-authored framework software is licensed under GNU GPL version 3 only
+(`GPL-3.0-only`), subject to the repository-root exclusions and third-party
+notices. See the root `LICENSE`, `RELICENSING.md`, and `THIRD_PARTY_NOTICES.md`.
 
 ---
 

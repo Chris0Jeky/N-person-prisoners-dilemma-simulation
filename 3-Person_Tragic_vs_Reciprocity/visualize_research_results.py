@@ -12,6 +12,7 @@ from pathlib import Path
 import json
 
 class ResearchResultsVisualizer:
+    """Visualize research results from the results directory."""
     def __init__(self, results_dir="results"):
         self.results_dir = Path(results_dir)
         self.figures_dir = self.results_dir / "figures"

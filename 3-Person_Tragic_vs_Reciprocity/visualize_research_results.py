@@ -335,6 +335,7 @@ class ResearchResultsVisualizer:
 
 
 def main():
+    """Entry point for visualizing research results."""
     # Check if matplotlib is available
     try:
         import matplotlib

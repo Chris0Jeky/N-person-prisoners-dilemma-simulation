@@ -250,6 +250,7 @@ The figures now correctly show:
 
 
 def main():
+    """Entry point for visualizing corrected results."""
     # Check dependencies
     try:
         import pandas

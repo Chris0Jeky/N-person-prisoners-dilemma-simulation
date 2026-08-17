@@ -22,6 +22,7 @@ class BaseAgent:
         self.total_score = 0
 
     def reset(self): 
+        """Reset the cumulative score for a new run."""
         self.total_score = 0
 
 

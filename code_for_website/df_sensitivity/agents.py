@@ -77,6 +77,7 @@ class StaticAgent(BaseAgent):
         return self._apply_error(intended)
 
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
+        """Bank the pairwise reward for a new run."""
         self.total_score += reward
         self.opponent_last_moves[opponent_id] = opponent_move
 

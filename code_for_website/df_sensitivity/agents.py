@@ -83,6 +83,7 @@ class StaticAgent(BaseAgent):
         self.opponent_last_moves[opponent_id] = opponent_move
 
     def record_neighborhood_outcome(self, coop_ratio, reward):
+        """Bank the reward and note the neighborhood move for a new run."""
         self.total_score += reward
         self.last_neighborhood_move = COOPERATE if coop_ratio and coop_ratio >= 0.5 else DEFECT
 

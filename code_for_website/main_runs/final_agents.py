@@ -260,6 +260,7 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         return self.params.get('initial_eps', self.params.get('eps', 0.1))
 
     def reset(self):
+        """Reset learning tables with picklable dicts."""
         super().reset()
         # Use regular dicts instead of defaultdicts with lambdas
         self.q_tables = {}

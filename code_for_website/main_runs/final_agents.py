@@ -419,6 +419,7 @@ class HystereticQLearner(BaseAgent):
         # Use regular dicts instead of defaultdicts for picklability
         self.q_tables = {}
         self.histories = {}
+        """Reset hysteretic Q-tables for a new run."""
         self.last_contexts = {}
         # Initialize neighborhood attributes
         self.neighborhood_q_table = {}

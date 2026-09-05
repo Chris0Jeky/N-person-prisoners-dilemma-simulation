@@ -306,6 +306,7 @@ class HystereticQLearner(BaseAgent):
     def choose_pairwise_action(self, opponent_id):
         state = self._get_state(opponent_id)
         # Initialize if needed
+        """Select the pairwise move from the opponent state."""
         if opponent_id not in self.q_tables:
             self.q_tables[opponent_id] = {}
         

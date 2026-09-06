@@ -327,6 +327,7 @@ class HystereticQLearner(BaseAgent):
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
         self.total_score += reward
         context = self.last_contexts.get(opponent_id)
+        """Bank the pairwise reward and update opponent tracking."""
         if not context: return
         
         # Initialize if needed

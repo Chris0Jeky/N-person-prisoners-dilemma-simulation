@@ -500,6 +500,7 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
         self.lr = self.params.get('initial_lr', self.params.get('lr', 0.1))
         self.epsilon = self.params.get('initial_eps', self.params.get('eps', 0.1))
         self.reward_window = deque(maxlen=self.params.get('reward_window_size', 20))
+        """Clear the neighborhood Q-table for a new run."""
         self.last_context = None
 
 

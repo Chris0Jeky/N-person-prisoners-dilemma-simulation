@@ -431,6 +431,7 @@ class HystereticQLearner(BaseAgent):
 class NeighborhoodAdaptiveQLearner(BaseAgent):
     def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "NeighborhoodAdaptive")
+    """Q-learning agent that adapts to the neighborhood cooperation ratio."""
         self.params = params
         self.reset()
 

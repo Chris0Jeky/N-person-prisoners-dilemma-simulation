@@ -144,3 +144,46 @@ def test_static_tfte_decay_matches_v2():
 
 def test_static_constants():
     assert (ported.COOPERATE, ported.DEFECT) == (legacy_v9.COOPERATE, legacy_v9.DEFECT) == (0, 1)
+
+
+# --- PairwiseAdaptiveQLearner ---
+
+ADAPTIVE_PARAMS = {
+    "initial_lr": 0.1,
+    "initial_eps": 0.15,
+    "min_lr": 0.03,
+    "max_lr": 0.15,
+    "min_eps": 0.02,
+    "max_eps": 0.15,
+    "adaptation_factor": 1.08,
+    "reward_window_size": 10,  # small so adaptation triggers in the script
+    "df": 0.95,
+}
+
+ADAPTIVE_PARAMS_NO_WINDOW = {"lr": 0.1, "eps": 0.1, "df": 0.9}
+
+
+@pytest.mark.parametrize("params", [ADAPTIVE_PARAMS, ADAPTIVE_PARAMS_NO_WINDOW, {}])
+def test_pairwise_adaptive_pairwise_equivalence(params):
+    old = legacy_v9.PairwiseAdaptiveQLearner(1, dict(params))
+    new = ported.PairwiseAdaptiveQLearner(1, dict(params))
+    assert run_pairwise_script(old) == run_pairwise_script(new)
+    assert snapshot(old) == snapshot(new)
+
+
+@pytest.mark.parametrize("params", [ADAPTIVE_PARAMS, ADAPTIVE_PARAMS_NO_WINDOW, {}])
+def test_pairwise_adaptive_neighborhood_equivalence(params):
+    old = legacy_v9.PairwiseAdaptiveQLearner(1, dict(params))
+    new = ported.PairwiseAdaptiveQLearner(1, dict(params))
+    assert run_neighborhood_script(old) == run_neighborhood_script(new)
+    assert snapshot(old) == snapshot(new)
+
+
+def test_pairwise_adaptive_adaptation_triggers():
+    """Sanity: the scripted run actually exercises parameter adaptation."""
+    agent = ported.PairwiseAdaptiveQLearner(1, dict(ADAPTIVE_PARAMS))
+    run_pairwise_script(agent)
+    assert agent.learning_rates[7] != 0.1 or agent.epsilons[7] != 0.15
+    agent2 = ported.PairwiseAdaptiveQLearner(1, dict(ADAPTIVE_PARAMS))
+    run_neighborhood_script(agent2)
+    assert agent2.neighborhood_lr != 0.1 or agent2.neighborhood_epsilon != 0.15

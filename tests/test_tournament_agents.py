@@ -187,3 +187,24 @@ def test_pairwise_adaptive_adaptation_triggers():
     agent2 = ported.PairwiseAdaptiveQLearner(1, dict(ADAPTIVE_PARAMS))
     run_neighborhood_script(agent2)
     assert agent2.neighborhood_lr != 0.1 or agent2.neighborhood_epsilon != 0.15
+
+
+# --- HystereticQLearner ---
+
+HYSTERETIC_PARAMS = {"lr": 0.12, "beta": 0.002, "df": 0.95, "eps": 0.05}
+
+
+@pytest.mark.parametrize("params", [HYSTERETIC_PARAMS, {"lr": 0.1}, {}])
+def test_hysteretic_pairwise_equivalence(params):
+    old = legacy_v9.HystereticQLearner(1, dict(params))
+    new = ported.HystereticQLearner(1, dict(params))
+    assert run_pairwise_script(old) == run_pairwise_script(new)
+    assert snapshot(old) == snapshot(new)
+
+
+@pytest.mark.parametrize("params", [HYSTERETIC_PARAMS, {"lr": 0.1}, {}])
+def test_hysteretic_neighborhood_equivalence(params):
+    old = legacy_v9.HystereticQLearner(1, dict(params))
+    new = ported.HystereticQLearner(1, dict(params))
+    assert run_neighborhood_script(old) == run_neighborhood_script(new)
+    assert snapshot(old) == snapshot(new)

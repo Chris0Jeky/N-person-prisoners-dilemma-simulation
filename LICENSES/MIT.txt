@@ -1,3 +1,9 @@
+Historical MIT grant
+
+The MIT terms below apply only to repository revisions through commit
+f7f1ccebf3a051878240fed60efbdd1fcea21121. They do not license the current
+checkout, whose owner-authored software is offered under GPL-3.0-only.
+
 MIT License
 
 Copyright (c) 2026 Cristian Tcaci

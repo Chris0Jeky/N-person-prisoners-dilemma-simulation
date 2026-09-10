@@ -17,3 +17,11 @@ in `Paper Resources/**`. Preserve every embedded notice.
 Python and JavaScript dependencies, and libraries loaded by the web dashboard
 from third-party CDNs, retain their own licences. They are not relicensed under
 GPL merely by use with this project.
+
+## Qodana configuration
+
+The files `.github/workflows/qodana_code_quality.yml` and `qodana.yaml`
+originated in commits authored by the Qodana Application and were later edited
+by the repository owner. To the extent that they retain Qodana-generated
+material, that material keeps its original rights; only the owner's
+copyrightable modifications are offered under `GPL-3.0-only` by this repository.

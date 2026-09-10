@@ -1,6 +1,6 @@
 # Relicensing record
 
-On 12 August 2026, Cristian Tcaci, the repository owner and sole contributor to
+On 12 August 2026, Cristian Tcaci, the repository owner and copyright holder for
 the owner-authored software, changed the licence for current and future versions
 of that software from MIT to GNU GPL version 3 only (`GPL-3.0-only`).
 

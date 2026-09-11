@@ -76,6 +76,7 @@ if not HAS_NUMPY:
 
 
     def np_sqrt(x):
+        """Compute the square root of x."""
         return x ** 0.5
 
 

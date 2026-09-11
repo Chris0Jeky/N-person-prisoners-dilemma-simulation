@@ -61,6 +61,7 @@ if not HAS_NUMPY:
 
 
     def np_std(data, axis=None):
+        """Compute the standard deviation of the data."""
         if axis is None:
             mean = np_mean(data)
             flat_list = [item for sublist in data for item in sublist] if isinstance(data[0], list) else data

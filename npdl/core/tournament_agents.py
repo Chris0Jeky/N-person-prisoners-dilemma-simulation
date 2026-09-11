@@ -462,3 +462,82 @@ class HystereticQLearner(BaseAgent):
         # Initialize neighborhood attributes
         self.neighborhood_q_table = {}
         self.last_neighborhood_context = None
+
+
+class NeighborhoodAdaptiveQLearner(BaseAgent):
+    """Adaptive Q-learning agent for the 3-person neighborhood game."""
+    def __init__(self, agent_id, params, **kwargs):
+        super().__init__(agent_id, "NeighborhoodAdaptive")
+        self.params = params
+        self.reset()
+
+    def _get_state(self, coop_ratio):
+        if coop_ratio is None: return 'start'
+        if coop_ratio <= 0.33: return 'low'
+        return 'medium' if coop_ratio <= 0.67 else 'high'
+
+    def choose_neighborhood_action(self, coop_ratio):
+        """Choose the neighborhood move for the observed cooperation ratio."""
+        state = self._get_state(coop_ratio)
+
+        # Initialize state if needed
+        if state not in self.q_table:
+            self.q_table[state] = self._make_q_dict()
+
+        if random.random() < self.epsilon:
+            action = random.choice([COOPERATE, DEFECT])
+        else:
+            action = COOPERATE if self.q_table[state][COOPERATE] >= self.q_table[state][DEFECT] else DEFECT
+        self.last_context = {'state': state, 'action': action}
+        return action
+
+    def record_neighborhood_outcome(self, coop_ratio, reward):
+        """Record the neighborhood reward and update the Q-table."""
+        self.total_score += reward
+        if not self.last_context: return
+        next_state = self._get_state(coop_ratio)
+
+        # Initialize next state if needed
+        if next_state not in self.q_table:
+            self.q_table[next_state] = self._make_q_dict()
+
+        old_q = self.q_table[self.last_context['state']][self.last_context['action']]
+        next_max_q = max(self.q_table[next_state].values())
+        df = self.params.get('df', 0.9)
+        self.q_table[self.last_context['state']][self.last_context['action']] = old_q + self.lr * (
+                    reward + df * next_max_q - old_q)
+        self.reward_window.append(reward)
+        self._adapt_parameters()
+
+    def _adapt_parameters(self):
+        win_size = self.params.get('reward_window_size')
+        if not win_size: return
+
+        window = self.reward_window
+        if len(window) < win_size: return
+
+        half = win_size // 2
+        adapt_factor = self.params.get('adaptation_factor', 1.05)
+        min_lr = self.params.get('min_lr', 0.05)
+        max_lr = self.params.get('max_lr', 0.5)
+        min_eps = self.params.get('min_eps', 0.01)
+        max_eps = self.params.get('max_eps', 0.5)
+
+        if np.mean(list(window)[half:]) > np.mean(list(window)[:half]):
+            self.lr = max(min_lr, self.lr / adapt_factor)
+            self.epsilon = max(min_eps, self.epsilon / adapt_factor)
+        else:
+            self.lr = min(max_lr, self.lr * adapt_factor)
+            self.epsilon = min(max_eps, self.epsilon * adapt_factor)
+
+    def _make_q_dict(self):
+        return {COOPERATE: 0.0, DEFECT: 0.0}
+
+    def reset(self):
+        """Clear the Q-table and restore the initial learning settings."""
+        super().reset()
+        self.q_table = {}
+        self.lr = self.params.get('initial_lr', self.params.get('lr', 0.1))
+        self.epsilon = self.params.get('initial_eps', self.params.get('eps', 0.1))
+        self.reward_window = deque(maxlen=self.params.get('reward_window_size', 20))
+        self.last_context = None

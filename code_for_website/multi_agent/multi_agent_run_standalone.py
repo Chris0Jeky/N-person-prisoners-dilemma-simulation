@@ -51,6 +51,7 @@ except ImportError:
 # --- Fallback Math Functions (if numpy is unavailable) ---
 if not HAS_NUMPY:
     def np_mean(data, axis=None):
+        """Compute the arithmetic mean of the data."""
         if axis is None:
             flat_list = [item for sublist in data for item in sublist] if isinstance(data[0], list) else data
             return sum(flat_list) / len(flat_list) if flat_list else 0

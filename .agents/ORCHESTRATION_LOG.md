@@ -17,8 +17,8 @@ Conventions:
 | Wave | Units | Status |
 |------|-------|--------|
 | A (baseline) | T1, T2, W0 | DONE (PR #43 merged as da30f844) |
-| B (core) | W1, then W2 + W3 parallel | W1 DONE (#44); W2 DONE (PR #45 merged as 52c7503d); W3 DISPATCHED |
-| C (breadth) | W4 + W5 + W6 parallel, then W7 + W8 parallel | PENDING |
+| B (core) | W1, then W2 + W3 parallel | DONE (W3 PR #46 merged as b73f10f3; lanes ran serialized — no isolation) |
+| C (breadth) | W4 + W5 + W6 serialized, then W7 + W8 | W4 DISPATCHED |
 | D (ship) | W9, W10, W11, then W12 (optional, needs reconfirmation) | PENDING |
 
 ## Ledger
@@ -30,7 +30,8 @@ Conventions:
 | W0 | parent | w0-baseline | parent | #43 | qa-reviewer subagent | PASS | da30f844 | Tag pushed; claude-review red = bot credit balance (infra); Codex clean; Qodana clean; self-approval impossible (same-user auth), QA recorded as comment review |
 | W1 | swarm | w1-skeleton | implementer subagent | #44 | qa-reviewer subagent | PASS | 694fd46e | Caches were never tracked (no-op untrack); lock pins installed, floors missing; claude-review red = bot credit again |
 | W2 | swarm | w2-entrypoints | implementer subagent | #45 | qa-reviewer subagent | PASS | 52c7503d | main.py logic moved verbatim to npdl/simulation/experiments.py; shim warns+delegates; run_npd_simulator.py removed (only served archived code); smoke tests pass; no new failures |
-| W3 | swarm | w3-consolidation | implementer subagent | — | PENDING | PENDING | — | Highest-risk unit; golden-fixture gated |
+| W3 | swarm | w3-consolidation | implementer subagent | #46 | qa-reviewer subagent | PASS | b73f10f3 | 3 modules + additive export, 98 equivalence tests green, fixtures identical, no new failures; adversarial audit of 2 classes clean; lane went quiet after pushing — parent verified + cancelled, report arrived on cancel |
+| W4 | swarm | w4-archive | implementer subagent | — | PENDING | PENDING | — | Dispatched after W3 merge |
 
 ## Baseline record (W0)
 

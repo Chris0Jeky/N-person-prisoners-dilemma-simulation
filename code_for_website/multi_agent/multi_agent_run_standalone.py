@@ -81,6 +81,7 @@ if not HAS_NUMPY:
 
 
     class MockNumpy:
+        """Tiny numpy substitute exposing mean, std, sqrt, and array."""
         mean = staticmethod(np_mean)
         std = staticmethod(np_std)
         sqrt = staticmethod(np_sqrt)

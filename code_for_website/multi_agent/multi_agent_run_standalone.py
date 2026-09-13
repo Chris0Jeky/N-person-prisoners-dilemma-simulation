@@ -86,7 +86,9 @@ if not HAS_NUMPY:
         std = staticmethod(np_std)
         sqrt = staticmethod(np_sqrt)
 
-        def array(self, data): return list(data)
+        def array(self, data):
+            """Return the data as a plain list."""
+            return list(data)
 
 
     np = MockNumpy()

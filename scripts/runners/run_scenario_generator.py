@@ -13,6 +13,7 @@ from typing import Dict, List, Any, Tuple
 
 from main import setup_experiment, save_results  # Re-use setup and saving
 from npdl.core.logging_utils import setup_logging
+from npdl.experiments import create_run
 
 # --- Configuration for Scenario Generation ---
 
@@ -175,15 +176,21 @@ def generate_random_scenario(scenario_id: int) -> Dict[str, Any]:
     return scenario
 
 
-def save_scenario_metadata(scenario_list, file_path="generated_scenarios_metadata.json"):
-    """Save metadata about the generated scenarios for later analysis."""
+def save_scenario_metadata(scenario_list, file_path="generated_scenarios_metadata.json", timestamp=None):
+    """Save metadata about the generated scenarios for later analysis.
+
+    ``timestamp`` defaults to the wall clock; registered runs pass a
+    deterministic seed-derived label so re-runs reproduce artifact hashes.
+    """
+    if timestamp is None:
+        timestamp = time.strftime("%Y-%m-%d %H:%M:%S")
     meta_data = {
-        "generation_timestamp": time.strftime("%Y-%m-%d %H:%M:%S"),
+        "generation_timestamp": timestamp,
         "total_scenarios": len(scenario_list),
         "parameters": {
-            "agent_strategies": list(set(strat for s in scenario_list for strat in s["config"]["agent_strategies"].keys())),
-            "network_types": list(set(s["config"]["network_type"] for s in scenario_list)),
-            "interaction_modes": list(set(s["config"]["interaction_mode"] for s in scenario_list))
+            "agent_strategies": sorted(set(strat for s in scenario_list for strat in s["config"]["agent_strategies"].keys())),
+            "network_types": sorted(set(s["config"]["network_type"] for s in scenario_list)),
+            "interaction_modes": sorted(set(s["config"]["interaction_mode"] for s in scenario_list))
         },
         "scenarios": [
             {
@@ -212,8 +219,15 @@ def run_scenario_generation(num_scenarios_to_generate: int,
                             num_save_runs: int,
                             top_n_to_save: int,
                             results_dir: str,
-                            log_level_str: str = 'INFO'):
-    """Generates, evaluates, and saves interesting scenarios."""
+                            log_level_str: str = 'INFO',
+                            seed: int = 0):
+    """Generates, evaluates, and saves interesting scenarios.
+
+    The run is registered: ``results_dir`` doubles as the run directory and
+    gains ``run_info.json`` (seed, config hash, command line),
+    ``resolved_config.json``, and ``manifest.json``. ``seed`` controls all
+    generation-time randomness so re-runs reproduce artifact hashes.
+    """
 
     log_level = getattr(logging, log_level_str.upper(), logging.INFO)
     gen_logger = setup_logging(level=log_level, console=True, log_file="scenario_generator.log")
@@ -222,10 +236,31 @@ def run_scenario_generation(num_scenarios_to_generate: int,
     gen_logger.info(f"Generating {num_scenarios_to_generate} scenarios...")
     gen_logger.info(f"Evaluating each with {num_eval_runs} runs...")
     gen_logger.info(f"Saving top {top_n_to_save} scenarios with {num_save_runs} runs each.")
+    gen_logger.info(f"Run seed: {seed}")
 
-    # Create results directory if it doesn't exist
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
+    random.seed(seed)
+    np.random.seed(seed)
+
+    resolved_config = {
+        "num_scenarios_to_generate": num_scenarios_to_generate,
+        "num_eval_runs": num_eval_runs,
+        "num_save_runs": num_save_runs,
+        "top_n_to_save": top_n_to_save,
+        "results_dir": results_dir,
+        "log_level": log_level_str,
+        "seed": seed,
+    }
+    # The results dir itself is the run dir; create_run normalizes and
+    # writes the provenance sidecars (seed, config hash, command line).
+    results_dir = os.path.abspath(results_dir)
+    run = create_run(
+        os.path.dirname(results_dir),
+        "scenario_generation",
+        resolved_config,
+        seed,
+        run_name=os.path.basename(results_dir),
+    )
+    results_dir = run.run_dir
 
     evaluated_scenarios = []
     start_gen_time = time.time()
@@ -275,6 +310,7 @@ def run_scenario_generation(num_scenarios_to_generate: int,
 
     if not evaluated_scenarios:
         gen_logger.error("No scenarios were successfully evaluated. Exiting.")
+        run.finalize()
         return
 
     # --- Selection Criteria ---
@@ -325,7 +361,11 @@ def run_scenario_generation(num_scenarios_to_generate: int,
     evaluated_scenarios.sort(key=lambda x: x["selection_score"], reverse=True)
 
     # Save metadata about all evaluated scenarios
-    save_scenario_metadata(evaluated_scenarios, file_path=os.path.join(results_dir, "generated_scenarios_metadata.json"))
+    save_scenario_metadata(
+        evaluated_scenarios,
+        file_path=os.path.join(results_dir, "generated_scenarios_metadata.json"),
+        timestamp=f"deterministic (seed={seed})",
+    )
 
     gen_logger.info(f"\n--- Top {top_n_to_save} Evaluated Scenarios ---")
     for k in range(min(top_n_to_save, len(evaluated_scenarios))):
@@ -383,7 +423,10 @@ def run_scenario_generation(num_scenarios_to_generate: int,
     gen_logger.info(f"Results saved in: {results_dir}")
     gen_logger.info(f"Metadata saved as: {os.path.join(results_dir, 'generated_scenarios_metadata.json')}")
     gen_logger.info(f"Selected configurations saved as: {os.path.join(results_dir, 'selected_scenarios.json')}")
-    
+
+    manifest = run.finalize()
+    gen_logger.info(f"Manifest written with {len(manifest['artifacts'])} artifacts.")
+
     return evaluated_scenarios
 
 
@@ -402,6 +445,8 @@ if __name__ == "__main__":
                         help='Base directory to save the final results of selected scenarios.')
     parser.add_argument('--log_level', type=str, default='INFO', choices=['DEBUG', 'INFO', 'WARNING', 'ERROR'],
                         help='Logging level for the generator script.')
+    parser.add_argument('--seed', type=int, default=0,
+                        help='Run seed: controls generation-time randomness and names the registry entry.')
     args = parser.parse_args()
 
     run_scenario_generation(
@@ -410,5 +455,6 @@ if __name__ == "__main__":
         num_save_runs=args.save_runs,
         top_n_to_save=args.top_n,
         results_dir=args.results_dir,
-        log_level_str=args.log_level
+        log_level_str=args.log_level,
+        seed=args.seed
     )

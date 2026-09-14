@@ -9,6 +9,7 @@ This script extends the basic scenario generator with more sophisticated
 approaches to discover and refine interesting scenarios.
 """
 import argparse
+import itertools
 import json
 import os
 import random
@@ -21,10 +22,15 @@ from functools import partial
 import multiprocessing
 from multiprocessing import Pool, cpu_count
 from collections import defaultdict
-from scipy import stats
+
+try:
+    from scipy import stats
+except ImportError:  # optional: not in requirements.txt; countering metric stays NaN
+    stats = None
 
 from main import setup_experiment, save_results
 from npdl.core.logging_utils import setup_logging
+from npdl.experiments import create_run
 from run_scenario_generator import (
     AGENT_STRATEGY_POOL, NETWORK_POOL, INTERACTION_MODE_POOL, 
     NUM_AGENTS_POOL, NUM_ROUNDS_POOL, STATE_TYPE_POOL, 
@@ -153,9 +159,9 @@ def calculate_enhanced_metrics(env, round_results) -> Dict[str, float]:
             strats = list(common_strategies)
             mid_values = [mid_scores[s] for s in strats]
             late_values = [late_scores[s] for s in strats]
-            
-            # Calculate rank correlation
-            if len(strats) > 1:
+
+            # Calculate rank correlation (needs scipy; else metric stays NaN)
+            if len(strats) > 1 and stats is not None:
                 try:
                     # Check if either array is constant before calculating correlation
                     if len(set(mid_values)) > 1 and len(set(late_values)) > 1:
@@ -291,7 +297,7 @@ def evaluate_scenario_parallel(scenario_config, num_runs, seed_offset=0):
     
     if valid_metrics:
         keys = set().union(*[set(m.keys()) for m in valid_metrics])
-        for key in keys:
+        for key in sorted(keys):
             values = [m[key] for m in valid_metrics if key in m and not np.isnan(m[key])]
             avg_eval_metrics[f'avg_{key}'] = np.mean(values) if values else np.nan
     
@@ -304,12 +310,21 @@ def evaluate_scenario_parallel(scenario_config, num_runs, seed_offset=0):
 
 # --- Evolutionary Algorithm Functions ---
 
+# Process-local counter for offspring names: deterministic across re-runs with
+# the same seed (unlike the previous wall-clock timestamp), unique within a run.
+_evo_name_counter = itertools.count(1)
+
+
+def _evo_offspring_name() -> str:
+    return f"Evo_{next(_evo_name_counter):06d}_{random.randint(1000, 9999)}"
+
+
 def crossover(parent1: Dict, parent2: Dict) -> Dict:
     """Create a new scenario by combining parameters from two parent scenarios."""
     child = {}
-    
+
     # Basic scenario info
-    child['scenario_name'] = f"Evo_{int(time.time())}_{random.randint(1000, 9999)}"
+    child['scenario_name'] = _evo_offspring_name()
     
     # Randomly select parameters from either parent
     # Core parameters
@@ -571,8 +586,8 @@ def mutate(scenario: Dict, mutation_rate: float = 0.2) -> Dict:
             mutated['rewiring_prob'] = round(random.uniform(0.05, 0.2), 2)
     
     # Regenerate name to indicate mutation
-    mutated['scenario_name'] = f"Evo_{int(time.time())}_{random.randint(1000, 9999)}"
-    
+    mutated['scenario_name'] = _evo_offspring_name()
+
     return mutated
 
 
@@ -587,21 +602,52 @@ def run_evolutionary_scenario_generation(
     save_runs: int = 10,
     top_n_to_save: int = 5,
     results_dir: str = "results/evolved_scenarios",
-    log_level_str: str = 'INFO'
+    log_level_str: str = 'INFO',
+    seed: int = 0
 ):
-    """Run evolutionary algorithm to discover interesting scenarios."""
-    
+    """Run evolutionary algorithm to discover interesting scenarios.
+
+    The run is registered: ``results_dir`` doubles as the run directory and
+    gains ``run_info.json`` (seed, config hash, command line),
+    ``resolved_config.json``, and ``manifest.json``. ``seed`` controls all
+    parent-process randomness; per-run evaluation seeds are fixed offsets, so
+    re-running with the same seed reproduces artifact hashes.
+    """
+
     log_level = getattr(logging, log_level_str.upper(), logging.INFO)
     gen_logger = setup_logging(level=log_level, console=True, log_file="evolutionary_generator.log")
-    
+
     gen_logger.info(f"Starting Evolutionary Scenario Generation")
     gen_logger.info(f"Population Size: {pop_size}, Generations: {num_generations}")
     gen_logger.info(f"Evaluation Runs per Scenario: {eval_runs}")
     gen_logger.info(f"Using {min(cpu_count(), pop_size)} worker processes for parallel evaluation")
-    
-    # Create results directory
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
+    gen_logger.info(f"Run seed: {seed}")
+
+    random.seed(seed)
+    np.random.seed(seed)
+
+    requested_results_dir = results_dir
+    results_dir = os.path.abspath(results_dir)
+    run = create_run(
+        os.path.dirname(results_dir),
+        "evolutionary_generation",
+        {
+            "pop_size": pop_size,
+            "num_generations": num_generations,
+            "eval_runs": eval_runs,
+            "elitism": elitism,
+            "crossover_fraction": crossover_fraction,
+            "mutation_rate": mutation_rate,
+            "save_runs": save_runs,
+            "top_n_to_save": top_n_to_save,
+            "results_dir": requested_results_dir,
+            "log_level": log_level_str,
+            "seed": seed,
+        },
+        seed,
+        run_name=os.path.basename(results_dir),
+    )
+    results_dir = run.run_dir
     
     start_time = time.time()
     
@@ -737,7 +783,11 @@ def run_evolutionary_scenario_generation(
             "selection_score": scenario["selection_score"]
         })
     
-    save_scenario_metadata(all_scenarios, file_path=os.path.join(results_dir, "all_evolved_scenarios.json"))
+    save_scenario_metadata(
+        all_scenarios,
+        file_path=os.path.join(results_dir, "all_evolved_scenarios.json"),
+        timestamp=f"deterministic (seed={seed})",
+    )
     
     # Select top N scenarios to save full results
     top_scenarios = best_scenarios[:top_n_to_save]
@@ -788,7 +838,10 @@ def run_evolutionary_scenario_generation(
     gen_logger.info(f"Saved {saved_count} scenarios from {num_generations} generations.")
     gen_logger.info(f"Total time: {end_time - start_time:.2f} seconds.")
     gen_logger.info(f"Results saved in: {results_dir}")
-    
+
+    manifest = run.finalize()
+    gen_logger.info(f"Manifest written with {len(manifest['artifacts'])} artifacts.")
+
     return best_scenarios, generation_stats
 
 
@@ -821,9 +874,11 @@ if __name__ == "__main__":
     parser.add_argument("--log_level", type=str, default="INFO",
                        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
                        help="Logging level")
-    
+    parser.add_argument("--seed", type=int, default=0,
+                       help="Run seed: controls parent-process randomness; re-running reproduces manifests")
+
     args = parser.parse_args()
-    
+
     run_evolutionary_scenario_generation(
         pop_size=args.pop_size,
         num_generations=args.generations,
@@ -834,5 +889,6 @@ if __name__ == "__main__":
         save_runs=args.save_runs,
         top_n_to_save=args.top_n,
         results_dir=args.results_dir,
-        log_level_str=args.log_level
+        log_level_str=args.log_level,
+        seed=args.seed
     )

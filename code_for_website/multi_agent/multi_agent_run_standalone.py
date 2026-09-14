@@ -219,6 +219,7 @@ class LegacyQLearner:
         return COOPERATE if q_values[COOPERATE] >= q_values[DEFECT] else DEFECT
 
     def choose_pairwise_action(self, opponent_id):
+        """Choose the pairwise move epsilon-greedily from the Q-table."""
         state = self._get_state_pairwise(opponent_id)
         action = self._choose_action(state, self.q_table_pairwise)
         self.last_state_pairwise[opponent_id] = state

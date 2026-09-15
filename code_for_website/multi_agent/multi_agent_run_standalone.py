@@ -239,6 +239,7 @@ class LegacyQLearner:
         return action
 
     def update_pairwise_q_value(self, opponent_id, my_move, opp_move, payoff):
+        """Update history and the pairwise Q-value."""
         # Update history
         self.my_history_pairwise[opponent_id].append(my_move)
         self.opp_history_pairwise[opponent_id].append(opp_move)

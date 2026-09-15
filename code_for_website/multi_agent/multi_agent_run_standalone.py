@@ -227,6 +227,7 @@ class LegacyQLearner:
         return action
 
     def choose_nperson_action(self, prev_round_group_coop_ratio):
+        """Choose the N-person move from the group cooperation ratio."""
         if prev_round_group_coop_ratio is not None:
             self.coop_ratio_history.append(prev_round_group_coop_ratio)
             if len(self.coop_ratio_history) > 2: self.coop_ratio_history.pop(0)

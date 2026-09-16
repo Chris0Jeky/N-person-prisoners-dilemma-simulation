@@ -255,6 +255,7 @@ class LegacyQLearner:
             self._update_q_table(self.q_table_pairwise, state, action, payoff, next_state)
 
     def update_nperson_q_value(self, my_move, payoff):
+        """Record the move and update the N-person Q-value."""
         self.my_history_nperson.append(my_move)
         if len(self.my_history_nperson) > 2: self.my_history_nperson.pop(0)
 

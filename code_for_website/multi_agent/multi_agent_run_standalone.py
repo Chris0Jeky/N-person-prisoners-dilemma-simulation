@@ -408,6 +408,7 @@ def aggregate_results(all_runs):
     avg_tft_score = np.mean(tft_runs_score, axis=0) if tft_runs_score else []
 
     def get_stats(run_data):
+        """Summarize a run into a statistics dictionary."""
         if len(run_data) == 0: return {}
         mean = np.mean(run_data, axis=0)
         std = np.std(run_data, axis=0)

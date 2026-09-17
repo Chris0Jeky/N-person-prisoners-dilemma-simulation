@@ -567,6 +567,7 @@ if __name__ == "__main__":
 
 
         def create_agents_for_run():
+            """Create the agent roster for the run."""
             tft_agents = [StaticTFTAgent(f"TFT_{i + 1}", exploration_rate=TFT_EXPLORATION_RATE) for i in
                           range(n_agents - 1)]
             ql_agent.reset()

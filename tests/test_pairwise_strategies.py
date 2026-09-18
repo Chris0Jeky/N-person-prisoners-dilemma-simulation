@@ -80,22 +80,31 @@ class TestPairwiseTitForTatStrategies:
     def test_tft_fallback_to_proportion(self):
         """Test TFT fallback behavior when specific moves not available."""
         agent = Agent(agent_id=0, strategy="tit_for_tat")
-        
+
         # Set up memory with only proportion (backward compatibility)
         neighbor_moves = {
             "opponent_coop_proportion": 0.99  # Almost all cooperated
         }
         agent.update_memory("cooperate", neighbor_moves, 3.0)
-        
-        # Should cooperate when proportion >= 0.99
+
+        # Should cooperate when proportion meets the default threshold (0.5)
         assert agent.choose_move([]) == "cooperate"
-        
-        # Now test with lower proportion
-        neighbor_moves = {"opponent_coop_proportion": 0.8}
-        agent.update_memory("cooperate", neighbor_moves, 2.5)
-        
-        # Should defect when proportion < 0.99
+
+        # Now test with a proportion below the default threshold
+        neighbor_moves = {"opponent_coop_proportion": 0.4}
+        agent.update_memory("cooperate", neighbor_moves, 1.2)
+
+        # Should defect when proportion < threshold
         assert agent.choose_move([]) == "defect"
+
+        # A stricter threshold defects on a proportion the default accepts
+        strict_agent = Agent(
+            agent_id=1, strategy="tit_for_tat", cooperation_threshold=0.9
+        )
+        strict_agent.update_memory(
+            "cooperate", {"opponent_coop_proportion": 0.8}, 2.5
+        )
+        assert strict_agent.choose_move([]) == "defect"
 
     def test_generous_tft_sometimes_cooperates_after_defection(self):
         """Test that Generous TFT sometimes forgives defection."""

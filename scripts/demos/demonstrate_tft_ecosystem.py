@@ -7,6 +7,7 @@ in their neighborhood rather than just mimicking random neighbors.
 
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment
+from npdl.core.utils import create_payoff_matrix
 import networkx as nx
 
 
@@ -29,8 +30,12 @@ def demonstrate_tft_behavior():
         Agent(agent_id="Defect1", strategy="always_defect"),
     ]
     
-    network = nx.complete_graph(5)
-    env_coop = Environment(agents_coop, network, interaction_mode="neighborhood")
+    env_coop = Environment(
+        agents_coop,
+        create_payoff_matrix(5),
+        network_type="fully_connected",
+        interaction_mode="neighborhood",
+    )
     
     print("Initial round to establish history...")
     env_coop.run(rounds=1)
@@ -65,7 +70,12 @@ def demonstrate_tft_behavior():
         Agent(agent_id="Coop1", strategy="always_cooperate"),
     ]
     
-    env_defect = Environment(agents_defect, nx.complete_graph(5), interaction_mode="neighborhood")
+    env_defect = Environment(
+        agents_defect,
+        create_payoff_matrix(5),
+        network_type="fully_connected",
+        interaction_mode="neighborhood",
+    )
     
     print("Initial round to establish history...")
     env_defect.run(rounds=1)
@@ -106,7 +116,12 @@ def demonstrate_tft_behavior():
         Agent(agent_id="Defect3", strategy="always_defect"),
     ]
     
-    env_fc = Environment(agents_fc, nx.complete_graph(6), interaction_mode="neighborhood")
+    env_fc = Environment(
+        agents_fc,
+        create_payoff_matrix(6),
+        network_type="fully_connected",
+        interaction_mode="neighborhood",
+    )
     env_fc.run(rounds=2)
     
     tft_fc = agents_fc[0]
@@ -129,16 +144,23 @@ def demonstrate_tft_behavior():
     ]
     
     network_sw = nx.Graph()
+    network_sw.add_nodes_from([a.agent_id for a in agents_sw])
     network_sw.add_edges_from([
-        (0, 3),  # TFT to Defect1
-        (0, 4),  # TFT to Defect2
-        (0, 5),  # TFT to Defect3
-        (1, 2),  # Coop1 to Coop2
-        (3, 4),  # Defect1 to Defect2
-        (4, 5),  # Defect2 to Defect3
+        ("TFT", "Defect1"),  # TFT to Defect1
+        ("TFT", "Defect2"),  # TFT to Defect2
+        ("TFT", "Defect3"),  # TFT to Defect3
+        ("Coop1", "Coop2"),  # Coop1 to Coop2
+        ("Defect1", "Defect2"),  # Defect1 to Defect2
+        ("Defect2", "Defect3"),  # Defect2 to Defect3
     ])
-    
-    env_sw = Environment(agents_sw, network_sw, interaction_mode="neighborhood")
+
+    env_sw = Environment(
+        agents_sw,
+        create_payoff_matrix(6),
+        network_type="custom",
+        network_params={"graph": network_sw},
+        interaction_mode="neighborhood",
+    )
     env_sw.run(rounds=2)
     
     tft_sw = agents_sw[0]
@@ -166,7 +188,12 @@ def demonstrate_tft_behavior():
             Agent(agent_id="Defect2", strategy="always_defect"),
         ]
         
-        env_prob = Environment(agents_prob, nx.complete_graph(6), interaction_mode="neighborhood")
+        env_prob = Environment(
+            agents_prob,
+            create_payoff_matrix(6),
+            network_type="fully_connected",
+            interaction_mode="neighborhood",
+        )
         env_prob.run(rounds=2)
         
         ptft = agents_prob[0]

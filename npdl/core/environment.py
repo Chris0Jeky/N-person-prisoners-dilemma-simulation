@@ -26,7 +26,10 @@ class Environment:
         Args:
             agents: List of Agent objects
             payoff_matrix: Dictionary mapping actions to payoff lists
-            network_type: Type of network to create
+            network_type: Type of network to create ("fully_connected",
+                "random", "small_world", "scale_free", "regular", or
+                "custom" with network_params={"graph": nx.Graph} whose
+                nodes match the agent IDs)
             network_params: Parameters for network creation
             logger: Logger object (if None, uses the root logger)
             interaction_mode: Mode of interaction - "neighborhood" (original) or "pairwise"
@@ -156,6 +159,16 @@ class Environment:
                 graph_seq = nx.random_regular_graph(adjusted_k, num_agents)
                 mapping = {i: agent_ids[i] for i in range(num_agents)}
                 graph = nx.relabel_nodes(graph_seq, mapping)
+
+        elif self.network_type == "custom":
+            graph = self.network_params.get("graph")
+            if graph is None:
+                raise ValueError(
+                    "network_type='custom' requires "
+                    "network_params={'graph': G} with G a networkx Graph "
+                    "whose nodes match the agent IDs"
+                )
+            graph = graph.copy()
 
         else:
             raise ValueError(f"Unknown network type: {self.network_type}")

@@ -66,9 +66,13 @@ class TestSetupLogging:
         
     def teardown_method(self):
         """Clean up test environment."""
+        # Close and detach root handlers first: an open FileHandler locks
+        # the log file on Windows and would fail the rmtree below.
+        root = logging.getLogger()
+        for handler in root.handlers[:]:
+            root.removeHandler(handler)
+            handler.close()
         shutil.rmtree(self.temp_dir)
-        # Reset logging configuration
-        logging.getLogger().handlers = []
         
     def test_setup_logging_basic(self):
         """Test basic logging setup."""
@@ -431,8 +435,8 @@ class TestGenerateAsciiChart:
     def test_generate_ascii_chart_dimensions(self):
         """Test chart with custom dimensions."""
         values = [1, 2, 3, 2, 1]
-        chart = generate_ascii_chart(values, width=20, height=5)
-        
+        chart = generate_ascii_chart(values, title="Dims", width=20, height=5)
+
         lines = chart.strip().split('\n')
         # Title + border + height + border = height + 3 lines minimum
         assert len(lines) >= 8  # 5 + 3

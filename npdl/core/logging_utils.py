@@ -7,6 +7,10 @@ import networkx as nx
 def setup_logging(log_file="experiment.log", level=logging.INFO, console=True):
     """Set up logging configuration.
 
+    Any existing root handlers are removed first (``force=True``) so that
+    repeated calls actually reconfigure logging instead of being ignored
+    by :func:`logging.basicConfig` once a handler exists.
+
     Args:
         log_file: Path to the log file
         level: Logging level
@@ -37,6 +41,7 @@ def setup_logging(log_file="experiment.log", level=logging.INFO, console=True):
         level=level,
         format="%(asctime)s - %(levelname)s - %(message)s",
         handlers=handlers,
+        force=True,
     )
 
     return logging.getLogger()
@@ -431,8 +436,13 @@ def generate_ascii_chart(values, title="", width=50, height=10):
         result += min_str + " +" + "-" * width + "+\n"
 
         return result
-    except Exception as e:
-        # Fallback to a simple text summary in case of errors
+    except Exception:
+        # Fallback to a simple text summary in case of errors. The summary
+        # itself is guarded so a broken min/max cannot raise out of the
+        # error handler.
         if values:
-            return f"Data summary (min: {min(values):.2f}, max: {max(values):.2f}, len: {len(values)})"
+            try:
+                return f"Data summary (min: {min(values):.2f}, max: {max(values):.2f}, len: {len(values)})"
+            except Exception:
+                pass
         return "No data to plot (chart generation failed)"

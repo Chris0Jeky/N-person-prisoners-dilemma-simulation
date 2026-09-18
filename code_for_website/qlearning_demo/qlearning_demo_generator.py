@@ -59,6 +59,7 @@ if not HAS_NUMPY:
         return data
     
     def np_std(data, axis=None):
+        """Compute the standard deviation of the data."""
         if axis is None:
             mean = np_mean(data)
             return (sum((x - mean) ** 2 for x in data) / len(data)) ** 0.5

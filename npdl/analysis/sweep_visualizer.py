@@ -1,13 +1,15 @@
 import argparse
 import os
 import pandas as pd
-import matplotlib.pyplot as plt
-import seaborn as sns
 import math
 
 
 def visualize_sweep_results(csv_file, output_dir):
     """Loads sweep results and generates plots."""
+    # Plotting deps are imported lazily so the module stays importable in
+    # minimal envs without matplotlib/seaborn (same pattern as utils.py).
+    import matplotlib.pyplot as plt
+    import seaborn as sns
 
     try:
         df = pd.read_csv(csv_file)

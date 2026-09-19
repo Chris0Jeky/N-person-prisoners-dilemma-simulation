@@ -435,9 +435,13 @@ class NPersonWolfPHC(WolfPHCStrategy, NPersonStateMixin):
         current_q = agent.q_values[state_executed][action]
         
         agent.q_values[state_executed][action] = (
-            (1 - current_alpha) * current_q + 
+            (1 - current_alpha) * current_q +
             current_alpha * (reward + self.discount_factor * best_next_q)
         )
+
+        # Hill-climb the explicit policy (choose_move samples from it).
+        best_action = self._greedy_action(q_coop, q_def)
+        self._hill_climb_policy(state_executed, best_action, current_alpha)
 
 
 # Factory function extension

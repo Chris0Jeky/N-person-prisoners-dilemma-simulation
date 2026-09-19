@@ -180,8 +180,8 @@ class InteractiveGame:
                     f"Agent {agent.agent_id} ({agent.strategy_type}): {coop_rate:.2f}"
                 )
 
-        # Show trend over time
-        if len(self.history) > 2:
+        # Show trend over time (needs at least 2 rounds to see change)
+        if len(self.history) >= 2:
             coop_rates = []
             for round_result in self.history:
                 moves = round_result["moves"]

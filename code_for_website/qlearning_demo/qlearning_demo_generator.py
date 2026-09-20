@@ -79,6 +79,7 @@ if not HAS_NUMPY:
     
     # Create a mock numpy module
     class MockNumpy:
+        """Minimal numpy replacement providing mean, std, and sqrt."""
         mean = staticmethod(np_mean)
         std = staticmethod(np_std)
         sqrt = staticmethod(np_sqrt)

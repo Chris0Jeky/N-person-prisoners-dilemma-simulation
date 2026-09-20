@@ -60,7 +60,7 @@ experiments/            # experiment-system notes (registry lives in npdl/)
 tests/                  # test suite + golden fixtures (w0_golden, w5_golden)
 docs/                   # documentation index and guides
 archive/                # superseded versioned copies (read-only) + MANIFEST.md
-Paper Resources/        # paper sources (.tex/.bib/.eps) + reference PDFs
+paper/                  # paper sources (.tex/.bib/.eps/.plt) + rebuild notes
 ```
 
 ## Running simulations

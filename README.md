@@ -203,7 +203,8 @@ Start at [docs/README.md](docs/README.md):
   [docs/N_PERSON_RL_COMPARISON_PLAN.md](docs/N_PERSON_RL_COMPARISON_PLAN.md),
   [docs/N_PERSON_RL_IMPLEMENTATION_SUMMARY.md](docs/N_PERSON_RL_IMPLEMENTATION_SUMMARY.md)
   — N-person RL analysis track
-- [docs/web-dashboard/](docs/web-dashboard/) — dashboard docs hub
+- [docs/DASHBOARD.md](docs/DASHBOARD.md) — canonical Dash dashboard
+  (launch, data layout, tests)
 - [archive/MANIFEST.md](archive/MANIFEST.md) — what was archived, what
   superseded it, how to run the archived copies
 

@@ -142,9 +142,8 @@ python run.py interactive    # play against AI strategies yourself
 ```
 
 The dashboard shows cooperation rates over time, strategy comparisons,
-network structure, and payoffs. Dashboard internals are documented under
-[docs/web-dashboard/](docs/web-dashboard/) (plan:
-[docs/WEB_DASHBOARD_PLAN.md](docs/WEB_DASHBOARD_PLAN.md)).
+network structure, and payoffs. See [docs/DASHBOARD.md](docs/DASHBOARD.md)
+for launch instructions, data layout, and tests.
 
 ## Demos
 

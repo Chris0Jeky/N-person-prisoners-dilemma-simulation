@@ -79,9 +79,7 @@ class TestVisualizeWiring:
         fake_dashboard = MagicMock()
         # Inject the dashboard module instead of patching its import path:
         # the real module needs dash/plotly, which may not be installed.
-        monkeypatch.setitem(
-            sys.modules, "npdl.visualization.dashboard", fake_dashboard
-        )
+        monkeypatch.setitem(sys.modules, "npdl.visualization.dashboard", fake_dashboard)
         monkeypatch.setattr(cli, "check_dependencies", lambda packages: [])
         assert cli.run_visualization() == 0
         fake_dashboard.run_dashboard.assert_called_once_with(debug=True)
@@ -91,9 +89,7 @@ class TestVisualizeWiring:
     def test_dashboard_error_returns_1(self, monkeypatch, capsys):
         fake_dashboard = MagicMock()
         fake_dashboard.run_dashboard.side_effect = RuntimeError("boom")
-        monkeypatch.setitem(
-            sys.modules, "npdl.visualization.dashboard", fake_dashboard
-        )
+        monkeypatch.setitem(sys.modules, "npdl.visualization.dashboard", fake_dashboard)
         monkeypatch.setattr(cli, "check_dependencies", lambda packages: [])
         assert cli.run_visualization() == 1
         captured = capsys.readouterr()

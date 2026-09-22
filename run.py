@@ -10,8 +10,8 @@ Examples:
     python run.py interactive           # play against AI agents
 """
 
-import sys
 import os
+import sys
 
 # Add the current directory to the path so imports work correctly
 sys.path.insert(0, os.path.abspath(os.path.dirname(__file__)))

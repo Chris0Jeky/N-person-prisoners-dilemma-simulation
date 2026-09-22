@@ -6,9 +6,9 @@ and launching the visualization dashboard.
 """
 
 import argparse
-import sys
-import os
 import importlib.util
+import os
+import sys
 
 
 def check_dependencies(package_names):

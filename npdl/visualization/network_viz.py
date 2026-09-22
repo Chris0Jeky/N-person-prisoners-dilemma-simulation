@@ -4,9 +4,10 @@ Network visualization utilities for N-Person Prisoner's Dilemma simulations.
 This module contains functions for visualizing agent networks using Plotly.
 """
 
+from typing import Any, Dict, List, Optional
+
 import networkx as nx
 import plotly.graph_objects as go
-from typing import Dict, List, Any, Optional
 
 
 def generate_network_positions(

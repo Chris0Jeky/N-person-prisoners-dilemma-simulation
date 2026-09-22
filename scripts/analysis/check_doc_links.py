@@ -29,9 +29,7 @@ DEFAULT_SCOPE = ("README.md", "docs", "archive/MANIFEST.md")
 
 def repo_root():
     """Return the repo root (this script lives in ``scripts/analysis/``)."""
-    return os.path.dirname(
-        os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-    )
+    return os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 
 def slugify(heading):

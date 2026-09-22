@@ -5,10 +5,11 @@ This module contains functions for processing simulation results
 for visualization purposes.
 """
 
-import pandas as pd
-import numpy as np
 import logging
-from typing import Dict, List, Optional, Any, Tuple, Union
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+import numpy as np
+import pandas as pd
 
 
 def get_payoffs_by_strategy(rounds_df: pd.DataFrame) -> pd.DataFrame:

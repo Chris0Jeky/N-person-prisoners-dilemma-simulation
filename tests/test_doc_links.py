@@ -63,8 +63,7 @@ class TestCheckFile:
         doc = str(tmp_path / "doc.md")
         _write(
             doc,
-            "# T\n\nGood [g](other.md#real-section), "
-            "bad [b](other.md#missing).\n",
+            "# T\n\nGood [g](other.md#real-section), " "bad [b](other.md#missing).\n",
         )
         assert check_doc_links.check_file(doc, str(tmp_path)) == [
             (3, "other.md#missing", "missing anchor")
@@ -89,8 +88,7 @@ class TestCheckFile:
         doc = str(tmp_path / "doc.md")
         _write(
             doc,
-            "# T\n\n[a](https://example.com/x) "
-            "[b](mailto:a@b.c) [c](#t).\n",
+            "# T\n\n[a](https://example.com/x) " "[b](mailto:a@b.c) [c](#t).\n",
         )
         assert check_doc_links.check_file(doc, str(tmp_path)) == []
 
@@ -107,7 +105,5 @@ class TestCheckFile:
 
 class TestRepoScope:
     def test_default_scope_has_no_dead_links(self):
-        results = check_doc_links.check_paths(
-            check_doc_links.default_scope(ROOT), ROOT
-        )
+        results = check_doc_links.check_paths(check_doc_links.default_scope(ROOT), ROOT)
         assert results == {}

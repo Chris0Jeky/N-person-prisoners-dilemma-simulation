@@ -1,6 +1,7 @@
 # utils.py
-import numpy as np
 from typing import Tuple
+
+import numpy as np
 
 
 def linear_payoff_C(n, N, R=3, S=0):

@@ -16,7 +16,14 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 V9 = REPO_ROOT / "3-Person_Tragic_vs_Reciprocity" / "final_experimentations" / "v9"
-V7SUB = REPO_ROOT / "archive" / "3-Person_Tragic_vs_Reciprocity" / "final_experimentations" / "v7" / "submittable_code"
+V7SUB = (
+    REPO_ROOT
+    / "archive"
+    / "3-Person_Tragic_vs_Reciprocity"
+    / "final_experimentations"
+    / "v7"
+    / "submittable_code"
+)
 
 
 def load_legacy(mod_name, path):
@@ -70,23 +77,43 @@ def run_neighborhood_script(agent, rounds=40):
         actions.append(a)
         ratio_out = COOP_RATIOS[(r + 3) % len(COOP_RATIOS)]
         rw = REWARD_SCRIPT[r % len(REWARD_SCRIPT)]
-        agent.record_neighborhood_outcome(ratio_out if ratio_out is not None else 0.5, rw)
+        agent.record_neighborhood_outcome(
+            ratio_out if ratio_out is not None else 0.5, rw
+        )
     return actions, agent.total_score
 
 
 def snapshot(agent):
     """Return comparable learning-state snapshot (plain containers only)."""
     snap = {"total_score": agent.total_score}
-    for attr in ("q_tables", "neighborhood_q_table", "n_q_table", "q_table",
-                 "histories", "last_contexts", "last_neighborhood_context",
-                 "last_context", "learning_rates", "epsilons", "reward_windows",
-                 "neighborhood_lr", "neighborhood_epsilon", "lr", "epsilon",
-                 "my_history_pairwise", "opp_history_pairwise",
-                 "my_history_nperson", "coop_ratio_history",
-                 "reward_window", "neighborhood_reward_window",
-                 "current_epsilon", "episode_count",
-                 "opponent_last_moves", "last_neighborhood_move",
-                 "error_rate"):
+    for attr in (
+        "q_tables",
+        "neighborhood_q_table",
+        "n_q_table",
+        "q_table",
+        "histories",
+        "last_contexts",
+        "last_neighborhood_context",
+        "last_context",
+        "learning_rates",
+        "epsilons",
+        "reward_windows",
+        "neighborhood_lr",
+        "neighborhood_epsilon",
+        "lr",
+        "epsilon",
+        "my_history_pairwise",
+        "opp_history_pairwise",
+        "my_history_nperson",
+        "coop_ratio_history",
+        "reward_window",
+        "neighborhood_reward_window",
+        "current_epsilon",
+        "episode_count",
+        "opponent_last_moves",
+        "last_neighborhood_move",
+        "error_rate",
+    ):
         if hasattr(agent, attr):
             v = getattr(agent, attr)
             snap[attr] = normalize(v)
@@ -131,20 +158,26 @@ def test_static_neighborhood_equivalence(strategy, error_rate):
 def test_static_tfte_decay_matches_v2():
     """Opt-in error_decay_rate=0.9995 reproduces v7sub final_agents_v2 exactly."""
     old = legacy_v2.StaticAgent(1, strategy_name="TFT-E", error_rate=0.2)
-    new = ported.StaticAgent(1, strategy_name="TFT-E", error_rate=0.2,
-                             error_decay_rate=0.9995)
+    new = ported.StaticAgent(
+        1, strategy_name="TFT-E", error_rate=0.2, error_decay_rate=0.9995
+    )
     assert run_pairwise_script(old) == run_pairwise_script(new)
     assert snapshot(old) == snapshot(new)
     assert old.round_count == new.round_count
     old2 = legacy_v2.StaticAgent(2, strategy_name="TFT-E", error_rate=0.2)
-    new2 = ported.StaticAgent(2, strategy_name="TFT-E", error_rate=0.2,
-                              error_decay_rate=0.9995)
+    new2 = ported.StaticAgent(
+        2, strategy_name="TFT-E", error_rate=0.2, error_decay_rate=0.9995
+    )
     assert run_neighborhood_script(old2) == run_neighborhood_script(new2)
     assert snapshot(old2) == snapshot(new2)
 
 
 def test_static_constants():
-    assert (ported.COOPERATE, ported.DEFECT) == (legacy_v9.COOPERATE, legacy_v9.DEFECT) == (0, 1)
+    assert (
+        (ported.COOPERATE, ported.DEFECT)
+        == (legacy_v9.COOPERATE, legacy_v9.DEFECT)
+        == (0, 1)
+    )
 
 
 # --- PairwiseAdaptiveQLearner ---
@@ -212,6 +245,7 @@ def test_hysteretic_neighborhood_equivalence(params):
 
 
 # --- NeighborhoodAdaptiveQLearner (neighborhood-only API) ---
+
 
 @pytest.mark.parametrize("params", [ADAPTIVE_PARAMS, ADAPTIVE_PARAMS_NO_WINDOW, {}])
 def test_neighborhood_adaptive_equivalence(params):

@@ -6,9 +6,9 @@ This module allows human players to participate in simulations
 against AI agents with a text-based interface.
 """
 
+import os
 import random
 import time
-import os
 
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment

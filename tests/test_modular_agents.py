@@ -36,8 +36,8 @@ sys.modules.setdefault("strategies", legacy_strategies)
 sys.modules.setdefault("config", legacy_config)
 legacy_modular = load_legacy("w3_mod_legacy_modular_agents", V9 / "modular_agents.py")
 
-from npdl.core import modular_strategies as ported_strat  # noqa: E402
 from npdl.core import modular_agents as ported_mod  # noqa: E402
+from npdl.core import modular_strategies as ported_strat  # noqa: E402
 
 C, D = 0, 1
 SEED = 777
@@ -52,7 +52,10 @@ Q_SCRIPT = [
 
 
 def test_simple_state_strategy_equivalence():
-    old, new = legacy_strategies.SimpleStateStrategy(), ported_strat.SimpleStateStrategy()
+    old, new = (
+        legacy_strategies.SimpleStateStrategy(),
+        ported_strat.SimpleStateStrategy(),
+    )
     states_old, states_new = [], []
     for i, mv in enumerate(MOVE_SCRIPT * 3):
         opp = i % 3
@@ -72,7 +75,11 @@ def test_simple_state_strategy_equivalence():
 def test_statistical_summary_strategy_equivalence():
     old = legacy_strategies.StatisticalSummaryStrategy()
     new = ported_strat.StatisticalSummaryStrategy()
-    assert old.get_state(None, 9) == new.get_state(None, 9) == "Opponent_Disposition_Unknown"
+    assert (
+        old.get_state(None, 9)
+        == new.get_state(None, 9)
+        == "Opponent_Disposition_Unknown"
+    )
     # Sweep opp 0 from all-defect to mostly-cooperate to cross every band.
     sweep = [D, D, D, D] + [C] * 16
     states_old, states_new = [], []
@@ -90,8 +97,10 @@ def test_statistical_summary_strategy_equivalence():
     assert states_old == states_new
     # All five disposition bands are exercised by the script.
     assert set(states_old) >= {
-        "Opponent_Disposition_VeryLow", "Opponent_Disposition_Low",
-        "Opponent_Disposition_Medium", "Opponent_Disposition_High",
+        "Opponent_Disposition_VeryLow",
+        "Opponent_Disposition_Low",
+        "Opponent_Disposition_Medium",
+        "Opponent_Disposition_High",
         "Opponent_Disposition_VeryHigh",
     }
     assert old.opponent_stats == new.opponent_stats
@@ -147,16 +156,19 @@ def test_softmax_equivalence(kwargs):
         ("StandardQLearning", {}),
         ("StandardQLearning", {"learning_rate": 0.15, "discount_factor": 0.99}),
         ("HystereticQLearning", {}),
-        ("HystereticQLearning", {"lr_positive": 0.2, "lr_negative": 0.005, "discount_factor": 0.95}),
+        (
+            "HystereticQLearning",
+            {"lr_positive": 0.2, "lr_negative": 0.005, "discount_factor": 0.95},
+        ),
     ],
 )
 def test_learning_strategy_equivalence(cls, kwargs):
     old = getattr(legacy_strategies, cls)(**kwargs)
     new = getattr(ported_strat, cls)(**kwargs)
     cases = [
-        (1.0, 3.0, 2.0),   # positive delta
-        (5.0, 0.0, 1.0),   # negative delta
-        (0.0, 0.0, 0.0),   # zero delta
+        (1.0, 3.0, 2.0),  # positive delta
+        (5.0, 0.0, 1.0),  # negative delta
+        (0.0, 0.0, 0.0),  # zero delta
         (-2.0, 5.0, -1.0),
     ]
     for current_q, reward, next_max_q in cases:
@@ -211,7 +223,9 @@ def run_neighborhood_script(agent, rounds=30):
         actions.append(a)
         ratio_out = COOP_RATIOS[(r + 3) % len(COOP_RATIOS)]
         rw = REWARD_SCRIPT[r % len(REWARD_SCRIPT)]
-        agent.record_neighborhood_outcome(ratio_out if ratio_out is not None else 0.5, rw)
+        agent.record_neighborhood_outcome(
+            ratio_out if ratio_out is not None else 0.5, rw
+        )
     return actions, agent.total_score
 
 
@@ -229,18 +243,24 @@ def normalize(v):
 
 def modular_snapshot(agent):
     snap = {"total_score": agent.total_score, "strategy_name": agent.strategy_name}
-    for attr in ("q_tables", "neighborhood_q_table", "last_contexts",
-                 "last_neighborhood_context", "learning_rates", "epsilons",
-                 "reward_windows", "neighborhood_lr", "neighborhood_epsilon",
-                 "neighborhood_reward_window"):
+    for attr in (
+        "q_tables",
+        "neighborhood_q_table",
+        "last_contexts",
+        "last_neighborhood_context",
+        "learning_rates",
+        "epsilons",
+        "reward_windows",
+        "neighborhood_lr",
+        "neighborhood_epsilon",
+        "neighborhood_reward_window",
+    ):
         if hasattr(agent, attr):
             snap[attr] = normalize(getattr(agent, attr))
     for sub in ("state_strategy", "action_strategy", "learning_strategy"):
         sub_agent = getattr(agent, sub, None)
         if sub_agent is not None:
-            snap[sub] = normalize(
-                {k: v for k, v in vars(sub_agent).items()}
-            )
+            snap[sub] = normalize({k: v for k, v in vars(sub_agent).items()})
     return snap
 
 
@@ -270,11 +290,25 @@ ADAPTIVE_FACTORIES = [
 @pytest.mark.parametrize("factory", PLAIN_FACTORIES)
 @pytest.mark.parametrize("use_default_params", [True, False])
 def test_plain_factory_pairwise_equivalence(factory, use_default_params):
-    params = None if use_default_params else {"lr": 0.2, "df": 0.9, "eps": 0.3,
-                                              "temperature": 1.5, "min_temperature": 0.05,
-                                              "decay_rate": 0.99, "beta": 0.02}
-    old = getattr(legacy_modular, factory)(1, params=None if params is None else dict(params))
-    new = getattr(ported_mod, factory)(1, params=None if params is None else dict(params))
+    params = (
+        None
+        if use_default_params
+        else {
+            "lr": 0.2,
+            "df": 0.9,
+            "eps": 0.3,
+            "temperature": 1.5,
+            "min_temperature": 0.05,
+            "decay_rate": 0.99,
+            "beta": 0.02,
+        }
+    )
+    old = getattr(legacy_modular, factory)(
+        1, params=None if params is None else dict(params)
+    )
+    new = getattr(ported_mod, factory)(
+        1, params=None if params is None else dict(params)
+    )
     assert run_pairwise_script(old) == run_pairwise_script(new)
     assert modular_snapshot(old) == modular_snapshot(new)
 
@@ -282,11 +316,25 @@ def test_plain_factory_pairwise_equivalence(factory, use_default_params):
 @pytest.mark.parametrize("factory", PLAIN_FACTORIES)
 @pytest.mark.parametrize("use_default_params", [True, False])
 def test_plain_factory_neighborhood_equivalence(factory, use_default_params):
-    params = None if use_default_params else {"lr": 0.2, "df": 0.9, "eps": 0.3,
-                                              "temperature": 1.5, "min_temperature": 0.05,
-                                              "decay_rate": 0.99, "beta": 0.02}
-    old = getattr(legacy_modular, factory)(1, params=None if params is None else dict(params))
-    new = getattr(ported_mod, factory)(1, params=None if params is None else dict(params))
+    params = (
+        None
+        if use_default_params
+        else {
+            "lr": 0.2,
+            "df": 0.9,
+            "eps": 0.3,
+            "temperature": 1.5,
+            "min_temperature": 0.05,
+            "decay_rate": 0.99,
+            "beta": 0.02,
+        }
+    )
+    old = getattr(legacy_modular, factory)(
+        1, params=None if params is None else dict(params)
+    )
+    new = getattr(ported_mod, factory)(
+        1, params=None if params is None else dict(params)
+    )
     assert run_neighborhood_script(old) == run_neighborhood_script(new)
     assert modular_snapshot(old) == modular_snapshot(new)
 
@@ -310,25 +358,33 @@ def test_adaptive_factory_neighborhood_equivalence(factory):
 def test_direct_composition_equivalence():
     """Hand-composed agents (not via factories) also match exactly."""
     old = legacy_modular.ModularQLearner(
-        1, legacy_strategies.StatisticalSummaryStrategy(),
+        1,
+        legacy_strategies.StatisticalSummaryStrategy(),
         legacy_strategies.SoftmaxStrategy(temperature=1.2),
-        legacy_strategies.HystereticQLearning(lr_positive=0.15, lr_negative=0.02))
+        legacy_strategies.HystereticQLearning(lr_positive=0.15, lr_negative=0.02),
+    )
     new = ported_mod.ModularQLearner(
-        1, ported_strat.StatisticalSummaryStrategy(),
+        1,
+        ported_strat.StatisticalSummaryStrategy(),
         ported_strat.SoftmaxStrategy(temperature=1.2),
-        ported_strat.HystereticQLearning(lr_positive=0.15, lr_negative=0.02))
+        ported_strat.HystereticQLearning(lr_positive=0.15, lr_negative=0.02),
+    )
     assert run_pairwise_script(old) == run_pairwise_script(new)
     assert modular_snapshot(old) == modular_snapshot(new)
 
     old2 = legacy_modular.ModularAdaptiveQLearner(
-        2, legacy_strategies.SimpleStateStrategy(),
+        2,
+        legacy_strategies.SimpleStateStrategy(),
         legacy_strategies.EpsilonGreedyStrategy(epsilon=0.2),
         legacy_strategies.StandardQLearning(learning_rate=0.1),
-        params=dict(ADAPTIVE_PARAMS))
+        params=dict(ADAPTIVE_PARAMS),
+    )
     new2 = ported_mod.ModularAdaptiveQLearner(
-        2, ported_strat.SimpleStateStrategy(),
+        2,
+        ported_strat.SimpleStateStrategy(),
         ported_strat.EpsilonGreedyStrategy(epsilon=0.2),
         ported_strat.StandardQLearning(learning_rate=0.1),
-        params=dict(ADAPTIVE_PARAMS))
+        params=dict(ADAPTIVE_PARAMS),
+    )
     assert run_neighborhood_script(old2) == run_neighborhood_script(new2)
     assert modular_snapshot(old2) == modular_snapshot(new2)

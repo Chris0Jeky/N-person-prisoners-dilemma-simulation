@@ -177,7 +177,7 @@ everyone), `true_pairwise` (a separate move per opponent).
 
 ```bash
 pytest tests/ -q
-# 628 passed, 1 skipped
+# 641 passed, 2 skipped (dashboard figure tests skip without the Dash stack)
 
 python tests/fixtures/w0_golden/generate.py --check
 # payoff_matrices.json: IDENTICAL

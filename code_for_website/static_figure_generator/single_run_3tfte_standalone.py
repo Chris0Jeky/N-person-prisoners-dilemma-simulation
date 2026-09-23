@@ -94,6 +94,7 @@ class StaticAgent:
         self.round_count += 1
 
     def reset(self):
+        """Clear opponent-move memory for a new run."""
         self.opponent_last_moves = {}
         self.round_count = 0
         # No need to reset exploration rate here as _get_current_exploration_rate depends on round_count

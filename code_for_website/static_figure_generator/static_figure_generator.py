@@ -30,6 +30,7 @@ def nperson_payoff(my_move, num_other_cooperators, total_agents):
 
 # --- Agent Class ---
 class StaticAgent:
+    """Agent playing a fixed strategy with optional exploration."""
     def __init__(self, agent_id, strategy_name, exploration_rate=0.0, exploration_decay=0.0):
         self.agent_id = agent_id
         self.strategy_name = strategy_name

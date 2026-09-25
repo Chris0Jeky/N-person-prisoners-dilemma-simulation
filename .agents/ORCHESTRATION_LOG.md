@@ -19,7 +19,7 @@ Conventions:
 | A (baseline) | T1, T2, W0 | DONE (PR #43 merged as da30f844) |
 | B (core) | W1, then W2 + W3 parallel | DONE (W3 PR #46 merged as b73f10f3; lanes ran serialized — no isolation) |
 | C (breadth) | W4 + W5 + W6 serialized, then W7 + W8 | DONE (W8 PR #51 merged as 3c25c676) |
-| D (ship) | W9, W10, W11, then W12 (optional, needs reconfirmation) | W9 DISPATCHED |
+| D (ship) | W9, W10, W11, then W12 (optional, needs reconfirmation) | W9 DONE (PR #52 merged as 98ad8cc7); chore #53 merged; W10 DISPATCHED |
 
 ## Ledger
 
@@ -36,7 +36,9 @@ Conventions:
 | W6 | swarm | w6-green | implementer subagent | #49 | qa-reviewer subagent | PASS | e127778b | Suite green: 628 passed + 1 documented plotly skip; adversarial audit: zero weakening in 10 test files; fixtures identical |
 | W7 | swarm | w7-docs | implementer subagent | #50 | qa-reviewer subagent | PASS | 1685efc8 | README rewrite, link checker + test (zero dead links), docs fold, Paper Resources→paper/ + artifacts untracked; suite 641+1 |
 | W8 | swarm | w8-dashboards | implementer subagent | #51 | qa-reviewer subagent | PASS | 3c25c676 | web-dashboard + static pages → archive (R100, MANIFEST rows); canonical Dash docs; smoke test (documented skip without Dash stack); suite 641+2, links OK |
-| W9 | swarm | w9-gates | implementer subagent | — | PENDING | PENDING | — | Dispatched after W8 merge |
+| W9 | swarm | w9-gates | implementer subagent | #52 | qa-reviewer subagent | PASS | 98ad8cc7 | 4 gates (tests/lint/docs-links/coverage) live-proven green on CI; format commit audited pure; mypy exclusion + scipy + CSV eol justified; report arrived on cancel |
+| CHORE | parent | chore/remove-claude-review | parent | #53 | parent (gate-absence proof) | PASS | 484651cb | Removed credit-dead claude-review gate per owner request; PR #53 itself proved absence + all other gates green; claude.yml mention-trigger kept |
+| W10 | swarm | w10-qa-sweep | QA sweep agents | — | PENDING | PENDING | — | Dispatched after W9 merge |
 
 ## Baseline record (W0)
 

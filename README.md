@@ -495,4 +495,8 @@ Detailed guides live in [docs/](docs/):
 
 ## License
 
-This project is available under the MIT License.
+The owner-authored software and documentation are licensed under GNU GPL
+version 3 only (`GPL-3.0-only`). See `LICENSE`, `RELICENSING.md`, and
+`THIRD_PARTY_NOTICES.md`. The coauthored paper, publishing templates, generated
+paper outputs, research material under `Paper Resources/**`, and other
+third-party material are excluded and retain their own rights.

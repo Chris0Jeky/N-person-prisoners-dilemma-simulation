@@ -83,6 +83,7 @@ def snapshot(agent):
                  "neighborhood_lr", "neighborhood_epsilon", "lr", "epsilon",
                  "my_history_pairwise", "opp_history_pairwise",
                  "my_history_nperson", "coop_ratio_history",
+                 "reward_window", "neighborhood_reward_window",
                  "current_epsilon", "episode_count",
                  "opponent_last_moves", "last_neighborhood_move",
                  "error_rate"):
@@ -206,5 +207,15 @@ def test_hysteretic_pairwise_equivalence(params):
 def test_hysteretic_neighborhood_equivalence(params):
     old = legacy_v9.HystereticQLearner(1, dict(params))
     new = ported.HystereticQLearner(1, dict(params))
+    assert run_neighborhood_script(old) == run_neighborhood_script(new)
+    assert snapshot(old) == snapshot(new)
+
+
+# --- NeighborhoodAdaptiveQLearner (neighborhood-only API) ---
+
+@pytest.mark.parametrize("params", [ADAPTIVE_PARAMS, ADAPTIVE_PARAMS_NO_WINDOW, {}])
+def test_neighborhood_adaptive_equivalence(params):
+    old = legacy_v9.NeighborhoodAdaptiveQLearner(1, dict(params))
+    new = ported.NeighborhoodAdaptiveQLearner(1, dict(params))
     assert run_neighborhood_script(old) == run_neighborhood_script(new)
     assert snapshot(old) == snapshot(new)

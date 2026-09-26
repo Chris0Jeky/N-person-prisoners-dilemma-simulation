@@ -265,6 +265,7 @@ def print_comparative_summary(scenario_results_agg, logger=None):
     print("\n=== END OF AGGREGATED COMPARATIVE SUMMARY ===\n")
 
 def main():
+    """Parse arguments and run the N-person experiments."""
     parser = argparse.ArgumentParser(description="Run N-person IPD experiments")
     parser.add_argument('--enhanced', action='store_true',
                         help='Use enhanced_scenarios.json instead of scenarios.json')

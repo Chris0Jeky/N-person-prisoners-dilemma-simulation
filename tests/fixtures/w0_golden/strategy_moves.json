@@ -1,0 +1,109 @@
+{
+  "moves": {
+    "always_cooperate": [
+      "cooperate",
+      "cooperate",
+      "cooperate",
+      "cooperate",
+      "cooperate",
+      "cooperate"
+    ],
+    "always_defect": [
+      "defect",
+      "defect",
+      "defect",
+      "defect",
+      "defect",
+      "defect"
+    ],
+    "generous_tit_for_tat": [
+      "cooperate",
+      "cooperate",
+      "cooperate",
+      "defect",
+      "cooperate",
+      "defect"
+    ],
+    "pavlov": [
+      "cooperate",
+      "defect",
+      "cooperate",
+      "defect",
+      "cooperate",
+      "defect"
+    ],
+    "q_learning": [
+      "cooperate",
+      "defect",
+      "cooperate",
+      "cooperate",
+      "cooperate",
+      "cooperate"
+    ],
+    "randomprob": [
+      "defect",
+      "cooperate",
+      "cooperate",
+      "cooperate",
+      "defect",
+      "defect"
+    ],
+    "suspicious_tit_for_tat": [
+      "defect",
+      "cooperate",
+      "cooperate",
+      "defect",
+      "cooperate",
+      "cooperate"
+    ],
+    "tit_for_tat": [
+      "cooperate",
+      "cooperate",
+      "cooperate",
+      "defect",
+      "cooperate",
+      "defect"
+    ],
+    "tit_for_two_tats": [
+      "cooperate",
+      "cooperate",
+      "cooperate",
+      "cooperate",
+      "cooperate",
+      "cooperate"
+    ]
+  },
+  "patterns": [
+    {
+      "1": "cooperate",
+      "2": "cooperate",
+      "3": "cooperate"
+    },
+    {
+      "1": "cooperate",
+      "2": "cooperate",
+      "3": "cooperate"
+    },
+    {
+      "1": "defect",
+      "2": "defect",
+      "3": "defect"
+    },
+    {
+      "1": "cooperate",
+      "2": "defect",
+      "3": "cooperate"
+    },
+    {
+      "1": "defect",
+      "2": "cooperate",
+      "3": "defect"
+    },
+    {
+      "1": "cooperate",
+      "2": "cooperate",
+      "3": "cooperate"
+    }
+  ],
+  "seed": 42
+}

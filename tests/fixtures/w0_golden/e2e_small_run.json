@@ -1,0 +1,395 @@
+{
+  "final_scores": {
+    "0": 24.0,
+    "1": 24.0,
+    "2": 68.0,
+    "3": 68.0,
+    "4": 45.0,
+    "5": 45.0
+  },
+  "per_round": [
+    {
+      "cooperation_rate": 0.666667,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "cooperate",
+        "5": "cooperate"
+      },
+      "payoffs": {
+        "0": 1.8,
+        "1": 1.8,
+        "2": 4.2,
+        "3": 4.2,
+        "4": 1.8,
+        "5": 1.8
+      }
+    },
+    {
+      "cooperation_rate": 0.5,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "cooperate",
+        "5": "defect"
+      },
+      "payoffs": {
+        "0": 1.2,
+        "1": 1.2,
+        "2": 3.4,
+        "3": 3.4,
+        "4": 1.2,
+        "5": 3.4
+      }
+    },
+    {
+      "cooperation_rate": 0.333333,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "defect",
+        "5": "defect"
+      },
+      "payoffs": {
+        "0": 0.6,
+        "1": 0.6,
+        "2": 2.6,
+        "3": 2.6,
+        "4": 2.6,
+        "5": 2.6
+      }
+    },
+    {
+      "cooperation_rate": 0.5,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "defect",
+        "5": "cooperate"
+      },
+      "payoffs": {
+        "0": 1.2,
+        "1": 1.2,
+        "2": 3.4,
+        "3": 3.4,
+        "4": 3.4,
+        "5": 1.2
+      }
+    },
+    {
+      "cooperation_rate": 0.666667,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "cooperate",
+        "5": "cooperate"
+      },
+      "payoffs": {
+        "0": 1.8,
+        "1": 1.8,
+        "2": 4.2,
+        "3": 4.2,
+        "4": 1.8,
+        "5": 1.8
+      }
+    },
+    {
+      "cooperation_rate": 0.5,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "cooperate",
+        "5": "defect"
+      },
+      "payoffs": {
+        "0": 1.2,
+        "1": 1.2,
+        "2": 3.4,
+        "3": 3.4,
+        "4": 1.2,
+        "5": 3.4
+      }
+    },
+    {
+      "cooperation_rate": 0.333333,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "defect",
+        "5": "defect"
+      },
+      "payoffs": {
+        "0": 0.6,
+        "1": 0.6,
+        "2": 2.6,
+        "3": 2.6,
+        "4": 2.6,
+        "5": 2.6
+      }
+    },
+    {
+      "cooperation_rate": 0.5,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "defect",
+        "5": "cooperate"
+      },
+      "payoffs": {
+        "0": 1.2,
+        "1": 1.2,
+        "2": 3.4,
+        "3": 3.4,
+        "4": 3.4,
+        "5": 1.2
+      }
+    },
+    {
+      "cooperation_rate": 0.666667,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "cooperate",
+        "5": "cooperate"
+      },
+      "payoffs": {
+        "0": 1.8,
+        "1": 1.8,
+        "2": 4.2,
+        "3": 4.2,
+        "4": 1.8,
+        "5": 1.8
+      }
+    },
+    {
+      "cooperation_rate": 0.5,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "cooperate",
+        "5": "defect"
+      },
+      "payoffs": {
+        "0": 1.2,
+        "1": 1.2,
+        "2": 3.4,
+        "3": 3.4,
+        "4": 1.2,
+        "5": 3.4
+      }
+    },
+    {
+      "cooperation_rate": 0.333333,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "defect",
+        "5": "defect"
+      },
+      "payoffs": {
+        "0": 0.6,
+        "1": 0.6,
+        "2": 2.6,
+        "3": 2.6,
+        "4": 2.6,
+        "5": 2.6
+      }
+    },
+    {
+      "cooperation_rate": 0.5,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "defect",
+        "5": "cooperate"
+      },
+      "payoffs": {
+        "0": 1.2,
+        "1": 1.2,
+        "2": 3.4,
+        "3": 3.4,
+        "4": 3.4,
+        "5": 1.2
+      }
+    },
+    {
+      "cooperation_rate": 0.666667,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "cooperate",
+        "5": "cooperate"
+      },
+      "payoffs": {
+        "0": 1.8,
+        "1": 1.8,
+        "2": 4.2,
+        "3": 4.2,
+        "4": 1.8,
+        "5": 1.8
+      }
+    },
+    {
+      "cooperation_rate": 0.5,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "cooperate",
+        "5": "defect"
+      },
+      "payoffs": {
+        "0": 1.2,
+        "1": 1.2,
+        "2": 3.4,
+        "3": 3.4,
+        "4": 1.2,
+        "5": 3.4
+      }
+    },
+    {
+      "cooperation_rate": 0.333333,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "defect",
+        "5": "defect"
+      },
+      "payoffs": {
+        "0": 0.6,
+        "1": 0.6,
+        "2": 2.6,
+        "3": 2.6,
+        "4": 2.6,
+        "5": 2.6
+      }
+    },
+    {
+      "cooperation_rate": 0.5,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "defect",
+        "5": "cooperate"
+      },
+      "payoffs": {
+        "0": 1.2,
+        "1": 1.2,
+        "2": 3.4,
+        "3": 3.4,
+        "4": 3.4,
+        "5": 1.2
+      }
+    },
+    {
+      "cooperation_rate": 0.666667,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "cooperate",
+        "5": "cooperate"
+      },
+      "payoffs": {
+        "0": 1.8,
+        "1": 1.8,
+        "2": 4.2,
+        "3": 4.2,
+        "4": 1.8,
+        "5": 1.8
+      }
+    },
+    {
+      "cooperation_rate": 0.5,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "cooperate",
+        "5": "defect"
+      },
+      "payoffs": {
+        "0": 1.2,
+        "1": 1.2,
+        "2": 3.4,
+        "3": 3.4,
+        "4": 1.2,
+        "5": 3.4
+      }
+    },
+    {
+      "cooperation_rate": 0.333333,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "defect",
+        "5": "defect"
+      },
+      "payoffs": {
+        "0": 0.6,
+        "1": 0.6,
+        "2": 2.6,
+        "3": 2.6,
+        "4": 2.6,
+        "5": 2.6
+      }
+    },
+    {
+      "cooperation_rate": 0.5,
+      "moves": {
+        "0": "cooperate",
+        "1": "cooperate",
+        "2": "defect",
+        "3": "defect",
+        "4": "defect",
+        "5": "cooperate"
+      },
+      "payoffs": {
+        "0": 1.2,
+        "1": 1.2,
+        "2": 3.4,
+        "3": 3.4,
+        "4": 3.4,
+        "5": 1.2
+      }
+    }
+  ],
+  "rounds": 20,
+  "seed": 42,
+  "use_global_bonus": false
+}

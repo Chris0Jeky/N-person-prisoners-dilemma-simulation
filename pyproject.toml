@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=61"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "npdl"
+version = "0.1.0"
+description = "N-Person Prisoner's Dilemma Learning: simulate and analyze agent behavior in N-person Prisoner's Dilemma scenarios"
+readme = "README.md"
+requires-python = ">=3.7"
+dependencies = [
+    "numpy>=1.20.0",
+    "pandas>=1.3.0",
+    "networkx>=2.6.0",
+    "matplotlib>=3.4.0",
+    "seaborn>=0.11.0",
+    "dash>=2.0.0",
+    "dash-bootstrap-components>=1.0.0",
+    "plotly>=5.0.0",
+    "flask>=2.0.0",
+    "pygame>=2.1.0,<3.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "typing-extensions>=4.4.0",
+    "mypy>=0.990",
+    "pytest>=7.0.0",
+    "black>=22.10.0",
+    "isort>=5.10.0",
+]
+
+[tool.black]
+line-length = 88
+
+[tool.isort]
+profile = "black"
+known_first_party = ["npdl"]
+
+[tool.mypy]
+ignore_missing_imports = true
+show_error_codes = true
+
+# Mirrors pytest.ini, which remains the canonical pytest config: when both
+# files exist, pytest reads pytest.ini first, so `pytest tests/` behavior is
+# unchanged. This section exists only so tooling that reads pyproject.toml
+# sees the same settings.
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_classes = ["Test*"]
+python_functions = ["test_*"]
+markers = [
+    "unit: marks tests as unit tests",
+    "integration: marks tests as integration tests",
+    "slow: marks tests as slow tests (skipped in quick runs)",
+    "visualization: marks tests for visualization components",
+    "network: marks tests for network functionality",
+]
+addopts = "--verbose"

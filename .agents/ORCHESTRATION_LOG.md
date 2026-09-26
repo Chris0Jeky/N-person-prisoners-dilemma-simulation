@@ -17,7 +17,7 @@ Conventions:
 | Wave | Units | Status |
 |------|-------|--------|
 | A (baseline) | T1, T2, W0 | DONE (PR #43 merged as da30f844) |
-| B (core) | W1, then W2 + W3 parallel | W1 DONE (PR #44 merged as 694fd46e); W2+W3 DISPATCHED |
+| B (core) | W1, then W2 + W3 parallel | W1 DONE (#44); W2 DONE (PR #45 merged as 52c7503d); W3 DISPATCHED |
 | C (breadth) | W4 + W5 + W6 parallel, then W7 + W8 parallel | PENDING |
 | D (ship) | W9, W10, W11, then W12 (optional, needs reconfirmation) | PENDING |
 
@@ -29,8 +29,8 @@ Conventions:
 | T2 | parent | main | parent | — | — | — | — | This file created on `go` |
 | W0 | parent | w0-baseline | parent | #43 | qa-reviewer subagent | PASS | da30f844 | Tag pushed; claude-review red = bot credit balance (infra); Codex clean; Qodana clean; self-approval impossible (same-user auth), QA recorded as comment review |
 | W1 | swarm | w1-skeleton | implementer subagent | #44 | qa-reviewer subagent | PASS | 694fd46e | Caches were never tracked (no-op untrack); lock pins installed, floors missing; claude-review red = bot credit again |
-| W2 | swarm | w2-entrypoints | PENDING | — | PENDING | PENDING | — | Dispatched with W3 in isolated worktrees |
-| W3 | swarm | w3-consolidation | PENDING | — | PENDING | PENDING | — | Highest-risk unit; golden-fixture gated |
+| W2 | swarm | w2-entrypoints | implementer subagent | #45 | qa-reviewer subagent | PASS | 52c7503d | main.py logic moved verbatim to npdl/simulation/experiments.py; shim warns+delegates; run_npd_simulator.py removed (only served archived code); smoke tests pass; no new failures |
+| W3 | swarm | w3-consolidation | implementer subagent | — | PENDING | PENDING | — | Highest-risk unit; golden-fixture gated |
 
 ## Baseline record (W0)
 
@@ -53,3 +53,10 @@ Conventions:
 ## QA findings
 
 (None yet.)
+
+## Environment notes
+
+- Worktree isolation unavailable (`workspace_git_probe_failed`): runtime-side probe
+  cannot confirm the Git repo, likely the OneDrive path (spaces + `\\?\` prefix).
+  Git itself works fine from the shell. Mitigation: lanes run serialized in the
+  shared checkout (one writer at a time); W2 then W3, same for Wave C.

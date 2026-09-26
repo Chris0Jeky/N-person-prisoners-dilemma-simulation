@@ -256,3 +256,32 @@ def test_legacy_v2_init_covered_by_param():
     new = ported.LegacyQLearner(1, {"optimistic_init": 0.1})
     assert run_pairwise_script(old) == run_pairwise_script(new)
     assert snapshot(old) == snapshot(new)
+
+
+# --- Legacy3RoundQLearner ---
+
+LEGACY_3ROUND_PARAMS = {
+    "lr": 0.15,
+    "df": 0.99,
+    "eps": 0.25,
+    "epsilon_decay": 0.998,
+    "epsilon_min": 0.01,
+    "optimistic_init": -0.3,
+    "history_length": 3,
+}
+
+
+@pytest.mark.parametrize("params", [LEGACY_3ROUND_PARAMS, {"history_length": 4}, {}])
+def test_legacy3_pairwise_equivalence(params):
+    old = legacy_v9.Legacy3RoundQLearner(1, dict(params))
+    new = ported.Legacy3RoundQLearner(1, dict(params))
+    assert run_pairwise_script(old, rounds=60) == run_pairwise_script(new, rounds=60)
+    assert snapshot(old) == snapshot(new)
+
+
+@pytest.mark.parametrize("params", [LEGACY_3ROUND_PARAMS, {"history_length": 4}, {}])
+def test_legacy3_neighborhood_equivalence(params):
+    old = legacy_v9.Legacy3RoundQLearner(1, dict(params))
+    new = ported.Legacy3RoundQLearner(1, dict(params))
+    assert run_neighborhood_script(old) == run_neighborhood_script(new)
+    assert snapshot(old) == snapshot(new)

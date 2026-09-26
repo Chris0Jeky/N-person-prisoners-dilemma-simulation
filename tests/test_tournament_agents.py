@@ -219,3 +219,40 @@ def test_neighborhood_adaptive_equivalence(params):
     new = ported.NeighborhoodAdaptiveQLearner(1, dict(params))
     assert run_neighborhood_script(old) == run_neighborhood_script(new)
     assert snapshot(old) == snapshot(new)
+
+
+# --- LegacyQLearner ---
+
+LEGACY_PARAMS = {
+    "lr": 0.15,
+    "df": 0.95,
+    "eps": 0.3,
+    "epsilon_decay": 0.995,
+    "epsilon_min": 0.05,
+    "optimistic_init": 0.0,
+}
+
+
+@pytest.mark.parametrize("params", [LEGACY_PARAMS, {"optimistic_init": 0.1}, {}])
+def test_legacy_pairwise_equivalence(params):
+    old = legacy_v9.LegacyQLearner(1, dict(params))
+    new = ported.LegacyQLearner(1, dict(params))
+    # 60 rounds x 2 opponents = 120 interactions: crosses the 100-step eps decay
+    assert run_pairwise_script(old, rounds=60) == run_pairwise_script(new, rounds=60)
+    assert snapshot(old) == snapshot(new)
+
+
+@pytest.mark.parametrize("params", [LEGACY_PARAMS, {"optimistic_init": 0.1}, {}])
+def test_legacy_neighborhood_equivalence(params):
+    old = legacy_v9.LegacyQLearner(1, dict(params))
+    new = ported.LegacyQLearner(1, dict(params))
+    assert run_neighborhood_script(old) == run_neighborhood_script(new)
+    assert snapshot(old) == snapshot(new)
+
+
+def test_legacy_v2_init_covered_by_param():
+    """v7sub v2's fixed 0.1 optimistic init == ported optimistic_init=0.1."""
+    old = legacy_v2.LegacyQLearner(1, {})
+    new = ported.LegacyQLearner(1, {"optimistic_init": 0.1})
+    assert run_pairwise_script(old) == run_pairwise_script(new)
+    assert snapshot(old) == snapshot(new)

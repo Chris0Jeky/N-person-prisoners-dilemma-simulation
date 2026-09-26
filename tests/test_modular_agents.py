@@ -37,6 +37,7 @@ sys.modules.setdefault("config", legacy_config)
 legacy_modular = load_legacy("w3_mod_legacy_modular_agents", V9 / "modular_agents.py")
 
 from npdl.core import modular_strategies as ported_strat  # noqa: E402
+from npdl.core import modular_agents as ported_mod  # noqa: E402
 
 C, D = 0, 1
 SEED = 777
@@ -162,3 +163,172 @@ def test_learning_strategy_equivalence(cls, kwargs):
         assert old.update_q_value(current_q, reward, next_max_q) == new.update_q_value(
             current_q, reward, next_max_q
         )
+
+
+# --- Modular agents + factories ---
+
+OPP_SCRIPT = [C, D, D, C, C, D, C, D]
+REWARD_SCRIPT = [3.0, 0.0, 5.0, 1.0, 2.5, 4.0, 1.5, 3.5]
+COOP_RATIOS = [None, 0.0, 0.2, 0.33, 0.5, 0.67, 0.8, 1.0]
+
+ADAPTIVE_PARAMS = {
+    "initial_lr": 0.1,
+    "initial_eps": 0.15,
+    "min_lr": 0.03,
+    "max_lr": 0.15,
+    "min_eps": 0.02,
+    "max_eps": 0.15,
+    "adaptation_factor": 1.08,
+    "reward_window_size": 10,
+    "df": 0.95,
+    "beta": 0.01,
+}
+
+
+def run_pairwise_script(agent, opponents=(7, 13), rounds=30):
+    random.seed(SEED)
+    np.random.seed(SEED)
+    actions = []
+    k = 0
+    for r in range(rounds):
+        for opp in opponents:
+            a = agent.choose_pairwise_action(opp)
+            actions.append(a)
+            om = OPP_SCRIPT[(r + opp) % len(OPP_SCRIPT)]
+            rw = REWARD_SCRIPT[k % len(REWARD_SCRIPT)]
+            k += 1
+            agent.record_pairwise_outcome(opp, a, om, rw)
+    return actions, agent.total_score
+
+
+def run_neighborhood_script(agent, rounds=30):
+    random.seed(SEED)
+    np.random.seed(SEED)
+    actions = []
+    for r in range(rounds):
+        ratio_in = COOP_RATIOS[r % len(COOP_RATIOS)]
+        a = agent.choose_neighborhood_action(ratio_in)
+        actions.append(a)
+        ratio_out = COOP_RATIOS[(r + 3) % len(COOP_RATIOS)]
+        rw = REWARD_SCRIPT[r % len(REWARD_SCRIPT)]
+        agent.record_neighborhood_outcome(ratio_out if ratio_out is not None else 0.5, rw)
+    return actions, agent.total_score
+
+
+def normalize(v):
+    from collections import deque
+
+    if isinstance(v, deque):
+        return [normalize(x) for x in v]
+    if isinstance(v, dict):
+        return {k: normalize(val) for k, val in v.items()}
+    if isinstance(v, (list, tuple)):
+        return [normalize(x) for x in v]
+    return v
+
+
+def modular_snapshot(agent):
+    snap = {"total_score": agent.total_score, "strategy_name": agent.strategy_name}
+    for attr in ("q_tables", "neighborhood_q_table", "last_contexts",
+                 "last_neighborhood_context", "learning_rates", "epsilons",
+                 "reward_windows", "neighborhood_lr", "neighborhood_epsilon",
+                 "neighborhood_reward_window"):
+        if hasattr(agent, attr):
+            snap[attr] = normalize(getattr(agent, attr))
+    for sub in ("state_strategy", "action_strategy", "learning_strategy"):
+        sub_agent = getattr(agent, sub, None)
+        if sub_agent is not None:
+            snap[sub] = normalize(
+                {k: v for k, v in vars(sub_agent).items()}
+            )
+    return snap
+
+
+def test_default_param_dicts_match_config():
+    assert ported_mod.MODULAR_BASE_PARAMS == legacy_config.MODULAR_BASE_PARAMS
+    assert ported_mod.SOFTMAX_PARAMS == legacy_config.SOFTMAX_PARAMS
+    assert ported_mod.HYSTERETIC_PARAMS == legacy_config.HYSTERETIC_PARAMS
+
+
+PLAIN_FACTORIES = [
+    "create_vanilla_qlearner",
+    "create_statistical_qlearner",
+    "create_softmax_qlearner",
+    "create_statistical_softmax_qlearner",
+    "create_hysteretic_statistical_qlearner",
+]
+
+ADAPTIVE_FACTORIES = [
+    "create_adaptive_baseline",
+    "create_adaptive_statistical",
+    "create_adaptive_softmax",
+    "create_adaptive_statistical_softmax",
+    "create_adaptive_hysteretic_statistical",
+]
+
+
+@pytest.mark.parametrize("factory", PLAIN_FACTORIES)
+@pytest.mark.parametrize("use_default_params", [True, False])
+def test_plain_factory_pairwise_equivalence(factory, use_default_params):
+    params = None if use_default_params else {"lr": 0.2, "df": 0.9, "eps": 0.3,
+                                              "temperature": 1.5, "min_temperature": 0.05,
+                                              "decay_rate": 0.99, "beta": 0.02}
+    old = getattr(legacy_modular, factory)(1, params=None if params is None else dict(params))
+    new = getattr(ported_mod, factory)(1, params=None if params is None else dict(params))
+    assert run_pairwise_script(old) == run_pairwise_script(new)
+    assert modular_snapshot(old) == modular_snapshot(new)
+
+
+@pytest.mark.parametrize("factory", PLAIN_FACTORIES)
+@pytest.mark.parametrize("use_default_params", [True, False])
+def test_plain_factory_neighborhood_equivalence(factory, use_default_params):
+    params = None if use_default_params else {"lr": 0.2, "df": 0.9, "eps": 0.3,
+                                              "temperature": 1.5, "min_temperature": 0.05,
+                                              "decay_rate": 0.99, "beta": 0.02}
+    old = getattr(legacy_modular, factory)(1, params=None if params is None else dict(params))
+    new = getattr(ported_mod, factory)(1, params=None if params is None else dict(params))
+    assert run_neighborhood_script(old) == run_neighborhood_script(new)
+    assert modular_snapshot(old) == modular_snapshot(new)
+
+
+@pytest.mark.parametrize("factory", ADAPTIVE_FACTORIES)
+def test_adaptive_factory_pairwise_equivalence(factory):
+    old = getattr(legacy_modular, factory)(1, dict(ADAPTIVE_PARAMS))
+    new = getattr(ported_mod, factory)(1, dict(ADAPTIVE_PARAMS))
+    assert run_pairwise_script(old) == run_pairwise_script(new)
+    assert modular_snapshot(old) == modular_snapshot(new)
+
+
+@pytest.mark.parametrize("factory", ADAPTIVE_FACTORIES)
+def test_adaptive_factory_neighborhood_equivalence(factory):
+    old = getattr(legacy_modular, factory)(1, dict(ADAPTIVE_PARAMS))
+    new = getattr(ported_mod, factory)(1, dict(ADAPTIVE_PARAMS))
+    assert run_neighborhood_script(old) == run_neighborhood_script(new)
+    assert modular_snapshot(old) == modular_snapshot(new)
+
+
+def test_direct_composition_equivalence():
+    """Hand-composed agents (not via factories) also match exactly."""
+    old = legacy_modular.ModularQLearner(
+        1, legacy_strategies.StatisticalSummaryStrategy(),
+        legacy_strategies.SoftmaxStrategy(temperature=1.2),
+        legacy_strategies.HystereticQLearning(lr_positive=0.15, lr_negative=0.02))
+    new = ported_mod.ModularQLearner(
+        1, ported_strat.StatisticalSummaryStrategy(),
+        ported_strat.SoftmaxStrategy(temperature=1.2),
+        ported_strat.HystereticQLearning(lr_positive=0.15, lr_negative=0.02))
+    assert run_pairwise_script(old) == run_pairwise_script(new)
+    assert modular_snapshot(old) == modular_snapshot(new)
+
+    old2 = legacy_modular.ModularAdaptiveQLearner(
+        2, legacy_strategies.SimpleStateStrategy(),
+        legacy_strategies.EpsilonGreedyStrategy(epsilon=0.2),
+        legacy_strategies.StandardQLearning(learning_rate=0.1),
+        params=dict(ADAPTIVE_PARAMS))
+    new2 = ported_mod.ModularAdaptiveQLearner(
+        2, ported_strat.SimpleStateStrategy(),
+        ported_strat.EpsilonGreedyStrategy(epsilon=0.2),
+        ported_strat.StandardQLearning(learning_rate=0.1),
+        params=dict(ADAPTIVE_PARAMS))
+    assert run_neighborhood_script(old2) == run_neighborhood_script(new2)
+    assert modular_snapshot(old2) == modular_snapshot(new2)

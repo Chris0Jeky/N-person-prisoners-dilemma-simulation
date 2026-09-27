@@ -308,7 +308,7 @@ class TestWolfPHC:
         assert lose_step == pytest.approx(0.2)
         assert lose_step > win_step
 
-    def test_wolf_phc_policy_improvement(self):
+    def test_wolf_phc_policy_improvement(self, seed):
         """Test that Wolf-PHC improves policy toward better actions."""
         agent = Agent(agent_id=0, strategy="wolf_phc", epsilon=0.0)
 
@@ -447,8 +447,12 @@ class TestHystereticQLearning:
             # Optimistic bias should lead to higher Q-values
             assert avg_q > 0  # Should be positive in mixed environment
 
-    def test_hysteretic_q_cooperation_promotion(self):
-        """Test that Hysteretic Q-learning promotes cooperation."""
+    def test_hysteretic_q_cooperation_promotion(self, seed):
+        """Test that Hysteretic Q-learning promotes cooperation.
+
+        Seeded: exploration is random, and roughly 0.5-1.5% of seeds fall below
+        the threshold, so an unseeded run depended on earlier tests' RNG state.
+        """
         # Create two hysteretic Q-learners
         agents = [
             Agent(

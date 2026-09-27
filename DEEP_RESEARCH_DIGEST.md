@@ -8,10 +8,10 @@ This comprehensive digest synthesizes key findings from a deep literature review
 
 1. [Foundational Research Findings](#foundational-research-findings)
 2. [Core Mechanisms & Theoretical Framework](#core-mechanisms--theoretical-framework)
-3. [Our Implementation vs Literature](#our-implementation-vs-literature)
-4. [Strategic Innovations & Gaps](#strategic-innovations--gaps)
-5. [Concrete Improvement Proposals](#concrete-improvement-proposals)
-6. [Future Research Directions](#future-research-directions)
+3. [Concrete Improvement Proposals](#concrete-improvement-proposals)
+4. [Future Research Directions](#future-research-directions)
+5. [Key Insights & Takeaways](#key-insights--takeaways)
+6. [References](#references)
 
 ## Foundational Research Findings
 

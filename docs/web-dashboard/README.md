@@ -45,7 +45,7 @@ The `archive/` folder contains historical planning documents that have been supe
 - Jump to the [User Guide section](./COMPREHENSIVE_WEB_DASHBOARD_DOCUMENTATION.md#user-guide) in the comprehensive documentation
 
 ### For Project Managers
-- Review the [Development Roadmap](./NEXT_STEPS_PLAN.md#development-roadmap)
+- Review the [development roadmap](./NEXT_STEPS_PLAN.md) (Immediate Priorities through Long-Term Vision sections)
 - Check [Resource Requirements](./NEXT_STEPS_PLAN.md#resource-requirements)
 
 ## 📂 Related Project Files

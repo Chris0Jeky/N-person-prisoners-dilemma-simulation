@@ -9,6 +9,10 @@
 numpy==2.4.6
 pandas==3.0.3
 networkx==3.7
+# Added for W9 CI: networkx drawing layouts used by the visualization
+# tests need scipy (missing from the original capture; pinned from the
+# same win32 / CPython 3.13.15 environment).
+scipy==1.18.1
 matplotlib==3.11.0
 # NOT INSTALLED in the capture environment; floor kept from requirements.txt.
 seaborn>=0.11.0

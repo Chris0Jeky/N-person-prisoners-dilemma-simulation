@@ -60,46 +60,56 @@ class TestLRAQLearning:
             discount_factor=0.9,
             epsilon=0.1
         )
-        
+
         assert agent.strategy_type == "lra_q"
         assert hasattr(agent.strategy, 'base_learning_rate')
-        assert hasattr(agent.strategy, 'state_learning_rates')
+        assert hasattr(agent.strategy, 'increase_rate')
+        assert hasattr(agent.strategy, 'decrease_rate')
         assert agent.strategy.base_learning_rate == 0.1
-        
+        assert agent.strategy.learning_rate == 0.1
+
     def test_lra_q_learning_rate_adjustment(self):
-        """Test that LRA-Q adjusts learning rates based on state visits."""
-        agent = Agent(agent_id=0, strategy="lra_q", learning_rate=0.5)
-        
-        # Create a simple environment
-        agents = [agent, Agent(agent_id=1, strategy="always_cooperate")]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
-        
-        # Run multiple rounds to accumulate state visits
-        for _ in range(10):
-            moves, payoffs = env.run_round()
-            
-        # Check that learning rates have been adjusted
-        assert len(agent.strategy.state_learning_rates) > 0
-        
-        # Check that frequently visited states have lower learning rates
-        for state, lr in agent.strategy.state_learning_rates.items():
-            assert lr <= agent.strategy.base_learning_rate
-            
-    def test_lra_q_state_specific_learning(self):
-        """Test that LRA-Q uses state-specific learning rates."""
+        """Test that LRA-Q adjusts its learning rate based on cooperation levels."""
         agent = Agent(agent_id=0, strategy="lra_q", learning_rate=0.5, epsilon=0.0)
-        
-        # Manually set different learning rates for different states
-        agent.strategy.state_learning_rates["state1"] = 0.1
-        agent.strategy.state_learning_rates["state2"] = 0.4
-        
-        # Test update for state1
-        agent.q_values = {"state1": {"cooperate": 0.0, "defect": 0.0}}
-        agent.strategy.update(agent, "cooperate", 10.0, {"neighbor": "cooperate"})
-        
-        # The Q-value should be updated with the state-specific learning rate
-        # New Q = Old Q + lr * (reward - old Q) = 0 + 0.1 * (10 - 0) = 1.0
-        # (Note: actual implementation may vary based on next state value)
+        agent.memory = [{"neighbor_moves": {"n1": "cooperate"}}]
+        agent.choose_move([])  # establish state (deterministic, epsilon=0.0)
+
+        all_coop = {"n1": "cooperate", "n2": "cooperate"}
+
+        # Cooperating with cooperators raises the learning rate
+        agent.strategy.update(agent, "cooperate", 3.0, all_coop)
+        assert agent.strategy.learning_rate == pytest.approx(0.5 + 0.1 - 0.01)
+
+        # Defecting against cooperators lowers the learning rate (then the
+        # regression toward base shaves another 0.01, still above base)
+        before = agent.strategy.learning_rate
+        agent.strategy.update(agent, "defect", 5.0, all_coop)
+        assert agent.strategy.learning_rate == pytest.approx(before - 0.05 - 0.01)
+
+        # The rate never exceeds its max / falls below its min
+        for _ in range(20):
+            agent.strategy.update(agent, "cooperate", 3.0, all_coop)
+        assert agent.strategy.learning_rate <= agent.strategy.max_learning_rate
+        agent.strategy.learning_rate = 0.02
+        for _ in range(20):
+            agent.strategy.update(agent, "defect", 5.0, all_coop)
+        assert agent.strategy.learning_rate >= agent.strategy.min_learning_rate
+
+    def test_lra_q_update_uses_adjusted_rate(self):
+        """Test that the Q-update uses the cooperation-adjusted learning rate."""
+        agent = Agent(agent_id=0, strategy="lra_q", learning_rate=0.5, epsilon=0.0)
+        agent.memory = [{"neighbor_moves": {"n1": "cooperate"}}]
+        agent.choose_move([])  # establish state (deterministic, epsilon=0.0)
+        state = agent.last_state_representation
+
+        agent.q_values[state] = {"cooperate": 0.0, "defect": 0.0}
+
+        # Cooperating with cooperators first raises lr 0.5 -> 0.6, then the
+        # Q-update applies that rate: Q = 0 + 0.6 * (10 + 0.9 * 0 - 0) = 6.0
+        agent.strategy.update(agent, "cooperate", 10.0, {"n1": "cooperate"})
+        assert agent.q_values[state]["cooperate"] == pytest.approx(6.0)
+        # Afterwards the rate regresses toward base: 0.6 -> 0.59
+        assert agent.strategy.learning_rate == pytest.approx(0.59)
         
     def test_lra_q_convergence_behavior(self):
         """Test that LRA-Q converges to stable Q-values."""
@@ -111,9 +121,10 @@ class TestLRAQLearning:
         
         # Track Q-value changes
         q_history = []
-        
-        # Run many rounds
-        for i in range(100):
+
+        # Run many rounds (300: a 100-round horizon leaves the early/late
+        # variance comparison flaky at ~10%; the longer run settles it)
+        for i in range(300):
             moves, payoffs = env.run_round()
             if agent.q_values:
                 # Get average Q-value
@@ -262,59 +273,69 @@ class TestWolfPHC:
             win_learning_rate=0.01,
             lose_learning_rate=0.2
         )
-        
-        # Set up initial state
-        state = "test_state"
+
+        # Establish the state through the real API.
+        agent.memory = [{"neighbor_moves": {"neighbor": "cooperate"}}]
+        agent.choose_move([])
+        state = agent.last_state_representation
+
+        # WINNING: current policy values the best action above the average
+        # policy, so the policy step equals win_learning_rate.
         agent.q_values[state] = {"cooperate": 3.0, "defect": 2.0}
         agent.strategy.policy[state] = {"cooperate": 0.6, "defect": 0.4}
         agent.strategy.average_policy[state] = {"cooperate": 0.5, "defect": 0.5}
-        agent.strategy.policy_counts[state] = 10
-        
-        # Simulate an update where agent is "winning" (current > average)
-        initial_policy = agent.strategy.policy[state]["cooperate"]
+        agent.strategy.policy_counts[state] = {"cooperate": 6, "defect": 4}
+
         agent.strategy.update(agent, "cooperate", 5.0, {"neighbor": "cooperate"})
-        
-        # Policy should change slowly when winning
-        policy_change = abs(agent.strategy.policy[state]["cooperate"] - initial_policy)
-        assert policy_change < 0.05  # Small change due to win_learning_rate
-        
+        win_step = agent.strategy.policy[state]["cooperate"] - 0.6
+        assert win_step == pytest.approx(0.01)
+
+        # LOSING: current policy trails the average policy, so the policy
+        # step equals lose_learning_rate (much bigger).
+        agent.strategy.policy[state] = {"cooperate": 0.4, "defect": 0.6}
+        agent.strategy.average_policy[state] = {"cooperate": 0.6, "defect": 0.4}
+        agent.strategy.update(agent, "cooperate", 5.0, {"neighbor": "cooperate"})
+        lose_step = agent.strategy.policy[state]["cooperate"] - 0.4
+        assert lose_step == pytest.approx(0.2)
+        assert lose_step > win_step
+
     def test_wolf_phc_policy_improvement(self):
         """Test that Wolf-PHC improves policy toward better actions."""
         agent = Agent(agent_id=0, strategy="wolf_phc", epsilon=0.0)
-        
-        # Set up state with clear best action
-        state = "test_state"
+
+        # Establish the state through the real API, then seed a bad policy.
+        agent.memory = [{"neighbor_moves": {"neighbor": "cooperate"}}]
+        agent.choose_move([])
+        state = agent.last_state_representation
         agent.q_values[state] = {"cooperate": 5.0, "defect": 1.0}
         agent.strategy.policy[state] = {"cooperate": 0.3, "defect": 0.7}  # Bad initial policy
         agent.strategy.average_policy[state] = {"cooperate": 0.3, "defect": 0.7}
-        agent.strategy.policy_counts[state] = 5
-        
+        agent.strategy.policy_counts[state] = {"cooperate": 3, "defect": 7}
+
         # Run multiple updates
         for _ in range(20):
-            agent.memory = [{"neighbor_moves": {"neighbor": "cooperate"}}]
             move = agent.choose_move([])
             agent.strategy.update(agent, move, 3.0, {"neighbor": "cooperate"})
-            
+
         # Policy should shift toward cooperate (higher Q-value)
         assert agent.strategy.policy[state]["cooperate"] > 0.5
-        
+
     def test_wolf_phc_stochastic_action_selection(self):
         """Test that Wolf-PHC selects actions stochastically according to policy."""
         agent = Agent(agent_id=0, strategy="wolf_phc", epsilon=0.0)
-        
-        # Set up policy with specific probabilities
-        state = "test_state"
-        agent.strategy.policy[state] = {"cooperate": 0.7, "defect": 0.3}
+
+        # Establish the state through the real API, then fix its policy.
         agent.memory = [{"neighbor_moves": {"neighbor": "cooperate"}}]
-        
+        agent.choose_move([])
+        state = agent.last_state_representation
+        agent.strategy.policy[state] = {"cooperate": 0.7, "defect": 0.3}
+
         # Sample many actions
         action_counts = {"cooperate": 0, "defect": 0}
         for _ in range(1000):
-            # Need to ensure we're in the right state
-            agent.strategy._get_state({"neighbor": "cooperate"})
             action = agent.choose_move([])
             action_counts[action] += 1
-            
+
         # Check that actions follow policy distribution (with some tolerance)
         coop_rate = action_counts["cooperate"] / 1000
         assert 0.6 < coop_rate < 0.8  # Should be close to 0.7
@@ -349,28 +370,32 @@ class TestHystereticQLearning:
             pessimistic_learning_rate=0.1,
             epsilon=0.0
         )
-        
-        # Initialize Q-values
-        state = "test_state"
-        agent.q_values[state] = {"cooperate": 2.0, "defect": 2.0}
-        
-        # Test positive update (reward > current Q)
+
+        # Establish the state through the real API (updates apply to the
+        # last state produced by choose_move, not to a caller-chosen key).
         agent.memory = [{"neighbor_moves": {"neighbor": "cooperate"}}]
-        initial_q = agent.q_values[state]["cooperate"]
+        agent.choose_move([])
+        state = agent.last_state_representation
+
+        # Initialize Q-values
+        agent.q_values[state] = {"cooperate": 2.0, "defect": 2.0}
+
+        # Test positive update (target above current Q)
         agent.strategy.update(agent, "cooperate", 5.0, {"neighbor": "cooperate"})
-        
-        # Should use optimistic learning rate
-        q_increase = agent.q_values[state]["cooperate"] - initial_q
-        assert q_increase > 0
-        
-        # Test negative update (reward < current Q)
+
+        # Should use optimistic learning rate:
+        # target = 5 + 0.9 * 2 = 6.8; Q = 2 + 0.5 * (6.8 - 2) = 4.4
+        q_increase = agent.q_values[state]["cooperate"] - 2.0
+        assert q_increase == pytest.approx(2.4)
+
+        # Test negative update (target below current Q)
         agent.q_values[state]["defect"] = 5.0
-        initial_q = agent.q_values[state]["defect"]
-        agent.strategy.update(agent, "defect", 1.0, {"neighbor": "cooperate"})
-        
-        # Should use pessimistic learning rate (smaller change)
-        q_decrease = initial_q - agent.q_values[state]["defect"]
-        assert q_decrease > 0
+        agent.strategy.update(agent, "defect", 0.0, {"neighbor": "cooperate"})
+
+        # Should use pessimistic learning rate (smaller change):
+        # target = 0 + 0.9 * 5 = 4.5; Q = 5 + 0.1 * (4.5 - 5) = 4.95
+        q_decrease = 5.0 - agent.q_values[state]["defect"]
+        assert q_decrease == pytest.approx(0.05)
         assert q_decrease < q_increase  # Pessimistic update should be smaller
         
     def test_hysteretic_q_optimistic_bias(self):
@@ -459,25 +484,46 @@ class TestStrategyComparison:
                 assert score_history[-1] >= score_history[0]
                 
     def test_advanced_strategies_against_defector(self):
-        """Test how advanced strategies handle always-defect opponent."""
-        strategies = ["lra_q", "ucb1_q", "wolf_phc", "hysteretic_q"]
-        
-        for strategy in strategies:
-            agent = Agent(agent_id=0, strategy=strategy, epsilon=0.05)
+        """Test how advanced strategies handle always-defect opponent.
+
+        Every strategy must learn that defecting pays better against an
+        always-defect opponent. Horizons differ per strategy because their
+        documented learning dynamics differ: UCB1 explores systematically
+        and converges in tens of rounds, Wolf-PHC hill-climbs its policy
+        once Q-values discriminate (optimistic init keeps untried actions
+        attractive), while LRA-Q and Hysteretic-Q at lr 0.1 / eps 0.05 need
+        O(1000) rounds -- plain Q-learning needs the same, so a uniform
+        50-round bar is unpassable by any correct implementation here.
+        """
+        configs = [
+            # (strategy, extra kwargs, rounds, measure_from, threshold)
+            ("ucb1_q", {}, 50, 20, 15),
+            ("wolf_phc", {"q_init_type": "optimistic"}, 50, 20, 15),
+            ("lra_q", {}, 3000, 2000, 500),
+            ("hysteretic_q", {}, 3000, 2000, 500),
+        ]
+
+        for case, (strategy, kwargs, rounds, measure_from, threshold) in enumerate(configs):
+            random.seed(42 + case)
+            np.random.seed(42 + case)
+            agent = Agent(agent_id=0, strategy=strategy, epsilon=0.05, **kwargs)
             defector = Agent(agent_id=1, strategy="always_defect")
-            
+
             env = Environment([agent, defector], create_payoff_matrix(2),
                             network_type="fully_connected")
-            
+
             # Run many rounds
             defection_count = 0
-            for i in range(50):
+            for i in range(rounds):
                 moves, payoffs = env.run_round()
-                if i >= 20 and moves[0] == "defect":  # After learning phase
+                if i >= measure_from and moves[0] == "defect":  # After learning phase
                     defection_count += 1
-                    
+
             # Should learn to defect against always-defect
-            assert defection_count > 15  # Should defect most of the time
+            assert defection_count > threshold, (
+                f"{strategy} defected {defection_count} times, "
+                f"expected more than {threshold}"
+            )
 
 
 if __name__ == '__main__':

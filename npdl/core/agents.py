@@ -644,9 +644,10 @@ class HystereticQLearningStrategy(QLearningStrategy):
     """Hysteretic Q-Learning Strategy for resilient cooperation.
 
     This strategy uses different learning rates for positive and negative experiences.
-    Positive updates (when the target Q-value is higher than current) use the standard
-    learning rate, while negative updates use a slower rate (beta). This creates
-    an optimistic agent that is more resistant to occasional defections.
+    Positive updates (when the target Q-value is higher than current) use the
+    optimistic learning rate, while negative updates use the slower pessimistic
+    rate. This creates an optimistic agent that is more resistant to occasional
+    defections.
 
     Hysteretic Q-learning helps maintain cooperation in unstable, non-stationary
     environments by being slower to learn negative outcomes.
@@ -658,10 +659,19 @@ class HystereticQLearningStrategy(QLearningStrategy):
         discount_factor=0.9,
         epsilon=0.1,
         beta=0.01,
+        optimistic_learning_rate=None,
+        pessimistic_learning_rate=None,
         state_type="proportion_discretized",
     ):
         super().__init__(learning_rate, discount_factor, epsilon, state_type)
-        self.beta = beta  # Lower learning rate for negative experiences
+        if optimistic_learning_rate is None:
+            optimistic_learning_rate = learning_rate
+        if pessimistic_learning_rate is None:
+            pessimistic_learning_rate = beta
+        self.optimistic_learning_rate = optimistic_learning_rate
+        self.pessimistic_learning_rate = pessimistic_learning_rate
+        # Legacy alias for the pessimistic (negative-experience) rate.
+        self.beta = pessimistic_learning_rate
 
     def update(self, agent, action, reward, neighbor_moves):
         """Update Q-values asymmetrically: fast for gains, slow for losses."""
@@ -685,21 +695,22 @@ class HystereticQLearningStrategy(QLearningStrategy):
         # Use different learning rates for positive and negative updates
         if target > current:  # Positive experience
             agent.q_values[state_executed][action] = (
-                1 - self.learning_rate
-            ) * current + self.learning_rate * target
+                1 - self.optimistic_learning_rate
+            ) * current + self.optimistic_learning_rate * target
         else:  # Negative experience - learn more slowly
             agent.q_values[state_executed][action] = (
-                1 - self.beta
-            ) * current + self.beta * target
+                1 - self.pessimistic_learning_rate
+            ) * current + self.pessimistic_learning_rate * target
 
 
 class WolfPHCStrategy(QLearningStrategy):
     """Win or Learn Fast Policy Hill-Climbing Strategy.
 
-    This strategy adjusts learning rates based on whether the agent is "winning"
-    or "losing" compared to its historical performance. It learns quickly
-    when performing worse than average (losing) and cautiously when doing better
-    than average (winning).
+    This strategy keeps an explicit stochastic policy per state and hill-climbs
+    it toward the greedy action. The climbing step depends on whether the agent
+    is "winning" (current policy beats its historical average policy) or
+    "losing": it learns quickly when performing worse than average and
+    cautiously when doing better than average.
 
     WoLF-PHC helps achieve convergence in multi-agent settings by dynamically
     balancing between exploration and exploitation, improving stability in
@@ -714,13 +725,24 @@ class WolfPHCStrategy(QLearningStrategy):
         alpha_win=0.05,
         alpha_lose=0.2,
         alpha_avg=0.01,
+        win_learning_rate=None,
+        lose_learning_rate=None,
+        min_policy_prob=0.05,
         state_type="proportion_discretized",
     ):
         super().__init__(learning_rate, discount_factor, epsilon, state_type)
+        if win_learning_rate is not None:
+            alpha_win = win_learning_rate
+        if lose_learning_rate is not None:
+            alpha_lose = lose_learning_rate
         self.alpha_win = alpha_win
         self.alpha_lose = alpha_lose
+        self.win_learning_rate = alpha_win
+        self.lose_learning_rate = alpha_lose
         self.alpha_avg = alpha_avg
+        self.min_policy_prob = min_policy_prob
         self.average_payoff = 0.0
+        self.policy = {}  # {state: {'cooperate': prob, 'defect': prob}}
         self.policy_counts = {}  # {state: {'cooperate': count, 'defect': count}}
         self.average_policy = {}  # {state: {'cooperate': prob, 'defect': prob}}
 
@@ -754,33 +776,67 @@ class WolfPHCStrategy(QLearningStrategy):
                 1 - self.alpha_avg
             ) * current_avg + self.alpha_avg * action_prob
 
+    @staticmethod
+    def _greedy_action(q_coop: float, q_def: float) -> str:
+        """Return the greedy action, breaking exact ties at random.
+
+        A deterministic tie-break would ratchet the policy toward one action
+        while Q-values sit at an exact fixed point (e.g. optimistic init),
+        starving the other action of samples; random ties keep the policy
+        mixed until Q-values discriminate.
+        """
+        if q_coop == q_def:
+            return random.choice(["cooperate", "defect"])
+        return "cooperate" if q_coop > q_def else "defect"
+
+    def _hill_climb_policy(self, state: Hashable, best_action: str, step: float) -> None:
+        """Move the state's policy toward the greedy action by step.
+
+        The best action's probability grows by step while the other action's
+        shrinks by the same amount; the result is clipped to
+        [min_policy_prob, 1 - min_policy_prob] and renormalized so the
+        policy stays a valid explorative distribution (a deterministic
+        policy would stop sampling the other action and could lock in a
+        premature convergence forever).
+
+        Args:
+            state: The state whose policy to adjust
+            best_action: The greedy action to move toward
+            step: The hill-climbing step size (win or lose rate)
+        """
+        if state not in self.policy:
+            self.policy[state] = {"cooperate": 0.5, "defect": 0.5}
+        other_action = "defect" if best_action == "cooperate" else "cooperate"
+        policy = self.policy[state]
+        floor = self.min_policy_prob
+        policy[best_action] = min(1.0 - floor, policy[best_action] + step)
+        policy[other_action] = max(floor, policy[other_action] - step)
+        total = policy["cooperate"] + policy["defect"]
+        if total > 0:
+            policy["cooperate"] /= total
+            policy["defect"] /= total
+
     def choose_move(self, agent, neighbors):
-        """Choose the highest-valued move while tracking policy statistics."""
+        """Sample an action from the current state's stochastic policy."""
         # Get current state
         current_state = self._get_current_state(agent)
         agent.last_state_representation = current_state
 
-        # Ensure state exists in Q-table, initialize if not
-        if current_state not in agent.q_values:
-            agent.q_values[current_state] = {"cooperate": 0.0, "defect": 0.0}
+        self._ensure_state_exists(agent, current_state)
 
-        # Initialize policy counts if needed
+        # Initialize policy tracking if needed
+        if current_state not in self.policy:
+            self.policy[current_state] = {"cooperate": 0.5, "defect": 0.5}
         if current_state not in self.policy_counts:
             self.policy_counts[current_state] = {"cooperate": 0, "defect": 0}
+        if current_state not in self.average_policy:
             self.average_policy[current_state] = {"cooperate": 0.5, "defect": 0.5}
 
-        # Exploration (epsilon-greedy)
-        if random.random() < self.epsilon:
-            chosen_action = random.choice(["cooperate", "defect"])
+        # Sample from the stochastic policy
+        if random.random() < self.policy[current_state]["cooperate"]:
+            chosen_action = "cooperate"
         else:
-            # Exploitation - choose action with highest Q-value
-            if (
-                agent.q_values[current_state]["cooperate"]
-                >= agent.q_values[current_state]["defect"]
-            ):
-                chosen_action = "cooperate"
-            else:
-                chosen_action = "defect"
+            chosen_action = "defect"
 
         # Increment count for the chosen action
         self.policy_counts[current_state][chosen_action] += 1
@@ -788,11 +844,20 @@ class WolfPHCStrategy(QLearningStrategy):
         return chosen_action
 
     def update(self, agent, action, reward, neighbor_moves):
-        """Learn faster when losing, slower when winning."""
+        """Update Q-values, then hill-climb the policy: small step when winning, big step when losing."""
         # Get the state that was used for the action
         state_executed = agent.last_state_representation
         if state_executed is None:
             return
+
+        # Standard Q-learning update with the base learning rate
+        next_state = self._get_current_state(agent)
+        self._ensure_state_exists(agent, next_state)
+        best_next_q = max(agent.q_values[next_state].values())
+        current_q = agent.q_values[state_executed][action]
+        agent.q_values[state_executed][action] = (1 - self.learning_rate) * current_q + self.learning_rate * (
+            reward + self.discount_factor * best_next_q
+        )
 
         # Update average payoff
         self.average_payoff = (
@@ -802,23 +867,11 @@ class WolfPHCStrategy(QLearningStrategy):
         # Update average policy for the state
         self._update_average_policy(state_executed)
 
-        # Calculate V_pi and V_pi_avg for the state
+        # Compare the current policy against the average policy
         q_coop = agent.q_values[state_executed]["cooperate"]
         q_def = agent.q_values[state_executed]["defect"]
-
-        # Estimate current policy pi using epsilon-greedy logic
-        num_actions = 2.0  # Float for division
-        if q_coop >= q_def:  # Cooperate is 'best' action
-            pi_coop = 1.0 - self.epsilon + self.epsilon / num_actions
-            pi_def = self.epsilon / num_actions
-        else:  # Defect is 'best' action
-            pi_def = 1.0 - self.epsilon + self.epsilon / num_actions
-            pi_coop = self.epsilon / num_actions
-
-        # Ensure probabilities sum roughly to 1 (optional sanity check)
-        # assert math.isclose(pi_coop + pi_def, 1.0), f"Policy probs sum to {pi_coop + pi_def}"
-
-        V_pi = pi_coop * q_coop + pi_def * q_def
+        policy = self.policy.get(state_executed, {"cooperate": 0.5, "defect": 0.5})
+        V_pi = policy["cooperate"] * q_coop + policy["defect"] * q_def
 
         # Get average policy values (ensure state exists)
         if state_executed not in self.average_policy:
@@ -827,22 +880,10 @@ class WolfPHCStrategy(QLearningStrategy):
         avg_pi_def = self.average_policy[state_executed]["defect"]
         V_pi_avg = avg_pi_coop * q_coop + avg_pi_def * q_def
 
-        # Determine learning rate - faster when losing, slower when winning
-        current_alpha = self.alpha_lose if V_pi < V_pi_avg else self.alpha_win
-
-        # Calculate next state and update Q-values
-        next_state = self._get_current_state(agent)
-        if next_state not in agent.q_values:
-            agent.q_values[next_state] = {"cooperate": 0.0, "defect": 0.0}
-
-        # Find max Q-value for next state
-        best_next_q = max(agent.q_values[next_state].values())
-
-        # Update Q-value using the dynamic learning rate
-        current_q = agent.q_values[state_executed][action]
-        agent.q_values[state_executed][action] = (
-            1 - current_alpha
-        ) * current_q + current_alpha * (reward + self.discount_factor * best_next_q)
+        # Hill-climbing step: small when winning, large when losing
+        step = self.alpha_win if V_pi >= V_pi_avg else self.alpha_lose
+        best_action = self._greedy_action(q_coop, q_def)
+        self._hill_climb_policy(state_executed, best_action, step)
 
 
 class UCB1QLearningStrategy(QLearningStrategy):
@@ -870,11 +911,11 @@ class UCB1QLearningStrategy(QLearningStrategy):
         )  # Set epsilon to 0, using UCB instead
         self.exploration_constant = exploration_constant
         self.action_counts = {}  # {state: {'cooperate': count, 'defect': count}}
-        self.total_steps = 0
+        self.total_count = 0
 
     def choose_move(self, agent, neighbors):
         """Pick the move with the highest upper confidence bound."""
-        self.total_steps += 1
+        self.total_count += 1
         current_state = self._get_current_state(agent)
         agent.last_state_representation = current_state
 
@@ -886,7 +927,7 @@ class UCB1QLearningStrategy(QLearningStrategy):
 
         # Calculate UCB values
         ucb_values = {}
-        total_log = math.log(self.total_steps + 1)  # Pre-compute logarithm
+        total_log = math.log(self.total_count + 1)  # Pre-compute logarithm
 
         for action in ["cooperate", "defect"]:
             q_value = agent.q_values[current_state][action]
@@ -896,7 +937,7 @@ class UCB1QLearningStrategy(QLearningStrategy):
                 # If an action hasn't been tried, prioritize it
                 ucb_values[action] = float("inf")
             else:
-                # UCB formula: Q-value + C * sqrt(log(total_steps) / count)
+                # UCB formula: Q-value + C * sqrt(log(total_count) / count)
                 exploration_bonus = self.exploration_constant * math.sqrt(
                     total_log / count
                 )
@@ -1001,9 +1042,13 @@ class Agent:
         increase_rate=0.1,
         decrease_rate=0.05,
         beta=0.01,
+        optimistic_learning_rate=None,
+        pessimistic_learning_rate=None,
         alpha_win=0.05,
         alpha_lose=0.2,
         alpha_avg=0.01,
+        win_learning_rate=None,
+        lose_learning_rate=None,
         exploration_constant=2.0,
         cooperation_threshold=0.5,
         N=None,  # Number of agents for N-person strategies
@@ -1069,6 +1114,8 @@ class Agent:
                     "discount_factor": discount_factor,
                     "epsilon": epsilon,
                     "beta": beta,
+                    "optimistic_learning_rate": optimistic_learning_rate,
+                    "pessimistic_learning_rate": pessimistic_learning_rate,
                     "state_type": state_type,
                 }
             )
@@ -1081,6 +1128,8 @@ class Agent:
                     "alpha_win": alpha_win,
                     "alpha_lose": alpha_lose,
                     "alpha_avg": alpha_avg,
+                    "win_learning_rate": win_learning_rate,
+                    "lose_learning_rate": lose_learning_rate,
                     "state_type": state_type,
                 }
             )

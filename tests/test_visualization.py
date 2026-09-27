@@ -9,7 +9,10 @@ import tempfile
 import os
 import json
 from pathlib import Path
-import plotly.graph_objects as go # For inspecting figure data
+go = pytest.importorskip(
+    "plotly.graph_objects",
+    reason="plotly not installed in minimal env; W9 CI installs full deps",
+)  # For inspecting figure data
 
 # Import visualization components
 from npdl.visualization.data_processor import (

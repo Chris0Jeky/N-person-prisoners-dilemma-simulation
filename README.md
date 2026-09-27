@@ -207,6 +207,10 @@ Start at [docs/README.md](docs/README.md):
   (launch, data layout, tests)
 - [archive/MANIFEST.md](archive/MANIFEST.md) — what was archived, what
   superseded it, how to run the archived copies
+- [CHANGELOG.md](CHANGELOG.md) — release history (1.0.0 covers the W0–W10
+  overhaul, PRs #43–#53)
+- [docs/MIGRATION.md](docs/MIGRATION.md) — old → new mapping for every
+  moved entry point and path
 
 ## License
 

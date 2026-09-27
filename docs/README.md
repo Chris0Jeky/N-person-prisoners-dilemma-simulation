@@ -3,18 +3,35 @@
 ## Overview
 
 This directory contains documentation for the N-Person Prisoner's Dilemma Learning (NPDL) framework.
+Start at the [main README](../README.md) for installation and usage.
 
 ## Documentation Structure
 
 - **[implementation/](implementation/)** - Technical implementation details
-  - `PAIRWISE_MODE.md` - Pairwise interaction modes (aggregate and true pairwise)
-  
-- **[testing/](testing/)** - Testing documentation
-  - Test suite overview and coverage reports
-  
-- **[SCENARIO_GENERATION.md](SCENARIO_GENERATION.md)** - Guide to scenario generation and analysis tools
-- **[WEB_DASHBOARD_PLAN.md](WEB_DASHBOARD_PLAN.md)** - Web dashboard design and visualization plan
-- **[N_PERSON_RL_ANALYSIS.md](N_PERSON_RL_ANALYSIS.md)** - Analysis of N-person RL experiments
+  - [`PAIRWISE_MODE.md`](implementation/PAIRWISE_MODE.md) - Pairwise
+    interaction modes (aggregate and true pairwise)
+- **[web-dashboard/](web-dashboard/)** - Dashboard docs hub
+  - [`README.md`](web-dashboard/README.md) - Hub index: comprehensive
+    documentation, next-steps plan, fix summary, project status
+- **[SCENARIO_GENERATION.md](SCENARIO_GENERATION.md)** - Guide to scenario
+  generation and analysis tools
+- **[WEB_DASHBOARD_PLAN.md](WEB_DASHBOARD_PLAN.md)** - Web dashboard design
+  and visualization plan
+- **[N_PERSON_RL_ANALYSIS.md](N_PERSON_RL_ANALYSIS.md)** - Analysis of
+  N-person RL experiments
+- **[N_PERSON_RL_COMPARISON_PLAN.md](N_PERSON_RL_COMPARISON_PLAN.md)** -
+  Comparison plan for N-person RL experiments
+- **[N_PERSON_RL_IMPLEMENTATION_SUMMARY.md](N_PERSON_RL_IMPLEMENTATION_SUMMARY.md)** -
+  Implementation summary for N-person RL experiments
+- **[COMPREHENSIVE_NPD_DOCUMENTATION.md](COMPREHENSIVE_NPD_DOCUMENTATION.md)** -
+  Framework documentation: vision, theory, implementation, validation
+  (moved from root; owned by this index)
+- **[DEEP_RESEARCH_DIGEST.md](DEEP_RESEARCH_DIGEST.md)** - Literature review
+  digest: pairwise vs group cooperation, improvement proposals
+  (moved from root; owned by this index)
+
+Test documentation lives with the suite: [tests/README.md](../tests/README.md)
+(runner notes) and [tests/TEST_PLAN.md](../tests/TEST_PLAN.md) (coverage plan).
 
 ## Key Concepts
 

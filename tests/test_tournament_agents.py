@@ -16,7 +16,7 @@ import pytest
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 V9 = REPO_ROOT / "3-Person_Tragic_vs_Reciprocity" / "final_experimentations" / "v9"
-V7SUB = REPO_ROOT / "3-Person_Tragic_vs_Reciprocity" / "final_experimentations" / "v7" / "submittable_code"
+V7SUB = REPO_ROOT / "archive" / "3-Person_Tragic_vs_Reciprocity" / "final_experimentations" / "v7" / "submittable_code"
 
 
 def load_legacy(mod_name, path):

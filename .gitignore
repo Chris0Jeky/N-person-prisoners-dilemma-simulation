@@ -4,6 +4,11 @@ htmlcov/
 backups/
 results/
 analysis_results/
+# W5: experiment result dumps are regenerated artifacts, never committed.
+# (One small golden fixture survives at tests/fixtures/w5_golden/.)
+demo_results/
+parameter_sweep_results/
+evolution_analysis/
 3-Person_Tragic_vs_Reciprocity/failed_attempt/results/
 simple_models/simple_results/
 

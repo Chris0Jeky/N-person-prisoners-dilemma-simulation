@@ -71,6 +71,7 @@ The test suite is organized by component:
 
 ### Other Tests
 - `test_visualization.py`: Tests for data processing and visualization components
+- `test_dashboard_smoke.py`: Smoke test rendering every canonical dashboard figure from a small fixture `results/` tree (no browser; skips with a documented reason when the dashboard stack is absent)
 - `test_core_basic.py`: Basic functionality tests
 - `test_environment_fixed.py`: Tests for environment fixes
 - `test_refactored_paths.py`: Tests for path refactoring

@@ -18,7 +18,7 @@ Conventions:
 |------|-------|--------|
 | A (baseline) | T1, T2, W0 | DONE (PR #43 merged as da30f844) |
 | B (core) | W1, then W2 + W3 parallel | DONE (W3 PR #46 merged as b73f10f3; lanes ran serialized — no isolation) |
-| C (breadth) | W4 + W5 + W6 serialized, then W7 + W8 | W4 DISPATCHED |
+| C (breadth) | W4 + W5 + W6 serialized, then W7 + W8 | W4 DONE (PR #47 merged as 285f6a72); W5 DISPATCHED |
 | D (ship) | W9, W10, W11, then W12 (optional, needs reconfirmation) | PENDING |
 
 ## Ledger
@@ -31,7 +31,8 @@ Conventions:
 | W1 | swarm | w1-skeleton | implementer subagent | #44 | qa-reviewer subagent | PASS | 694fd46e | Caches were never tracked (no-op untrack); lock pins installed, floors missing; claude-review red = bot credit again |
 | W2 | swarm | w2-entrypoints | implementer subagent | #45 | qa-reviewer subagent | PASS | 52c7503d | main.py logic moved verbatim to npdl/simulation/experiments.py; shim warns+delegates; run_npd_simulator.py removed (only served archived code); smoke tests pass; no new failures |
 | W3 | swarm | w3-consolidation | implementer subagent | #46 | qa-reviewer subagent | PASS | b73f10f3 | 3 modules + additive export, 98 equivalence tests green, fixtures identical, no new failures; adversarial audit of 2 classes clean; lane went quiet after pushing — parent verified + cancelled, report arrived on cancel |
-| W4 | swarm | w4-archive | implementer subagent | — | PENDING | PENDING | — | Dispatched after W3 merge |
+| W4 | swarm | w4-archive | implementer subagent | #47 | qa-reviewer subagent | PASS | 285f6a72 | 185 files, all R100 renames + manifest/README/1-line loader; v9 + main_runs kept runnable; main_runs user file untouched |
+| W5 | swarm | w5-experiments | implementer subagent | — | PENDING | PENDING | — | Dispatched after W4 merge |
 
 ## Baseline record (W0)
 

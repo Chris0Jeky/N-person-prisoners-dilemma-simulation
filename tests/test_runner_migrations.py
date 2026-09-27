@@ -8,6 +8,7 @@ import inspect
 import json
 import os
 import re
+import subprocess
 import sys
 
 import pytest
@@ -63,6 +64,42 @@ class TestMigrationWiring:
         assert re.fullmatch(r"Evo_\d{6}_\d{4}", first)
         assert re.fullmatch(r"Evo_\d{6}_\d{4}", second)
         assert first != second
+
+    def test_crossover_is_independent_of_hash_seed(self):
+        # Set iteration order depends on PYTHONHASHSEED, which differs per
+        # process; a seeded crossover must not, or --seed cannot reproduce.
+        script = (
+            "import json, random, sys\n"
+            f"sys.path.insert(0, {ROOT!r})\n"
+            f"sys.path.insert(0, {os.path.join(ROOT, 'scripts', 'runners')!r})\n"
+            "import run_evolutionary_generator as evo\n"
+            "strats = ['tit_for_tat', 'q_learning', 'always_defect',\n"
+            "          'always_cooperate', 'pavlov', 'generous_tit_for_tat']\n"
+            "p1 = {'num_agents': 30, 'num_rounds': 10,\n"
+            "      'network_type': 'fully_connected', 'network_params': {},\n"
+            "      'interaction_mode': 'neighborhood',\n"
+            "      'agent_strategies': {s: 5 for s in strats},\n"
+            "      'payoff_params': {'R': 3, 'S': 0, 'T': 5, 'P': 1}}\n"
+            "p2 = dict(p1, agent_strategies={s: 5 for s in reversed(strats)},\n"
+            "          payoff_params={'R': 4, 'S': 1, 'T': 6, 'P': 2})\n"
+            "random.seed(0)\n"
+            "out = [evo.crossover(p1, p2) for _ in range(5)]\n"
+            "for c in out:\n"
+            "    c.pop('scenario_name')\n"
+            "print(json.dumps(out, sort_keys=True))\n"
+        )
+        outputs = set()
+        for hash_seed in ("1", "2", "3"):
+            env = dict(os.environ, PYTHONHASHSEED=hash_seed, MPLBACKEND="Agg")
+            result = subprocess.run(
+                [sys.executable, "-c", script],
+                capture_output=True,
+                text=True,
+                env=env,
+                check=True,
+            )
+            outputs.add(result.stdout)
+        assert len(outputs) == 1
 
 
 class TestTinyLiveRuns:

@@ -113,7 +113,7 @@ def calculate_enhanced_metrics(env, round_results) -> Dict[str, float]:
                                     curr_q.get(s, {}).get(a, 0)
                                     - prev_q.get(s, {}).get(a, 0)
                                 )
-                                for s in set(curr_q.keys()) | set(prev_q.keys())
+                                for s in sorted(set(curr_q.keys()) | set(prev_q.keys()))
                                 for a in ["cooperate", "defect"]
                             ]
                         )
@@ -179,8 +179,9 @@ def calculate_enhanced_metrics(env, round_results) -> Dict[str, float]:
         late_round = len(strategy_scores) - 1
 
         # Get strategies present in both rounds
-        common_strategies = set(strategy_scores[mid_round].keys()) & set(
-            strategy_scores[late_round].keys()
+        common_strategies = sorted(
+            set(strategy_scores[mid_round].keys())
+            & set(strategy_scores[late_round].keys())
         )
 
         if common_strategies:
@@ -415,7 +416,7 @@ def crossover(parent1: Dict, parent2: Dict) -> Dict:
 
         # Assign agents while keeping total count consistent
         remaining_agents = child["num_agents"]
-        strategies_list = list(all_strategies)
+        strategies_list = sorted(all_strategies)
         random.shuffle(strategies_list)
 
         for i, strategy in enumerate(strategies_list):
@@ -465,7 +466,7 @@ def crossover(parent1: Dict, parent2: Dict) -> Dict:
                 # For dictionary parameters, do field-by-field selection
                 child[param] = {}
                 all_keys = set(parent1[param].keys()) | set(parent2[param].keys())
-                for key in all_keys:
+                for key in sorted(all_keys):
                     if key in parent1[param] and key in parent2[param]:
                         # Both have the key, randomly select
                         child[param][key] = (

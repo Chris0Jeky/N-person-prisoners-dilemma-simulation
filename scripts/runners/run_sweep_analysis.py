@@ -31,7 +31,7 @@ def run_sweep_and_analysis(
     eval_runs=3,
     save_runs=10,
     top_n=5,
-    results_dir="results/generated_scenarios",
+    results_dir="results/sweep_scenarios",
     analysis_dir="analysis_results",
     log_level="INFO",
     seed=0,
@@ -129,7 +129,9 @@ if __name__ == "__main__":
     parser.add_argument(
         "--results_dir",
         type=str,
-        default="results/generated_scenarios",
+        # Distinct from run_scenario_generator's default: a registered run
+        # dir refuses leftovers from a run with a different config.
+        default="results/sweep_scenarios",
         help="Directory to save scenario results",
     )
     parser.add_argument(

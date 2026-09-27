@@ -160,6 +160,42 @@ class TestTinyLiveRuns:
         assert "epsilon" in header.split(",")
         assert row.split(",")[0] == "0.1"
 
+    def test_sweep_csv_is_independent_of_hash_seed(self, tmp_path):
+        # Metric columns used to follow set iteration order, which depends
+        # on PYTHONHASHSEED, so the same --seed gave different CSV bytes.
+        script = (
+            "import sys\n"
+            f"sys.path.insert(0, {ROOT!r})\n"
+            f"sys.path.insert(0, {os.path.join(ROOT, 'scripts', 'runners')!r})\n"
+            "import run_parameter_sweep as ps\n"
+            "out = sys.argv[1]\n"
+            "base = {'scenario_name_prefix': 'Tiny', 'num_rounds': 10,\n"
+            "        'network_type': 'fully_connected', 'network_params': {},\n"
+            "        'fixed_opponents': {'tit_for_tat': 2},\n"
+            "        'payoff_type': 'linear',\n"
+            "        'state_type': 'proportion_discretized',\n"
+            "        'q_init_type': 'zero', 'memory_length': 2,\n"
+            "        'logging_interval': 11}\n"
+            "gs = {'num_runs_per_combo': 1, 'output_base_dir': out,\n"
+            "      'log_level': 'ERROR'}\n"
+            "ps.run_single_strategy_sweep({'global_settings': gs}, 'q_learning',\n"
+            "    {'target_agent_count': 2, 'parameter_grid': {'epsilon': [0.1]}},\n"
+            "    base, gs, seed=0)\n"
+        )
+        contents = set()
+        for hash_seed in ("1", "2", "3", "4"):
+            out = str(tmp_path / hash_seed)
+            env = dict(os.environ, PYTHONHASHSEED=hash_seed, MPLBACKEND="Agg")
+            subprocess.run(
+                [sys.executable, "-c", script, out],
+                capture_output=True,
+                env=env,
+                check=True,
+            )
+            with open(os.path.join(out, "sweep_results_q_learning.csv")) as f:
+                contents.add(f.read())
+        assert len(contents) == 1
+
 
 if __name__ == "__main__":
     raise SystemExit(pytest.main([__file__, "-q"]))

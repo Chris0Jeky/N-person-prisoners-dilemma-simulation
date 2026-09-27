@@ -12,7 +12,13 @@ an independent QA agent before merge (verdicts in
 [archive/MANIFEST.md](archive/MANIFEST.md). The pre-overhaul state is tagged
 `pre-overhaul-baseline` (at `21c3174`).
 
-### W0 — Baseline and safety (PR #43, `da30f844`)
+Commit references: `main` was later replaced by a linear replay of the
+per-unit commits (W12), so the PR merge commits are not ancestors of `main`.
+Each SHA cited below is the commit on `main` whose tree is identical to that
+PR's merge result. The original merge commits are preserved on the
+`backup/pre-w12-main` branch.
+
+### W0 — Baseline and safety (PR #43, `242db0d6`)
 
 - Tagged the pre-overhaul snapshot (`pre-overhaul-baseline`).
 - Recorded the failing-tests baseline (36 failed, 440 passed, 1 error plus a
@@ -21,7 +27,7 @@ an independent QA agent before merge (verdicts in
   byte-identically; every later unit re-verified them (`--check` 3/3
   IDENTICAL). No production code changes.
 
-### W1 — Packaging and repo skeleton (PR #44, `694fd46e`)
+### W1 — Packaging and repo skeleton (PR #44, `fdaa553b`)
 
 - Added `pyproject.toml` (project metadata, black/isort/mypy config, pytest
   settings mirroring `pytest.ini`, which stays canonical) and
@@ -33,7 +39,7 @@ an independent QA agent before merge (verdicts in
 - Migration: install still works from `requirements.txt`; the lock is the
   reproducible path (`pip install -r requirements.lock`).
 
-### W2 — Entry-point unification (PR #45, `52c7503d`)
+### W2 — Entry-point unification (PR #45, `e1e61bd0`)
 
 - Moved root `main.py` runner logic verbatim into
   `npdl/simulation/experiments.py` (`load_scenarios`, `setup_experiment`,
@@ -49,7 +55,7 @@ an independent QA agent before merge (verdicts in
   `npdl.simulation.experiments`) instead of `python main.py`; see
   [docs/MIGRATION.md](docs/MIGRATION.md).
 
-### W3 — Agent/environment consolidation (PR #46, `b73f10f3`)
+### W3 — Agent/environment consolidation (PR #46, `a4099135`)
 
 - Ported the versioned v9 agent implementations exactly into `npdl/core/`:
   `tournament_agents.py` (`StaticAgent` family, `PairwiseAdaptiveQLearner`,
@@ -66,7 +72,7 @@ an independent QA agent before merge (verdicts in
   `tests/test_modular_agents.py`) comparing old vs new on identical seeded
   inputs. Suite delta was exactly the new green tests; zero new failures.
 
-### W4 — Archive pass (PR #47, `285f6a72`)
+### W4 — Archive pass (PR #47, `c1405d73`)
 
 - Moved superseded families into `archive/` with `git mv`
   (history-preserving, all R100 renames, one commit per family, 182 files):
@@ -80,7 +86,7 @@ an independent QA agent before merge (verdicts in
   left for W5. Verified no live import resolves into `archive/`.
 - Migration: every moved path is mapped in [docs/MIGRATION.md](docs/MIGRATION.md).
 
-### W5 — Experiment system (PR #48, `8c497d98`)
+### W5 — Experiment system (PR #48, `976e6221`)
 
 - New `npdl/experiments/` run registry: `create_run()` records seed, config
   hash (sha256 of canonical JSON), and command line;
@@ -101,7 +107,7 @@ an independent QA agent before merge (verdicts in
 - Migration: regenerate old dumps with the seeded runners; old committed
   dumps survive in history before this PR's merge.
 
-### W6 — Test suite green (PR #49, `e127778b`)
+### W6 — Test suite green (PR #49, `00680d80`)
 
 - Fixed the full W0 baseline (36 failures + 1 error + 2 collection layers),
   one commit per area: `conftest` pytest-9 fixture params, plotly skip guard,
@@ -113,7 +119,7 @@ an independent QA agent before merge (verdicts in
 - Result: stock `pytest tests/ -q` → **628 passed, 1 skipped**, golden
   3/3 IDENTICAL.
 
-### W7 — Docs and paper (PR #50, `1685efc8`)
+### W7 — Docs and paper (PR #50, `702de29e`)
 
 - Rewrote the root README around the canonical layout (every command/path
   verified by execution).
@@ -129,7 +135,7 @@ an independent QA agent before merge (verdicts in
 - Suite: 641 passed, 1 skipped. Migration: see
   [docs/MIGRATION.md](docs/MIGRATION.md) for every moved doc path.
 
-### W8 — Dashboards (PR #51, `3c25c676`)
+### W8 — Dashboards (PR #51, `58d4278a`)
 
 - `npdl/visualization/dashboard.py` is the canonical dashboard; documented in
   `docs/DASHBOARD.md` (launch, data layout, tests).
@@ -142,7 +148,7 @@ an independent QA agent before merge (verdicts in
 - Added a dashboard figure smoke test (no browser; documented skip without
   the Dash stack). Suite: 641 passed, 2 skipped; links clean.
 
-### W9 — CI gates (PR #52, `98ad8cc7`)
+### W9 — CI gates (PR #52, `f71983c1`)
 
 - New workflows on every PR and push to `main`: `tests.yml` (stock suite on
   Python 3.13 from `requirements.lock` with `requirements.txt` fallback,
@@ -161,7 +167,7 @@ an independent QA agent before merge (verdicts in
 - Final CI state: 668 passed (full viz stack installed), coverage 73% with
   artifact, lint/docs-links/Qodana green.
 
-### Chore — Remove Claude review gate (PR #53, `484651cb`)
+### Chore — Remove Claude review gate (PR #53, `a199de8f`)
 
 - Removed `.github/workflows/claude-code-review.yml`: the bot account is out
   of credits, so the check failed on every PR without reviewing anything.

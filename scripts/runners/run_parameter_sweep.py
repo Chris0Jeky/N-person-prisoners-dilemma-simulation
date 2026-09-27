@@ -191,7 +191,7 @@ def run_single_strategy_sweep(
             all_keys = set()
             for m in valid_run_metrics:
                 all_keys.update(m.keys())
-            metric_keys = list(all_keys)
+            metric_keys = sorted(all_keys)
 
             for key in metric_keys:
                 values = [

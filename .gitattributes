@@ -38,3 +38,8 @@ requirements.txt text eol=lf
 
 # Jupyter notebooks
 *.ipynb text eol=lf
+
+# W9: bytes-pinned fixture (test_w5_golden_fixture hashes exact bytes).
+# Overrides '*.csv text' above: without this, Linux checkouts convert
+# the CRLF blob to LF and the hash fails on CI only.
+tests/fixtures/w5_golden/strategy_stats.csv -text

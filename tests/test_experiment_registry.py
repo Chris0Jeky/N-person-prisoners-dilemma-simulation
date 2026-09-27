@@ -78,6 +78,27 @@ class TestCreateRun:
         second = create_run(str(tmp_path), "exp", {"a": 1}, 3, run_name="out")
         assert second.run_dir == first.run_dir
 
+    def test_rerun_refuses_to_record_stale_artifacts(self, tmp_path):
+        first = create_run(str(tmp_path), "exp", {"a": 1}, 3, run_name="out")
+        for name in ("kept.csv", "stale.csv"):
+            with open(os.path.join(first.run_dir, name), "w") as f:
+                f.write("x\n")
+            # Age the files so a rewrite is visible at any mtime resolution.
+            os.utime(os.path.join(first.run_dir, name), ns=(10**9, 10**9))
+        first.finalize()
+        second = create_run(str(tmp_path), "exp", {"a": 1}, 3, run_name="out")
+        with open(os.path.join(second.run_dir, "kept.csv"), "w") as f:
+            f.write("x\n")
+        with pytest.raises(RuntimeError, match="stale.csv"):
+            second.finalize()
+        os.remove(os.path.join(second.run_dir, "stale.csv"))
+        manifest = second.finalize()
+        assert [e["path"] for e in manifest["artifacts"]] == [
+            "kept.csv",
+            "resolved_config.json",
+            "run_info.json",
+        ]
+
     def test_refuses_dir_holding_a_different_run(self, tmp_path):
         run = create_run(str(tmp_path), "exp", {"a": 1}, 3, run_name="out")
         with open(os.path.join(run.run_dir, "result.csv"), "w") as f:

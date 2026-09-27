@@ -23,6 +23,12 @@ Start at the [main README](../README.md) for installation and usage.
   Comparison plan for N-person RL experiments
 - **[N_PERSON_RL_IMPLEMENTATION_SUMMARY.md](N_PERSON_RL_IMPLEMENTATION_SUMMARY.md)** -
   Implementation summary for N-person RL experiments
+- **[COMPREHENSIVE_NPD_DOCUMENTATION.md](COMPREHENSIVE_NPD_DOCUMENTATION.md)** -
+  Framework documentation: vision, theory, implementation, validation
+  (moved from root; owned by this index)
+- **[DEEP_RESEARCH_DIGEST.md](DEEP_RESEARCH_DIGEST.md)** - Literature review
+  digest: pairwise vs group cooperation, improvement proposals
+  (moved from root; owned by this index)
 
 Test documentation lives with the suite: [tests/README.md](../tests/README.md)
 (runner notes) and [tests/TEST_PLAN.md](../tests/TEST_PLAN.md) (coverage plan).

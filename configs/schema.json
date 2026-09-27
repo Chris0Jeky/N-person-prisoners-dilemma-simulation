@@ -1,0 +1,95 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://npdl/configs/schema.json",
+  "title": "NPDL sweep config file",
+  "description": "A sweep config is either a single-strategy sweep (sweep_config.json) or a multi-strategy sweep (multi_sweep_config.json) as consumed by scripts/runners/run_parameter_sweep.py.",
+  "anyOf": [
+    {"$ref": "#/$defs/singleSweep"},
+    {"$ref": "#/$defs/multiSweep"}
+  ],
+  "$defs": {
+    "parameterGrid": {
+      "type": "object",
+      "minProperties": 1,
+      "additionalProperties": {"type": "array", "minItems": 1}
+    },
+    "logLevel": {"enum": ["DEBUG", "INFO", "WARNING", "ERROR"]},
+    "singleSweep": {
+      "title": "single-strategy sweep",
+      "type": "object",
+      "required": ["base_scenario", "parameter_grid", "target_strategy", "num_runs_per_combo"],
+      "properties": {
+        "base_scenario": {
+          "type": "object",
+          "required": ["scenario_name", "num_agents", "num_rounds", "network_type", "agent_strategies"],
+          "properties": {
+            "scenario_name": {"type": "string", "minLength": 1},
+            "num_agents": {"type": "integer", "minimum": 1},
+            "num_rounds": {"type": "integer", "minimum": 1},
+            "network_type": {"enum": ["fully_connected", "small_world", "scale_free", "random"]},
+            "network_params": {"type": "object"},
+            "agent_strategies": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {"type": "integer", "minimum": 0}
+            }
+          },
+          "additionalProperties": true
+        },
+        "parameter_grid": {"$ref": "#/$defs/parameterGrid"},
+        "target_strategy": {"type": "string", "minLength": 1},
+        "num_runs_per_combo": {"type": "integer", "minimum": 1},
+        "output_file": {"type": "string"},
+        "log_level": {"$ref": "#/$defs/logLevel"}
+      },
+      "additionalProperties": true
+    },
+    "multiSweep": {
+      "title": "multi-strategy sweep",
+      "type": "object",
+      "required": ["global_settings", "base_scenario", "strategy_sweeps"],
+      "properties": {
+        "global_settings": {
+          "type": "object",
+          "required": ["num_runs_per_combo"],
+          "properties": {
+            "num_runs_per_combo": {"type": "integer", "minimum": 1},
+            "output_base_dir": {"type": "string", "minLength": 1},
+            "log_level": {"$ref": "#/$defs/logLevel"}
+          },
+          "additionalProperties": true
+        },
+        "base_scenario": {
+          "type": "object",
+          "required": ["scenario_name_prefix", "num_rounds", "network_type"],
+          "properties": {
+            "scenario_name_prefix": {"type": "string", "minLength": 1},
+            "num_rounds": {"type": "integer", "minimum": 1},
+            "network_type": {"enum": ["fully_connected", "small_world", "scale_free", "random"]},
+            "network_params": {"type": "object"},
+            "fixed_opponents": {
+              "type": "object",
+              "minProperties": 1,
+              "additionalProperties": {"type": "integer", "minimum": 0}
+            }
+          },
+          "additionalProperties": true
+        },
+        "strategy_sweeps": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {
+            "type": "object",
+            "required": ["target_agent_count", "parameter_grid"],
+            "properties": {
+              "target_agent_count": {"type": "integer", "minimum": 1},
+              "parameter_grid": {"$ref": "#/$defs/parameterGrid"}
+            },
+            "additionalProperties": true
+          }
+        }
+      },
+      "additionalProperties": true
+    }
+  }
+}

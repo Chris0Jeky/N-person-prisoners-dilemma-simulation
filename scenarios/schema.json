@@ -1,0 +1,114 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://npdl/scenarios/schema.json",
+  "title": "NPDL scenario file",
+  "description": "A scenario file is either a flat list of scenario configs (scenarios.json, enhanced_scenarios.json, pairwise_scenarios.json, express_scenarios.json, chris_testing_scenarios.json) or a grouped comparison object (true_pairwise_scenarios.json).",
+  "anyOf": [
+    {
+      "title": "flat scenario list",
+      "type": "array",
+      "minItems": 1,
+      "items": {"$ref": "#/$defs/flatScenario"}
+    },
+    {
+      "title": "grouped comparison",
+      "type": "object",
+      "required": ["scenarios"],
+      "properties": {
+        "scenarios": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/scenarioGroup"}
+        }
+      },
+      "additionalProperties": true
+    }
+  ],
+  "$defs": {
+    "flatScenario": {
+      "type": "object",
+      "required": ["scenario_name", "num_agents", "num_rounds", "network_type", "agent_strategies"],
+      "properties": {
+        "scenario_name": {"type": "string", "minLength": 1},
+        "num_agents": {"type": "integer", "minimum": 1},
+        "num_rounds": {"type": "integer", "minimum": 1},
+        "network_type": {"enum": ["fully_connected", "small_world", "scale_free", "random"]},
+        "network_params": {"type": "object"},
+        "agent_strategies": {
+          "type": "object",
+          "minProperties": 1,
+          "additionalProperties": {"type": "integer", "minimum": 0}
+        },
+        "interaction_mode": {"enum": ["neighborhood", "pairwise"]},
+        "payoff_type": {"enum": ["linear", "threshold", "exponential"]},
+        "payoff_params": {"type": "object"},
+        "state_type": {"enum": ["proportion_discretized", "memory_enhanced", "count", "basic"]},
+        "memory_length": {"type": "integer", "minimum": 1},
+        "q_init_type": {"enum": ["zero", "optimistic", "random"]},
+        "max_possible_payoff": {"type": "number"},
+        "learning_rate": {"type": "number"},
+        "discount_factor": {"type": "number"},
+        "epsilon": {"type": "number"},
+        "beta": {"type": "number"},
+        "increase_rate": {"type": "number"},
+        "decrease_rate": {"type": "number"},
+        "alpha_win": {"type": "number"},
+        "alpha_lose": {"type": "number"},
+        "alpha_avg": {"type": "number"},
+        "exploration_constant": {"type": "number"},
+        "generosity": {"type": "number"},
+        "prob_coop": {"type": "number"},
+        "initial_move": {"enum": ["cooperate", "defect"]},
+        "use_global_bonus": {"type": "boolean"},
+        "rewiring_interval": {"type": "integer", "minimum": 0},
+        "rewiring_prob": {"type": "number"},
+        "logging_interval": {"type": "integer", "minimum": 1}
+      },
+      "additionalProperties": true
+    },
+    "scenarioGroup": {
+      "type": "object",
+      "required": ["name", "scenarios"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "description": {"type": "string"},
+        "scenarios": {
+          "type": "array",
+          "minItems": 1,
+          "items": {"$ref": "#/$defs/groupedScenario"}
+        }
+      },
+      "additionalProperties": true
+    },
+    "groupedScenario": {
+      "type": "object",
+      "required": ["name", "agent_strategies", "num_rounds"],
+      "properties": {
+        "name": {"type": "string", "minLength": 1},
+        "description": {"type": "string"},
+        "agent_strategies": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "required": ["type", "count"],
+            "properties": {
+              "type": {"type": "string", "minLength": 1},
+              "count": {"type": "integer", "minimum": 1}
+            },
+            "additionalProperties": true
+          }
+        },
+        "network_type": {"enum": ["fully_connected", "small_world", "scale_free", "random"]},
+        "interaction_mode": {"enum": ["neighborhood", "pairwise"]},
+        "pairwise_mode": {"enum": ["aggregate", "individual"]},
+        "num_rounds": {"type": "integer", "minimum": 1},
+        "runs": {"type": "integer", "minimum": 1},
+        "episodes": {"type": "integer", "minimum": 1},
+        "reset_between_episodes": {"type": "boolean"},
+        "noise_level": {"type": "number"}
+      },
+      "additionalProperties": true
+    }
+  }
+}

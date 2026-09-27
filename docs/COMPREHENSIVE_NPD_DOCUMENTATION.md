@@ -147,9 +147,7 @@ NPDL/
 │   ├── test_agents.py       # Strategy behavior tests
 │   ├── test_pairwise.py     # Pairwise interaction tests
 │   └── test_integration.py  # End-to-end tests
-└── web-dashboard/           # Interactive visualization
-    ├── index.html           # Main dashboard interface
-    └── js/                  # Visualization components
+└── archive/web-dashboard/   # Archived static dashboard (see archive/MANIFEST.md)
 ```
 
 ### Core Components

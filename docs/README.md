@@ -10,13 +10,11 @@ Start at the [main README](../README.md) for installation and usage.
 - **[implementation/](implementation/)** - Technical implementation details
   - [`PAIRWISE_MODE.md`](implementation/PAIRWISE_MODE.md) - Pairwise
     interaction modes (aggregate and true pairwise)
-- **[web-dashboard/](web-dashboard/)** - Dashboard docs hub
-  - [`README.md`](web-dashboard/README.md) - Hub index: comprehensive
-    documentation, next-steps plan, fix summary, project status
+- **[DASHBOARD.md](DASHBOARD.md)** - Canonical Dash dashboard: launch
+  instructions, data layout, tests (the static `web-dashboard/` pages and
+  their docs were archived under `archive/web-dashboard/`)
 - **[SCENARIO_GENERATION.md](SCENARIO_GENERATION.md)** - Guide to scenario
   generation and analysis tools
-- **[WEB_DASHBOARD_PLAN.md](WEB_DASHBOARD_PLAN.md)** - Web dashboard design
-  and visualization plan
 - **[N_PERSON_RL_ANALYSIS.md](N_PERSON_RL_ANALYSIS.md)** - Analysis of
   N-person RL experiments
 - **[N_PERSON_RL_COMPARISON_PLAN.md](N_PERSON_RL_COMPARISON_PLAN.md)** -

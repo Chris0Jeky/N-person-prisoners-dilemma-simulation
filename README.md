@@ -142,9 +142,8 @@ python run.py interactive    # play against AI strategies yourself
 ```
 
 The dashboard shows cooperation rates over time, strategy comparisons,
-network structure, and payoffs. Dashboard internals are documented under
-[docs/web-dashboard/](docs/web-dashboard/) (plan:
-[docs/WEB_DASHBOARD_PLAN.md](docs/WEB_DASHBOARD_PLAN.md)).
+network structure, and payoffs. See [docs/DASHBOARD.md](docs/DASHBOARD.md)
+for launch instructions, data layout, and tests.
 
 ## Demos
 
@@ -178,7 +177,7 @@ everyone), `true_pairwise` (a separate move per opponent).
 
 ```bash
 pytest tests/ -q
-# 628 passed, 1 skipped
+# 641 passed, 2 skipped (dashboard figure tests skip without the Dash stack)
 
 python tests/fixtures/w0_golden/generate.py --check
 # payoff_matrices.json: IDENTICAL
@@ -204,7 +203,8 @@ Start at [docs/README.md](docs/README.md):
   [docs/N_PERSON_RL_COMPARISON_PLAN.md](docs/N_PERSON_RL_COMPARISON_PLAN.md),
   [docs/N_PERSON_RL_IMPLEMENTATION_SUMMARY.md](docs/N_PERSON_RL_IMPLEMENTATION_SUMMARY.md)
   — N-person RL analysis track
-- [docs/web-dashboard/](docs/web-dashboard/) — dashboard docs hub
+- [docs/DASHBOARD.md](docs/DASHBOARD.md) — canonical Dash dashboard
+  (launch, data layout, tests)
 - [archive/MANIFEST.md](archive/MANIFEST.md) — what was archived, what
   superseded it, how to run the archived copies
 

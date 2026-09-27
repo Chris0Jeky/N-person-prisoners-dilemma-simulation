@@ -18,10 +18,21 @@ from npdl.experiments.registry import (
     create_run,
     verify_manifest,
 )
+from npdl.experiments.validate import (
+    ValidationError,
+    validate,
+    validate_config_file,
+    validate_file,
+    validate_scenario_file,
+)
 
 __all__ = [
     "ExperimentRun",
+    "ValidationError",
     "compute_config_hash",
     "create_run",
-    "verify_manifest",
+    "validate",
+    "validate_config_file",
+    "validate_file",
+    "validate_scenario_file",
 ]

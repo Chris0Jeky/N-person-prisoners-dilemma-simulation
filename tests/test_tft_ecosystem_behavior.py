@@ -65,12 +65,16 @@ class TestTFTEcosystemBehavior:
         ]
         
         # Create fully connected network
-        network = nx.complete_graph(4)
-        env = Environment(agents, network, interaction_mode="neighborhood")
-        
+        env = Environment(
+            agents,
+            create_payoff_matrix(4),
+            network_type="fully_connected",
+            interaction_mode="neighborhood",
+        )
+
         # Run one round to establish history
         env.run(rounds=1)
-        
+
         # Get TFT agent's last round info
         tft_agent = agents[0]
         last_round = tft_agent.memory[-1]
@@ -95,12 +99,16 @@ class TestTFTEcosystemBehavior:
             Agent(agent_id="coop1", strategy="always_cooperate"),
         ]
         
-        network = nx.complete_graph(4)
-        env = Environment(agents, network, interaction_mode="neighborhood")
-        
+        env = Environment(
+            agents,
+            create_payoff_matrix(4),
+            network_type="fully_connected",
+            interaction_mode="neighborhood",
+        )
+
         # Run one round to establish history
         env.run(rounds=1)
-        
+
         # Get TFT agent's info
         tft_agent = agents[0]
         last_round = tft_agent.memory[-1]
@@ -125,9 +133,13 @@ class TestTFTEcosystemBehavior:
             Agent(agent_id="defect1", strategy="always_defect"),
         ]
         
-        network = nx.complete_graph(3)
-        env = Environment(agents, network, interaction_mode="neighborhood")
-        
+        env = Environment(
+            agents,
+            create_payoff_matrix(3),
+            network_type="fully_connected",
+            interaction_mode="neighborhood",
+        )
+
         # Run two rounds
         env.run(rounds=2)
         
@@ -142,7 +154,12 @@ class TestTFTEcosystemBehavior:
             Agent(agent_id="defect1", strategy="always_defect"),
         ]
         
-        env_strict = Environment(agents_strict, nx.complete_graph(3), interaction_mode="neighborhood")
+        env_strict = Environment(
+            agents_strict,
+            create_payoff_matrix(3),
+            network_type="fully_connected",
+            interaction_mode="neighborhood",
+        )
         env_strict.run(rounds=2)
         
         tft_strict = agents_strict[0]
@@ -162,10 +179,14 @@ class TestTFTEcosystemBehavior:
         ]
         
         # Test 1: Fully connected - TFT sees all agents
-        agents_fc = [Agent(a.agent_id, a.strategy_type, cooperation_threshold=0.5) 
+        agents_fc = [Agent(a.agent_id, a.strategy_type, cooperation_threshold=0.5)
                      for a in agents_template]
-        network_fc = nx.complete_graph(6)
-        env_fc = Environment(agents_fc, network_fc, interaction_mode="neighborhood")
+        env_fc = Environment(
+            agents_fc,
+            create_payoff_matrix(6),
+            network_type="fully_connected",
+            interaction_mode="neighborhood",
+        )
         env_fc.run(rounds=2)
         
         tft_fc = agents_fc[0]
@@ -177,19 +198,26 @@ class TestTFTEcosystemBehavior:
         assert tft_fc.memory[-1]['my_move'] == "cooperate"
         
         # Test 2: Small world where TFT only connects to defectors
-        agents_sw = [Agent(a.agent_id, a.strategy_type, cooperation_threshold=0.5) 
+        agents_sw = [Agent(a.agent_id, a.strategy_type, cooperation_threshold=0.5)
                      for a in agents_template]
         network_sw = nx.Graph()
+        network_sw.add_nodes_from([a.agent_id for a in agents_sw])
         network_sw.add_edges_from([
-            (0, 4),  # TFT to defect1
-            (0, 5),  # TFT to defect2
-            (1, 2),  # coop1 to coop2
-            (2, 3),  # coop2 to coop3
-            (3, 1),  # coop3 to coop1
-            (4, 5),  # defect1 to defect2
+            ("tft", "defect1"),  # TFT to defect1
+            ("tft", "defect2"),  # TFT to defect2
+            ("coop1", "coop2"),  # coop1 to coop2
+            ("coop2", "coop3"),  # coop2 to coop3
+            ("coop3", "coop1"),  # coop3 to coop1
+            ("defect1", "defect2"),  # defect1 to defect2
         ])
-        
-        env_sw = Environment(agents_sw, network_sw, interaction_mode="neighborhood")
+
+        env_sw = Environment(
+            agents_sw,
+            create_payoff_matrix(6),
+            network_type="custom",
+            network_params={"graph": network_sw},
+            interaction_mode="neighborhood",
+        )
         env_sw.run(rounds=2)
         
         tft_sw = agents_sw[0]
@@ -213,8 +241,12 @@ class TestTFTEcosystemBehavior:
                 Agent(agent_id="defect1", strategy="always_defect"),
             ]
             
-            network = nx.complete_graph(4)
-            env = Environment(agents, network, interaction_mode="neighborhood")
+            env = Environment(
+                agents,
+                create_payoff_matrix(4),
+                network_type="fully_connected",
+                interaction_mode="neighborhood",
+            )
             env.run(rounds=2)
             
             ptft_agent = agents[0]
@@ -234,23 +266,45 @@ class TestTFTEcosystemBehavior:
             Agent(agent_id="defect", strategy="always_defect"),
         ]
         
-        network = nx.complete_graph(3)
-        env = Environment(agents, network, interaction_mode="pairwise")
+        env = Environment(
+            agents,
+            create_payoff_matrix(3),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+        )
         env.run(rounds=2)
-        
+
         tft_agent = agents[0]
         last_round = tft_agent.memory[-1]
-        
-        # In pairwise mode, TFT should use aggregate cooperation proportion
+
+        # In pairwise mode, TFT records the aggregate cooperation proportion
         assert 'neighbor_moves' in last_round
         neighbor_info = last_round['neighbor_moves']
-        
+
         # Should have opponent_coop_proportion in pairwise mode
         assert 'opponent_coop_proportion' in neighbor_info
-        
+
         # With 1 cooperator and 1 defector, proportion should be 0.5
-        # TFT should cooperate at exactly 50% with default threshold
-        assert tft_agent.memory[-1]['my_move'] == "cooperate"
+        assert neighbor_info['opponent_coop_proportion'] == 0.5
+
+        # A specific opponent defected, so TFT defects per the documented
+        # specific-tracking rule (README: "Defects if ANY opponent defected").
+        assert tft_agent.memory[-1]['my_move'] == "defect"
+
+        # Against all cooperators in pairwise mode, TFT keeps cooperating.
+        agents_coop = [
+            Agent(agent_id="tft", strategy="tit_for_tat"),
+            Agent(agent_id="coop1", strategy="always_cooperate"),
+            Agent(agent_id="coop2", strategy="always_cooperate"),
+        ]
+        env_coop = Environment(
+            agents_coop,
+            create_payoff_matrix(3),
+            network_type="fully_connected",
+            interaction_mode="pairwise",
+        )
+        env_coop.run(rounds=2)
+        assert agents_coop[0].memory[-1]['my_move'] == "cooperate"
 
 
 if __name__ == "__main__":

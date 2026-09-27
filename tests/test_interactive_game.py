@@ -10,6 +10,7 @@ This module tests the interactive gameplay functionality including:
 """
 
 import pytest
+import random
 import sys
 import os
 from unittest.mock import Mock, patch, MagicMock, call
@@ -60,18 +61,21 @@ class TestInteractiveGame:
             
     def test_setup_game_agent_creation(self):
         """Test that agents are properly created during setup."""
+        random.seed(42)  # deterministic opponent mix incl. q_learning
         game = InteractiveGame(num_agents=4, opponents=["q_learning", "generous_tit_for_tat"])
         
         # Check human player
         assert game.agents[0].agent_id == 0
         assert game.agents[0].strategy_type == "always_cooperate"
         
-        # Check AI agents have proper parameters
+        # Check AI agents have proper parameters (params live on the
+        # strategy, the universal Agent contract -- see Agent.__init__)
         q_learning_agents = [a for a in game.agents if a.strategy_type == "q_learning"]
+        assert len(q_learning_agents) > 0
         for agent in q_learning_agents:
-            assert hasattr(agent, 'learning_rate')
-            assert hasattr(agent, 'discount_factor')
-            assert hasattr(agent, 'epsilon')
+            assert agent.strategy.learning_rate == 0.1
+            assert agent.strategy.discount_factor == 0.9
+            assert agent.strategy.epsilon == 0.2
             
     @patch('builtins.input', side_effect=['c'])
     def test_get_human_move_cooperate(self, mock_input):

@@ -89,7 +89,8 @@ class TestDailyT007PairwiseTwoRounds:
 
 # Note: The TitForTat implementation in agents.py handles pairwise mode correctly.
 # It checks for 'specific_opponent_moves' first, then falls back to 'opponent_coop_proportion'.
-# In pairwise mode with opponent_coop_proportion, it uses a threshold of 0.99 to decide.
+# With aggregate 'opponent_coop_proportion', it cooperates iff the proportion meets
+# its cooperation_threshold (default 0.5, inclusive).
 
 def test_pairwise_basic():
     """Test basic functionality of the pairwise interaction model."""
@@ -142,14 +143,14 @@ def test_pairwise_basic():
     print(f"TFT agent memory: {tft_agent.memory[-1]}")
     print(f"Opponent cooperation proportion: {coop_prop}")
     
-    # The TFT implementation uses a threshold of 0.99, so with coop_prop = 0.5,
-    # it should defect in the next round
+    # coop_prop = 0.5, but a specific opponent defected, so TFT defects
+    # in the next round per the documented specific-tracking rule.
     assert coop_prop == 0.5, "Cooperation proportion should be 0.5 (1 of 2 opponents cooperated)"
-    
-    # In the third round, TFT should defect because coop_prop < 0.99
+
+    # In the third round, TFT should defect because a specific opponent defected
     moves, payoffs = env.run_round()
     print("Third round moves:", moves)
-    assert moves[2] == "defect", "Tit-for-tat agent should defect when cooperation proportion < 0.99"
+    assert moves[2] == "defect", "Tit-for-tat agent should defect when a specific opponent defected"
     
     print("Basic pairwise test passed with manual override!")
 
@@ -173,26 +174,33 @@ def test_explicit_tft_behavior():
     print(f"TFT with all cooperators (1.0): {move}")
     assert move == "cooperate", "TFT should cooperate when all opponents cooperated"
     
-    # Case 2: Some opponents defected (0.5)
+    # Case 2: Cooperation at exactly the default threshold (0.5, inclusive)
     tft_agent.memory.clear()
     tft_agent.update_memory("cooperate", {"opponent_coop_proportion": 0.5}, 1.5)
     move = tft_agent.choose_move([])
-    print(f"TFT with some defectors (0.5): {move}")
-    assert move == "defect", "TFT should defect when cooperation proportion < 0.99"
-    
+    print(f"TFT at threshold (0.5): {move}")
+    assert move == "cooperate", "TFT should cooperate when proportion meets its threshold"
+
+    # Case 2b: Cooperation below the default threshold (0.4)
+    tft_agent.memory.clear()
+    tft_agent.update_memory("cooperate", {"opponent_coop_proportion": 0.4}, 1.2)
+    move = tft_agent.choose_move([])
+    print(f"TFT below threshold (0.4): {move}")
+    assert move == "defect", "TFT should defect when proportion is below its threshold"
+
     # Case 3: All opponents defected (0.0)
     tft_agent.memory.clear()
     tft_agent.update_memory("cooperate", {"opponent_coop_proportion": 0.0}, 0.0)
     move = tft_agent.choose_move([])
     print(f"TFT with all defectors (0.0): {move}")
     assert move == "defect", "TFT should defect when all opponents defected"
-    
+
     # Case 4: Almost all cooperated (0.99)
     tft_agent.memory.clear()
     tft_agent.update_memory("cooperate", {"opponent_coop_proportion": 0.99}, 2.97)
     move = tft_agent.choose_move([])
     print(f"TFT with 99% cooperators (0.99): {move}")
-    assert move == "cooperate", "TFT should cooperate when cooperation proportion >= 0.99"
+    assert move == "cooperate", "TFT should cooperate when proportion is above its threshold"
     
     # Case 5: Test with specific_opponent_moves (preferred format)
     tft_agent.memory.clear()

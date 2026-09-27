@@ -130,16 +130,16 @@ def small_test_env(default_payoff_matrix, basic_agents, ql_agent, seed, setup_te
     agents = basic_agents[:3] + [ql_agent] # AC, AD, TFT, QL
     return Environment(agents, default_payoff_matrix, "fully_connected", {}, logger=setup_test_logging)
 
-@pytest.fixture
-@pytest.mark.parametrize("network_type, network_params", [
+@pytest.fixture(params=[
     ("fully_connected", {}),
     ("small_world", {"k": 4, "beta": 0.3}),
     ("scale_free", {"m": 2}),
     ("random", {"probability": 0.4}),
     ("regular", {"k": 4}),
 ])
-def diverse_env(network_type, network_params, default_payoff_matrix, basic_agents, ql_agent, seed, setup_test_logging):
+def diverse_env(request, default_payoff_matrix, basic_agents, ql_agent, seed, setup_test_logging):
     """Fixture providing environments with different network types."""
+    network_type, network_params = request.param
     num_agents = 10
     agents = [Agent(agent_id=i, strategy=random.choice(["always_cooperate", "always_defect", "tit_for_tat", "q_learning"])) for i in range(num_agents)]
     payoff_matrix = create_payoff_matrix(num_agents)

@@ -29,7 +29,9 @@ OUT_DIR = Path(__file__).resolve().parent
 
 def norm(value):
     if isinstance(value, dict):
-        return {str(k): norm(v) for k, v in sorted(value.items(), key=lambda kv: str(kv[0]))}
+        return {
+            str(k): norm(v) for k, v in sorted(value.items(), key=lambda kv: str(kv[0]))
+        }
     if isinstance(value, (list, tuple)):
         return [norm(v) for v in value]
     if isinstance(value, (np.integer,)):
@@ -87,7 +89,9 @@ def strategy_fixtures():
         for step, pattern in enumerate(PATTERNS):
             move = agent.choose_move([1, 2, 3])
             moves.append(move)
-            agent.update_memory(move, dict(pattern), reward=1.0 if move == "cooperate" else 2.0)
+            agent.update_memory(
+                move, dict(pattern), reward=1.0 if move == "cooperate" else 2.0
+            )
         out[name] = moves
     return {"seed": SEED, "patterns": PATTERNS, "moves": out}
 
@@ -137,7 +141,11 @@ if __name__ == "__main__":
         with tempfile.TemporaryDirectory() as tmp:
             generate(Path(tmp))
             ok = True
-            for name in ("payoff_matrices.json", "strategy_moves.json", "e2e_small_run.json"):
+            for name in (
+                "payoff_matrices.json",
+                "strategy_moves.json",
+                "e2e_small_run.json",
+            ):
                 a = sha256_of(Path(tmp) / name)
                 b = sha256_of(OUT_DIR / name)
                 status = "IDENTICAL" if a == b else "DIFFERS"

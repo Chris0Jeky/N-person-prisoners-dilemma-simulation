@@ -1,0 +1,24 @@
+# W9 gate: docs-link check (W7 script, stdlib-only so no dependency
+# install needed) on every PR and on pushes to main.
+name: Docs
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  docs-links:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          # Minor-pinned; satisfies requires-python (>=3.7). Kept uniform
+          # with the other gates even though the script is stdlib-only.
+          python-version: '3.13'
+
+      - name: Check doc links
+        run: python scripts/analysis/check_doc_links.py

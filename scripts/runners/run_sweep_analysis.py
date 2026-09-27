@@ -8,10 +8,13 @@ This script:
 3. Runs and saves detailed results for the selected scenarios
 4. Generates visualization and analysis of the results
 """
-import os
+
 import argparse
+import os
 import time
+
 from run_scenario_generator import run_scenario_generation
+
 from npdl.experiments import create_run
 
 try:
@@ -23,14 +26,16 @@ except ImportError:
     create_scenario_comparison_report = None
 
 
-def run_sweep_and_analysis(num_generate=30,
-                          eval_runs=3,
-                          save_runs=10,
-                          top_n=5,
-                          results_dir="results/generated_scenarios",
-                          analysis_dir="analysis_results",
-                          log_level="INFO",
-                          seed=0):
+def run_sweep_and_analysis(
+    num_generate=30,
+    eval_runs=3,
+    save_runs=10,
+    top_n=5,
+    results_dir="results/generated_scenarios",
+    analysis_dir="analysis_results",
+    log_level="INFO",
+    seed=0,
+):
     """Run the complete workflow of scenario generation, evaluation, and analysis.
 
     Both stages are registered: the generation stage writes its own run dir
@@ -53,7 +58,7 @@ def run_sweep_and_analysis(num_generate=30,
         top_n_to_save=top_n,
         results_dir=results_dir,
         log_level_str=log_level,
-        seed=seed
+        seed=seed,
     )
 
     # Step 2: Analyze and visualize results (registered as its own run dir)
@@ -74,12 +79,16 @@ def run_sweep_and_analysis(num_generate=30,
         seed,
         run_name=os.path.basename(analysis_dir),
     )
-    metadata_path = os.path.join(os.path.abspath(results_dir), "generated_scenarios_metadata.json")
+    metadata_path = os.path.join(
+        os.path.abspath(results_dir), "generated_scenarios_metadata.json"
+    )
     if os.path.exists(metadata_path) and create_scenario_comparison_report is not None:
         create_scenario_comparison_report(metadata_path, analysis_run.run_dir)
     else:
         if create_scenario_comparison_report is None:
-            print("Warning: scenario comparison helper unavailable; analysis step skipped.")
+            print(
+                "Warning: scenario comparison helper unavailable; analysis step skipped."
+            )
         else:
             print(f"Warning: Metadata file not found at {metadata_path}")
             print("Analysis step skipped.")
@@ -93,23 +102,55 @@ def run_sweep_and_analysis(num_generate=30,
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run scenario sweep and analysis")
-    parser.add_argument("--num_generate", type=int, default=30,
-                       help="Number of random scenarios to generate")
-    parser.add_argument("--eval_runs", type=int, default=3,
-                       help="Number of evaluation runs per scenario")
-    parser.add_argument("--save_runs", type=int, default=10,
-                       help="Number of full runs for selected scenarios")
-    parser.add_argument("--top_n", type=int, default=5,
-                       help="Number of top scenarios to save and analyze")
-    parser.add_argument("--results_dir", type=str, default="results/generated_scenarios",
-                       help="Directory to save scenario results")
-    parser.add_argument("--analysis_dir", type=str, default="analysis_results",
-                       help="Directory to save analysis results")
-    parser.add_argument("--log_level", type=str, default="INFO",
-                       choices=["DEBUG", "INFO", "WARNING", "ERROR"],
-                       help="Logging level")
-    parser.add_argument("--seed", type=int, default=0,
-                       help="Run seed shared by both stages; re-running with the same seed reproduces manifests")
+    parser.add_argument(
+        "--num_generate",
+        type=int,
+        default=30,
+        help="Number of random scenarios to generate",
+    )
+    parser.add_argument(
+        "--eval_runs",
+        type=int,
+        default=3,
+        help="Number of evaluation runs per scenario",
+    )
+    parser.add_argument(
+        "--save_runs",
+        type=int,
+        default=10,
+        help="Number of full runs for selected scenarios",
+    )
+    parser.add_argument(
+        "--top_n",
+        type=int,
+        default=5,
+        help="Number of top scenarios to save and analyze",
+    )
+    parser.add_argument(
+        "--results_dir",
+        type=str,
+        default="results/generated_scenarios",
+        help="Directory to save scenario results",
+    )
+    parser.add_argument(
+        "--analysis_dir",
+        type=str,
+        default="analysis_results",
+        help="Directory to save analysis results",
+    )
+    parser.add_argument(
+        "--log_level",
+        type=str,
+        default="INFO",
+        choices=["DEBUG", "INFO", "WARNING", "ERROR"],
+        help="Logging level",
+    )
+    parser.add_argument(
+        "--seed",
+        type=int,
+        default=0,
+        help="Run seed shared by both stages; re-running with the same seed reproduces manifests",
+    )
 
     args = parser.parse_args()
 
@@ -121,5 +162,5 @@ if __name__ == "__main__":
         results_dir=args.results_dir,
         analysis_dir=args.analysis_dir,
         log_level=args.log_level,
-        seed=args.seed
+        seed=args.seed,
     )

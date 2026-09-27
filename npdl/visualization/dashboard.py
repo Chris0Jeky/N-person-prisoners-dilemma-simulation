@@ -5,37 +5,38 @@ This module contains the implementation of the visualization dashboard
 using Flask and Dash.
 """
 
-import os
-import sys
+import importlib.util
 import json
-import dash
 import logging
-from dash import dcc, html, Input, Output, State, callback
+import os
+import subprocess
+import sys
+from pathlib import Path
+
+import dash
 import dash_bootstrap_components as dbc
+import pandas as pd
 import plotly.express as px
 import plotly.graph_objects as go
+from dash import Input, Output, State, callback, dcc, html
 from flask import Flask
-import pandas as pd
-import subprocess
-from pathlib import Path
-import importlib.util
 
 from npdl.visualization.data_loader import (
+    get_available_runs,
     get_available_scenarios,
-    load_scenario_results,
     get_cooperation_rates,
     get_strategy_cooperation_rates,
     load_network_structure,
-    get_available_runs,
+    load_scenario_results,
 )
 from npdl.visualization.data_processor import (
     get_payoffs_by_strategy,
-    get_strategy_scores,
     get_strategy_colors,
+    get_strategy_scores,
     prepare_network_data,
 )
-from npdl.visualization.network_viz import create_network_figure
 from npdl.visualization.matplotlib_config import configure_matplotlib
+from npdl.visualization.network_viz import create_network_figure
 
 # Configure matplotlib to reduce debug output
 configure_matplotlib()

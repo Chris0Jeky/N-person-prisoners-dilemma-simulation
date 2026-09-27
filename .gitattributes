@@ -38,3 +38,9 @@ requirements.txt text eol=lf
 
 # Jupyter notebooks
 *.ipynb text eol=lf
+
+# W9: bytes-pinned fixture (test_w5_golden_fixture hashes exact bytes,
+# captured from CRLF worktree bytes). Overrides '*.csv text' above:
+# without this, Linux checkouts keep the LF blob while Windows gets
+# CRLF, so the hash fails on CI only. Forced CRLF everywhere instead.
+tests/fixtures/w5_golden/strategy_stats.csv text eol=crlf

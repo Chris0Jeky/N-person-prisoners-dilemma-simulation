@@ -11,19 +11,13 @@ import json
 
 import pytest
 
-pytest.importorskip(
-    "dash", reason="dashboard stack not installed in minimal env"
-)
+pytest.importorskip("dash", reason="dashboard stack not installed in minimal env")
 pytest.importorskip(
     "dash_bootstrap_components",
     reason="dashboard stack not installed in minimal env",
 )
-pytest.importorskip(
-    "plotly", reason="dashboard stack not installed in minimal env"
-)
-pytest.importorskip(
-    "flask", reason="dashboard stack not installed in minimal env"
-)
+pytest.importorskip("plotly", reason="dashboard stack not installed in minimal env")
+pytest.importorskip("flask", reason="dashboard stack not installed in minimal env")
 
 import pandas as pd
 import plotly.graph_objects as go
@@ -153,18 +147,14 @@ class TestDashboardSmoke:
         assert len(fig.data) == len(STRATEGIES)
         assert all(trace.type == "box" for trace in fig.data)
 
-    def test_network_figure_has_edge_and_node_traces(
-        self, smoke_results_dir
-    ):
+    def test_network_figure_has_edge_and_node_traces(self, smoke_results_dir):
         """Network tab renders edges plus one marker per agent."""
         fig = update_network_graph(SCENARIO, 0, 1, 1)
         assert isinstance(fig, go.Figure)
         assert len(fig.data) == 2  # edge trace + node trace
         assert len(fig.data[1].x) == 4
 
-    def test_empty_selection_returns_placeholder_figures(
-        self, smoke_results_dir
-    ):
+    def test_empty_selection_returns_placeholder_figures(self, smoke_results_dir):
         """Missing scenario/strategies yield placeholders, not errors."""
         fig = update_cooperation_graph(None, 0, STRATEGIES, [0, 2], 1)
         assert isinstance(fig, go.Figure)

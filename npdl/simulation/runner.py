@@ -5,23 +5,24 @@ This module provides the functions to run simulations with different
 configurations, scenarios, and options.
 """
 
-import os
-import logging
 import json
-import time
+import logging
+import os
 import random
+import time
+from typing import Any, Dict, List, Optional, Tuple, Union
+
 import numpy as np
 import pandas as pd
-from typing import Dict, List, Optional, Any, Union, Tuple
 
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment
-from npdl.core.utils import create_payoff_matrix
 from npdl.core.logging_utils import (
-    setup_logging,
-    log_experiment_summary,
     generate_ascii_chart,
+    log_experiment_summary,
+    setup_logging,
 )
+from npdl.core.utils import create_payoff_matrix
 
 # For analysis
 try:
@@ -193,22 +194,24 @@ def setup_experiment(
 
     # Create environment
     interaction_mode = scenario.get("interaction_mode", "neighborhood")
-    pairwise_mode = scenario.get("pairwise_mode", "aggregate")  # aggregate or individual
-    
+    pairwise_mode = scenario.get(
+        "pairwise_mode", "aggregate"
+    )  # aggregate or individual
+
     # Check if we should use true pairwise implementation
     if interaction_mode == "pairwise" and pairwise_mode == "individual":
         # Use the true pairwise implementation
         from npdl.core.true_pairwise_adapter import TruePairwiseSimulationAdapter
-        
+
         # Create config for true pairwise
         true_pairwise_config = {
-            'agents': scenario.get('agent_strategies', []),
-            'rounds': scenario.get('rounds', 100),
-            'episodes': scenario.get('episodes', 1),
-            'noise_level': scenario.get('noise_level', 0.0),
-            'reset_between_episodes': scenario.get('reset_between_episodes', True)
+            "agents": scenario.get("agent_strategies", []),
+            "rounds": scenario.get("rounds", 100),
+            "episodes": scenario.get("episodes", 1),
+            "noise_level": scenario.get("noise_level", 0.0),
+            "reset_between_episodes": scenario.get("reset_between_episodes", True),
         }
-        
+
         # Create and return adapter
         adapter = TruePairwiseSimulationAdapter(true_pairwise_config)
         adapter.setup()
@@ -527,12 +530,15 @@ def run_simulation(
             start_run_time = time.time()
             try:
                 # Check if we're using the true pairwise adapter
-                from npdl.core.true_pairwise_adapter import TruePairwiseSimulationAdapter
+                from npdl.core.true_pairwise_adapter import (
+                    TruePairwiseSimulationAdapter,
+                )
+
                 if isinstance(env, TruePairwiseSimulationAdapter):
                     # Run true pairwise simulation
                     simulation_results = env.run()
                     # Convert results to expected format
-                    round_results = env.get_results_for_analysis()['rounds']
+                    round_results = env.get_results_for_analysis()["rounds"]
                 else:
                     # Standard environment simulation
                     round_results = env.run_simulation(
@@ -552,8 +558,13 @@ def run_simulation(
 
             # Log summary for this specific run
             from npdl.core.true_pairwise_adapter import TruePairwiseSimulationAdapter
-            agents_list = env.agents if isinstance(env, TruePairwiseSimulationAdapter) else env.agents
-            
+
+            agents_list = (
+                env.agents
+                if isinstance(env, TruePairwiseSimulationAdapter)
+                else env.agents
+            )
+
             log_experiment_summary(
                 scenario,
                 run_number,

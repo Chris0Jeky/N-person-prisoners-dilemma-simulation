@@ -5,11 +5,13 @@ These tests verify that TFT agents respond to the proportion of cooperation
 in their ecosystem rather than just mimicking random neighbors.
 """
 
+from typing import Dict, List
+
+import networkx as nx
 import pytest
-from typing import List, Dict
+
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment
-import networkx as nx
 from npdl.core.utils import create_payoff_matrix
 
 
@@ -20,7 +22,9 @@ class TestDailyT028TftWithCooperators:
         agents = [Agent(agent_id=0, strategy="tit_for_tat")] + [
             Agent(agent_id=i, strategy="always_cooperate") for i in range(1, 4)
         ]
-        env = Environment(agents, create_payoff_matrix(4), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(4), network_type="fully_connected"
+        )
         env.run_round()
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
@@ -53,7 +57,7 @@ class TestDailyT008FreshTftCooperates:
 
 class TestTFTEcosystemBehavior:
     """Test TFT behavior based on ecosystem cooperation proportion."""
-    
+
     def test_tft_cooperates_in_cooperative_neighborhood(self):
         """TFT should cooperate when majority of neighbors cooperate."""
         # Create a small fully connected network
@@ -63,7 +67,7 @@ class TestTFTEcosystemBehavior:
             Agent(agent_id="coop2", strategy="always_cooperate"),
             Agent(agent_id="defect1", strategy="always_defect"),
         ]
-        
+
         # Create fully connected network
         env = Environment(
             agents,
@@ -78,18 +82,18 @@ class TestTFTEcosystemBehavior:
         # Get TFT agent's last round info
         tft_agent = agents[0]
         last_round = tft_agent.memory[-1]
-        neighbor_moves = last_round['neighbor_moves']
-        
+        neighbor_moves = last_round["neighbor_moves"]
+
         # Verify TFT saw 2 cooperators and 1 defector (66.7% cooperation)
         coop_count = sum(1 for move in neighbor_moves.values() if move == "cooperate")
         assert coop_count == 2
         assert len(neighbor_moves) == 3
-        
+
         # Run another round - TFT should cooperate with high cooperation proportion
         env.run(rounds=1)
         tft_second_round = tft_agent.memory[-1]
-        assert tft_second_round['my_move'] == "cooperate"
-    
+        assert tft_second_round["my_move"] == "cooperate"
+
     def test_tft_defects_in_defective_neighborhood(self):
         """TFT should defect when majority of neighbors defect."""
         agents = [
@@ -98,7 +102,7 @@ class TestTFTEcosystemBehavior:
             Agent(agent_id="defect2", strategy="always_defect"),
             Agent(agent_id="coop1", strategy="always_cooperate"),
         ]
-        
+
         env = Environment(
             agents,
             create_payoff_matrix(4),
@@ -112,18 +116,18 @@ class TestTFTEcosystemBehavior:
         # Get TFT agent's info
         tft_agent = agents[0]
         last_round = tft_agent.memory[-1]
-        neighbor_moves = last_round['neighbor_moves']
-        
+        neighbor_moves = last_round["neighbor_moves"]
+
         # Verify TFT saw 1 cooperator and 2 defectors (33.3% cooperation)
         coop_count = sum(1 for move in neighbor_moves.values() if move == "cooperate")
         assert coop_count == 1
         assert len(neighbor_moves) == 3
-        
+
         # Run another round - TFT should defect with low cooperation proportion
         env.run(rounds=1)
         tft_second_round = tft_agent.memory[-1]
-        assert tft_second_round['my_move'] == "defect"
-    
+        assert tft_second_round["my_move"] == "defect"
+
     def test_tft_threshold_behavior(self):
         """Test TFT behavior at different cooperation thresholds."""
         # Test with 50% cooperation - should cooperate with default 0.5 threshold
@@ -132,7 +136,7 @@ class TestTFTEcosystemBehavior:
             Agent(agent_id="coop1", strategy="always_cooperate"),
             Agent(agent_id="defect1", strategy="always_defect"),
         ]
-        
+
         env = Environment(
             agents,
             create_payoff_matrix(3),
@@ -142,18 +146,20 @@ class TestTFTEcosystemBehavior:
 
         # Run two rounds
         env.run(rounds=2)
-        
+
         tft_agent = agents[0]
         # At exactly 50% cooperation, TFT should cooperate (threshold is inclusive)
-        assert tft_agent.memory[-1]['my_move'] == "cooperate"
-        
+        assert tft_agent.memory[-1]["my_move"] == "cooperate"
+
         # Test with higher threshold - should defect at 50% cooperation
         agents_strict = [
-            Agent(agent_id="tft_strict", strategy="tit_for_tat", cooperation_threshold=0.6),
+            Agent(
+                agent_id="tft_strict", strategy="tit_for_tat", cooperation_threshold=0.6
+            ),
             Agent(agent_id="coop1", strategy="always_cooperate"),
             Agent(agent_id="defect1", strategy="always_defect"),
         ]
-        
+
         env_strict = Environment(
             agents_strict,
             create_payoff_matrix(3),
@@ -161,11 +167,11 @@ class TestTFTEcosystemBehavior:
             interaction_mode="neighborhood",
         )
         env_strict.run(rounds=2)
-        
+
         tft_strict = agents_strict[0]
         # With 50% cooperation and 60% threshold, TFT should defect
-        assert tft_strict.memory[-1]['my_move'] == "defect"
-    
+        assert tft_strict.memory[-1]["my_move"] == "defect"
+
     def test_tft_small_world_vs_fully_connected(self):
         """Test TFT behavior differs based on network topology."""
         # Create 6 agents: 1 TFT, 3 cooperators, 2 defectors
@@ -177,10 +183,12 @@ class TestTFTEcosystemBehavior:
             Agent(agent_id="defect1", strategy="always_defect"),
             Agent(agent_id="defect2", strategy="always_defect"),
         ]
-        
+
         # Test 1: Fully connected - TFT sees all agents
-        agents_fc = [Agent(a.agent_id, a.strategy_type, cooperation_threshold=0.5)
-                     for a in agents_template]
+        agents_fc = [
+            Agent(a.agent_id, a.strategy_type, cooperation_threshold=0.5)
+            for a in agents_template
+        ]
         env_fc = Environment(
             agents_fc,
             create_payoff_matrix(6),
@@ -188,28 +196,32 @@ class TestTFTEcosystemBehavior:
             interaction_mode="neighborhood",
         )
         env_fc.run(rounds=2)
-        
+
         tft_fc = agents_fc[0]
-        fc_neighbors = tft_fc.memory[-2]['neighbor_moves']  # Second-to-last round
+        fc_neighbors = tft_fc.memory[-2]["neighbor_moves"]  # Second-to-last round
         assert len(fc_neighbors) == 5  # TFT sees all 5 other agents
-        
+
         # In fully connected, TFT sees 3 cooperators and 2 defectors (60% cooperation)
         # So it should cooperate
-        assert tft_fc.memory[-1]['my_move'] == "cooperate"
-        
+        assert tft_fc.memory[-1]["my_move"] == "cooperate"
+
         # Test 2: Small world where TFT only connects to defectors
-        agents_sw = [Agent(a.agent_id, a.strategy_type, cooperation_threshold=0.5)
-                     for a in agents_template]
+        agents_sw = [
+            Agent(a.agent_id, a.strategy_type, cooperation_threshold=0.5)
+            for a in agents_template
+        ]
         network_sw = nx.Graph()
         network_sw.add_nodes_from([a.agent_id for a in agents_sw])
-        network_sw.add_edges_from([
-            ("tft", "defect1"),  # TFT to defect1
-            ("tft", "defect2"),  # TFT to defect2
-            ("coop1", "coop2"),  # coop1 to coop2
-            ("coop2", "coop3"),  # coop2 to coop3
-            ("coop3", "coop1"),  # coop3 to coop1
-            ("defect1", "defect2"),  # defect1 to defect2
-        ])
+        network_sw.add_edges_from(
+            [
+                ("tft", "defect1"),  # TFT to defect1
+                ("tft", "defect2"),  # TFT to defect2
+                ("coop1", "coop2"),  # coop1 to coop2
+                ("coop2", "coop3"),  # coop2 to coop3
+                ("coop3", "coop1"),  # coop3 to coop1
+                ("defect1", "defect2"),  # defect1 to defect2
+            ]
+        )
 
         env_sw = Environment(
             agents_sw,
@@ -219,20 +231,20 @@ class TestTFTEcosystemBehavior:
             interaction_mode="neighborhood",
         )
         env_sw.run(rounds=2)
-        
+
         tft_sw = agents_sw[0]
-        sw_neighbors = tft_sw.memory[-2]['neighbor_moves']
+        sw_neighbors = tft_sw.memory[-2]["neighbor_moves"]
         assert len(sw_neighbors) == 2  # TFT only sees 2 neighbors
-        
+
         # In small world, TFT only sees defectors (0% cooperation)
         # So it should defect
-        assert tft_sw.memory[-1]['my_move'] == "defect"
-    
+        assert tft_sw.memory[-1]["my_move"] == "defect"
+
     def test_proportional_tft_behavior(self):
         """Test ProportionalTitForTat probabilistic behavior."""
         # Run multiple trials to test probabilistic behavior
         cooperation_results = []
-        
+
         for _ in range(100):  # Run 100 trials
             agents = [
                 Agent(agent_id="ptft", strategy="proportional_tit_for_tat"),
@@ -240,7 +252,7 @@ class TestTFTEcosystemBehavior:
                 Agent(agent_id="coop2", strategy="always_cooperate"),
                 Agent(agent_id="defect1", strategy="always_defect"),
             ]
-            
+
             env = Environment(
                 agents,
                 create_payoff_matrix(4),
@@ -248,16 +260,16 @@ class TestTFTEcosystemBehavior:
                 interaction_mode="neighborhood",
             )
             env.run(rounds=2)
-            
+
             ptft_agent = agents[0]
             # PTFT saw 2/3 cooperation (66.7%)
             # So it should cooperate ~66.7% of the time
-            cooperation_results.append(ptft_agent.memory[-1]['my_move'] == "cooperate")
-        
+            cooperation_results.append(ptft_agent.memory[-1]["my_move"] == "cooperate")
+
         # Check that cooperation rate is approximately 66.7% (allow some variance)
         cooperation_rate = sum(cooperation_results) / len(cooperation_results)
         assert 0.57 < cooperation_rate < 0.77  # Within 10% of expected 0.667
-    
+
     def test_tft_pairwise_mode_compatibility(self):
         """Verify TFT still works correctly in pairwise mode."""
         agents = [
@@ -265,7 +277,7 @@ class TestTFTEcosystemBehavior:
             Agent(agent_id="coop", strategy="always_cooperate"),
             Agent(agent_id="defect", strategy="always_defect"),
         ]
-        
+
         env = Environment(
             agents,
             create_payoff_matrix(3),
@@ -278,18 +290,18 @@ class TestTFTEcosystemBehavior:
         last_round = tft_agent.memory[-1]
 
         # In pairwise mode, TFT records the aggregate cooperation proportion
-        assert 'neighbor_moves' in last_round
-        neighbor_info = last_round['neighbor_moves']
+        assert "neighbor_moves" in last_round
+        neighbor_info = last_round["neighbor_moves"]
 
         # Should have opponent_coop_proportion in pairwise mode
-        assert 'opponent_coop_proportion' in neighbor_info
+        assert "opponent_coop_proportion" in neighbor_info
 
         # With 1 cooperator and 1 defector, proportion should be 0.5
-        assert neighbor_info['opponent_coop_proportion'] == 0.5
+        assert neighbor_info["opponent_coop_proportion"] == 0.5
 
         # A specific opponent defected, so TFT defects per the documented
         # specific-tracking rule (README: "Defects if ANY opponent defected").
-        assert tft_agent.memory[-1]['my_move'] == "defect"
+        assert tft_agent.memory[-1]["my_move"] == "defect"
 
         # Against all cooperators in pairwise mode, TFT keeps cooperating.
         agents_coop = [
@@ -304,7 +316,7 @@ class TestTFTEcosystemBehavior:
             interaction_mode="pairwise",
         )
         env_coop.run(rounds=2)
-        assert agents_coop[0].memory[-1]['my_move'] == "cooperate"
+        assert agents_coop[0].memory[-1]["my_move"] == "cooperate"
 
 
 if __name__ == "__main__":
@@ -319,7 +331,9 @@ class TestDailyT038TftRetaliatesLoneDefector:
             Agent(agent_id=0, strategy="tit_for_tat"),
             Agent(agent_id=1, strategy="always_defect"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         first_moves, _ = env.run_round()
         assert first_moves[0] == "cooperate"
         second_moves, _ = env.run_round()
@@ -332,10 +346,12 @@ class TestDailyT048TftMemoryRecordsMove:
     def test_tft_memory_records_opening_move(self):
         tft_agent = Agent(agent_id=0, strategy="tit_for_tat")
         agents = [tft_agent, Agent(agent_id=1, strategy="always_cooperate")]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert moves[0] == "cooperate"
-        assert tft_agent.memory[-1]['my_move'] == "cooperate"
+        assert tft_agent.memory[-1]["my_move"] == "cooperate"
 
 
 class TestDailyT058MutualTftStable:
@@ -346,7 +362,9 @@ class TestDailyT058MutualTftStable:
             Agent(agent_id=0, strategy="tit_for_tat"),
             Agent(agent_id=1, strategy="tit_for_tat"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         for _ in range(3):
             moves, _ = env.run_round()
             assert set(moves.values()) == {"cooperate"}
@@ -360,7 +378,9 @@ class TestDailyT068RetaliationPersists:
             Agent(agent_id=0, strategy="tit_for_tat"),
             Agent(agent_id=1, strategy="always_defect"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         env.run_round()
         for _ in range(2):
             moves, _ = env.run_round()
@@ -376,7 +396,9 @@ class TestDailyT078ThreeWayFirstRound:
             Agent(agent_id=1, strategy="always_cooperate"),
             Agent(agent_id=2, strategy="always_defect"),
         ]
-        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(3), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate", "defect"}
 
@@ -386,7 +408,9 @@ class TestDailyT088LoneCooperator:
 
     def test_lone_cooperator_round(self):
         agents = [Agent(agent_id=0, strategy="always_cooperate")]
-        env = Environment(agents, create_payoff_matrix(1), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(1), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert moves == {0: "cooperate"}
 
@@ -399,7 +423,9 @@ class TestDailyT098TftPairOpensClean:
             Agent(agent_id=0, strategy="tit_for_tat"),
             Agent(agent_id=1, strategy="tit_for_tat"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
 
@@ -412,7 +438,9 @@ class TestDailyT108TftRetaliates:
             Agent(agent_id=0, strategy="tit_for_tat"),
             Agent(agent_id=1, strategy="always_defect"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         env.run_round()
         moves, _ = env.run_round()
         assert moves == {0: "defect", 1: "defect"}
@@ -427,7 +455,9 @@ class TestDailyT118TftTrioOpensClean:
             Agent(agent_id=1, strategy="tit_for_tat"),
             Agent(agent_id=2, strategy="tit_for_tat"),
         ]
-        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(3), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
 
@@ -440,7 +470,9 @@ class TestDailyT128TftMirrorsCooperator:
             Agent(agent_id=0, strategy="tit_for_tat"),
             Agent(agent_id=1, strategy="always_cooperate"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         env.run_round()
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
@@ -455,7 +487,9 @@ class TestDailyT138DefectorTrio:
             Agent(agent_id=1, strategy="always_defect"),
             Agent(agent_id=2, strategy="always_defect"),
         ]
-        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(3), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"defect"}
 
@@ -469,7 +503,9 @@ class TestDailyT148TftTrio:
             Agent(agent_id=4, strategy="tit_for_tat"),
             Agent(agent_id=5, strategy="tit_for_tat"),
         ]
-        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(3), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
 
@@ -483,7 +519,9 @@ class TestDailyT158CooperatorTrio:
             Agent(agent_id=7, strategy="always_cooperate"),
             Agent(agent_id=8, strategy="always_cooperate"),
         ]
-        env = Environment(agents, create_payoff_matrix(3), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(3), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
 
@@ -496,7 +534,9 @@ class TestDailyT168DefectorPair:
             Agent(agent_id=9, strategy="always_defect"),
             Agent(agent_id=10, strategy="always_defect"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"defect"}
 
@@ -509,7 +549,9 @@ class TestDailyT178CooperatorPair:
             Agent(agent_id=11, strategy="always_cooperate"),
             Agent(agent_id=12, strategy="always_cooperate"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
 
@@ -522,7 +564,9 @@ class TestDailyT188TftPair:
             Agent(agent_id=13, strategy="tit_for_tat"),
             Agent(agent_id=14, strategy="tit_for_tat"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
 
@@ -535,7 +579,9 @@ class TestDailyT198PavlovPair:
             Agent(agent_id=15, strategy="pavlov"),
             Agent(agent_id=16, strategy="pavlov"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate"}
 
@@ -548,7 +594,9 @@ class TestDailyT208MixedPairOpens:
             Agent(agent_id=17, strategy="tit_for_tat"),
             Agent(agent_id=18, strategy="always_defect"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"cooperate", "defect"}
 
@@ -561,6 +609,8 @@ class TestDailyT218DefectorPairOpens:
             Agent(agent_id=19, strategy="always_defect"),
             Agent(agent_id=20, strategy="always_defect"),
         ]
-        env = Environment(agents, create_payoff_matrix(2), network_type="fully_connected")
+        env = Environment(
+            agents, create_payoff_matrix(2), network_type="fully_connected"
+        )
         moves, _ = env.run_round()
         assert set(moves.values()) == {"defect"}

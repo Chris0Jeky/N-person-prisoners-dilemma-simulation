@@ -9,9 +9,10 @@ were added.
 """
 
 import random
-import numpy as np
-from collections import deque
 from abc import ABC, abstractmethod
+from collections import deque
+
+import numpy as np
 
 # Constants
 COOPERATE, DEFECT = 0, 1
@@ -70,12 +71,12 @@ class StatisticalSummaryStrategy(StateStrategy):
             return "Opponent_Disposition_Unknown"
 
         stats = self.opponent_stats[opponent_id]
-        total_moves = stats['cooperated'] + stats['defected']
+        total_moves = stats["cooperated"] + stats["defected"]
 
         if total_moves == 0:
             return "Opponent_Disposition_Unknown"
 
-        coop_rate = stats['cooperated'] / total_moves
+        coop_rate = stats["cooperated"] / total_moves
 
         # Discretize into categories
         if coop_rate < 0.2:
@@ -92,12 +93,12 @@ class StatisticalSummaryStrategy(StateStrategy):
     def update_stats(self, opponent_id, opponent_move):
         """Initialize the statistics entry for a new opponent."""
         if opponent_id not in self.opponent_stats:
-            self.opponent_stats[opponent_id] = {'cooperated': 0, 'defected': 0}
+            self.opponent_stats[opponent_id] = {"cooperated": 0, "defected": 0}
 
         if opponent_move == COOPERATE:
-            self.opponent_stats[opponent_id]['cooperated'] += 1
+            self.opponent_stats[opponent_id]["cooperated"] += 1
         else:
-            self.opponent_stats[opponent_id]['defected'] += 1
+            self.opponent_stats[opponent_id]["defected"] += 1
 
     def reset(self):
         """Reset opponent statistics for a new run."""
@@ -132,13 +133,13 @@ class EpsilonGreedyStrategy(ActionStrategy):
     def choose_action(self, q_values, **kwargs):
         """Explore with probability epsilon, otherwise exploit."""
         if random.random() < self.epsilon:
-            return random.choice(['cooperate', 'defect'])
+            return random.choice(["cooperate", "defect"])
         else:
             # Choose action with highest Q-value
-            if q_values['cooperate'] >= q_values['defect']:
-                return 'cooperate'
+            if q_values["cooperate"] >= q_values["defect"]:
+                return "cooperate"
             else:
-                return 'defect'
+                return "defect"
 
     def set_epsilon(self, epsilon):
         """Set the exploration rate for the epsilon-greedy policy."""
@@ -162,8 +163,8 @@ class SoftmaxStrategy(ActionStrategy):
     def choose_action(self, q_values, **kwargs):
         """Choose an action from the Q-values with softmax exploration."""
         # Get Q-values
-        q_c = q_values['cooperate']
-        q_d = q_values['defect']
+        q_c = q_values["cooperate"]
+        q_d = q_values["defect"]
 
         # Normalize Q-values to prevent overflow
         max_q = max(q_c, q_d)
@@ -184,11 +185,12 @@ class SoftmaxStrategy(ActionStrategy):
         # Decay temperature
         self.step_count += 1
         if self.step_count % 10 == 0:  # Decay every 10 steps
-            self.temperature = max(self.min_temperature,
-                                 self.temperature * self.decay_rate)
+            self.temperature = max(
+                self.min_temperature, self.temperature * self.decay_rate
+            )
 
         # Choose action based on probability
-        return 'cooperate' if random.random() < p_cooperate else 'defect'
+        return "cooperate" if random.random() < p_cooperate else "defect"
 
     def reset(self):
         """Restore the initial temperature for a new run."""

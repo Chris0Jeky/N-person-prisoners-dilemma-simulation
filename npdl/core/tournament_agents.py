@@ -29,6 +29,7 @@ COOPERATE, DEFECT = 0, 1
 # --- Base Agents ---
 class BaseAgent:
     """Minimal shared agent interface for tournament entries."""
+
     def __init__(self, agent_id, strategy_name):
         self.agent_id, self.strategy_name = agent_id, strategy_name
         self.total_score = 0
@@ -40,6 +41,7 @@ class BaseAgent:
 
 class StaticAgent(BaseAgent):
     """Static baseline agent with a fixed strategy and execution noise."""
+
     def __init__(self, agent_id, strategy_name="TFT", error_rate=0.0, **kwargs):
         super().__init__(agent_id, strategy_name)
         self.strategy_name = strategy_name
@@ -54,11 +56,16 @@ class StaticAgent(BaseAgent):
 
     def _apply_error(self, intended_move):
         """Apply error rate to the intended move"""
-        if (self.strategy_name == "TFT-E" and self.initial_error_rate > 0
-                and self.error_decay_rate is not None):
+        if (
+            self.strategy_name == "TFT-E"
+            and self.initial_error_rate > 0
+            and self.error_decay_rate is not None
+        ):
             self.round_count += 1
             # Exponential decay: error_rate = initial_rate * decay_rate^round
-            self.error_rate = self.initial_error_rate * (self.error_decay_rate ** self.round_count)
+            self.error_rate = self.initial_error_rate * (
+                self.error_decay_rate**self.round_count
+            )
             # Stop decaying when we get very close to 0
             if self.error_rate < 0.001:
                 self.error_rate = 0.0
@@ -113,7 +120,9 @@ class StaticAgent(BaseAgent):
     def record_neighborhood_outcome(self, coop_ratio, reward):
         """Bank the reward and note the neighborhood move for a new run."""
         self.total_score += reward
-        self.last_neighborhood_move = COOPERATE if coop_ratio and coop_ratio >= 0.5 else DEFECT
+        self.last_neighborhood_move = (
+            COOPERATE if coop_ratio and coop_ratio >= 0.5 else DEFECT
+        )
 
     def reset(self):
         """Clear tracked opponent moves and restore the default move."""
@@ -127,6 +136,7 @@ class StaticAgent(BaseAgent):
 # --- Specialized Q-Learning Agents ---
 class PairwiseAdaptiveQLearner(BaseAgent):
     """Q-learning agent that tracks each pairwise opponent separately."""
+
     def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "PairwiseAdaptive")
         self.params = params
@@ -136,7 +146,8 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         if opponent_id not in self.histories:
             self.histories[opponent_id] = self._make_history_deque()
         history = self.histories[opponent_id]
-        if len(history) < 2: return "start"
+        if len(history) < 2:
+            return "start"
         return str(tuple(history))
 
     def choose_pairwise_action(self, opponent_id):
@@ -157,15 +168,20 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         if random.random() < epsilon:
             action = random.choice([COOPERATE, DEFECT])
         else:
-            action = COOPERATE if q_table[state][COOPERATE] >= q_table[state][DEFECT] else DEFECT
-        self.last_contexts[opponent_id] = {'state': state, 'action': action}
+            action = (
+                COOPERATE
+                if q_table[state][COOPERATE] >= q_table[state][DEFECT]
+                else DEFECT
+            )
+        self.last_contexts[opponent_id] = {"state": state, "action": action}
         return action
 
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
         """Record the reward from a pairwise encounter."""
         self.total_score += reward
         context = self.last_contexts.get(opponent_id)
-        if not context: return
+        if not context:
+            return
 
         # Initialize if needed
         if opponent_id not in self.histories:
@@ -183,38 +199,50 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         # Initialize next state if needed
         if next_state not in q_table:
             q_table[next_state] = self._make_q_dict()
-        old_q = q_table[context['state']][context['action']]
+        old_q = q_table[context["state"]][context["action"]]
         next_max_q = max(q_table[next_state].values())
-        df = self.params.get('df', 0.9)
-        q_table[context['state']][context['action']] = old_q + lr * (reward + df * next_max_q - old_q)
+        df = self.params.get("df", 0.9)
+        q_table[context["state"]][context["action"]] = old_q + lr * (
+            reward + df * next_max_q - old_q
+        )
         self.reward_windows[opponent_id].append(reward)
         self._adapt_parameters(opponent_id)
 
     def _adapt_parameters(self, opponent_id):
-        win_size = self.params.get('reward_window_size')
-        if not win_size: return
+        win_size = self.params.get("reward_window_size")
+        if not win_size:
+            return
 
         window = self.reward_windows[opponent_id]
-        if len(window) < win_size: return
+        if len(window) < win_size:
+            return
 
         half = win_size // 2
-        adapt_factor = self.params.get('adaptation_factor', 1.05)
-        min_lr = self.params.get('min_lr', 0.05)
-        max_lr = self.params.get('max_lr', 0.5)
-        min_eps = self.params.get('min_eps', 0.01)
-        max_eps = self.params.get('max_eps', 0.5)
+        adapt_factor = self.params.get("adaptation_factor", 1.05)
+        min_lr = self.params.get("min_lr", 0.05)
+        max_lr = self.params.get("max_lr", 0.5)
+        min_eps = self.params.get("min_eps", 0.01)
+        max_eps = self.params.get("max_eps", 0.5)
 
         if np.mean(list(window)[half:]) > np.mean(list(window)[:half]):
-            self.learning_rates[opponent_id] = max(min_lr, self.learning_rates[opponent_id] / adapt_factor)
-            self.epsilons[opponent_id] = max(min_eps, self.epsilons[opponent_id] / adapt_factor)
+            self.learning_rates[opponent_id] = max(
+                min_lr, self.learning_rates[opponent_id] / adapt_factor
+            )
+            self.epsilons[opponent_id] = max(
+                min_eps, self.epsilons[opponent_id] / adapt_factor
+            )
         else:
-            self.learning_rates[opponent_id] = min(max_lr, self.learning_rates[opponent_id] * adapt_factor)
-            self.epsilons[opponent_id] = min(max_eps, self.epsilons[opponent_id] * adapt_factor)
+            self.learning_rates[opponent_id] = min(
+                max_lr, self.learning_rates[opponent_id] * adapt_factor
+            )
+            self.epsilons[opponent_id] = min(
+                max_eps, self.epsilons[opponent_id] * adapt_factor
+            )
 
     def choose_neighborhood_action(self, coop_ratio):
         """Choose action for neighborhood game based on cooperation ratio"""
         state = self._get_neighborhood_state(coop_ratio)
-        epsilon = self.params.get('initial_eps', self.params.get('eps', 0.1))
+        epsilon = self.params.get("initial_eps", self.params.get("eps", 0.1))
 
         # Initialize neighborhood state if needed
         if state not in self.neighborhood_q_table:
@@ -223,15 +251,23 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         if random.random() < self.neighborhood_epsilon:
             action = random.choice([COOPERATE, DEFECT])
         else:
-            action = COOPERATE if self.neighborhood_q_table[state][COOPERATE] >= self.neighborhood_q_table[state][DEFECT] else DEFECT
+            action = (
+                COOPERATE
+                if self.neighborhood_q_table[state][COOPERATE]
+                >= self.neighborhood_q_table[state][DEFECT]
+                else DEFECT
+            )
 
-        self.last_neighborhood_context = {'state': state, 'action': action}
+        self.last_neighborhood_context = {"state": state, "action": action}
         return action
 
     def record_neighborhood_outcome(self, coop_ratio, reward):
         """Record outcome for neighborhood game"""
         self.total_score += reward
-        if not hasattr(self, 'last_neighborhood_context') or not self.last_neighborhood_context:
+        if (
+            not hasattr(self, "last_neighborhood_context")
+            or not self.last_neighborhood_context
+        ):
             return
 
         next_state = self._get_neighborhood_state(coop_ratio)
@@ -240,12 +276,15 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         if next_state not in self.neighborhood_q_table:
             self.neighborhood_q_table[next_state] = self._make_q_dict()
 
-        old_q = self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']]
+        old_q = self.neighborhood_q_table[self.last_neighborhood_context["state"]][
+            self.last_neighborhood_context["action"]
+        ]
         next_max_q = max(self.neighborhood_q_table[next_state].values())
-        df = self.params.get('df', 0.9)
+        df = self.params.get("df", 0.9)
 
-        self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']] = \
-            old_q + self.neighborhood_lr * (reward + df * next_max_q - old_q)
+        self.neighborhood_q_table[self.last_neighborhood_context["state"]][
+            self.last_neighborhood_context["action"]
+        ] = old_q + self.neighborhood_lr * (reward + df * next_max_q - old_q)
 
         self.neighborhood_reward_window.append(reward)
         self._adapt_neighborhood_parameters()
@@ -253,34 +292,38 @@ class PairwiseAdaptiveQLearner(BaseAgent):
     def _get_neighborhood_state(self, coop_ratio):
         """Get state representation for neighborhood game"""
         if coop_ratio is None:
-            return 'start'
+            return "start"
         if coop_ratio <= 0.33:
-            return 'low'
+            return "low"
         elif coop_ratio <= 0.67:
-            return 'medium'
+            return "medium"
         else:
-            return 'high'
+            return "high"
 
     def _adapt_neighborhood_parameters(self):
         """Adapt learning parameters for neighborhood game"""
-        win_size = self.params.get('reward_window_size')
+        win_size = self.params.get("reward_window_size")
         if not win_size or len(self.neighborhood_reward_window) < win_size:
             return
 
         window = self.neighborhood_reward_window
         half = win_size // 2
-        adapt_factor = self.params.get('adaptation_factor', 1.05)
-        min_lr = self.params.get('min_lr', 0.05)
-        max_lr = self.params.get('max_lr', 0.5)
-        min_eps = self.params.get('min_eps', 0.01)
-        max_eps = self.params.get('max_eps', 0.5)
+        adapt_factor = self.params.get("adaptation_factor", 1.05)
+        min_lr = self.params.get("min_lr", 0.05)
+        max_lr = self.params.get("max_lr", 0.5)
+        min_eps = self.params.get("min_eps", 0.01)
+        max_eps = self.params.get("max_eps", 0.5)
 
         if np.mean(list(window)[half:]) > np.mean(list(window)[:half]):
             self.neighborhood_lr = max(min_lr, self.neighborhood_lr / adapt_factor)
-            self.neighborhood_epsilon = max(min_eps, self.neighborhood_epsilon / adapt_factor)
+            self.neighborhood_epsilon = max(
+                min_eps, self.neighborhood_epsilon / adapt_factor
+            )
         else:
             self.neighborhood_lr = min(max_lr, self.neighborhood_lr * adapt_factor)
-            self.neighborhood_epsilon = min(max_eps, self.neighborhood_epsilon * adapt_factor)
+            self.neighborhood_epsilon = min(
+                max_eps, self.neighborhood_epsilon * adapt_factor
+            )
 
     def _make_q_dict(self):
         return {COOPERATE: 0.0, DEFECT: 0.0}
@@ -289,13 +332,13 @@ class PairwiseAdaptiveQLearner(BaseAgent):
         return deque(maxlen=2)
 
     def _make_reward_window(self):
-        return deque(maxlen=self.params.get('reward_window_size', 20))
+        return deque(maxlen=self.params.get("reward_window_size", 20))
 
     def _get_initial_lr(self):
-        return self.params.get('initial_lr', self.params.get('lr', 0.1))
+        return self.params.get("initial_lr", self.params.get("lr", 0.1))
 
     def _get_initial_eps(self):
-        return self.params.get('initial_eps', self.params.get('eps', 0.1))
+        return self.params.get("initial_eps", self.params.get("eps", 0.1))
 
     def reset(self):
         """Clear pairwise Q-tables and learning state for a new run."""
@@ -321,6 +364,7 @@ class HystereticQLearner(BaseAgent):
     Uses higher learning rate (lr) for positive updates and lower rate (beta) for negative updates.
     This creates an optimistic bias that can lead to better cooperation.
     """
+
     def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "Hysteretic")
         self.params = params
@@ -330,7 +374,8 @@ class HystereticQLearner(BaseAgent):
         if opponent_id not in self.histories:
             self.histories[opponent_id] = self._make_history_deque()
         history = self.histories[opponent_id]
-        if len(history) < 2: return "start"
+        if len(history) < 2:
+            return "start"
         return str(tuple(history))
 
     def _make_q_dict(self):
@@ -347,7 +392,7 @@ class HystereticQLearner(BaseAgent):
             self.q_tables[opponent_id] = {}
 
         q_table = self.q_tables[opponent_id]
-        epsilon = self.params.get('eps', 0.1)
+        epsilon = self.params.get("eps", 0.1)
 
         # Initialize state if needed
         if state not in q_table:
@@ -356,15 +401,20 @@ class HystereticQLearner(BaseAgent):
         if random.random() < epsilon:
             action = random.choice([COOPERATE, DEFECT])
         else:
-            action = COOPERATE if q_table[state][COOPERATE] >= q_table[state][DEFECT] else DEFECT
-        self.last_contexts[opponent_id] = {'state': state, 'action': action}
+            action = (
+                COOPERATE
+                if q_table[state][COOPERATE] >= q_table[state][DEFECT]
+                else DEFECT
+            )
+        self.last_contexts[opponent_id] = {"state": state, "action": action}
         return action
 
     def record_pairwise_outcome(self, opponent_id, my_move, opponent_move, reward):
         """Bank the pairwise reward for a new run."""
         self.total_score += reward
         context = self.last_contexts.get(opponent_id)
-        if not context: return
+        if not context:
+            return
 
         # Initialize if needed
         if opponent_id not in self.histories:
@@ -379,21 +429,21 @@ class HystereticQLearner(BaseAgent):
             q_table[next_state] = self._make_q_dict()
 
         # Hysteretic Q-learning update
-        current_q = q_table[context['state']][context['action']]
+        current_q = q_table[context["state"]][context["action"]]
         next_max_q = max(q_table[next_state].values())
-        df = self.params.get('df', 0.9)
+        df = self.params.get("df", 0.9)
         target_q = reward + df * next_max_q
         delta = target_q - current_q
 
         # Use different learning rates for positive and negative updates
         if delta >= 0:
             # Good news: use normal learning rate
-            lr = self.params.get('lr', 0.1)
-            q_table[context['state']][context['action']] = current_q + lr * delta
+            lr = self.params.get("lr", 0.1)
+            q_table[context["state"]][context["action"]] = current_q + lr * delta
         else:
             # Bad news: use beta (lower learning rate)
-            beta = self.params.get('beta', 0.01)
-            q_table[context['state']][context['action']] = current_q + beta * delta
+            beta = self.params.get("beta", 0.01)
+            q_table[context["state"]][context["action"]] = current_q + beta * delta
 
     def choose_neighborhood_action(self, coop_ratio):
         """Choose action for neighborhood game based on cooperation ratio"""
@@ -403,19 +453,27 @@ class HystereticQLearner(BaseAgent):
         if state not in self.neighborhood_q_table:
             self.neighborhood_q_table[state] = self._make_q_dict()
 
-        epsilon = self.params.get('eps', 0.1)
+        epsilon = self.params.get("eps", 0.1)
         if random.random() < epsilon:
             action = random.choice([COOPERATE, DEFECT])
         else:
-            action = COOPERATE if self.neighborhood_q_table[state][COOPERATE] >= self.neighborhood_q_table[state][DEFECT] else DEFECT
+            action = (
+                COOPERATE
+                if self.neighborhood_q_table[state][COOPERATE]
+                >= self.neighborhood_q_table[state][DEFECT]
+                else DEFECT
+            )
 
-        self.last_neighborhood_context = {'state': state, 'action': action}
+        self.last_neighborhood_context = {"state": state, "action": action}
         return action
 
     def record_neighborhood_outcome(self, coop_ratio, reward):
         """Record outcome for neighborhood game with hysteretic learning"""
         self.total_score += reward
-        if not hasattr(self, 'last_neighborhood_context') or not self.last_neighborhood_context:
+        if (
+            not hasattr(self, "last_neighborhood_context")
+            or not self.last_neighborhood_context
+        ):
             return
 
         next_state = self._get_neighborhood_state(coop_ratio)
@@ -425,32 +483,38 @@ class HystereticQLearner(BaseAgent):
             self.neighborhood_q_table[next_state] = self._make_q_dict()
 
         # Hysteretic Q-learning update
-        current_q = self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']]
+        current_q = self.neighborhood_q_table[self.last_neighborhood_context["state"]][
+            self.last_neighborhood_context["action"]
+        ]
         next_max_q = max(self.neighborhood_q_table[next_state].values())
-        df = self.params.get('df', 0.9)
+        df = self.params.get("df", 0.9)
         target_q = reward + df * next_max_q
         delta = target_q - current_q
 
         # Use different learning rates for positive and negative updates
         if delta >= 0:
             # Good news: use normal learning rate
-            lr = self.params.get('lr', 0.1)
-            self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']] = current_q + lr * delta
+            lr = self.params.get("lr", 0.1)
+            self.neighborhood_q_table[self.last_neighborhood_context["state"]][
+                self.last_neighborhood_context["action"]
+            ] = (current_q + lr * delta)
         else:
             # Bad news: use beta (lower learning rate)
-            beta = self.params.get('beta', 0.01)
-            self.neighborhood_q_table[self.last_neighborhood_context['state']][self.last_neighborhood_context['action']] = current_q + beta * delta
+            beta = self.params.get("beta", 0.01)
+            self.neighborhood_q_table[self.last_neighborhood_context["state"]][
+                self.last_neighborhood_context["action"]
+            ] = (current_q + beta * delta)
 
     def _get_neighborhood_state(self, coop_ratio):
         """Get state representation for neighborhood game"""
         if coop_ratio is None:
-            return 'start'
+            return "start"
         if coop_ratio <= 0.33:
-            return 'low'
+            return "low"
         elif coop_ratio <= 0.67:
-            return 'medium'
+            return "medium"
         else:
-            return 'high'
+            return "high"
 
     def reset(self):
         """Reset Q-tables and histories with picklable dicts."""
@@ -466,15 +530,18 @@ class HystereticQLearner(BaseAgent):
 
 class NeighborhoodAdaptiveQLearner(BaseAgent):
     """Adaptive Q-learning agent for the 3-person neighborhood game."""
+
     def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "NeighborhoodAdaptive")
         self.params = params
         self.reset()
 
     def _get_state(self, coop_ratio):
-        if coop_ratio is None: return 'start'
-        if coop_ratio <= 0.33: return 'low'
-        return 'medium' if coop_ratio <= 0.67 else 'high'
+        if coop_ratio is None:
+            return "start"
+        if coop_ratio <= 0.33:
+            return "low"
+        return "medium" if coop_ratio <= 0.67 else "high"
 
     def choose_neighborhood_action(self, coop_ratio):
         """Choose the neighborhood move for the observed cooperation ratio."""
@@ -487,41 +554,49 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
         if random.random() < self.epsilon:
             action = random.choice([COOPERATE, DEFECT])
         else:
-            action = COOPERATE if self.q_table[state][COOPERATE] >= self.q_table[state][DEFECT] else DEFECT
-        self.last_context = {'state': state, 'action': action}
+            action = (
+                COOPERATE
+                if self.q_table[state][COOPERATE] >= self.q_table[state][DEFECT]
+                else DEFECT
+            )
+        self.last_context = {"state": state, "action": action}
         return action
 
     def record_neighborhood_outcome(self, coop_ratio, reward):
         """Record the neighborhood reward and update the Q-table."""
         self.total_score += reward
-        if not self.last_context: return
+        if not self.last_context:
+            return
         next_state = self._get_state(coop_ratio)
 
         # Initialize next state if needed
         if next_state not in self.q_table:
             self.q_table[next_state] = self._make_q_dict()
 
-        old_q = self.q_table[self.last_context['state']][self.last_context['action']]
+        old_q = self.q_table[self.last_context["state"]][self.last_context["action"]]
         next_max_q = max(self.q_table[next_state].values())
-        df = self.params.get('df', 0.9)
-        self.q_table[self.last_context['state']][self.last_context['action']] = old_q + self.lr * (
-                    reward + df * next_max_q - old_q)
+        df = self.params.get("df", 0.9)
+        self.q_table[self.last_context["state"]][self.last_context["action"]] = (
+            old_q + self.lr * (reward + df * next_max_q - old_q)
+        )
         self.reward_window.append(reward)
         self._adapt_parameters()
 
     def _adapt_parameters(self):
-        win_size = self.params.get('reward_window_size')
-        if not win_size: return
+        win_size = self.params.get("reward_window_size")
+        if not win_size:
+            return
 
         window = self.reward_window
-        if len(window) < win_size: return
+        if len(window) < win_size:
+            return
 
         half = win_size // 2
-        adapt_factor = self.params.get('adaptation_factor', 1.05)
-        min_lr = self.params.get('min_lr', 0.05)
-        max_lr = self.params.get('max_lr', 0.5)
-        min_eps = self.params.get('min_eps', 0.01)
-        max_eps = self.params.get('max_eps', 0.5)
+        adapt_factor = self.params.get("adaptation_factor", 1.05)
+        min_lr = self.params.get("min_lr", 0.05)
+        max_lr = self.params.get("max_lr", 0.5)
+        min_eps = self.params.get("min_eps", 0.01)
+        max_eps = self.params.get("max_eps", 0.5)
 
         if np.mean(list(window)[half:]) > np.mean(list(window)[:half]):
             self.lr = max(min_lr, self.lr / adapt_factor)
@@ -537,9 +612,9 @@ class NeighborhoodAdaptiveQLearner(BaseAgent):
         """Clear the Q-table and restore the initial learning settings."""
         super().reset()
         self.q_table = {}
-        self.lr = self.params.get('initial_lr', self.params.get('lr', 0.1))
-        self.epsilon = self.params.get('initial_eps', self.params.get('eps', 0.1))
-        self.reward_window = deque(maxlen=self.params.get('reward_window_size', 20))
+        self.lr = self.params.get("initial_lr", self.params.get("lr", 0.1))
+        self.epsilon = self.params.get("initial_eps", self.params.get("eps", 0.1))
+        self.reward_window = deque(maxlen=self.params.get("reward_window_size", 20))
         self.last_context = None
 
 
@@ -555,7 +630,7 @@ class LegacyQLearner(BaseAgent):
     def _get_pairwise_state(self, opponent_id):
         """Get state based on last 2 rounds of history"""
         if opponent_id not in self.my_history_pairwise:
-            return 'initial'
+            return "initial"
 
         my_hist = self.my_history_pairwise[opponent_id]
         opp_hist = self.opp_history_pairwise[opponent_id]
@@ -564,7 +639,7 @@ class LegacyQLearner(BaseAgent):
             # Only 1 round of history
             if len(my_hist) == 1 and len(opp_hist) == 1:
                 return f"1round_M{'C' if my_hist[0] == COOPERATE else 'D'}_O{'C' if opp_hist[0] == COOPERATE else 'D'}"
-            return 'initial'
+            return "initial"
 
         # Full 2-round history: (My_t-2, Opp_t-2, My_t-1, Opp_t-1)
         state = f"M{self._move_to_char(my_hist[0])}{self._move_to_char(my_hist[1])}_O{self._move_to_char(opp_hist[0])}{self._move_to_char(opp_hist[1])}"
@@ -573,18 +648,27 @@ class LegacyQLearner(BaseAgent):
     def _get_neighborhood_state(self):
         """Get state based on cooperation trends and my recent behavior"""
         if len(self.coop_ratio_history) == 0:
-            return 'initial'
+            return "initial"
 
         if len(self.coop_ratio_history) == 1:
             # One round of history
             ratio = self.coop_ratio_history[0]
-            my_last = 'C' if len(self.my_history_nperson) > 0 and self.my_history_nperson[0] == COOPERATE else 'D' if len(self.my_history_nperson) > 0 else 'X'
+            my_last = (
+                "C"
+                if len(self.my_history_nperson) > 0
+                and self.my_history_nperson[0] == COOPERATE
+                else "D" if len(self.my_history_nperson) > 0 else "X"
+            )
             return f"1round_{self._ratio_to_category(ratio)}_M{my_last}"
 
         # Two rounds of history - look at trend
         ratio_t2 = self.coop_ratio_history[0]
         ratio_t1 = self.coop_ratio_history[1]
-        trend = 'up' if ratio_t1 > ratio_t2 + 0.1 else 'down' if ratio_t1 < ratio_t2 - 0.1 else 'stable'
+        trend = (
+            "up"
+            if ratio_t1 > ratio_t2 + 0.1
+            else "down" if ratio_t1 < ratio_t2 - 0.1 else "stable"
+        )
 
         # Include my recent behavior
         my_recent = ""
@@ -595,24 +679,24 @@ class LegacyQLearner(BaseAgent):
 
     def _move_to_char(self, move):
         """Convert move to character"""
-        return 'C' if move == COOPERATE else 'D'
+        return "C" if move == COOPERATE else "D"
 
     def _ratio_to_category(self, ratio):
         """Convert ratio to category"""
         if ratio is None:
-            return 'unknown'
+            return "unknown"
         if ratio <= 0.33:
-            return 'low'
+            return "low"
         elif ratio <= 0.67:
-            return 'medium'
+            return "medium"
         else:
-            return 'high'
+            return "high"
 
     def _ensure_state_exists(self, state, q_table):
         """Initialize Q-values for new states with optimistic values"""
         if state not in q_table:
             # Use optimistic_init parameter (default to 0.0)
-            init_val = self.params.get('optimistic_init', 0.0)
+            init_val = self.params.get("optimistic_init", 0.0)
             q_table[state] = {COOPERATE: init_val, DEFECT: init_val}
 
     def choose_pairwise_action(self, opponent_id):
@@ -657,7 +741,7 @@ class LegacyQLearner(BaseAgent):
         self._update_q_value(opponent_id, state, my_move, reward, next_state)
 
         # Decay epsilon after each episode
-        if hasattr(self, 'episode_count'):
+        if hasattr(self, "episode_count"):
             self.episode_count += 1
             if self.episode_count % 100 == 0:  # Decay every 100 interactions
                 self._decay_epsilon()
@@ -691,7 +775,7 @@ class LegacyQLearner(BaseAgent):
 
         # We need to track what action we just took
         # The simulation framework doesn't tell us, so we'll store it
-        if hasattr(self, '_last_neighborhood_action'):
+        if hasattr(self, "_last_neighborhood_action"):
             action = self._last_neighborhood_action
 
             # Get current state (before updating history)
@@ -714,8 +798,8 @@ class LegacyQLearner(BaseAgent):
         self._ensure_state_exists(state, self.q_tables[opponent_id])
         self._ensure_state_exists(next_state, self.q_tables[opponent_id])
 
-        lr = self.params.get('lr', 0.15)
-        df = self.params.get('df', 0.95)
+        lr = self.params.get("lr", 0.15)
+        df = self.params.get("df", 0.95)
 
         current_q = self.q_tables[opponent_id][state][action]
         max_next_q = max(self.q_tables[opponent_id][next_state].values())
@@ -728,8 +812,8 @@ class LegacyQLearner(BaseAgent):
         self._ensure_state_exists(state, self.n_q_table)
         self._ensure_state_exists(next_state, self.n_q_table)
 
-        lr = self.params.get('lr', 0.15)
-        df = self.params.get('df', 0.95)
+        lr = self.params.get("lr", 0.15)
+        df = self.params.get("df", 0.95)
 
         current_q = self.n_q_table[state][action]
         max_next_q = max(self.n_q_table[next_state].values())
@@ -739,16 +823,18 @@ class LegacyQLearner(BaseAgent):
 
     def _get_epsilon(self):
         """Get current epsilon value"""
-        if hasattr(self, 'current_epsilon'):
+        if hasattr(self, "current_epsilon"):
             return self.current_epsilon
-        return self.params.get('eps', 0.2)
+        return self.params.get("eps", 0.2)
 
     def _decay_epsilon(self):
         """Decay epsilon"""
-        if hasattr(self, 'current_epsilon'):
-            epsilon_decay = self.params.get('epsilon_decay', 0.995)
-            epsilon_min = self.params.get('epsilon_min', 0.05)
-            self.current_epsilon = max(epsilon_min, self.current_epsilon * epsilon_decay)
+        if hasattr(self, "current_epsilon"):
+            epsilon_decay = self.params.get("epsilon_decay", 0.995)
+            epsilon_min = self.params.get("epsilon_min", 0.05)
+            self.current_epsilon = max(
+                epsilon_min, self.current_epsilon * epsilon_decay
+            )
 
     def reset(self):
         """Reset agent state"""
@@ -763,7 +849,7 @@ class LegacyQLearner(BaseAgent):
         self.coop_ratio_history = deque(maxlen=2)  # last 2 cooperation ratios
 
         # Initialize epsilon
-        self.current_epsilon = self.params.get('eps', 0.2)
+        self.current_epsilon = self.params.get("eps", 0.2)
         self.episode_count = 0
 
 
@@ -774,20 +860,20 @@ class Legacy3RoundQLearner(BaseAgent):
     def __init__(self, agent_id, params, **kwargs):
         super().__init__(agent_id, "Legacy3RoundQL")
         self.params = params
-        self.history_length = params.get('history_length', 3)
+        self.history_length = params.get("history_length", 3)
         self.reset()
 
     def _get_pairwise_state(self, opponent_id):
         """Get state based on last 3 rounds of history"""
         if opponent_id not in self.my_history_pairwise:
-            return 'initial'
+            return "initial"
 
         my_hist = self.my_history_pairwise[opponent_id]
         opp_hist = self.opp_history_pairwise[opponent_id]
 
         hist_len = len(my_hist)
         if hist_len == 0:
-            return 'initial'
+            return "initial"
         elif hist_len == 1:
             return f"1round_M{'C' if my_hist[0] == COOPERATE else 'D'}_O{'C' if opp_hist[0] == COOPERATE else 'D'}"
         elif hist_len == 2:
@@ -800,18 +886,27 @@ class Legacy3RoundQLearner(BaseAgent):
     def _get_neighborhood_state(self):
         """Get state based on cooperation trends and my recent behavior (3 rounds)"""
         if len(self.coop_ratio_history) == 0:
-            return 'initial'
+            return "initial"
 
         if len(self.coop_ratio_history) == 1:
             ratio = self.coop_ratio_history[0]
-            my_last = 'C' if len(self.my_history_nperson) > 0 and self.my_history_nperson[0] == COOPERATE else 'D' if len(self.my_history_nperson) > 0 else 'X'
+            my_last = (
+                "C"
+                if len(self.my_history_nperson) > 0
+                and self.my_history_nperson[0] == COOPERATE
+                else "D" if len(self.my_history_nperson) > 0 else "X"
+            )
             return f"1round_{self._ratio_to_category(ratio)}_M{my_last}"
 
         if len(self.coop_ratio_history) == 2:
             # Two rounds - simple trend
             ratio_t2 = self.coop_ratio_history[0]
             ratio_t1 = self.coop_ratio_history[1]
-            trend = 'up' if ratio_t1 > ratio_t2 + 0.1 else 'down' if ratio_t1 < ratio_t2 - 0.1 else 'stable'
+            trend = (
+                "up"
+                if ratio_t1 > ratio_t2 + 0.1
+                else "down" if ratio_t1 < ratio_t2 - 0.1 else "stable"
+            )
             my_recent = ""
             if len(self.my_history_nperson) >= 2:
                 my_recent = f"_M{self._move_to_char(self.my_history_nperson[0])}{self._move_to_char(self.my_history_nperson[1])}"
@@ -824,15 +919,15 @@ class Legacy3RoundQLearner(BaseAgent):
 
         # Analyze trend over 3 rounds
         if ratio_t1 > ratio_t2 + 0.1 and ratio_t2 > ratio_t3 + 0.1:
-            trend = 'strong_up'
+            trend = "strong_up"
         elif ratio_t1 < ratio_t2 - 0.1 and ratio_t2 < ratio_t3 - 0.1:
-            trend = 'strong_down'
+            trend = "strong_down"
         elif ratio_t1 > ratio_t2 + 0.1:
-            trend = 'up'
+            trend = "up"
         elif ratio_t1 < ratio_t2 - 0.1:
-            trend = 'down'
+            trend = "down"
         else:
-            trend = 'stable'
+            trend = "stable"
 
         # Include my recent 3-round behavior
         my_recent = ""
@@ -843,24 +938,24 @@ class Legacy3RoundQLearner(BaseAgent):
 
     def _move_to_char(self, move):
         """Convert move to character"""
-        return 'C' if move == COOPERATE else 'D'
+        return "C" if move == COOPERATE else "D"
 
     def _ratio_to_category(self, ratio):
         """Convert ratio to category"""
         if ratio is None:
-            return 'unknown'
+            return "unknown"
         if ratio <= 0.33:
-            return 'low'
+            return "low"
         elif ratio <= 0.67:
-            return 'medium'
+            return "medium"
         else:
-            return 'high'
+            return "high"
 
     def _ensure_state_exists(self, state, q_table):
         """Initialize Q-values for new states"""
         if state not in q_table:
             # Use optimistic_init parameter
-            init_val = self.params.get('optimistic_init', -0.1)
+            init_val = self.params.get("optimistic_init", -0.1)
             q_table[state] = {COOPERATE: init_val, DEFECT: init_val}
 
     def choose_pairwise_action(self, opponent_id):
@@ -905,7 +1000,7 @@ class Legacy3RoundQLearner(BaseAgent):
         self._update_q_value(opponent_id, state, my_move, reward, next_state)
 
         # Decay epsilon after each episode
-        if hasattr(self, 'episode_count'):
+        if hasattr(self, "episode_count"):
             self.episode_count += 1
             if self.episode_count % 100 == 0:  # Decay every 100 interactions
                 self._decay_epsilon()
@@ -937,7 +1032,7 @@ class Legacy3RoundQLearner(BaseAgent):
         """Record outcome and update Q-values"""
         self.total_score += reward
 
-        if hasattr(self, '_last_neighborhood_action'):
+        if hasattr(self, "_last_neighborhood_action"):
             action = self._last_neighborhood_action
 
             # Get current state (before updating history)
@@ -960,8 +1055,8 @@ class Legacy3RoundQLearner(BaseAgent):
         self._ensure_state_exists(state, self.q_tables[opponent_id])
         self._ensure_state_exists(next_state, self.q_tables[opponent_id])
 
-        lr = self.params.get('lr', 0.15)
-        df = self.params.get('df', 0.98)
+        lr = self.params.get("lr", 0.15)
+        df = self.params.get("df", 0.98)
 
         current_q = self.q_tables[opponent_id][state][action]
         max_next_q = max(self.q_tables[opponent_id][next_state].values())
@@ -974,8 +1069,8 @@ class Legacy3RoundQLearner(BaseAgent):
         self._ensure_state_exists(state, self.n_q_table)
         self._ensure_state_exists(next_state, self.n_q_table)
 
-        lr = self.params.get('lr', 0.15)
-        df = self.params.get('df', 0.98)
+        lr = self.params.get("lr", 0.15)
+        df = self.params.get("df", 0.98)
 
         current_q = self.n_q_table[state][action]
         max_next_q = max(self.n_q_table[next_state].values())
@@ -985,16 +1080,18 @@ class Legacy3RoundQLearner(BaseAgent):
 
     def _get_epsilon(self):
         """Get current epsilon value"""
-        if hasattr(self, 'current_epsilon'):
+        if hasattr(self, "current_epsilon"):
             return self.current_epsilon
-        return self.params.get('eps', 0.3)
+        return self.params.get("eps", 0.3)
 
     def _decay_epsilon(self):
         """Decay epsilon"""
-        if hasattr(self, 'current_epsilon'):
-            epsilon_decay = self.params.get('epsilon_decay', 0.9995)
-            epsilon_min = self.params.get('epsilon_min', 0.02)
-            self.current_epsilon = max(epsilon_min, self.current_epsilon * epsilon_decay)
+        if hasattr(self, "current_epsilon"):
+            epsilon_decay = self.params.get("epsilon_decay", 0.9995)
+            epsilon_min = self.params.get("epsilon_min", 0.02)
+            self.current_epsilon = max(
+                epsilon_min, self.current_epsilon * epsilon_decay
+            )
 
     def reset(self):
         """Reset agent state"""
@@ -1006,8 +1103,10 @@ class Legacy3RoundQLearner(BaseAgent):
         self.my_history_pairwise = {}  # opponent_id -> [my last 3 moves]
         self.opp_history_pairwise = {}  # opponent_id -> [their last 3 moves]
         self.my_history_nperson = deque(maxlen=self.history_length)  # my last 3 moves
-        self.coop_ratio_history = deque(maxlen=self.history_length)  # last 3 cooperation ratios
+        self.coop_ratio_history = deque(
+            maxlen=self.history_length
+        )  # last 3 cooperation ratios
 
         # Initialize epsilon
-        self.current_epsilon = self.params.get('eps', 0.3)
+        self.current_epsilon = self.params.get("eps", 0.3)
         self.episode_count = 0

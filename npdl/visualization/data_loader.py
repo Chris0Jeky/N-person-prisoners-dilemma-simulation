@@ -5,13 +5,14 @@ This module contains functions for loading simulation results
 and preprocessing data for visualization.
 """
 
-import os
-import pandas as pd
-import json
 import glob
+import json
 import logging
+import os
+from typing import Dict, List, Optional, Tuple
+
 import networkx as nx
-from typing import Dict, List, Tuple, Optional
+import pandas as pd
 
 
 def get_available_scenarios(results_dir: str = "results") -> List[str]:

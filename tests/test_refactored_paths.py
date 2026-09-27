@@ -57,10 +57,24 @@ class TestRefactoredPaths(unittest.TestCase):
             "test_core_basic.py not found in tests directory"
         )
         
-        # Check analysis scripts
+        # Check canonical analysis layout. Planned mapping (the thin CLI
+        # wrapper analysis_scripts/run_statistical_analysis.py was removed in
+        # beb00b04; it only called into the canonical module):
+        #   analysis_scripts/run_statistical_analysis.py
+        #     -> npdl/analysis/analysis.py::compare_scenarios_stats
+        canonical_analysis = os.path.join(
+            self.project_root, 'npdl', 'analysis', 'analysis.py'
+        )
         self.assertTrue(
-            os.path.exists(os.path.join(self.project_root, 'analysis_scripts', 'run_statistical_analysis.py')),
-            "run_statistical_analysis.py not found in analysis_scripts directory"
+            os.path.exists(canonical_analysis),
+            "npdl/analysis/analysis.py not found (canonical analysis module)"
+        )
+        with open(canonical_analysis, 'r', encoding='utf-8') as f:
+            analysis_source = f.read()
+        self.assertIn(
+            "def compare_scenarios_stats",
+            analysis_source,
+            "compare_scenarios_stats missing from canonical analysis module",
         )
     
     def test_load_scenarios(self):

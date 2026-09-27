@@ -13,6 +13,7 @@ from typing import Dict, List, Any
 # Adjust imports based on your final structure if main.py was split
 from main import setup_experiment
 from npdl.core.logging_utils import setup_logging
+from npdl.experiments import create_run
 
 # --- Helper function to extract performance ---
 def calculate_performance_metrics(env, round_results, target_strategy):
@@ -42,8 +43,15 @@ def calculate_performance_metrics(env, round_results, target_strategy):
     return metrics
 
 # --- Function to run sweep for a SINGLE strategy ---
-def run_single_strategy_sweep(config, target_strategy, strategy_config, base_scenario_template, global_settings):
-    """Runs the parameter sweep for one specified strategy."""
+def run_single_strategy_sweep(config, target_strategy, strategy_config, base_scenario_template, global_settings, seed=0):
+    """Runs the parameter sweep for one specified strategy.
+
+    The sweep as a whole is one registered run (see ``__main__``): all
+    strategies share ``output_base_dir`` as the run dir, which gains
+    ``run_info.json``, ``resolved_config.json``, and ``manifest.json``.
+    ``seed`` offsets the per-run simulation seeds (default 0 reproduces the
+    legacy seed sequence exactly).
+    """
 
     parameter_grid = strategy_config['parameter_grid']
     target_agent_count = strategy_config['target_agent_count']
@@ -106,9 +114,9 @@ def run_single_strategy_sweep(config, target_strategy, strategy_config, base_sce
 
         combo_run_metrics = []
         for run_number in range(num_runs):
-            seed = (i * num_runs) + run_number # Unique seed
-            random.seed(seed)
-            np.random.seed(seed)
+            run_seed = seed * 100000 + (i * num_runs) + run_number # Unique seed
+            random.seed(run_seed)
+            np.random.seed(run_seed)
 
             # Create a temporary silent logger for setup_experiment to avoid spam
             silent_logger = logging.getLogger('silent_setup')
@@ -196,6 +204,8 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="Run parameter sweeps for N-IPD agent strategies based on a config file.")
     parser.add_argument('--config', type=str, default='configs/multi_sweep_config.json',
                         help='Path to the JSON configuration file defining multiple sweeps.')
+    parser.add_argument('--seed', type=int, default=0,
+                        help='Run seed: offsets per-run simulation seeds; re-running reproduces the manifest.')
     args = parser.parse_args()
 
     # Load sweep configuration from JSON
@@ -225,6 +235,18 @@ if __name__ == "__main__":
     print(f"Loaded sweep configuration from: {args.config}")
     print(f"Output directory: {global_settings.get('output_base_dir', 'parameter_sweep_results')}")
     print(f"Strategies to sweep: {list(strategy_sweeps.keys())}")
+    print(f"Run seed: {args.seed}")
+
+    # --- Register the whole sweep as one run (output dir is the run dir) ---
+    output_base_dir = os.path.abspath(global_settings.get('output_base_dir', 'parameter_sweep_results'))
+    sweep_run = create_run(
+        os.path.dirname(output_base_dir),
+        "parameter_sweep",
+        {"sweep_config": sweep_config, "config_file": args.config, "seed": args.seed},
+        args.seed,
+        run_name=os.path.basename(output_base_dir),
+    )
+    global_settings['output_base_dir'] = sweep_run.run_dir
 
     # --- Run Sweep for Each Strategy Defined in Config ---
     overall_start_time = time.time()
@@ -232,7 +254,10 @@ if __name__ == "__main__":
         if "parameter_grid" not in strategy_details or "target_agent_count" not in strategy_details:
             print(f"Warning: Skipping strategy '{strategy_name}' due to missing 'parameter_grid' or 'target_agent_count' in config.")
             continue
-        run_single_strategy_sweep(sweep_config, strategy_name, strategy_details, base_scenario_template, global_settings)
+        run_single_strategy_sweep(sweep_config, strategy_name, strategy_details, base_scenario_template, global_settings, seed=args.seed)
+
+    manifest = sweep_run.finalize()
+    print(f"Manifest written with {len(manifest['artifacts'])} artifacts.")
 
     overall_end_time = time.time()
     print(f"\nAll parameter sweeps finished in {overall_end_time - overall_start_time:.2f} seconds.")

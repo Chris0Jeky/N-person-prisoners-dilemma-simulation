@@ -71,6 +71,36 @@ class TestCreateRun:
         second = create_run(str(tmp_path), "exp", config, 3)
         assert first.run_dir == second.run_dir
 
+    def test_rerun_same_config_reuses_dir(self, tmp_path):
+        first = create_run(str(tmp_path), "exp", {"a": 1}, 3, run_name="out")
+        with open(os.path.join(first.run_dir, "result.csv"), "w") as f:
+            f.write("x\n")
+        second = create_run(str(tmp_path), "exp", {"a": 1}, 3, run_name="out")
+        assert second.run_dir == first.run_dir
+
+    def test_refuses_dir_holding_a_different_run(self, tmp_path):
+        run = create_run(str(tmp_path), "exp", {"a": 1}, 3, run_name="out")
+        with open(os.path.join(run.run_dir, "result.csv"), "w") as f:
+            f.write("x\n")
+        with pytest.raises(FileExistsError):
+            create_run(str(tmp_path), "exp", {"a": 1}, 4, run_name="out")
+        with pytest.raises(FileExistsError):
+            create_run(str(tmp_path), "exp", {"a": 2}, 3, run_name="out")
+
+    def test_refuses_non_run_dir_with_files(self, tmp_path):
+        out = tmp_path / "out"
+        out.mkdir()
+        (out / "old_dump.csv").write_text("x\n")
+        with pytest.raises(FileExistsError):
+            create_run(str(tmp_path), "exp", {}, 0, run_name="out")
+
+    def test_allows_dir_with_only_logs(self, tmp_path):
+        out = tmp_path / "out"
+        out.mkdir()
+        (out / "run.log").write_text("started\n")
+        run = create_run(str(tmp_path), "exp", {}, 0, run_name="out")
+        assert run.run_dir == str(out)
+
     def test_defaults_command_to_sys_argv(self, tmp_path, monkeypatch):
         monkeypatch.setattr(sys, "argv", ["prog", "--seed", "1"])
         run = create_run(str(tmp_path), "exp", {}, 1)

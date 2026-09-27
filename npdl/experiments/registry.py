@@ -108,6 +108,43 @@ class ExperimentRun:
         return manifest
 
 
+def _check_reusable(run_dir: str, experiment: str, seed: int, config_hash: str) -> None:
+    """Refuse a non-empty run dir that is not a prior run of the same config.
+
+    ``finalize`` hashes every file in the run dir, so leftovers from a
+    different run would be recorded as this run's artifacts. Re-running the
+    same experiment/seed/config reproduces the same files and may reuse the
+    dir; anything else must go elsewhere. Nothing is ever deleted here.
+    """
+    if not os.path.isdir(run_dir):
+        return
+    has_content = False
+    for _, _, filenames in os.walk(run_dir):
+        if any(not name.endswith(EXCLUDED_SUFFIXES) for name in filenames):
+            has_content = True
+            break
+    if not has_content:
+        return
+    info_path = os.path.join(run_dir, RUN_INFO_FILENAME)
+    try:
+        with open(info_path) as f:
+            info = json.load(f)
+    except (OSError, ValueError):
+        info = None
+    if (
+        isinstance(info, dict)
+        and info.get("experiment") == experiment
+        and info.get("seed") == seed
+        and info.get("config_hash") == config_hash
+    ):
+        return
+    raise FileExistsError(
+        f"{run_dir} already holds files from a different run (or no run at "
+        "all); they would be recorded in this run's manifest. Choose another "
+        "output directory or remove the existing one."
+    )
+
+
 def create_run(
     root: str,
     experiment: str,
@@ -120,6 +157,8 @@ def create_run(
 
     The directory name ``{experiment}_seed{seed}_{config_hash8}`` is fully
     deterministic: re-running the same seed/config lands in the same place.
+    A non-empty existing dir that holds a different run (or no run) raises
+    ``FileExistsError`` rather than mixing stale files into the manifest.
     Writes ``resolved_config.json`` and ``run_info.json`` (no timestamps, so
     both are byte-stable across re-runs) and returns the :class:`ExperimentRun`.
     """
@@ -128,6 +167,7 @@ def create_run(
     if run_name is None:
         run_name = f"{safe_experiment}_seed{seed}_{config_hash[:8]}"
     run_dir = os.path.join(root, run_name)
+    _check_reusable(run_dir, experiment, seed, config_hash)
     os.makedirs(run_dir, exist_ok=True)
 
     command = list(argv) if argv is not None else list(sys.argv)

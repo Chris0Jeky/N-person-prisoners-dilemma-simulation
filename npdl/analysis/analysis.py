@@ -1,14 +1,15 @@
 # analysis.py
-import pandas as pd
-import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-import networkx as nx
-import os
 import json
 import logging
+import os
+from typing import Any, Dict, List, Optional, Tuple, Union
+
+import matplotlib.pyplot as plt
+import networkx as nx
+import numpy as np
+import pandas as pd
 import scipy.stats as stats
-from typing import Dict, List, Optional, Any, Tuple, Union
+import seaborn as sns
 
 
 def load_results(

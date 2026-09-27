@@ -34,10 +34,7 @@ jobs:
         run: python -m black --check npdl/ tests/ scripts/ run.py main.py
 
       - name: isort --check-only
-        # npdl/analysis/analysis.py is skipped: it carries pre-existing
-        # isort drift plus in-flight uncommitted changes owned outside W9,
-        # so W9 cannot normalize it; tracked follow-up in the PR body.
-        run: python -m isort --check-only npdl/ tests/ scripts/ run.py main.py --skip-glob '*/analysis/analysis.py'
+        run: python -m isort --check-only npdl/ tests/ scripts/ run.py main.py
 
       - name: mypy on npdl/
         # Scoped to the modules that pass: 7 files carry pre-existing

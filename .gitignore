@@ -39,6 +39,27 @@ fix_network_visualization.py
 
 # Backup files
 *.bak
+*~
+
+# W7: LaTeX build outputs (paper/ builds from .tex/.bib/.eps/.plt sources).
+# prisoners.pdf stays tracked as the distributable; the reference literature
+# PDF is a source, not a build output.
+paper/*.aux
+paper/*.bbl
+paper/*.blg
+paper/*.dvi
+paper/*.out
+paper/*.ps
+paper/*.synctex.gz
+paper/*-eps-converted-to.pdf
+paper/*.log
+paper/*.toc
+paper/*.lof
+paper/*.lot
+paper/avg.tex
+paper/avgQ.tex
+paper/avg.eps
+paper/avgQ.eps
 
 # Claude Code local settings (personal overrides)
 .claude/settings.local.json

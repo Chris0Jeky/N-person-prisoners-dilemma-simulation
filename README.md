@@ -54,7 +54,7 @@ scenarios/              # scenario JSON files + schema.json
 configs/                # sweep configs + schema.json
 scripts/
 ├── runners/            # scenario generation, parameter sweep, evolution
-├── demos/              # compare_rl_strategies, TFT ecosystem, true pairwise
+├── demos/              # TFT ecosystem, true pairwise (compare_rl_strategies: broken, #58)
 └── analysis/           # cooperation-pattern analysis + docs-link checker
 experiments/            # experiment-system notes (registry lives in npdl/)
 tests/                  # test suite + golden fixtures (w0_golden, w5_golden)
@@ -124,7 +124,7 @@ consumed by `scripts/runners/run_parameter_sweep.py --config <file>
 PYTHONPATH=. python scripts/runners/run_scenario_generator.py --num_generate 50 --eval_runs 3 --save_runs 10 --top_n 5
 PYTHONPATH=. python scripts/runners/run_sweep_analysis.py --num_generate 30 --top_n 5
 PYTHONPATH=. python scripts/runners/run_evolutionary_generator.py --pop_size 20 --generations 5 --eval_runs 3
-PYTHONPATH=. python scripts/runners/run_parameter_sweep.py --config configs/sweep_config.json --seed 7
+PYTHONPATH=. python scripts/runners/run_parameter_sweep.py --config configs/multi_sweep_config.json --seed 7
 ```
 
 The generator samples random scenarios, scores them by "interestingness"
@@ -150,7 +150,6 @@ for launch instructions, data layout, and tests.
 ```bash
 PYTHONPATH=. python scripts/demos/demonstrate_tft_ecosystem.py
 PYTHONPATH=. python scripts/demos/demonstrate_true_pairwise.py
-PYTHONPATH=. python scripts/demos/compare_rl_strategies.py
 ```
 
 The TFT demo shows the ecosystem-aware Tit-for-Tat: instead of copying one

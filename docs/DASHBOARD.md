@@ -2,7 +2,10 @@
 
 The canonical dashboard is the Dash app in
 [`npdl/visualization/dashboard.py`](../npdl/visualization/dashboard.py),
-launched through the CLI. It is the only live chart implementation.
+launched through the CLI. It is the only live chart implementation; the
+standalone static pages (`web-dashboard/`, `npd_cooperation_dashboard.html`)
+were archived under [`archive/web-dashboard/`](../archive/web-dashboard/)
+(see [archive/MANIFEST.md](../archive/MANIFEST.md)).
 
 ## Launch
 

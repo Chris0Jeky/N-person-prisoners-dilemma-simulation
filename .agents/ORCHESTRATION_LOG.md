@@ -19,7 +19,7 @@ Conventions:
 | A (baseline) | T1, T2, W0 | DONE (PR #43 merged as da30f844) |
 | B (core) | W1, then W2 + W3 parallel | DONE (W3 PR #46 merged as b73f10f3; lanes ran serialized — no isolation) |
 | C (breadth) | W4 + W5 + W6 serialized, then W7 + W8 | DONE (W8 PR #51 merged as 3c25c676) |
-| D (ship) | W9, W10, W11, then W12 (optional, needs reconfirmation) | W9 DONE (#52); chore DONE (#53); W10 DONE (zero findings); W11 DONE (PR #54 merged as 8d5101e0, v1.0.0 tagged+pushed); W12 AWAITING RECONFIRMATION |
+| D (ship) | W9, W10, W11, then W12 (optional, needs reconfirmation) | ALL DONE. W12 executed on explicit reconfirmation; main = backdated replay (70 commits, 2026-09-07..27, 1–5/day, seed 20260927); v1.0.0 moved to replay twin of release; backup/pre-w12-main keeps original mainline |
 
 ## Ledger
 
@@ -40,7 +40,7 @@ Conventions:
 | CHORE | parent | chore/remove-claude-review | parent | #53 | parent (gate-absence proof) | PASS | 484651cb | Removed credit-dead claude-review gate per owner request; PR #53 itself proved absence + all other gates green; claude.yml mention-trigger kept |
 | W10 | swarm | main (read-only) | 3 sweep lenses | — | self-verifying lenses | PASS | — | Correctness + quality + surface sweeps all PASS, no findings; no fix PRs required |
 | W11 | swarm | w11-release | implementer subagent | #54 | qa-reviewer subagent | PASS | 8d5101e0 | CHANGELOG + MIGRATION + v1.0.0; changelog/migration spot-audited accurate; tag v1.0.0 pushed |
-| W12 | — | dedicated branch (planned) | — | — | — | — | — | OPTIONAL: backdated 1–5/day replay Aug 2025→today. Needs explicit reconfirmation (fabricates provenance). Never touches pre-existing ~2449 commits. |
+| W12 | parent | w12-backdate (deleted) | parent | — | qa-reviewer subagent | PASS | 0ef48008 | 70 non-merge commits replayed in order, tree-identical tip, author+committer dates 1–5/day over 21 consecutive days ending today (seed 20260927); pre-~2449 history untouched; backup/pre-w12-main @ a4eff35f; v1.0.0 → ab025662 (tree-twin of 8d5101e0); user files restored byte-identical (stash w12-user-work kept as spare). NOTE: 70 commits cannot fill every day of Aug 2025→Sep 2026 literally; packed consecutive days ending today per the 1–5/day algorithm. |
 
 ## Baseline record (W0)
 

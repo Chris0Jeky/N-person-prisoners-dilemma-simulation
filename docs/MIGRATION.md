@@ -62,7 +62,7 @@ code provenance lives in [../archive/MANIFEST.md](../archive/MANIFEST.md).
 
 | Old | New | Notes |
 |-----|-----|-------|
-| Committed `parameter_sweep_results/`, `evolution_analysis/` dumps | Untracked and ignored (`.gitignore`); regenerate with the seeded runners | Removed from tracking in W5 (`-86k` dump lines). Old dumps survive in history before the W5 merge (`8c497d98`). `demo_results/` had nothing committed and is ignored too. |
+| Committed `parameter_sweep_results/`, `evolution_analysis/` dumps | Untracked and ignored (`.gitignore`); regenerate with the seeded runners | Removed from tracking in W5 (`-86k` dump lines). Old dumps survive in history before the last W5 commit (`976e6221`). `demo_results/` had nothing committed and is ignored too. |
 | (golden reference) | `tests/fixtures/w5_golden/strategy_stats.csv` ([strategy_stats.csv](../tests/fixtures/w5_golden/strategy_stats.csv)) | The one kept fixture, pinned by shape + sha256 in `tests/test_w5_golden_fixture.py` (W5). |
 | `scripts/runners/*.py` invocation | Same paths, new `--seed` flag (default 0), run from root with `PYTHONPATH=.` | All four runners register a run dir with `manifest.json`; same seed reproduces manifest hashes. `*.log` files are excluded from manifests by design (W5). |
 

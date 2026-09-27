@@ -447,8 +447,12 @@ class TestHystereticQLearning:
             # Optimistic bias should lead to higher Q-values
             assert avg_q > 0  # Should be positive in mixed environment
 
-    def test_hysteretic_q_cooperation_promotion(self):
-        """Test that Hysteretic Q-learning promotes cooperation."""
+    def test_hysteretic_q_cooperation_promotion(self, seed):
+        """Test that Hysteretic Q-learning promotes cooperation.
+
+        Seeded: exploration is random, and about 1.5% of seeds fall below the
+        threshold, so an unseeded run depended on earlier tests' RNG state.
+        """
         # Create two hysteretic Q-learners
         agents = [
             Agent(

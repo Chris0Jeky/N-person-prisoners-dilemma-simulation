@@ -71,7 +71,7 @@ code provenance lives in [../archive/MANIFEST.md](../archive/MANIFEST.md).
 | Path | Purpose |
 |------|---------|
 | `npdl/experiments/` ([npdl/experiments/](../npdl/experiments/)) | Run registry: `create_run`, `finalize`, `verify_manifest` (W5). |
-| `scenarios/schema.json`, `configs/schema.json` | Checked-in schemas; enforced by `npdl.experiments.validate` (`ValidationError` with JSON paths) and `tests/test_config_schemas.py` (W5). |
+| `scenarios/schema.json`, `configs/schema.json` | Checked-in schemas; enforced by `npdl.experiments.validate` (`ValidationError` with JSON paths) and `tests/test_config_schemas.py` (W5), with packaged copies in `npdl/experiments/schemas/` kept identical by a test. |
 | `tests/fixtures/w0_golden/` | Payoff, strategy-move, and end-to-end golden fixtures; `generate.py --check` must print 3/3 IDENTICAL (W0). |
 | `experiments/` ([experiments/](../experiments/)) | Notes dir for the experiment system; the registry itself lives in `npdl/` (W1). |
 

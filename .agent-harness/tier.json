@@ -1,0 +1,17 @@
+{
+  "tier": 2,
+  "name": "daily-driver",
+  "authority": {
+    "push": "free",
+    "merge": "free"
+  },
+  "flags": {
+    "sensitive_data": false,
+    "wave_mode": false,
+    "dormant_production": false,
+    "relaxed_work_loss_guards": false
+  },
+  "human_todo": null,
+  "last_reviewed": "2026-10-07",
+  "notes": "Owner decision 2026-10-07 (estate-hub session): T2. Measured signals: published research code (Springer chapter linked as homepage, paper PDF), v1.0.0 tag, 1.0.0 release stamp and installable package; no Pages, GitHub releases or PyPI. Standing rule: agents never change published results, numbers or the experiment definitions behind them; code quality, tests and docs only unless the owner says otherwise."
+}

@@ -20,7 +20,7 @@ import numpy as np
 
 from npdl.core.agents import Agent
 from npdl.core.environment import Environment
-from npdl.simulation.runner import SimulationRunner
+from npdl.core.utils import create_payoff_matrix
 
 
 def create_comparison_scenarios():
@@ -105,6 +105,30 @@ def create_comparison_scenarios():
     return scenarios
 
 
+def _output_path(output_dir, filename):
+    """Keep the historical bare filename when writing to the working directory."""
+    if output_dir in ("", "."):
+        return filename
+    return os.path.join(output_dir, filename)
+
+
+def _cooperation_rates(round_results):
+    """Fraction of agents who cooperated in each round.
+
+    ``Environment.run`` returns a list of ``{"round", "moves", "payoffs"}``
+    dicts. ``moves`` maps agent id to ``"cooperate"`` or ``"defect"``.
+    """
+    rates = []
+    for round_result in round_results:
+        moves = round_result["moves"]
+        if not moves:
+            rates.append(0.0)
+            continue
+        cooperators = sum(1 for move in moves.values() if move == "cooperate")
+        rates.append(cooperators / len(moves))
+    return rates
+
+
 def run_comparison_experiments(scenarios):
     """Run the comparison experiments."""
     results = {}
@@ -112,14 +136,7 @@ def run_comparison_experiments(scenarios):
     for scenario in scenarios:
         print(f"\nRunning scenario: {scenario['name']}")
 
-        # Create environment
-        env = Environment(
-            num_agents=scenario["num_agents"],
-            interaction_mode=scenario["interaction_mode"],
-            payoff_matrix="standard",  # Standard PD payoffs
-        )
-
-        # Create agents
+        # Create agents before the environment; it takes them in the constructor.
         agents = []
         agent_id = 0
 
@@ -132,22 +149,24 @@ def run_comparison_experiments(scenarios):
                 agents.append(agent)
                 agent_id += 1
 
-        env.agents = agents
+        # Default linear payoff, matching setup_experiment.
+        payoff_matrix = create_payoff_matrix(scenario["num_agents"])
+        env = Environment(
+            agents,
+            payoff_matrix,
+            interaction_mode=scenario["interaction_mode"],
+        )
 
-        # Run simulation
-        runner = SimulationRunner(env)
-        history = runner.run(num_rounds=scenario["num_rounds"])
+        round_results = env.run(rounds=scenario["num_rounds"])
+        cooperation_rate = _cooperation_rates(round_results)
+        history = {"cooperation_rate": cooperation_rate}
 
         # Store results
         results[scenario["name"]] = {
             "history": history,
-            "final_cooperation": (
-                history["cooperation_rate"][-1] if history["cooperation_rate"] else 0
-            ),
+            "final_cooperation": cooperation_rate[-1] if cooperation_rate else 0,
             "avg_cooperation": (
-                np.mean(history["cooperation_rate"])
-                if history["cooperation_rate"]
-                else 0
+                float(np.mean(cooperation_rate)) if cooperation_rate else 0
             ),
             "scenario": scenario,
         }
@@ -162,7 +181,7 @@ def run_comparison_experiments(scenarios):
     return results
 
 
-def analyze_results(results):
+def analyze_results(results, output_dir="."):
     """Analyze and visualize the comparison results."""
 
     # 1. Group size scaling comparison
@@ -225,8 +244,9 @@ def analyze_results(results):
     ax2.grid(True, alpha=0.3, axis="y")
 
     plt.tight_layout()
-    plt.savefig("rl_comparison_results.png", dpi=150)
-    print("\nResults saved to rl_comparison_results.png")
+    results_path = _output_path(output_dir, "rl_comparison_results.png")
+    plt.savefig(results_path, dpi=150)
+    print(f"\nResults saved to {results_path}")
 
     # 3. Learning curves comparison
     fig, axes = plt.subplots(2, 3, figsize=(18, 10))
@@ -287,8 +307,9 @@ def analyze_results(results):
             plot_idx += 1
 
     plt.tight_layout()
-    plt.savefig("rl_learning_curves.png", dpi=150)
-    print("Learning curves saved to rl_learning_curves.png")
+    curves_path = _output_path(output_dir, "rl_learning_curves.png")
+    plt.savefig(curves_path, dpi=150)
+    print(f"Learning curves saved to {curves_path}")
 
     # Print summary statistics
     print("\n" + "=" * 60)
@@ -334,34 +355,45 @@ def smooth_data(data, window):
     return smoothed
 
 
-def main():
-    """Main function to run the comparison."""
+def main(num_rounds=None, output_dir="."):
+    """Main function to run the comparison.
+
+    Args:
+        num_rounds: When set, overrides every scenario's round count.
+            The command-line default (``None``) keeps each scenario at 500.
+        output_dir: Directory for the two PNG files and the JSON summary.
+            The command-line default is the working directory.
+    """
     print("Comparing Standard RL vs N-Person RL Strategies")
     print("=" * 60)
 
     # Create scenarios
     scenarios = create_comparison_scenarios()
+    if num_rounds is not None:
+        for scenario in scenarios:
+            scenario["num_rounds"] = num_rounds
     print(f"Created {len(scenarios)} comparison scenarios")
 
     # Run experiments
     results = run_comparison_experiments(scenarios)
 
     # Analyze and visualize
-    analyze_results(results)
+    analyze_results(results, output_dir=output_dir)
 
     # Save detailed results
     summary = {}
     for name, result in results.items():
         summary[name] = {
-            "final_cooperation": result["final_cooperation"],
-            "avg_cooperation": result["avg_cooperation"],
+            "final_cooperation": float(result["final_cooperation"]),
+            "avg_cooperation": float(result["avg_cooperation"]),
             "scenario": result["scenario"],
         }
 
-    with open("rl_comparison_summary.json", "w") as f:
+    summary_path = _output_path(output_dir, "rl_comparison_summary.json")
+    with open(summary_path, "w") as f:
         json.dump(summary, f, indent=2)
 
-    print("\nDetailed results saved to rl_comparison_summary.json")
+    print(f"\nDetailed results saved to {summary_path}")
     print("\nComparison complete!")
 
 

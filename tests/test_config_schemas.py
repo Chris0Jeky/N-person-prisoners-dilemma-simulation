@@ -20,6 +20,10 @@ from npdl.experiments import (  # noqa: E402
     validate_config_file,
     validate_scenario_file,
 )
+from npdl.experiments.validate import (  # noqa: E402
+    CONFIG_SCHEMA_PATH,
+    SCENARIO_SCHEMA_PATH,
+)
 
 EXPECTED_SCENARIO_FILES = {
     "chris_testing_scenarios.json",
@@ -193,6 +197,40 @@ class TestInvalidConfigs:
         path = _write_tmp(tmp_path, "bad.json", payload)
         with pytest.raises(ValidationError):
             validate_config_file(path)
+
+
+class TestPackagedSchemas:
+    def test_packaged_copies_match_repo_copies(self):
+        pairs = [
+            (
+                os.path.join(ROOT, "scenarios", "schema.json"),
+                SCENARIO_SCHEMA_PATH,
+            ),
+            (
+                os.path.join(ROOT, "configs", "schema.json"),
+                CONFIG_SCHEMA_PATH,
+            ),
+        ]
+        for repo_path, packaged_path in pairs:
+            with open(repo_path, "rb") as f:
+                repo_bytes = f.read()
+            with open(packaged_path, "rb") as f:
+                packaged_bytes = f.read()
+            assert repo_bytes == packaged_bytes
+
+    def test_schema_paths_live_inside_package_and_validators_use_them(self, tmp_path):
+        npdl_dir = os.path.join(ROOT, "npdl")
+        for schema_path in (SCENARIO_SCHEMA_PATH, CONFIG_SCHEMA_PATH):
+            assert os.path.isfile(schema_path)
+            assert os.path.abspath(schema_path).startswith(
+                os.path.abspath(npdl_dir) + os.sep
+            )
+            assert os.path.abspath(schema_path) not in (
+                os.path.abspath(os.path.join(ROOT, "scenarios", "schema.json")),
+                os.path.abspath(os.path.join(ROOT, "configs", "schema.json")),
+            )
+        path = _write_tmp(tmp_path, "good.json", [dict(GOOD_FLAT_SCENARIO)])
+        validate_scenario_file(path)
 
 
 if __name__ == "__main__":

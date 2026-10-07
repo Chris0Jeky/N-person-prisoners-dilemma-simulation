@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Validation schemas now ship inside the wheel as package data (`npdl/experiments/schemas/`) (#57).
+
 ## [1.0.0] - 2026-09-27
 
 First stable release: the repository is now one canonical package (`npdl/`),

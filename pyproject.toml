@@ -36,6 +36,9 @@ dev = [
 [tool.setuptools.packages.find]
 include = ["npdl*"]
 
+[tool.setuptools.package-data]
+npdl = ["experiments/schemas/*.json"]
+
 [tool.black]
 line-length = 88
 

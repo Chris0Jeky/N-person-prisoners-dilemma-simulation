@@ -1,8 +1,11 @@
 """Dependency-free validation of scenario/config files (W5).
 
-The checked-in schemas (``scenarios/schema.json``, ``configs/schema.json``)
-are standard JSON Schema (draft 2020-12); this module implements the subset
-they use so validation needs no third-party package:
+The schemas ship inside the package as data (``npdl/experiments/schemas/``), so
+validation also works from an installed wheel. The repo-level
+``scenarios/schema.json`` and ``configs/schema.json`` are the published,
+documented copies; a test keeps them byte-identical to the packaged ones. The
+schemas are standard JSON Schema (draft 2020-12); this module implements the
+subset they use so validation needs no third-party package:
 
 ``$ref`` (local pointers), ``anyOf``, ``type``, ``required``,
 ``properties``, ``additionalProperties``, ``items``, ``minItems``,
@@ -13,11 +16,12 @@ import json
 import os
 from typing import Any, Dict, List
 
-_REPO_ROOT = os.path.dirname(
-    os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+SCENARIO_SCHEMA_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "schemas", "scenario.schema.json"
 )
-SCENARIO_SCHEMA_PATH = os.path.join(_REPO_ROOT, "scenarios", "schema.json")
-CONFIG_SCHEMA_PATH = os.path.join(_REPO_ROOT, "configs", "schema.json")
+CONFIG_SCHEMA_PATH = os.path.join(
+    os.path.dirname(os.path.abspath(__file__)), "schemas", "config.schema.json"
+)
 
 
 class ValidationError(Exception):

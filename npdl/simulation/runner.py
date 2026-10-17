@@ -23,6 +23,12 @@ from npdl.core.logging_utils import (
     setup_logging,
 )
 from npdl.core.utils import create_payoff_matrix
+from npdl.experiments import ValidationError, validate_scenario_file
+from npdl.simulation.output_paths import (
+    prepare_run_directory,
+    validate_scenario_names,
+    write_run_metadata,
+)
 
 # For analysis
 try:
@@ -44,12 +50,16 @@ def load_scenarios(file_path: str) -> List[Dict[str, Any]]:
     Raises:
         FileNotFoundError: If the scenario file doesn't exist
         json.JSONDecodeError: If the scenario file is invalid JSON
+        ValidationError: If the scenario file fails schema validation
+        ValueError: If scenario names are unsafe or collide
     """
     if not os.path.exists(file_path):
         raise FileNotFoundError(f"Scenario file not found: {file_path}")
 
+    validate_scenario_file(file_path)
     with open(file_path, "r") as f:
         scenarios = json.load(f)
+    validate_scenario_names(scenarios)
     return scenarios
 
 
@@ -239,6 +249,7 @@ def save_results(
     results_dir: str = "results",
     logger: Optional[logging.Logger] = None,
     env: Optional[Environment] = None,
+    effective_payoff_type: Optional[str] = None,
 ) -> None:
     """Save experiment results for a specific run to CSV files.
 
@@ -250,13 +261,14 @@ def save_results(
         base_filename: Base filename prefix for result files
         results_dir: Directory to save result files
         logger: Logger object for logging information
+        effective_payoff_type: Validated payoff family to record in run metadata
 
     Raises:
         IOError: If directories cannot be created or files cannot be written
     """
-    run_dir = os.path.join(results_dir, scenario_name, f"run_{run_number:02d}")
-    if not os.path.exists(run_dir):
-        os.makedirs(run_dir)
+    run_dir = prepare_run_directory(results_dir, scenario_name, run_number, base_filename)
+    if effective_payoff_type is not None:
+        write_run_metadata(run_dir, scenario_name, effective_payoff_type)
 
     if logger is None:
         logger = logging.getLogger(__name__)
@@ -490,7 +502,7 @@ def run_simulation(
     try:
         scenarios = load_scenarios(scenario_file)
         logger.info(f"Loaded {len(scenarios)} scenarios from {scenario_file}")
-    except (FileNotFoundError, json.JSONDecodeError) as e:
+    except (FileNotFoundError, ValueError, ValidationError) as e:
         logger.error(f"Error loading scenarios: {e}")
         return 1
 
@@ -584,12 +596,14 @@ def run_simulation(
                     results_dir=results_dir,
                     logger=logger,
                     env=env,
+                    effective_payoff_type=scenario.get("payoff_type", "linear"),
                 )
             except Exception as e:
                 logger.error(
                     f"Error saving results for {scenario_name} run {run_number}: {e}",
                     exc_info=True,
                 )
+                return 1
 
             # Store key results for aggregation
             final_round = round_results[-1]

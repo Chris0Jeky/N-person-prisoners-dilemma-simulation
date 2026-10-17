@@ -206,9 +206,13 @@ def create_payoff_matrix(N, payoff_type="linear", params=None):
         threshold = params.get("threshold", 0.5)
         C_func = lambda n: threshold_payoff_C(n, N, R, S, threshold)
         D_func = lambda n: threshold_payoff_D(n, N, T, P, threshold)
-    else:  # default to linear
+    elif payoff_type == "linear":
         C_func = lambda n: linear_payoff_C(n, N, R, S)
         D_func = lambda n: linear_payoff_D(n, N, T, P)
+    else:
+        raise ValueError(
+            f"Unsupported payoff_type {payoff_type!r}; expected linear, exponential or threshold"
+        )
 
     # Create payoff matrix
     payoff_matrix = {

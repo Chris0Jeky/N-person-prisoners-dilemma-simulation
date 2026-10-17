@@ -4,8 +4,10 @@ Analyze cooperation patterns in n-person prisoner's dilemma experiments
 Uses MCP capabilities to fetch academic insights and visualize results
 """
 
+import ast
 import csv
 import json
+import math
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -13,16 +15,88 @@ import numpy as np
 import pandas as pd
 import seaborn as sns
 
+MAX_ANALYSIS_ROWS = 100000
+MAX_RATE_CELL_LENGTH = 16384
+MAX_CSV_ROW_LENGTH = 65536
+MAX_ANALYSIS_BYTES = 16 * 1024 * 1024
+KNOWN_STRATEGIES = frozenset(
+    {
+        "random",
+        "always_cooperate",
+        "always_defect",
+        "tit_for_tat",
+        "proportional_tit_for_tat",
+        "tit_for_two_tats",
+        "generous_tit_for_tat",
+        "suspicious_tit_for_tat",
+        "pavlov",
+        "randomprob",
+        "q_learning",
+        "q_learning_adaptive",
+        "lra_q",
+        "hysteretic_q",
+        "wolf_phc",
+        "ucb1_q",
+        "n_person_q_learning",
+        "n_person_hysteretic_q",
+        "n_person_wolf_phc",
+        "TFT",
+    }
+)
+
+
+def parse_strategy_rates(cell):
+    """Read JSON or historical dict repr without executing CSV content."""
+    error = "Invalid strategy_cooperation_rates: expected known strategies and finite rates in [0, 1]"
+    if not isinstance(cell, str) or len(cell) > MAX_RATE_CELL_LENGTH:
+        raise ValueError(error)
+    try:
+        try:
+            rates = json.loads(cell)
+        except json.JSONDecodeError:
+            rates = ast.literal_eval(cell)
+    except (ValueError, SyntaxError, TypeError, RecursionError):
+        raise ValueError(error) from None
+    if not isinstance(rates, dict) or len(rates) > len(KNOWN_STRATEGIES):
+        raise ValueError(error)
+    for strategy, rate in rates.items():
+        if (
+            strategy not in KNOWN_STRATEGIES
+            or type(rate) not in (int, float)
+            or not 0 <= rate <= 1
+            or not math.isfinite(rate)
+        ):
+            raise ValueError(error)
+    return rates
+
 
 def load_experiment_data():
     """Load and analyze experiment results"""
-    results = []
-
     # Load comparative analysis
     comp_path = Path("analysis_results/comparative_analysis.csv")
     if comp_path.exists():
-        df = pd.read_csv(comp_path)
-        return df
+        if comp_path.stat().st_size > MAX_ANALYSIS_BYTES:
+            raise ValueError("Comparative analysis exceeds maximum file size")
+        # Preflight with the CSV parser's field bound before pandas allocates cells.
+        previous_limit = csv.field_size_limit(MAX_RATE_CELL_LENGTH)
+        try:
+            with comp_path.open(newline="") as handle:
+                rows = csv.reader(handle)
+                for count, row in enumerate(rows):
+                    if sum(map(len, row)) + len(row) > MAX_CSV_ROW_LENGTH:
+                        raise ValueError(
+                            "Comparative analysis contains an oversized row"
+                        )
+                    if count > MAX_ANALYSIS_ROWS:  # Exclude the header.
+                        raise ValueError("Comparative analysis exceeds maximum rows")
+                handle.seek(0)
+                return pd.read_csv(handle, nrows=MAX_ANALYSIS_ROWS)
+        except csv.Error:
+            raise ValueError(
+                "Comparative analysis contains an oversized or invalid field"
+            ) from None
+        finally:
+            csv.field_size_limit(previous_limit)
     return None
 
 
@@ -50,19 +124,19 @@ def analyze_cooperation_emergence(df):
 def identify_key_factors(df):
     """Identify key factors for cooperation"""
 
+    if len(df) > MAX_ANALYSIS_ROWS:
+        raise ValueError("Comparative analysis exceeds maximum rows")
+
     # Group by strategy types
     strategy_patterns = {}
 
     for idx, row in df.iterrows():
         if pd.notna(row["strategy_cooperation_rates"]):
-            try:
-                strategies = eval(row["strategy_cooperation_rates"])
-                for strategy, rate in strategies.items():
-                    if strategy not in strategy_patterns:
-                        strategy_patterns[strategy] = []
-                    strategy_patterns[strategy].append(float(rate))
-            except:
-                pass
+            strategies = parse_strategy_rates(row["strategy_cooperation_rates"])
+            for strategy, rate in strategies.items():
+                if strategy not in strategy_patterns:
+                    strategy_patterns[strategy] = []
+                strategy_patterns[strategy].append(float(rate))
 
     print("\n=== STRATEGY COOPERATION ANALYSIS ===")
     strategy_stats = []
@@ -78,9 +152,9 @@ def identify_key_factors(df):
                 }
             )
 
-    strategy_df = pd.DataFrame(strategy_stats).sort_values(
-        "avg_cooperation", ascending=False
-    )
+    strategy_df = pd.DataFrame(
+        strategy_stats, columns=["strategy", "avg_cooperation", "instances", "std_dev"]
+    ).sort_values("avg_cooperation", ascending=False)
     print(strategy_df.head(15))
 
     return strategy_df

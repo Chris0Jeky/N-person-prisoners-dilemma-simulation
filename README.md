@@ -54,7 +54,7 @@ scenarios/              # scenario JSON files + schema.json
 configs/                # sweep configs + schema.json
 scripts/
 ├── runners/            # scenario generation, parameter sweep, evolution
-├── demos/              # TFT ecosystem, true pairwise (compare_rl_strategies: broken, #58)
+├── demos/              # TFT ecosystem, true pairwise, RL comparison
 └── analysis/           # cooperation-pattern analysis + docs-link checker
 experiments/            # experiment-system notes (registry lives in npdl/)
 tests/                  # test suite + golden fixtures (w0_golden, w5_golden)
@@ -150,6 +150,7 @@ for launch instructions, data layout, and tests.
 ```bash
 PYTHONPATH=. python scripts/demos/demonstrate_tft_ecosystem.py
 PYTHONPATH=. python scripts/demos/demonstrate_true_pairwise.py
+PYTHONPATH=. python scripts/demos/compare_rl_strategies.py
 ```
 
 The TFT demo shows the ecosystem-aware Tit-for-Tat: instead of copying one

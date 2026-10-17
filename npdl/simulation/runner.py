@@ -266,7 +266,9 @@ def save_results(
     Raises:
         IOError: If directories cannot be created or files cannot be written
     """
-    run_dir = prepare_run_directory(results_dir, scenario_name, run_number, base_filename)
+    run_dir = prepare_run_directory(
+        results_dir, scenario_name, run_number, base_filename
+    )
     if effective_payoff_type is not None:
         write_run_metadata(run_dir, scenario_name, effective_payoff_type)
 

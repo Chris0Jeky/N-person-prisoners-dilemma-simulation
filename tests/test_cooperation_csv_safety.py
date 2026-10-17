@@ -1,14 +1,14 @@
 """Untrusted strategy-rate cells are data, including at the script entry point."""
 
 import csv
-import json
+import math
 import os
 import runpy
 from pathlib import Path
 from unittest.mock import Mock
 
-import pandas as pd
 import numpy as np
+import pandas as pd
 import pytest
 
 from scripts.analysis import analyze_cooperation_patterns as analysis
@@ -55,6 +55,25 @@ def test_json_and_historical_rates_are_unchanged(tmp_path, monkeypatch, cell):
     }
 
 
+@pytest.mark.parametrize("rate", [np.float64(0.5), np.float64(5e-5), np.int64(1)])
+def test_numpy_writer_cells_are_parsed(rate):
+    cell = str({"tit_for_tat": rate})
+    assert analysis.parse_strategy_rates(cell) == {"tit_for_tat": float(rate)}
+
+
+@pytest.mark.parametrize(
+    "cell",
+    [
+        "{'TFT': nan}",
+        "{'TFT': np.float64(nan)}",
+        '{"TFT": NaN}',
+        str({"TFT": np.float64(np.nan)}),
+    ],
+)
+def test_nan_rate_cells_preserve_missing_values(cell):
+    assert math.isnan(analysis.parse_strategy_rates(cell)["TFT"])
+
+
 @pytest.mark.parametrize(
     "cell",
     [
@@ -63,7 +82,13 @@ def test_json_and_historical_rates_are_unchanged(tmp_path, monkeypatch, cell):
         '{"unknown": 0.5}',
         '{"TFT": true}',
         '{"TFT": "0.5"}',
-        '{"TFT": NaN}',
+        '{"TFT": null}',
+        "{'TFT': None}",
+        "{'TFT': np.float64('0.5')}",
+        "{'TFT': np.float64(0.5 + 0.1)}",
+        "{'TFT': np.int64(0.5)}",
+        "{'TFT': np.float64(inf)}",
+        "{'TFT': np.float64(1e999)}",
         '{"TFT": 1e999}',
         '{"TFT": -0.1}',
         '{"TFT": 1.1}',
@@ -118,10 +143,11 @@ def test_csv_load_bounds_total_file_and_row_size(tmp_path, monkeypatch):
         analysis.load_experiment_data()
 
 
-def test_comparative_export_uses_json_without_changing_metrics(tmp_path, monkeypatch):
+@pytest.mark.parametrize("rate", [np.float64(0.5), np.float64(np.nan)])
+def test_comparative_export_preserves_legacy_cells(tmp_path, monkeypatch, rate):
     from npdl.analysis import analysis as reports
 
-    rates = {"tit_for_tat": np.float64(0.5)}
+    rates = {"tit_for_tat": rate}
     monkeypatch.setattr(
         reports,
         "create_analysis_report",
@@ -139,7 +165,10 @@ def test_comparative_export_uses_json_without_changing_metrics(tmp_path, monkeyp
     cell = pd.read_csv(output / "comparative_analysis.csv").iloc[0][
         "strategy_cooperation_rates"
     ]
-    assert json.loads(cell) == {"tit_for_tat": 0.5}
+    assert cell == str(rates)
     monkeypatch.chdir(tmp_path)
     stats = analysis.identify_key_factors(analysis.load_experiment_data())
-    assert stats.iloc[0]["avg_cooperation"] == 0.5
+    if np.isnan(rate):
+        assert math.isnan(stats.iloc[0]["avg_cooperation"])
+    else:
+        assert stats.iloc[0]["avg_cooperation"] == 0.5

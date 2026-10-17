@@ -549,11 +549,7 @@ def analyze_multiple_scenarios(
 
         # Save to CSV
         comparative_csv = os.path.join(output_dir, "comparative_analysis.csv")
-        csv_df = comparative_df.copy()
-        csv_df["strategy_cooperation_rates"] = csv_df["strategy_cooperation_rates"].map(
-            lambda rates: json.dumps(rates, allow_nan=False)
-        )
-        csv_df.to_csv(comparative_csv, index=False)
+        comparative_df.to_csv(comparative_csv, index=False)
 
         # Create comparative plots
         plt.figure(figsize=(10, 6))

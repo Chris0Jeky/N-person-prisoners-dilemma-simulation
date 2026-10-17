@@ -8,6 +8,7 @@ import ast
 import csv
 import json
 import math
+import re
 from pathlib import Path
 
 import matplotlib.pyplot as plt
@@ -47,14 +48,27 @@ KNOWN_STRATEGIES = frozenset(
 
 def parse_strategy_rates(cell):
     """Read JSON or historical dict repr without executing CSV content."""
-    error = "Invalid strategy_cooperation_rates: expected known strategies and finite rates in [0, 1]"
+    error = "Invalid strategy_cooperation_rates: expected known strategies and rates in [0, 1] or NaN"
     if not isinstance(cell, str) or len(cell) > MAX_RATE_CELL_LENGTH:
         raise ValueError(error)
     try:
         try:
             rates = json.loads(cell)
         except json.JSONDecodeError:
-            rates = ast.literal_eval(cell)
+            number = r"[+-]?(?:\d+(?:\.\d*)?|\.\d+)(?:[eE][+-]?\d+)?"
+            cell = re.sub(rf"\bnp\.float64\(({number}|nan)\)", r"\1", cell)
+            cell = re.sub(r"\bnp\.int64\(([+-]?\d+)\)", r"\1", cell)
+            entry = rf"['\"][A-Za-z_]\w*['\"]\s*:\s*(?:{number}|nan)"
+            if not re.fullmatch(
+                rf"\s*\{{\s*(?:{entry}(?:\s*,\s*{entry})*\s*,?)?\s*\}}\s*", cell
+            ):
+                raise ValueError(error)
+            # Only the validated legacy nan token can become a missing value.
+            rates = ast.literal_eval(re.sub(r"\bnan\b", "None", cell))
+            rates = {
+                strategy: math.nan if rate is None else rate
+                for strategy, rate in rates.items()
+            }
     except (ValueError, SyntaxError, TypeError, RecursionError):
         raise ValueError(error) from None
     if not isinstance(rates, dict) or len(rates) > len(KNOWN_STRATEGIES):
@@ -63,8 +77,7 @@ def parse_strategy_rates(cell):
         if (
             strategy not in KNOWN_STRATEGIES
             or type(rate) not in (int, float)
-            or not 0 <= rate <= 1
-            or not math.isfinite(rate)
+            or not (0 <= rate <= 1 or math.isnan(rate))
         ):
             raise ValueError(error)
     return rates

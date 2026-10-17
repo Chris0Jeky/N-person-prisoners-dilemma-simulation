@@ -24,12 +24,20 @@ from npdl.core.logging_utils import (
     setup_logging,
 )
 from npdl.core.utils import create_payoff_matrix, linear_payoff_C, linear_payoff_D
+from npdl.experiments import validate_scenario_file
+from npdl.simulation.output_paths import (
+    prepare_run_directory,
+    validate_scenario_names,
+    write_run_metadata,
+)
 
 
 def load_scenarios(file_path):
     """Load scenario definitions from a JSON file."""
+    validate_scenario_file(file_path)
     with open(file_path, "r") as f:
         scenarios = json.load(f)
+    validate_scenario_names(scenarios)
     return scenarios
 
 
@@ -180,11 +188,14 @@ def save_results(
     results_dir="results",
     logger=None,
     env=None,
+    effective_payoff_type=None,
 ):
     """Save experiment results for a specific run to CSV files."""
-    run_dir = os.path.join(results_dir, scenario_name, f"run_{run_number:02d}")
-    if not os.path.exists(run_dir):
-        os.makedirs(run_dir)
+    run_dir = prepare_run_directory(
+        results_dir, scenario_name, run_number, base_filename
+    )
+    if effective_payoff_type is not None:
+        write_run_metadata(run_dir, scenario_name, effective_payoff_type)
 
     if logger is None:
         logger = logging.getLogger(__name__)
@@ -487,6 +498,7 @@ def main():
                 round_results,
                 results_dir=args.results_dir,
                 env=env,
+                effective_payoff_type=scenario.get("payoff_type", "linear"),
             )
 
             # Store key results for aggregation

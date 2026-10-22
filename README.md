@@ -11,10 +11,10 @@ One package (`npdl/`), one CLI (`run.py`), one experiment registry
 
 ## Requirements
 
-Python 3.7+ and the packages in [requirements.txt](requirements.txt):
+Runtime dependencies are declared in [pyproject.toml](pyproject.toml):
 
 ```bash
-pip install -r requirements.txt
+python -m pip install .
 ```
 
 ## Quick start
@@ -175,10 +175,22 @@ everyone), `true_pairwise` (a separate move per opponent).
 
 ## Tests
 
-```bash
-pytest tests/ -q
-# 641 passed, 2 skipped (dashboard figure tests skip without the Dash stack)
+Use a fresh virtual environment (Python 3.13 matches CI). From the project root:
 
+```bash
+python3.13 -m venv .venv  # Linux/macOS; Windows commands are linked below
+source .venv/bin/activate
+python -m pip install -e ".[dev]"
+python -m pytest tests/ -q
+```
+
+The `dev` extra includes pytest 8.4/9.x, coverage tooling, and all runtime
+dependencies, including the visualization stack, so visualization tests run too.
+See [CONTRIBUTING.md](CONTRIBUTING.md) for the dependency strategy and Windows commands.
+
+To check the published golden fixtures without updating them:
+
+```bash
 python tests/fixtures/w0_golden/generate.py --check
 # payoff_matrices.json: IDENTICAL
 # strategy_moves.json: IDENTICAL

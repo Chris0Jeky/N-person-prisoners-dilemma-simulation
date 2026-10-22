@@ -1,26 +1,3 @@
-# Requires Python 3.7+ (see README.md). Install with: pip install -r requirements.txt
-# Core requirements
-numpy>=1.20.0
-pandas>=1.3.0
-networkx>=2.6.0
-# networkx drawing layouts used by the visualization tests need scipy.
-scipy>=1.14.0
-matplotlib>=3.4.0
-seaborn>=0.11.0
-
-# Visualization requirements
-dash>=2.0.0
-dash-bootstrap-components>=1.0.0
-plotly>=5.0.0
-flask>=2.0.0
-
-# Interactive mode requirements
-pygame>=2.1.0,<3.0.0
-
-# Type checking and development
-typing-extensions>=4.4.0
-mypy>=0.990
-pytest>=7.0.0
-black>=22.10.0
-isort>=5.10.0
-
+# Compatibility entry point; pyproject.toml declares the dependencies.
+# Run from the repository root in a fresh virtual environment.
+-e .[dev]

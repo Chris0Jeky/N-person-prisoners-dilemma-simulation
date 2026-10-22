@@ -14,11 +14,13 @@ The test suite verifies the functionality of all components of the NPDL framewor
 
 ## Running Tests
 
-To run the entire test suite:
+Install the complete test environment from the project root, following
+[CONTRIBUTING.md](../CONTRIBUTING.md) to create and activate a fresh venv.
+This includes pytest 8.4/9.x and the visualization dependencies.
 
 ```bash
-# From the project root directory
-pytest
+python -m pip install -e ".[dev]"
+python -m pytest tests/ -q
 ```
 
 To run specific test files:
@@ -43,7 +45,7 @@ pytest tests/test_visualization.py
 To run tests with coverage reporting:
 
 ```bash
-pytest --cov=npdl
+python -m pytest tests/ -q --cov=npdl --cov-report=xml --cov-report=term
 ```
 
 ## Test Organization

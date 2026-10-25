@@ -74,6 +74,10 @@ before anything runs, so bad parameters fail fast:
 python -c "from npdl.experiments import validate_scenario_file; validate_scenario_file('scenarios/scenarios.json'); print('valid')"
 ```
 
+If a scenario or run fails during setup or simulation, the CLI logs the error
+and continues with the remaining scenarios/runs. It exits nonzero if any failed,
+even when other runs successfully saved results.
+
 Minimal scenario (neighborhood mode):
 
 ```json

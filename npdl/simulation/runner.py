@@ -664,17 +664,22 @@ def run_simulation(
             try:
                 logger.info("Running analysis on experiment results")
                 scenario_names = list(scenario_results_aggregated.keys())
-                analyze_multiple_scenarios(
+                analysis_results = analyze_multiple_scenarios(
                     scenario_names, results_dir, "analysis_results"
                 )
+                if analysis_results is None:
+                    logger.error("No scenarios were successfully analyzed.")
+                    return 1
                 logger.info(
                     "Analysis complete. Results saved to 'analysis_results' directory."
                 )
             except Exception as e:
                 logger.error(f"Error running analysis: {e}")
+                return 1
         else:
             logger.error(
                 "Analysis module not available. Install npdl with analysis support."
             )
+            return 1
 
     return 0

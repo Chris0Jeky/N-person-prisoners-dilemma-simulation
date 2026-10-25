@@ -145,6 +145,14 @@ def test_cli_exit_status_when_analysis_output_is_blocked(tiny_run, tmp_path, ana
         assert "Analysis complete" not in result.stderr
 
 
+@pytest.fixture
+def analysis_backend(monkeypatch):
+    from npdl.analysis import analysis
+
+    analysis.plt.switch_backend("Agg")
+    monkeypatch.setenv("MPLBACKEND", "Agg")
+
+
 def write_scenarios(tmp_path, names):
     path = tmp_path / "scenarios.json"
     path.write_text(
@@ -254,3 +262,80 @@ def test_failed_run_is_reported_even_when_later_run_succeeds(
     assert not (saved / "run_00").exists()
     assert (saved / "run_01" / "experiment_results_rounds.csv").is_file()
     assert "injected run failure" in (tmp_path / "logs" / "experiment.log").read_text()
+
+
+@pytest.mark.parametrize("failed_scenario", ["First", "Second", None])
+def test_analysis_reports_missing_scenario_and_preserves_results(
+    tmp_path, monkeypatch, failed_scenario, analysis_backend
+):
+    monkeypatch.chdir(tmp_path)
+    names = ["First", "Second"]
+    path = write_scenarios(tmp_path, names)
+    output = tmp_path / "analysis_results"
+    if failed_scenario:
+        # A directory at the report's file path forces a real write failure.
+        (output / f"{failed_scenario}_metrics.json").mkdir(parents=True)
+
+    status = runner.run_simulation(
+        scenario_file=str(path),
+        results_dir=str(tmp_path / "results"),
+        log_dir=str(tmp_path / "logs"),
+        num_runs=1,
+        analyze=True,
+    )
+
+    expected = [name for name in names if name != failed_scenario]
+    comparison = pd.read_csv(output / "comparative_analysis.csv")
+    assert comparison["scenario_name"].tolist() == expected
+    for name in names:
+        saved = tmp_path / "results" / name / "run_00"
+        assert (saved / "experiment_results_agents.csv").is_file()
+        assert (saved / "experiment_results_rounds.csv").is_file()
+        assert (output / f"{name}_metrics.json").is_file() == (name in expected)
+
+    assert status == (1 if failed_scenario else 0)
+    log = (tmp_path / "logs" / "experiment.log").read_text()
+    if failed_scenario:
+        assert f"Analysis incomplete. No report generated for: {failed_scenario}" in log
+        assert "Analysis complete." not in log
+    else:
+        assert "Analysis complete." in log
+
+
+@pytest.mark.parametrize("failed_scenario", ["First", None])
+def test_cli_exit_status_reflects_partial_analysis(
+    tmp_path, failed_scenario, analysis_backend
+):
+    path = write_scenarios(tmp_path, ["First", "Second"])
+    output = tmp_path / "analysis_results"
+    if failed_scenario:
+        (output / f"{failed_scenario}_metrics.json").mkdir(parents=True)
+
+    proc = subprocess.run(
+        [
+            sys.executable,
+            str(Path(__file__).resolve().parents[1] / "run.py"),
+            "simulate",
+            "--scenario_file",
+            str(path),
+            "--results_dir",
+            str(tmp_path / "results"),
+            "--log_dir",
+            str(tmp_path / "logs"),
+            "--analyze",
+        ],
+        cwd=tmp_path,
+        capture_output=True,
+        text=True,
+        timeout=120,
+    )
+
+    comparison = pd.read_csv(output / "comparative_analysis.csv")
+    assert comparison["scenario_name"].tolist() == (
+        ["Second"] if failed_scenario else ["First", "Second"]
+    )
+    assert (output / "Second_metrics.json").is_file()
+    assert proc.returncode == (1 if failed_scenario else 0)
+    if failed_scenario:
+        assert f"No report generated for: {failed_scenario}" in proc.stderr
+        assert "Analysis complete." not in proc.stderr

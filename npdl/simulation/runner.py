@@ -669,12 +669,23 @@ def run_simulation(
             try:
                 logger.info("Running analysis on experiment results")
                 scenario_names = list(scenario_results_aggregated.keys())
-                analysis_results = analyze_multiple_scenarios(
+                comparison = analyze_multiple_scenarios(
                     scenario_names, results_dir, "analysis_results"
                 )
-                if analysis_results is None:
+                if comparison is None:
                     logger.error("No scenarios were successfully analyzed.")
                     return 1
+                if not comparison.empty:
+                    analyzed_names = set(comparison["scenario_name"])
+                    missing_names = [
+                        name for name in scenario_names if name not in analyzed_names
+                    ]
+                    if missing_names:
+                        logger.error(
+                            "Analysis incomplete. No report generated for: %s",
+                            ", ".join(missing_names),
+                        )
+                        return 1
                 logger.info(
                     "Analysis complete. Results saved to 'analysis_results' directory."
                 )

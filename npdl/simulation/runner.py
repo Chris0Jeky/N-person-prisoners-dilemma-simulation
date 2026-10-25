@@ -672,7 +672,10 @@ def run_simulation(
                 comparison = analyze_multiple_scenarios(
                     scenario_names, results_dir, "analysis_results"
                 )
-                if comparison is not None and not comparison.empty:
+                if comparison is None:
+                    logger.error("No scenarios were successfully analyzed.")
+                    return 1
+                if not comparison.empty:
                     analyzed_names = set(comparison["scenario_name"])
                     missing_names = [
                         name for name in scenario_names if name not in analyzed_names
@@ -688,9 +691,11 @@ def run_simulation(
                 )
             except Exception as e:
                 logger.error(f"Error running analysis: {e}")
+                return 1
         else:
             logger.error(
                 "Analysis module not available. Install npdl with analysis support."
             )
+            return 1
 
     return 1 if had_simulation_error else 0

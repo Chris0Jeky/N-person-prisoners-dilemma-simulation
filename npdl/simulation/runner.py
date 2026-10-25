@@ -482,7 +482,8 @@ def run_simulation(
         num_runs: Number of runs per scenario
 
     Returns:
-        Exit code (0 for success, non-zero for error)
+        Exit code (0 if every scenario/run succeeds, non-zero for any failure).
+        Caught setup/simulation errors are logged and skipped so later work can finish.
     """
     # Set up logging
     if not os.path.exists(log_dir):
@@ -510,6 +511,7 @@ def run_simulation(
 
     # Store aggregated results across runs
     scenario_results_aggregated = {}
+    had_simulation_error = False
 
     # Run experiments - Outer loop for scenarios, inner loop for runs
     for scenario in scenarios:
@@ -522,6 +524,7 @@ def run_simulation(
             _, theoretical_scores = setup_experiment(scenario, logger)
         except (ValueError, KeyError) as e:
             logger.error(f"Error setting up scenario {scenario_name}: {e}")
+            had_simulation_error = True
             continue
 
         for run_number in range(num_runs):
@@ -538,6 +541,7 @@ def run_simulation(
                 logger.error(
                     f"Error setting up run {run_number} for scenario {scenario_name}: {e}"
                 )
+                had_simulation_error = True
                 continue
 
             # Run simulation for this run
@@ -566,6 +570,7 @@ def run_simulation(
                 logger.error(
                     f"Error running simulation for {scenario_name} run {run_number}: {e}"
                 )
+                had_simulation_error = True
                 continue
 
             run_execution_time = time.time() - start_run_time
@@ -677,4 +682,4 @@ def run_simulation(
                 "Analysis module not available. Install npdl with analysis support."
             )
 
-    return 0
+    return 1 if had_simulation_error else 0
